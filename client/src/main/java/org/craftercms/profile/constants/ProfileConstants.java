@@ -33,7 +33,7 @@ public class ProfileConstants {
 			add("ANONYMOUS"); 
 		}
 	};
-	public static final Profile ANONYMOUS = new Profile(null, "cprofile-anonymous", null, true, new Date(), new Date(), null, ANONYMOUS_ROLES);
+	public static final Profile ANONYMOUS = new Profile(null, "anonymous", null, true, new Date(), new Date(), null, ANONYMOUS_ROLES);
 	
 	public static final String ROLES = "roles";
     public static final String DOMAINS = "domains";

@@ -308,13 +308,13 @@ public class AccountController {
         Pattern pattern = Pattern.compile("[,\\s]|@.*@");
         Matcher m = pattern.matcher(account.getUsername());
         profileUserAccountValidator.validate(account, bindingResult);
-        try {
-            if (profileDao.getUser(account.getUsername(), selectedTenantName)!=null) {
-                bindingResult.rejectValue("username", "user.validation.fields.errors.user.already.exist", null, "user.validation.fields.errors.user.already.exist");
-            }
-        } catch(Exception e) {
-            bindingResult.rejectValue("username", "user.validation.fields.errors.username.get", null, "user.validation.fields.errors.user.already.exist");
-        }
+//        try {
+//            if (profileDao.getUser(account.getUsername(), selectedTenantName)!=null) {
+//                bindingResult.rejectValue("username", "user.validation.fields.errors.user.already.exist", null, "user.validation.fields.errors.user.already.exist");
+//            }
+//        } catch(Exception e) {
+//            bindingResult.rejectValue("username", "user.validation.fields.errors.username.get", null, "user.validation.fields.errors.user.already.exist");
+//        }
 
         if (!account.getPassword().equals(account.getConfirmPassword())) {
 

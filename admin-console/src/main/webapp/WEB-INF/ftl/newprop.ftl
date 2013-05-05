@@ -38,8 +38,19 @@
             </p>
             <p>
 		        <label  id="attributeType" for="type">Attribute Type:</label>
-    			<@crafter.formInput "prop.type", "type", "style=width:270", "text"/>
-                <@crafter.showErrors "error-msg", "mbs", ""/>
+    			<@spring.bind "prop.type"/>
+				<#assign attributeType = spring.status.value?default(attributeTypes?values[0])>
+				<select style="width:270px;" id="${spring.status.expression}" name="${spring.status.expression}">
+				    <#list attributeTypes?keys as key>
+					    <#if (attributeType == key) >
+					        <#assign isSelected = true>
+					    <#else>
+					        <#assign isSelected = false>
+					    </#if>
+				    	<option value="${key?html}"<#if isSelected> selected="selected"</#if>>${attributeTypes[key]?html}
+				    </#list>
+				</select>
+    			<@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
             <p>
 		        <label  id="attributeConstraint" for="constraint">Attribute Constraint:</label>

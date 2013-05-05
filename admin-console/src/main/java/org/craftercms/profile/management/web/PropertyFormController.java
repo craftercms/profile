@@ -100,6 +100,8 @@ public class PropertyFormController {
         } else {
             model.addAttribute("propList", tenant.getSchema().getAttributes());
             model.addAttribute("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+            Map<String, String> supportedTypes = ProfileUserAccountUtil.getAttributesSupportedTypes();
+            model.addAttribute("attributeTypes",supportedTypes);
             return "updateprop";
         }
         
@@ -109,9 +111,11 @@ public class PropertyFormController {
     public ModelAndView findProp(@ModelAttribute("tenant") Tenant tenant, @RequestParam(required=false) String property) throws Exception {
         
         Attribute prop = TenantUtil.findSchemaAttributeByName(property, tenant);
+        Map<String, String> supportedTypes = ProfileUserAccountUtil.getAttributesSupportedTypes();
         ModelAndView mav = new ModelAndView();
         if (prop != null) {
             mav.setViewName("updateprop");
+            mav.addObject("attributeTypes",supportedTypes);
             mav.addObject("prop",prop);
             mav.addObject("propList", tenant.getSchema().getAttributes());
             mav.addObject("currentuser", SecurityContextHolder.getContext().getAuthentication().getPrincipal());

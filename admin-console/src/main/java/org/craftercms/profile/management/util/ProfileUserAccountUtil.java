@@ -117,7 +117,7 @@ public class ProfileUserAccountUtil {
 	
 	public static Map<String, String> getAttributesSupportedTypes() {
 		Map<String, String> types = new HashMap<String, String>();
-		types.put("Input","Input");
+		types.put("Text","Text");
 		return types;
 			    
 	}
