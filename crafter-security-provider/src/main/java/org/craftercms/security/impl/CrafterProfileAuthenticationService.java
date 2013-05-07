@@ -38,15 +38,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CrafterProfileAuthenticationService implements AuthenticationService {
 
-    protected Map<String, String> tenantIds;
-
     protected ProfileClient profileClient;
     protected String appUsername;
     protected String appPassword;
-
-    public CrafterProfileAuthenticationService() {
-        tenantIds = new ConcurrentHashMap<String, String>();
-    }
 
     @Required
     public void setProfileClient(ProfileClient profileClient) {
@@ -76,7 +70,7 @@ public class CrafterProfileAuthenticationService implements AuthenticationServic
         String appToken = getAppToken();
 
         try {
-            return profileClient.getTicket(appToken, username, password, getTenantId(appToken, tenantName));
+            return profileClient.getTicket(appToken, username, password, tenantName);
         } catch (UserAuthenticationFailedException e) {
             throw new UserAuthenticationException("User authentication for '" + username + "' failed", e);
         }
@@ -92,25 +86,6 @@ public class CrafterProfileAuthenticationService implements AuthenticationServic
         } catch (AppAuthenticationFailedException e) {
             throw new AuthenticationSystemException("App authentication for '" + appUsername + "' failed", e);
         }
-    }
-
-    protected String getTenantId(String appToken, String tenantName) {
-        String tenantId;
-
-        if (tenantIds.containsKey(tenantName)) {
-            tenantId = tenantIds.get(tenantName);
-        } else {
-            Tenant tenant = profileClient.getTenantByName(appToken, tenantName);
-            if (tenant == null) {
-                throw new AuthenticationSystemException("No tenant found for tenant name '" + tenantName + "'");
-            }
-
-            tenantId = tenant.getId();
-
-            tenantIds.put(tenantName, tenantId);
-        }
-
-        return tenantId;
     }
 
 }
