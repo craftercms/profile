@@ -23,6 +23,7 @@ import org.craftercms.security.api.RequestSecurityProcessorChain;
 import org.craftercms.security.api.UserProfile;
 import org.craftercms.security.exception.AccessDeniedException;
 import org.craftercms.security.exception.CrafterSecurityException;
+import org.craftercms.security.utils.spring.el.AccessRestrictionExpressionRoot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -39,11 +40,21 @@ import java.util.Map;
 /**
  * Processor that checks if the current user has permission to access the current request URL. To do this, the processor matches
  * the URL against the keys of the {@code restriction} map, which are ANT-style path patterns. If a key matches, the value is
- * interpreted as a Spring EL expression, with the user's profile as the root. The expression should be a profile method call that
- * returns a boolean (e.g. isAnonymous(), isAuthenticated(), hasRole('role'), hasAnyRole({'role1', 'role2'})). Examples of user
- * URL restrictions:
+ * interpreted as a Spring EL expression. The expression should be one of this method calls that return a boolean:
+ *
+ * <ol>
+ *     <li>isAnonymous()</li>
+ *     <li>isAuthenticated()</li>
+ *     <li>hasRole('role'})</li>
+ *     <li>hasAnyRole({'role1', 'role2'})</li>
+ *     <li>permitAll()</li>
+ *     <li>denyAll()</li>
+ * </ol>
+ *
+ * <p>Examples of user URL restrictions:</p>
  *
  * <![CDATA[
+ * <entry key="/static-assets" value="permitAll()"/>
  * <entry key="/user" value="hasAnyRole({'user', 'admin'})"/>
  * <entry key="/admin" value="hasRole('admin'})"/>
  * <entry key="/**" value="isAnonymous()"/>
@@ -120,7 +131,7 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
                     profile.getUserName());
         }
 
-        Object value = expression.getValue(profile);
+        Object value = expression.getValue(createExpressionRoot(profile));
 
         if (!(value instanceof Boolean)) {
             throw new CrafterSecurityException("Expression " + expression.getExpressionString() + " should return a boolean value");
@@ -130,6 +141,10 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
             throw new AccessDeniedException("Denied access to URL '" + requestUrl + "' to user '" + profile.getUserName() + "': " +
                     expression.getExpressionString() + " evaluated to false");
         }
+    }
+
+    protected AccessRestrictionExpressionRoot createExpressionRoot(UserProfile profile) {
+        return new AccessRestrictionExpressionRoot(profile);
     }
 
 }
