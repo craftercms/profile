@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.security.impl;
+package org.craftercms.security.utils.spring.el;
 
 import org.craftercms.security.api.UserProfile;
 

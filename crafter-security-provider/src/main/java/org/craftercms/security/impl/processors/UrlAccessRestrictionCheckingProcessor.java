@@ -23,7 +23,7 @@ import org.craftercms.security.api.RequestSecurityProcessorChain;
 import org.craftercms.security.api.UserProfile;
 import org.craftercms.security.exception.AccessDeniedException;
 import org.craftercms.security.exception.CrafterSecurityException;
-import org.craftercms.security.impl.AccessRestrictionExpressionRoot;
+import org.craftercms.security.utils.spring.el.AccessRestrictionExpressionRoot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
