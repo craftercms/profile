@@ -40,4 +40,12 @@ public class ProfileConstants {
 	public static final String DEFAULT_ROLE = "USER";
 	public static final String SUPER_ADMIN = "SUPERADMIN";
 	
+	public static final String TENANT_NAME = "tenantName";
+	public static final String APP_TOKEN = "appToken";
+	public static final String USER_NAME = "userName";
+	public static final String PASSWORD = "password";
+	public static final String ACTIVE = "active";
+	public static final String TICKET = "ticket";
+	public static final String ROLE_NAME = "roleName";
+	
 }
