@@ -57,8 +57,8 @@ import java.util.Map;
  * <![CDATA[
  * <entry key="/static-assets" value="permitAll()"/>
  * <entry key="/user" value="hasAnyRole({'user', 'admin'})"/>
- * <entry key="/admin" value="hasRole('admin'})"/>
- * <entry key="/**" value="isAnonymous()"/>
+ * <entry key="/admin" value="hasRole('admin')"/>
+ * <entry key="/**" value="isAuthenticated()"/>
  * ]]>
  *
  * <strong>WARN: </strong> Remember to put the more general restrictions (like /**) at the end so they're matched last.
@@ -138,7 +138,7 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
     }
 
     protected String getRequestUrl(HttpServletRequest request) {
-        return request.getRequestURI();
+        return request.getRequestURI().substring(request.getContextPath().length());
     }
 
     protected boolean isAccessAllowed(UserProfile profile, Expression expression) {
