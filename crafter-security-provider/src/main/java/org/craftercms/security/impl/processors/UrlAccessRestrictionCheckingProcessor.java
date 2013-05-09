@@ -113,7 +113,22 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
                 Expression expression = entry.getValue();
 
                 if (pathMatcher.match(urlPattern, requestUrl)) {
-                    checkRestriction(requestUrl, profile, expression);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Checking restriction ['" + requestUrl + "' => " + expression.getExpressionString() + "] for user " +
+                                profile.getUserName());
+                    }
+
+                    if (isAccessAllowed(profile, expression)) {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Restriction ['" + requestUrl + "' => " + expression.getExpressionString() + "] evaluated to " +
+                                    "true for user " + profile.getUserName() + ": access allowed");
+                        }
+
+                        break;
+                    } else {
+                        throw new AccessDeniedException("Restriction ['" + requestUrl + "' => " + expression.getExpressionString() +
+                                "] evaluated to false for user " + profile.getUserName() + ": access denied");
+                    }
                 }
             }
         }
@@ -125,22 +140,13 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
         return request.getRequestURI();
     }
 
-    protected void checkRestriction(String requestUrl, UserProfile profile, Expression expression) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Checking restriction ['" + requestUrl + "' => " + expression.getExpressionString() + "] for user " +
-                    profile.getUserName());
-        }
-
+    protected boolean isAccessAllowed(UserProfile profile, Expression expression) {
         Object value = expression.getValue(createExpressionRoot(profile));
-
         if (!(value instanceof Boolean)) {
             throw new CrafterSecurityException("Expression " + expression.getExpressionString() + " should return a boolean value");
         }
 
-        if (!((Boolean) value)) {
-            throw new AccessDeniedException("Denied access to URL '" + requestUrl + "' to user '" + profile.getUserName() + "': " +
-                    expression.getExpressionString() + " evaluated to false");
-        }
+        return (Boolean) value;
     }
 
     protected AccessRestrictionExpressionRoot createExpressionRoot(UserProfile profile) {
