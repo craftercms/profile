@@ -78,6 +78,9 @@ public class UserProfile extends Profile {
      * Returns true if the user has at least one of the given roles.
      */
     public boolean hasAnyRole(List<String> roles) {
+    	if (getRoles() == null) {
+    		return false;
+    	}
         for (String r : roles) {
             if (getRoles().contains(r)) {
                 return true;
