@@ -16,6 +16,7 @@
  */
 package org.craftercms.security.api;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.craftercms.profile.domain.Profile;
 
@@ -65,6 +66,10 @@ public class UserProfile extends Profile {
      * Returns true if the user has the given role.
      */
     public boolean hasRole(String role) {
+        if (CollectionUtils.isEmpty(getRoles())) {
+            return false;
+        }
+
         for (String r : getRoles()) {
             if (r.equals(role)) {
                 return true;
@@ -78,6 +83,10 @@ public class UserProfile extends Profile {
      * Returns true if the user has at least one of the given roles.
      */
     public boolean hasAnyRole(List<String> roles) {
+        if (CollectionUtils.isEmpty(getRoles())) {
+            return false;
+        }
+
         for (String r : roles) {
             if (getRoles().contains(r)) {
                 return true;
