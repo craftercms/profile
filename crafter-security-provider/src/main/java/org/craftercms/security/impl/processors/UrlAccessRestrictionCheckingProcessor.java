@@ -40,7 +40,8 @@ import java.util.Map;
 /**
  * Processor that checks if the current user has permission to access the current request URL. To do this, the processor matches
  * the URL against the keys of the {@code restriction} map, which are ANT-style path patterns. If a key matches, the value is
- * interpreted as a Spring EL expression. The expression should be one of this method calls that return a boolean:
+ * interpreted as a Spring EL expression, the expression is executed, and if it returns true, the processor chain is continued, if not
+ * an {@link AccessDeniedException} is thrown. The expression should be one of this method calls that return a boolean:
  *
  * <ol>
  *     <li>isAnonymous()</li>
@@ -56,8 +57,8 @@ import java.util.Map;
  * <![CDATA[
  * <entry key="/static-assets" value="permitAll()"/>
  * <entry key="/user" value="hasAnyRole({'user', 'admin'})"/>
- * <entry key="/admin" value="hasRole('admin'})"/>
- * <entry key="/**" value="isAnonymous()"/>
+ * <entry key="/admin" value="hasRole('admin')"/>
+ * <entry key="/**" value="isAuthenticated()"/>
  * ]]>
  *
  * <strong>WARN: </strong> Remember to put the more general restrictions (like /**) at the end so they're matched last.
