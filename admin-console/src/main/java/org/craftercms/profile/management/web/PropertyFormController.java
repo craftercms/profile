@@ -29,6 +29,7 @@ import org.craftercms.profile.management.services.TenantDAOService;
 import org.craftercms.profile.management.util.ProfilePropertyFormValidator;
 import org.craftercms.profile.management.util.ProfileUserAccountUtil;
 import org.craftercms.profile.management.util.TenantUtil;
+import org.craftercms.security.api.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -58,7 +59,8 @@ public class PropertyFormController {
         mav.setViewName("proplist");
         mav.addObject("baseUser", baseUser);
         mav.addObject("propList", baseUser.getAttributes());
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
     
@@ -71,7 +73,8 @@ public class PropertyFormController {
         mav.addObject("attributeTypes",supportedTypes);
         mav.addObject("prop", property);
         mav.addObject("propList", tenant.getSchema().getAttributes());
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
     
@@ -85,7 +88,8 @@ public class PropertyFormController {
             Map<String, String> supportedTypes = ProfileUserAccountUtil.getAttributesSupportedTypes();
             model.addAttribute("attributeTypes",supportedTypes);
             model.addAttribute("propList", tenant.getSchema().getAttributes());
-            model.addAttribute("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+            RequestContext context = RequestContext.getCurrent();
+            model.addAttribute("currentuser", context.getAuthenticationToken().getProfile());
             return "newprop";
         }
         
@@ -99,7 +103,8 @@ public class PropertyFormController {
             return "redirect:/getprops";
         } else {
             model.addAttribute("propList", tenant.getSchema().getAttributes());
-            model.addAttribute("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+            RequestContext context = RequestContext.getCurrent();
+            model.addAttribute("currentuser", context.getAuthenticationToken().getProfile());
             Map<String, String> supportedTypes = ProfileUserAccountUtil.getAttributesSupportedTypes();
             model.addAttribute("attributeTypes",supportedTypes);
             return "updateprop";
@@ -118,12 +123,14 @@ public class PropertyFormController {
             mav.addObject("attributeTypes",supportedTypes);
             mav.addObject("prop",prop);
             mav.addObject("propList", tenant.getSchema().getAttributes());
-            mav.addObject("currentuser", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+            RequestContext context = RequestContext.getCurrent();
+            mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         } else {
             mav.setViewName("proplist");
            
             mav.addObject("propList", tenant.getSchema().getAttributes());
-            mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+            RequestContext context = RequestContext.getCurrent();
+            mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
             return mav;
         }
         
@@ -141,11 +148,10 @@ public class PropertyFormController {
         mav.setViewName("proplist");
         mav.addObject("baseUser", tenant.getSchema());
         mav.addObject("propList", tenant.getSchema().getAttributes());
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
-
-    // <editor-fold defaultstate="collapsed" desc="Validation Functions">
 
     private boolean validateNewProperty(Attribute prop, Tenant target, Errors errors) {
         boolean pass= true;
@@ -188,10 +194,6 @@ public class PropertyFormController {
         return pass;
     }
 
-    // </editor-fold>
-
-    // <editor-fold defaultstate="collapsed" desc="Attribute Setters">
-
     @Autowired
     public void setProfilePropertyFormValidator(ProfilePropertyFormValidator validator) {
         this.profilePropertyFormValidator = validator;
@@ -201,7 +203,5 @@ public class PropertyFormController {
     public void setTenantDAOService(TenantDAOService tenantDAOService) {
         this.tenantDAOService = tenantDAOService;
     }
-
-    // </editor-fold>
 
 }

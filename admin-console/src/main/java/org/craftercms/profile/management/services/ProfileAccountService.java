@@ -33,11 +33,11 @@ import org.craftercms.profile.management.model.ProfileUserAccountForm;
 import org.craftercms.profile.management.util.ProfileAccountPaging;
 import org.craftercms.profile.management.util.ProfileUserAccountConstants;
 import org.craftercms.profile.management.util.ProfileUserAccountUtil;
-import org.craftercms.crafterprofile.user.UserProfile;
+import org.craftercms.security.api.RequestContext;
+import org.craftercms.security.api.UserProfile;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -149,7 +149,8 @@ public class ProfileAccountService {
     }
     
 	private List<Profile> excludeUsers(List<Profile> profiles) {
-		UserProfile currentUser = (UserProfile) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		RequestContext context = RequestContext.getCurrent();
+		UserProfile currentUser = context.getAuthenticationToken().getProfile();
 		List<Profile> newList = new ArrayList<Profile>();
 		for (Profile profile: profiles) {
 			if (isDisplayableUser(profile, currentUser)) {
@@ -162,7 +163,7 @@ public class ProfileAccountService {
 	private boolean isDisplayableUser(Profile profile, UserProfile currentUser) {
 		boolean isDisplayable = true;
 		if (profile.getUserName() == null // Profile should have username but this is a validation only
-				|| (profile.getUserName().equals(currentUser.getUsername()) // Profile is user log-in 
+				|| (profile.getUserName().equals(currentUser.getUserName()) // Profile is user log-in 
 						&& profile.getTenantName().equals(currentUser.getTenantName())) 
 				|| isSuperAdmin(profile.getRoles())) { // SUPERADMIN 
 			isDisplayable = false;

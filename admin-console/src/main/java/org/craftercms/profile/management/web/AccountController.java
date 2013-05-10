@@ -51,6 +51,8 @@ import org.craftercms.profile.management.services.ProfileAccountService;
 import org.craftercms.profile.management.services.ProfileDAOServiceImpl;
 import org.craftercms.profile.management.util.ProfileAccountPaging;
 import org.craftercms.profile.management.util.ProfileUserAccountValidator;
+import org.craftercms.security.api.RequestContext;
+import org.craftercms.security.api.UserProfile;
 
 @Controller
 @SessionAttributes({"account"})
@@ -94,7 +96,8 @@ public class AccountController {
         mav.addObject("selectedTenantName",selectedTenantName);
         mav.addObject("profileAccountPaging", profileAccountPaging);
 
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
 
@@ -115,7 +118,8 @@ public class AccountController {
         mav.addObject("filter",filter);
         mav.addObject("tenantNames",tenantNames);
         mav.addObject("selectedTenantName",selectedTenantName);
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
     
@@ -136,7 +140,8 @@ public class AccountController {
         mav.addObject("tenantNames",tenantNames);
         mav.addObject("selectedTenantName",selectedTenantName);
         mav.addObject("profileAccountPaging", profileAccountPaging);
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
     
@@ -158,7 +163,8 @@ public class AccountController {
         mav.addObject("selectedTenantName",selectedTenantName);
         mav.addObject("profileAccountPaging", profileAccountPaging);
       
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
     
@@ -178,7 +184,8 @@ public class AccountController {
         mav.addObject("account", account);
         mav.addObject("attributeList",t.getSchema().getAttributes());
         mav.addObject("tenantNames", tenantNames);
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
     
@@ -197,7 +204,8 @@ public class AccountController {
             model.addAttribute("account", account);
             model.addAttribute("attributeList", tenant.getSchema().getAttributes());
             model.addAttribute("tenantNames", tenantNames);
-            model.addAttribute("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+            RequestContext context = RequestContext.getCurrent();
+            model.addAttribute("currentuser", context.getAuthenticationToken().getProfile());
             return "new";
         }
     }
@@ -211,7 +219,8 @@ public class AccountController {
         mav.setViewName("profileattributes");
         mav.addObject("account", account);
         mav.addObject("attributeList", result.getSchema().getAttributes());
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
 
         return mav;
     }
@@ -235,7 +244,8 @@ public class AccountController {
         mav.addObject("account", a);
         mav.addObject("tenantName", tenant.getTenantName());
         mav.addObject("attributeList", tenant.getSchema().getAttributes());
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
     
@@ -255,7 +265,8 @@ public class AccountController {
         mav.addObject("filter", new FilterForm());
         mav.addObject("tenantNames", tenantNames);
         mav.addObject("selectedTenantName",selectedTenantName);
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
     
@@ -308,13 +319,6 @@ public class AccountController {
         Pattern pattern = Pattern.compile("[,\\s]|@.*@");
         Matcher m = pattern.matcher(account.getUsername());
         profileUserAccountValidator.validate(account, bindingResult);
-//        try {
-//            if (profileDao.getUser(account.getUsername(), selectedTenantName)!=null) {
-//                bindingResult.rejectValue("username", "user.validation.fields.errors.user.already.exist", null, "user.validation.fields.errors.user.already.exist");
-//            }
-//        } catch(Exception e) {
-//            bindingResult.rejectValue("username", "user.validation.fields.errors.username.get", null, "user.validation.fields.errors.user.already.exist");
-//        }
 
         if (!account.getPassword().equals(account.getConfirmPassword())) {
 
@@ -326,13 +330,6 @@ public class AccountController {
         }
         if (m.find()){
             bindingResult.rejectValue("username", "user.validation.error.empty.or.whitespace", null, "user.validation.error.empty.or.whitespace");
-        }
-    }
-    
-    private void validateUpdateAccount(ProfileUserAccountForm account, BindingResult bindingResult) {
-        profileUserAccountValidator.validate(account, bindingResult);
-        if (!account.getPassword().equals(account.getConfirmPassword())) {
-            bindingResult.rejectValue("password", "user.validation.fields.errors.confirm.password", null, "user.validation.fields.errors.confirm.password");
         }
     }
     

@@ -27,6 +27,7 @@ import org.craftercms.profile.management.services.RoleDAOService;
 import org.craftercms.profile.management.services.TenantDAOService;
 import org.craftercms.profile.management.util.TenantPaging;
 import org.craftercms.profile.management.util.TenantValidator;
+import org.craftercms.security.api.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -39,8 +40,6 @@ import org.springframework.web.servlet.ModelAndView;
 @SessionAttributes({"tenant"})
 public class MultiTenantController {
 
-    // <editor-fold defaultstate="collapsed" desc="Services and util Beans">
-
     private RoleDAOService roleDAOService;
 
     private TenantDAOService tenantDAOService;
@@ -48,10 +47,6 @@ public class MultiTenantController {
     private TenantValidator tenantValidator;
 
     private TenantPaging tenantPaging;
-
-    // </editor-fold>
-
-    // <editor-fold defaultstate="collapsed" desc="Request Handlers">
 
     @RequestMapping(value = "/gettenants", method = RequestMethod.GET)
     public ModelAndView findAllAccounts() throws Exception {
@@ -62,8 +57,8 @@ public class MultiTenantController {
         mav.setViewName("tenantlist");
         mav.addObject("tenantList", tenantList);
         mav.addObject("filter",filter);
-
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
 
@@ -75,7 +70,8 @@ public class MultiTenantController {
         mav.addObject("filter",filter);
         mav.setViewName("tenantlist");
         mav.addObject("tenantList", tenantList);
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
 
@@ -87,7 +83,8 @@ public class MultiTenantController {
         mav.addObject("filter",filter);
         mav.setViewName("tenantlist");
         mav.addObject("tenantList", tenantList);
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
 
@@ -100,7 +97,8 @@ public class MultiTenantController {
         mav.addObject("tenantList", tenantList);
         mav.addObject("filter",filter);
 
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
 
@@ -115,7 +113,8 @@ public class MultiTenantController {
         mav.addObject("tenant", tenant);
         mav.addObject("roleOption",roleOption);
         mav.addObject("tenantList",tenantList);
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
 
@@ -133,7 +132,8 @@ public class MultiTenantController {
             model.addAttribute("tenant", tenant);
             model.addAttribute("roleOption", roleOption);
             model.addAttribute("tenantList", tenantList);
-            model.addAttribute("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+            RequestContext context = RequestContext.getCurrent();
+            model.addAttribute("currentuser", context.getAuthenticationToken().getProfile());
             return "newtenant";
         }
     }
@@ -149,7 +149,8 @@ public class MultiTenantController {
         mav.addObject("tenant", tenant);
         mav.addObject("roleOption",roleOption);
         mav.addObject("tenantList",tenantList);
-        mav.addObject("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        RequestContext context = RequestContext.getCurrent();
+        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
 
@@ -167,14 +168,11 @@ public class MultiTenantController {
             model.addAttribute("tenant", tenant);
             model.addAttribute("roleOption", roleOption);
             model.addAttribute("tenantList", tenantList);
-            model.addAttribute("currentuser",SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+            RequestContext context = RequestContext.getCurrent();
+            model.addAttribute("currentuser", context.getAuthenticationToken().getProfile());
             return "newtenant";
         }
     }
-
-    // </editor-fold>
-
-    // <editor-fold defaultstate="collapsed" desc="Validation Functions">
 
     private void validateNewTenant(Tenant t, BindingResult result){
         Pattern pattern = Pattern.compile("^((http(s?):\\/\\/)?(((www\\.)?+" +
@@ -240,10 +238,6 @@ public class MultiTenantController {
 
     }
 
-    // </editor-fold>
-
-    // <editor-fold defaultstate="collapsed" desc="Attribute Setters">
-
     @Autowired
     public void setRoleDAOService(RoleDAOService roleDAOService) {
         this.roleDAOService = roleDAOService;
@@ -263,7 +257,5 @@ public class MultiTenantController {
     public void setTenantPaging(TenantPaging tenantPaging) {
         this.tenantPaging = tenantPaging;
     }
-
-    // </editor-fold>
 
 }
