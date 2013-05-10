@@ -1332,7 +1332,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 			String hashedPassword = encoder.encodePassword(appPassword, null);
 
 			List<NameValuePair> qparams = new ArrayList<NameValuePair>();
-			qparams.add(new BasicNameValuePair(ProfileConstants.USER_NAME,
+			qparams.add(new BasicNameValuePair("username",
 					appUsername));
 			qparams.add(new BasicNameValuePair(ProfileConstants.PASSWORD,
 					hashedPassword));
@@ -1393,7 +1393,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 			List<NameValuePair> qparams = new ArrayList<NameValuePair>();
 			qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN,
 					appToken));
-			qparams.add(new BasicNameValuePair(ProfileConstants.USER_NAME,
+			qparams.add(new BasicNameValuePair("username",
 					username));
 			qparams.add(new BasicNameValuePair(ProfileConstants.PASSWORD,
 					hashedPassword));
