@@ -137,7 +137,7 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
     }
 
     protected String getRequestUrl(HttpServletRequest request) {
-        return request.getRequestURI();
+        return request.getRequestURI().substring(request.getContextPath().length());
     }
 
     protected boolean isAccessAllowed(UserProfile profile, Expression expression) {
