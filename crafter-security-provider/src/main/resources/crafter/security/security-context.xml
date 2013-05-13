@@ -110,7 +110,7 @@
     </bean>
 
     <bean id="crafter.authenticationCookieFactory" class="org.craftercms.security.authentication.impl.CipheredAuthenticationCookieFactory">
-        <property name="encryptionKey" value="${crafter.security.authentication.cookie.encryptionKey}"/>
+        <property name="encryptionKeyFile" value="${crafter.security.authentication.cookie.encryptionKey.file}"/>
     </bean>
 
     <bean id="crafter.authenticationService" class="org.craftercms.security.impl.CrafterProfileAuthenticationService">

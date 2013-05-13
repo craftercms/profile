@@ -32,9 +32,6 @@ import java.util.Date;
  */
 public class CipheredAuthenticationCookie extends AuthenticationCookie {
 
-    public static final SecureRandom secureRandom = new SecureRandom();
-
-    public static final String CIPHER_ALGORITHM = "AES";
     public static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";
 
     protected Key encryptionKey;
@@ -69,7 +66,7 @@ public class CipheredAuthenticationCookie extends AuthenticationCookie {
     protected byte[] generateIv() {
         byte[] iv = new byte[16];
 
-        secureRandom.nextBytes(iv);
+        CipheredAuthenticationCookieFactory.secureRandom.nextBytes(iv);
 
         return iv;
     }
