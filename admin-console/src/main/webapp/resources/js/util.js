@@ -50,7 +50,7 @@ function onsubmitform(param) {
 		} 
 	} else if(param == 'Logout' || document.pressed == 'Logout') {
 		cForm.method = "get";
-		cForm.action = "logout";
+		cForm.action = "crafter-security-logout";
 		cForm.submit();
 	} else if(param == 'Previous' || document.pressed == 'Previous') {
 		cForm.method = "get";

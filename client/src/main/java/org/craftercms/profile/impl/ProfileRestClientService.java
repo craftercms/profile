@@ -39,6 +39,12 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 
+/**
+ * This service creates an HttpConnection and is able to service connection requests from multiple execution threads.
+ * 
+ * @author Alvaro Gonzalez
+ *
+ */
 public class ProfileRestClientService {
 	private static final int CONNECTION_TIMEOUT = 10000;
 	private static final int SOCKET_TIMEOUT = 60000;

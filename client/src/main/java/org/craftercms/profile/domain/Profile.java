@@ -52,20 +52,13 @@ public class Profile implements Serializable {
 	}
 
 	public Profile(String id, String userName, String password, Boolean active, Date created, Date modified, Map<String, Object> attributes) {
-		//super();
-		this(id, userName, password, active, created, modified, attributes, null);
-//		this.id = id;
-//		this.userName = userName;
-//		this.password = password;
-//		this.active = active;
-//		this.created = created;
-//		this.modified = modified;
-//		this.attributes = attributes;
+
+		this(id, userName, password, active, created, modified, attributes, null, "");
 	}
 	
-	public Profile(String id, String userName, String password, Boolean active, Date created, Date modified, Map<String, Object> attributes, List<String> roles) {
+	public Profile(String id, String userName, String password, Boolean active, Date created, Date modified, Map<String, Object> attributes, List<String> roles, String tenantName) {
 		super();
-		//this()
+
 		this.id = id;
 		this.userName = userName;
 		this.password = password;
@@ -74,6 +67,7 @@ public class Profile implements Serializable {
 		this.modified = modified;
 		this.attributes = attributes;
 		this.roles = roles;
+		this.tenantName = tenantName;
 	}
 
 	public String getId() {

@@ -45,7 +45,8 @@ public class UserProfile extends Profile {
                 profile.getCreated(),
                 profile.getModified(),
                 profile.getAttributes(),
-                profile.getRoles());
+                profile.getRoles(),
+                profile.getTenantName());
     }
 
     /**
