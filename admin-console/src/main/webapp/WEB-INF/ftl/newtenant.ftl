@@ -22,12 +22,12 @@
   	  <form id="form-item" onsubmit="return onsubmitform();">
   	  	<div class="box pad mt40 style-inputs">
 		  	<p>
-		        <label  id="tenantName" for="tenantName">Tenant Name:</label>
+		        <label  id="tenantName" for="tenantName">*Tenant Name:</label>
     			<@crafter.formInput "tenant.tenantName", "tenantName", "style=width:270", "text"/>
                 <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
             <p>
-		        <label  id="roleLabel" for="role">Roles:</label>
+		        <label  id="roleLabel" for="role">*Roles:</label>
 	            <@spring.bind "tenant.roles"/>
 				<#assign selectedRoles = spring.status.value?default(" ")>
 				<select style="width:270px;" multiple="multiple" id="${spring.status.expression}" name="${spring.status.expression}"}>
@@ -40,12 +40,15 @@
 				    	<option value="${role.roleName?html}"<#if isSelected> selected="selected"</#if>>${role.roleName?html}
 				    </#list>
 				</select>
+				<br />
+                <span  class="hintField">Roles will be assigned to the Profiles of this Tenant</span>
     			<@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
             <p>
-                <label  id="tenantDomains" for="name">Tenant Domains:</label>
+                <label  id="tenantDomains" for="name">*Tenant Domains:</label>
                 <@spring.bind "tenant.domains"/>
                 <a href="#" id="add">Add</a> | <a href="#" id="remove">Remove</a> | <a href="#" id="reset">Reset</a>
+                <br />
                 <div id="domainList">
                     <#if tenant.domains?size == 0>
                         <input type="text" class="field" name="${spring.status.expression}" value="" "style=width:270" />
@@ -55,11 +58,15 @@
 				        </#list>
 					</#if>
                 </div>
+                <span id="tenantDomainHint" class="hintField">Domain names allow to access this Tenant</span>
                 <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
             <p>
 		        <label>&nbsp;</label>
 		        <button class="btn btn-info" id="ManageAttributes" type="submit" value="ManageAttributes" onclick="document.pressed=this.id" formtarget="_blank">Manage Attributes</button>
+            </p>
+            <p>
+            <span  class="hintField">* Required fields mark</span>
             </p>
             <p>
 		        <label>&nbsp;</label>

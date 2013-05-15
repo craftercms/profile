@@ -28,11 +28,13 @@
             <p>
                 <label  id="attributeLabel" for="label">Attribute Label:</label>
                 <@crafter.formInput "prop.label", "label", "style=width:270", "text"/>
+                <span  class="hintField">Label displayed to request data in the profile page</span>
                 <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
             <p>
                 <label  id="attributeOrder" for="order">Attribute Order:</label>
                 <@crafter.formInput "prop.order", "order", "style=width:270", "text"/>
+                <span  class="hintField">Order where this field is displayed in the profile page</span>
                 <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
             <p>
@@ -49,16 +51,19 @@
 				    	<option value="${key?html}"<#if isSelected> selected="selected"</#if>>${attributeTypes[key]?html}
 				    </#list>
 				</select>
+				<span  class="hintField">Field Type used to request the information in the profile page</span>
     			<@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
             <p>
                 <label  id="attributeConstraint" for="constraint">Attribute Constraint:</label>
                 <@crafter.formInput "prop.constraint", "constraint", "style=width:270", "text"/>
+                <span  class="hintField">Regular expression used during the validation</span>
                 <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
             <p>
                 <label  id="attributeRequired" for="required">Attribute Required:</label>
                 <@crafter.formCheckbox "prop.required", "required"/>
+                <span  class="hintField">Is this field required?</span>
                 <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
 

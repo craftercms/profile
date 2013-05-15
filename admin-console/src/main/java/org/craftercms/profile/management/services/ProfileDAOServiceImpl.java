@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import org.craftercms.profile.api.ProfileClient;
+import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.RestException;
 import org.craftercms.profile.domain.*;
@@ -55,7 +56,18 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
 		if (appToken == null) {
 			setAppToken();
 		}
-		profileRestClient.deleteProfile(appToken, profileId);
+		try {
+			profileRestClient.deleteProfile(appToken, profileId);
+		} catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			profileRestClient.deleteProfile(appToken, profileId);
+		}
 	}
 	
 	public void deleteUsers(List<String> users) throws AppAuthenticationFailedException {
@@ -73,15 +85,36 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
 		if (appToken == null) {
 			setAppToken();
 		} 
-		
-		return profileRestClient.createProfile(appToken, data);
+		try {
+			return profileRestClient.createProfile(appToken, data);
+		} catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return profileRestClient.createProfile(appToken, data);
+		}
 	}
 	
 	public List<Role> getRoles(String tenantName) throws AppAuthenticationFailedException {
 		if (appToken == null) {
 			setAppToken();
 		}
-		return profileRestClient.getAllRoles(appToken, tenantName);
+		try {
+			return profileRestClient.getAllRoles(appToken, tenantName);
+		} catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return profileRestClient.getAllRoles(appToken, tenantName);
+		}
 	}
 	 
 	public void setAppToken() throws AppAuthenticationFailedException {
@@ -94,13 +127,34 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
 		if (appToken == null) {
 			setAppToken();
 		} 
-		
-		return profileRestClient.updateProfile(appToken, data);
+		try {
+			return profileRestClient.updateProfile(appToken, data);
+		} catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return profileRestClient.updateProfile(appToken, data);
+		}
 	}
 
 
     public void setSchemaAttribute(Attribute attribute, String tenantName) {
+    	try{ 
             profileRestClient.setAttributeForSchema(appToken, tenantName,attribute);
+    	} catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			profileRestClient.setAttributeForSchema(appToken, tenantName,attribute);
+		}
 	}
 
 	public Profile getUser(String username, String tenantName)
@@ -109,7 +163,18 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
 		if (appToken == null) {
 			setAppToken();
 		}
-		return profileRestClient.getProfileByUsername(appToken, username, tenantName);
+		try {
+			return profileRestClient.getProfileByUsername(appToken, username, tenantName);
+		} catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return profileRestClient.getProfileByUsername(appToken, username, tenantName);
+		}
 	}
 
     public SchemaModel getSchema(String tenantName)
@@ -118,7 +183,19 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
 		if (appToken == null) {
 			setAppToken();
 		} 
-		Tenant t = profileRestClient.getTenantByName(appToken, tenantName);
+		Tenant t = null; 
+		try { 
+			t = profileRestClient.getTenantByName(appToken, tenantName);
+		} catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			t = profileRestClient.getTenantByName(appToken, tenantName);
+		}
 		return new SchemaModel(t.getSchema(),t.getTenantName());
 	}
 	
@@ -128,11 +205,19 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
 		if (appToken == null) {
 			setAppToken();
 		}
-		//Tenant t = profileRestClient.getTenantByName(appToken, tenantName);
-//        if (t == null) {
-//        	throw new RestException("Tenant not valid");
-//        }
-		Profile p = profileRestClient.getProfileByUsernameWithAllAttributes(appToken, username, tenantName);
+		Profile p = null;
+		try {
+			p = profileRestClient.getProfileByUsernameWithAllAttributes(appToken, username, tenantName);
+		} catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			p = profileRestClient.getProfileByUsernameWithAllAttributes(appToken, username, tenantName);
+		}
 		if (p == null) { 
 			throw new RestException("Username was not valid");
 		}
@@ -144,7 +229,18 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
 		
 		List<String> attributes = new ArrayList<String>();
 		attributes.add(ProfileUserAccountConstants.USERNAME_PROPERTY);
-		return profileRestClient.getProfileRange(appToken, tenantName, start, end, ProfileUserAccountConstants.MODIFIED_PROPERTY, ProfileUserAccountConstants.SORT_ORDER_ASC, attributes);
+		try {
+			return profileRestClient.getProfileRange(appToken, tenantName, start, end, ProfileUserAccountConstants.MODIFIED_PROPERTY, ProfileUserAccountConstants.SORT_ORDER_ASC, attributes);
+		} catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return profileRestClient.getProfileRange(appToken, tenantName, start, end, ProfileUserAccountConstants.MODIFIED_PROPERTY, ProfileUserAccountConstants.SORT_ORDER_ASC, attributes);
+		}
 	}
 	
 	public List<Profile> getUsers(int start, int end, String sortBy, String sortOrder, List<String> attributes, String tenantName)
@@ -152,7 +248,18 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
 		if (appToken == null) {
 			setAppToken();
 		}
-		return profileRestClient.getProfileRange(appToken, tenantName, start, end, sortBy, sortOrder, attributes);
+		try {
+			return profileRestClient.getProfileRange(appToken, tenantName, start, end, sortBy, sortOrder, attributes);
+		} catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return profileRestClient.getProfileRange(appToken, tenantName, start, end, sortBy, sortOrder, attributes);
+		}
 	}
 	
 	public long getProfileCount(String tenantName)
@@ -160,22 +267,54 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
 		if (appToken == null) {
 			setAppToken();
 		}
-		return profileRestClient.getProfileCount(appToken, tenantName);
+		try {
+			return profileRestClient.getProfileCount(appToken, tenantName);
+		} catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return profileRestClient.getProfileCount(appToken, tenantName);
+		}
 	}
 	
 	public void setAttributes(String profileId, Map<String, Serializable> attributes) throws AppAuthenticationFailedException {
 		if (appToken == null) {
 			setAppToken();
 		}
-		this.profileRestClient.setAttributesForProfile(appToken, profileId, attributes);
+		try {
+			this.profileRestClient.setAttributesForProfile(appToken, profileId, attributes);
+		} catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			this.profileRestClient.setAttributesForProfile(appToken, profileId, attributes);
+		}
 	}
 	
 	public Profile getProfileWithAllAttributes(String profileId) throws AppAuthenticationFailedException {
 		if (appToken == null) {
 			setAppToken();
 		}
-		
-		return this.profileRestClient.getProfileWithAllAttributes(appToken, profileId);
+		try {
+			return this.profileRestClient.getProfileWithAllAttributes(appToken, profileId);
+		} catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return this.profileRestClient.getProfileWithAllAttributes(appToken, profileId);
+		}
 	}
 	
 	public void deleteAttributes(String profileId, List<String> attributes)
@@ -183,8 +322,18 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
 		if (appToken == null) {
 			setAppToken();
 		} 
-		
-		profileRestClient.deleteAttributesForProfile(appToken, profileId,attributes);
+		try {
+			profileRestClient.deleteAttributesForProfile(appToken, profileId,attributes);
+		} catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			profileRestClient.deleteAttributesForProfile(appToken, profileId,attributes);
+		}
 	}
 	
 	@Value("${crafter.profile.app.username}")
@@ -208,7 +357,18 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
 		} 
 		
 		for (String attribute: attributes){
-            profileRestClient.deleteAttributeForSchema(appToken, schemaId, attribute);
+			try {
+				profileRestClient.deleteAttributeForSchema(appToken, schemaId, attribute);
+			} catch(AppAuthenticationException e) {
+    			try {
+    				
+    				setAppToken();
+    				
+    			} catch (AppAuthenticationFailedException e1) {
+    				log.error("could not get an AppToken", e);
+    			}
+    			 profileRestClient.deleteAttributeForSchema(appToken, schemaId, attribute);
+    		}
         }
 		
 	}
