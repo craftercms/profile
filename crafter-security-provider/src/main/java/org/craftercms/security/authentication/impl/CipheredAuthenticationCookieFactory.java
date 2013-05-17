@@ -19,20 +19,14 @@ package org.craftercms.security.authentication.impl;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.craftercms.security.exception.CrafterSecurityException;
-import org.craftercms.security.utils.crypto.KeyFile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
-import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.Key;
-import java.security.SecureRandom;
 import java.util.Date;
 
 /**
@@ -42,49 +36,18 @@ import java.util.Date;
  */
 public class CipheredAuthenticationCookieFactory extends AuthenticationCookieFactory {
 
-    public static final SecureRandom secureRandom = new SecureRandom();
-
-    public static final String CIPHER_ALGORITHM = "AES";
-
     public static final int ENCRYPTED_VALUE =   0;
     public static final int IV =                1;
 
-    private static final Logger logger = LoggerFactory.getLogger(CipheredAuthenticationCookieFactory.class);
-
-    protected File encryptionKeyFile;
     protected Key encryptionKey;
 
     @Required
-    public void setEncryptionKeyFile(File encryptionKeyFile) {
-        this.encryptionKeyFile = encryptionKeyFile;
-    }
-
-    @PostConstruct
-    public void init() throws CrafterSecurityException {
-        KeyFile keyFile = new KeyFile(encryptionKeyFile);
-
-        if (encryptionKeyFile.length() > 0) {
-            try {
-                encryptionKey = keyFile.readKey();
-            } catch (IOException e) {
-                throw new CrafterSecurityException("Error while trying to read encryption key from file " + encryptionKeyFile, e);
-            }
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Found encryption key for authentication cookies in file " + encryptionKeyFile);
-            }
-        } else {
-            encryptionKey = generateRandomKey();
-            try {
-                keyFile.writeKey(encryptionKey);
-            } catch (IOException e) {
-                throw new CrafterSecurityException("Error while trying to write encryption key to file " + encryptionKeyFile, e);
-            }
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("No encryption key for authentication cookies found. A new random encryption key was generated and " +
-                        "stored in file " + encryptionKeyFile + " for future use");
-            }
+    public void setEncryptionKey(String encryptionKey) {
+        try {
+            this.encryptionKey = new SecretKeySpec(encryptionKey.getBytes("UTF-8"), CipheredAuthenticationCookie.CIPHER_ALGORITHM);
+        } catch (UnsupportedEncodingException e) {
+            // Shouldn't happen
+            throw new CrafterSecurityException(e);
         }
     }
 
@@ -117,18 +80,6 @@ public class CipheredAuthenticationCookieFactory extends AuthenticationCookieFac
             return new String(decryptedValue, "UTF-8");
         } catch (Exception e) {
             throw new CrafterSecurityException("Error while trying to decrypt cookie value", e);
-        }
-    }
-
-    protected Key generateRandomKey() throws CrafterSecurityException {
-        KeyGenerator keyGenerator;
-        try {
-            keyGenerator = KeyGenerator.getInstance(CIPHER_ALGORITHM);
-            keyGenerator.init(secureRandom);
-
-            return keyGenerator.generateKey();
-        } catch (Exception e) {
-            throw new CrafterSecurityException("Unable to generate random encryption key", e);
         }
     }
 
