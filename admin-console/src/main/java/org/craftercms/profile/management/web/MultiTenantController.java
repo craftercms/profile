@@ -180,13 +180,13 @@ public class MultiTenantController {
                 "[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b))" +
                 "(\\/[a-zA-Z0-9\\_\\-\\s\\.\\/\\?\\%\\#\\&\\=]*)?)|localhost$");
         tenantValidator.validate(t, result);
-        try {
-            if (tenantDAOService.getTenantByName(t.getTenantName()) != null) {
-                result.rejectValue("tenantName", "tenant.name.validation.tenant.already.exist", null, "tenant.name.validation.tenant.already.exist");
-            }
-        }catch (Exception e){
-
-        }
+//        try {
+//            if (tenantDAOService.getTenantByName(t.getTenantName()) != null) {
+//                result.rejectValue("tenantName", "tenant.name.validation.tenant.already.exist", null, "tenant.name.validation.tenant.already.exist");
+//            }
+//        }catch (Exception e){
+//
+//        }
         if(t.getRoles().isEmpty()){
             result.rejectValue("roles", "tenant.roles.validation.error.empty", null, "tenant.roles.validation.error.empty");
         }

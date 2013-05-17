@@ -162,7 +162,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>admin-console</finalName>
+		<finalName>crafter-profile-admin-console</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

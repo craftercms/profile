@@ -21,10 +21,13 @@ import org.craftercms.profile.api.ProfileClient;
 import org.craftercms.profile.domain.Attribute;
 import org.craftercms.profile.domain.Schema;
 import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.management.model.TenantFilterForm;
 import org.craftercms.profile.management.util.AttributeFieldsComparator;
 import org.craftercms.profile.management.util.TenantPaging;
+
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -40,8 +43,7 @@ public class TenantDAOServiceImpl implements TenantDAOService {
 
     private String username;
     private String password;
-
-
+    
     private ProfileClient profileRestClient;
     private TenantPaging tenantPaging;
 
@@ -59,8 +61,22 @@ public class TenantDAOServiceImpl implements TenantDAOService {
         if (appToken == null) {
             setAppToken();
         }
-        Tenant created = profileRestClient.createTenant(appToken, tenant.getTenantName(),
-                tenant.getRoles(), tenant.getDomains(), false);
+        
+        Tenant created = null;
+        try {
+        	created = profileRestClient.createTenant(appToken, tenant.getTenantName(),
+                    tenant.getRoles(), tenant.getDomains(), false);
+	    } catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			created = profileRestClient.createTenant(appToken, tenant.getTenantName(),
+                    tenant.getRoles(), tenant.getDomains(), false);
+		}
         if (created != null && created.getTenantName() != null){
             for (Attribute attribute : tenant.getSchema().getAttributes()){
                 profileRestClient.setAttributeForSchema(appToken, created.getTenantName(), attribute);
@@ -75,7 +91,18 @@ public class TenantDAOServiceImpl implements TenantDAOService {
         if (appToken == null) {
             setAppToken();
         }
-        return profileRestClient.exitsTenant(appToken, tenantName);
+        try {
+        	return profileRestClient.exitsTenant(appToken, tenantName);
+        } catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return profileRestClient.exitsTenant(appToken, tenantName);
+		}
     }
 
     @Override
@@ -83,7 +110,18 @@ public class TenantDAOServiceImpl implements TenantDAOService {
         if (appToken == null) {
             setAppToken();
         }
-        return profileRestClient.getTenantCount(appToken);
+        try {
+        	return profileRestClient.getTenantCount(appToken);
+        } catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return profileRestClient.getTenantCount(appToken);
+		}
     }
 
     @Override
@@ -127,7 +165,18 @@ public class TenantDAOServiceImpl implements TenantDAOService {
         if (appToken == null) {
             setAppToken();
         }
-        return profileRestClient.getAllTenants(appToken);
+        try {
+        	return profileRestClient.getAllTenants(appToken);
+    	} catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+	        return profileRestClient.getAllTenants(appToken);
+    	}
     }
 
     @Override
@@ -146,7 +195,20 @@ public class TenantDAOServiceImpl implements TenantDAOService {
 
     @Override
     public Tenant getTenantForUpdate(String tenantName) throws AppAuthenticationFailedException {
-        return getTenantByName(tenantName);
+    	try {
+    		return getTenantByName(tenantName);
+    	
+	    } catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return getTenantByName(tenantName);
+		}
+        
     }
 
     @Override
@@ -154,7 +216,18 @@ public class TenantDAOServiceImpl implements TenantDAOService {
         if (appToken == null) {
             setAppToken();
         }
-        return profileRestClient.updateTenant(appToken, tenant.getId(), tenant.getTenantName(), tenant.getRoles(), tenant.getDomains());
+        try {
+        	return profileRestClient.updateTenant(appToken, tenant.getId(), tenant.getTenantName(), tenant.getRoles(), tenant.getDomains());
+        } catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return profileRestClient.updateTenant(appToken, tenant.getId(), tenant.getTenantName(), tenant.getRoles(), tenant.getDomains());
+		}
     }
 
     @Override
@@ -195,7 +268,18 @@ public class TenantDAOServiceImpl implements TenantDAOService {
             if (appToken == null) {
                 setAppToken();
             }
-            profileRestClient.setAttributeForSchema(appToken, tenant.getTenantName(), attribute);
+            try {
+            	profileRestClient.setAttributeForSchema(appToken, tenant.getTenantName(), attribute);
+            } catch(AppAuthenticationException e) {
+    			try {
+    				
+    				setAppToken();
+    				
+    			} catch (AppAuthenticationFailedException e1) {
+    				log.error("could not get an AppToken", e);
+    			}
+    			profileRestClient.setAttributeForSchema(appToken, tenant.getTenantName(), attribute);
+    		}
         }
     }
 
@@ -210,7 +294,18 @@ public class TenantDAOServiceImpl implements TenantDAOService {
                     if (appToken == null) {
                         setAppToken();
                     }
-                    profileRestClient.deleteAttributeForSchema(appToken, tenant.getTenantName(), attribute);
+                    try {
+                    	profileRestClient.deleteAttributeForSchema(appToken, tenant.getTenantName(), attribute);
+	                } catch(AppAuthenticationException e) {
+	        			try {
+	        				
+	        				setAppToken();
+	        				
+	        			} catch (AppAuthenticationFailedException e1) {
+	        				log.error("could not get an AppToken", e);
+	        			}
+	        			profileRestClient.deleteAttributeForSchema(appToken, tenant.getTenantName(), attribute);
+	        		}
                 }
             }
         }
@@ -225,7 +320,18 @@ public class TenantDAOServiceImpl implements TenantDAOService {
         if (appToken == null) {
             setAppToken();
         }
-        return profileRestClient.getTenantRange(appToken, sortBy, sortOrder, start, end);
+        try {
+        	return profileRestClient.getTenantRange(appToken, sortBy, sortOrder, start, end);
+        } catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return profileRestClient.getTenantRange(appToken, sortBy, sortOrder, start, end);
+		}
     }
 
     @Value("${crafter.profile.app.username}")

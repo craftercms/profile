@@ -1,3 +1,12 @@
+span.hintField {
+	clear: both;
+    color: #4F6B72;
+    display: block;
+    font: 10px "Trebuchet MS",Verdana,Arial,Helvetica,sans-serif;
+    margin: 0 310px;
+    width: 940px;
+}
+
 body {
 	background: none repeat scroll 0 0 #F1F1F1;
 	/*font-family: Calibri, Arial;*/

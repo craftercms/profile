@@ -240,9 +240,14 @@ public class ProfileRestClientImpl implements ProfileClient {
 			} else {
 				handleErrorStatus(response.getStatusLine(), entity);
 			}
-		} catch (Exception e) {
-			log.error(String.format("could not get the profile by ticket='%s'",
-					ticket), e);
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
 		} finally {
 			try {
 				EntityUtils.consume(entity);
@@ -293,9 +298,14 @@ public class ProfileRestClientImpl implements ProfileClient {
 			} else {
 				handleErrorStatus(response.getStatusLine(), entity);
 			}
-		} catch (Exception e) {
-			log.error(String.format("could not get the profile by ticket='%s'",
-					ticket), e);
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
 		} finally {
 			try {
 				EntityUtils.consume(entity);
@@ -341,9 +351,14 @@ public class ProfileRestClientImpl implements ProfileClient {
 			} else {
 				handleErrorStatus(response.getStatusLine(), entity);
 			}
-		} catch (Exception e) {
-			log.error(String.format("could not get the profile by ticket='%s'",
-					ticket), e);
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
 		} finally {
 			try {
 				EntityUtils.consume(entity);
@@ -391,9 +406,14 @@ public class ProfileRestClientImpl implements ProfileClient {
 			} else {
 				handleErrorStatus(response.getStatusLine(), entity);
 			}
-		} catch (Exception e) {
-			log.error(String.format(
-					"could not get the profile by username='%s'", username), e);
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
 		} finally {
 			try {
 				EntityUtils.consume(entity);
@@ -449,9 +469,14 @@ public class ProfileRestClientImpl implements ProfileClient {
 			} else {
 				handleErrorStatus(response.getStatusLine(), entity);
 			}
-		} catch (Exception e) {
-			log.error(String.format(
-					"could not get the profile by username='%s'", username), e);
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
 		} finally {
 			try {
 				EntityUtils.consume(entity);
@@ -499,9 +524,14 @@ public class ProfileRestClientImpl implements ProfileClient {
 			} else {
 				handleErrorStatus(response.getStatusLine(), entity);
 			}
-		} catch (Exception e) {
-			log.error(String.format(
-					"could not get the profile by username='%s'", username), e);
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
 		} finally {
 			try {
 				EntityUtils.consume(entity);
@@ -1355,9 +1385,14 @@ public class ProfileRestClientImpl implements ProfileClient {
 		} catch (AppAuthenticationFailedException e) {
 			log.error("", e);
 			throw e;
-		} catch (Exception e) {
-			log.error("", e);
-			throw new AppAuthenticationFailedException(e);
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
 		} finally {
 			try {
 				EntityUtils.consume(entity);
@@ -1414,9 +1449,14 @@ public class ProfileRestClientImpl implements ProfileClient {
 			} else {
 				handleErrorStatus(response.getStatusLine(), entity);
 			}
-		} catch (Exception e) {
-			log.error("", e);
-			throw new UserAuthenticationFailedException(e);
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
 		} finally {
 			try {
 				EntityUtils.consume(entity);
@@ -1468,8 +1508,15 @@ public class ProfileRestClientImpl implements ProfileClient {
 			} else {
 				handleErrorStatus(response.getStatusLine(), entity);
 			}
-		} catch (Exception e) {
-			log.error("", e);
+		} 
+		catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
 		} finally {
 			try {
 				EntityUtils.consume(entity);
@@ -1511,8 +1558,14 @@ public class ProfileRestClientImpl implements ProfileClient {
 			response = clientService.getHttpClient().execute(httppost);
 			entity = response.getEntity();
 			handleErrorStatus(response.getStatusLine(), entity);
-		} catch (Exception e) {
-			log.error("", e);
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
 		} finally {
 			try {
 				EntityUtils.consume(entity);
@@ -1716,11 +1769,14 @@ public class ProfileRestClientImpl implements ProfileClient {
 			} else {
 				handleErrorStatus(response.getStatusLine(), entity);
 			}
-		} catch (Exception e) {
-			log.error(
-					String.format(
-							"could not get the tenant by tenant name='%s'",
-							tenantName), e);
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
 		} finally {
 			try {
 				EntityUtils.consume(entity);
@@ -1757,10 +1813,14 @@ public class ProfileRestClientImpl implements ProfileClient {
 			} else {
 				handleErrorStatus(response.getStatusLine(), entity);
 			}
-		} catch (Exception e) {
-			log.error(String.format(
-					"could not get the tenant by tenant id='%s'", tenantName),
-					e);
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
 		} finally {
 			try {
 				EntityUtils.consume(entity);
@@ -1797,9 +1857,14 @@ public class ProfileRestClientImpl implements ProfileClient {
 			} else {
 				handleErrorStatus(response.getStatusLine(), entity);
 			}
-		} catch (Exception e) {
-			log.error(String.format("could not get the tenant by ticket ='%s'",
-					ticket), e);
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
 		} finally {
 			try {
 				EntityUtils.consume(entity);
@@ -1979,8 +2044,14 @@ public class ProfileRestClientImpl implements ProfileClient {
 			} else {
 				handleErrorStatus(response.getStatusLine(), entity);
 			}
-		} catch (Exception e) {
-			log.error(String.format("Could not get tenant List"), e);
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
 		} finally {
 			try {
 				EntityUtils.consume(entity);

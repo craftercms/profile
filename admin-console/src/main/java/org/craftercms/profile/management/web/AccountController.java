@@ -272,7 +272,7 @@ public class AccountController {
     
     @ExceptionHandler(AppAuthenticationFailedException.class)
     public String logoutException() {
-        return "redirect:/logout";
+        return "redirect:/login?logout=true";
     }
     
     @ExceptionHandler(RestException.class)
