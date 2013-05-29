@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<title>Crafter Admin Console</title>
+<title>Crafter Admin Console Profile List</title>
 <link href="resources/image/favicon.ico" rel="Shortcut Icon">
 <link rel="stylesheet" href="resources/css/profile.css">
 <script src="resources/js/jquery-1.9.1.min.js"></script>
@@ -29,7 +29,7 @@
   		<div class="pad">
 		<nav>
 			<ul class="main-nav clearfix">
-				<li><a type="submit" href="javascript:onsubmitform('New');" value="New Profile" id="New" name="operation">New Profile</a></li>
+				<li><a type="submit" href="javascript:onsubmitform('New');" onclick="javascript:onsubmitform('New');" value="New Profile" id="New" name="operation">New Profile</a></li>
 	    		<li><a type="submit" href="javascript:onsubmitform('Delete');" value="Delete Profile" id="Delete" name="operation">Delete Profile</a></li>
 	    		<li><a type="submit" href="javascript:onsubmitform('GetTenants');" value="Get Tenants" id="GetTenants" name="operation">Manage Tenants</a></li>
 	    	</ul>
@@ -62,7 +62,7 @@
     </tr>
     <#list userList as u>
       <tr>
-        <td><input type=checkbox name="item" value="${u.id}" unchecked></td>
+        <td><input type=checkbox name="item" id="${u.username}" value="${u.id}" unchecked></td>
       	<td><a name="username" href="item?username=${u.username}&tenantName=${u.tenantName}">${u.username!""}</a></td>
       </tr>
      

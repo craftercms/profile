@@ -16,7 +16,7 @@
 	    <h1 class="mainTitle">Profile Admin Console</h1>
 	  </div>  
 	  
-	<form class="login-form" action="crafter-security-login" method="post" accept-charset="UTF-8">
+	<form class="login-form" action="crafter-security-login" method="post" accept-charset="UTF-8" id="loginForm">
 	    <div class="box pad mt40 style-inputs">
 			<p>
 			<label for="j_username">Username:</label>
@@ -29,7 +29,7 @@
 			</p>
 			<p>
 			<label for=""></label>
-			<button class="btn btn-info" type="submit">Login</button>
+			<button class="btn btn-info" type="submit" id="login" name="login">Login</button>
 			</p>
 			<#if RequestParameters.logout??>
 		<p class="logout-success">You have been successfully logged out.</p>
