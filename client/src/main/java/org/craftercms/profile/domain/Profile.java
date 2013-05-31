@@ -44,7 +44,7 @@ public class Profile implements Serializable {
 	
 	private String tenantName;
 
-	private Map<String, Object> attributes;
+    private Map<String, Object> attributes;
 	
 	private List<String> roles;
 	

@@ -63,7 +63,7 @@
     <#list userList as u>
       <tr>
         <td><input type=checkbox name="item" id="${u.username}" value="${u.id}" unchecked></td>
-      	<td><a name="username" href="item?username=${u.username}&tenantName=${u.tenantName}">${u.username!""}</a></td>
+      	<td><a name="username" href="item?username=${u.username}&tenantName=${u.tenantName}" id="${u.username}">${u.username!""}</a></td>
       </tr>
      
     </#list>

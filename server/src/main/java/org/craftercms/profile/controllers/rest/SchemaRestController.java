@@ -21,8 +21,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.profile.constants.AttributeConstants;
 import org.craftercms.profile.constants.ProfileConstants;
-import org.craftercms.profile.domain.Schema;
 import org.craftercms.profile.domain.Attribute;
+import org.craftercms.profile.domain.Schema;
 import org.craftercms.profile.services.SchemaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

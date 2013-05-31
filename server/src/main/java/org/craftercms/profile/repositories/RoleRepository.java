@@ -17,6 +17,7 @@
 package org.craftercms.profile.repositories;
 
 import java.util.List;
+
 import org.craftercms.profile.domain.Role;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;

@@ -17,6 +17,7 @@
 package org.craftercms.profile.services;
 
 import org.craftercms.profile.domain.Tenant;
+
 import java.util.List;
 
 public interface MultiTenantService {

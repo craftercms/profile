@@ -19,6 +19,7 @@ package org.craftercms.profile.management.services;
 import org.apache.log4j.Logger;
 import org.craftercms.profile.api.ProfileClient;
 import org.craftercms.profile.domain.Role;
+import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,18 @@ public class RoleDAOServiceImpl implements RoleDAOService{
         if (appToken == null) {
             setAppToken();
         }
+        try {
         return profileRestClient.getAllRoles(appToken);
+	    } catch(AppAuthenticationException e) {
+			try {
+				
+				setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			return profileRestClient.getAllRoles(appToken);
+		}
     }
 
     // </editor-fold>

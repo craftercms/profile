@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<title>Crafter Admin Console</title>
+<title>Crafter Admin Console - Update Profile</title>
 <link href="resources/image/favicon.ico" rel="Shortcut Icon">
 <link rel="stylesheet" href="resources/css/profile.css">
 <script src="resources/js/jquery-1.9.1.min.js"></script>

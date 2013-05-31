@@ -19,13 +19,13 @@ package org.craftercms.profile.management.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.craftercms.profile.domain.Tenant;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.RestException;
-import org.craftercms.profile.domain.Profile;
 
 import org.craftercms.profile.management.model.FilterForm;
 import org.craftercms.profile.domain.Attribute;
+import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.domain.Tenant;
 import org.craftercms.profile.management.model.SchemaForm;
 
 import org.craftercms.profile.management.model.ProfileUserAccountForm;
