@@ -27,8 +27,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.craftercms.profile.domain.Attribute;
-import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.impl.domain.Attribute;
+import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.profile.management.model.SchemaForm;
 import org.craftercms.profile.management.model.ProfileUserAccountForm;
 

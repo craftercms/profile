@@ -50,16 +50,15 @@ public class ProfileUserDetailsServiceImpl implements ProfileUserDetailsService 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		String tenantName = null;
-		if (username.lastIndexOf("@")>0) {
+		String newUsername = username;
+		if (username.lastIndexOf('@')>0) {
 
-			int idx = username.lastIndexOf("@");
-			String newUsername = username.substring(0,idx);
+			int idx = username.lastIndexOf('@');
+			newUsername = username.substring(0,idx);
 			tenantName = username.substring(idx + 1);
-			username = newUsername;
 		}
 		
-		Profile profile = profileService.getProfileByUserName(username, tenantName, null);
-		User user = new User(profile.getUserName(), profile.getPassword(), profile.getActive(), true, true, true, defaultGrantedAuthorities);
-		return user;
+		Profile profile = profileService.getProfileByUserName(newUsername, tenantName, null);
+		return new User(profile.getUserName(), profile.getPassword(), profile.getActive(), true, true, true, defaultGrantedAuthorities);
 	}
 }

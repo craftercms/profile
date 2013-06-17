@@ -23,8 +23,8 @@ import java.util.List;
 
 public interface TenantRepositoryCustom {
 
-    public List<Tenant> getTenantRange(String sortBy, String sortOrder, int start, int end);
+    List<Tenant> getTenantRange(String sortBy, String sortOrder, int start, int end);
 	Tenant getTenantByName(String tenantName);
-    public void setAttribute(String tenantName, Attribute attribute);
-    public void deleteAttribute(String tenantName, String attributeName);
+    void setAttribute(String tenantName, Attribute attribute);
+    void deleteAttribute(String tenantName, String attributeName);
 }

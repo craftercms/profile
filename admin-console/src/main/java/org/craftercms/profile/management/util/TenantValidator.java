@@ -16,7 +16,7 @@
  */
 package org.craftercms.profile.management.util;
 
-import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.impl.domain.Tenant;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;

@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.management.services.TenantDAOService;
 import org.craftercms.profile.management.util.TenantUtil;
 import org.springframework.beans.factory.annotation.Autowired;

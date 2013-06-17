@@ -22,12 +22,12 @@ import org.springframework.security.web.authentication.rememberme.PersistentReme
 
 public interface PersistentTicketService {
 
-	public abstract void createNewToken(PersistentRememberMeToken token);
+	void createNewToken(PersistentRememberMeToken token);
 
-	public abstract void updateToken(String series, String tokenValue, Date lastUsed);
+	void updateToken(String series, String tokenValue, Date lastUsed);
 
-	public abstract PersistentRememberMeToken getTokenForSeries(String seriesId);
+	PersistentRememberMeToken getTokenForSeries(String seriesId);
 
-	public abstract void removeUserTokens(String username);
+	void removeUserTokens(String username);
 
 }

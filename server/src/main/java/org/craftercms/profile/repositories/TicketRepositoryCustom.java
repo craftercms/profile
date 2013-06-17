@@ -20,7 +20,7 @@ import org.craftercms.profile.domain.Ticket;
 
 public interface TicketRepositoryCustom {
 	
-	public void removeUserTickets(String username);
-	public void removeTicketsOlderThan(long expirationSeconds);
-	public Ticket getByTicket(String ticketStr);
+	void removeUserTickets(String username);
+	void removeTicketsOlderThan(long expirationSeconds);
+	Ticket getByTicket(String ticketStr);
 }

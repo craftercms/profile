@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.craftercms.profile.domain.Role;
-import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.impl.domain.Role;
+import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.management.model.TenantFilterForm;
 import org.craftercms.profile.management.services.RoleDAOService;
 import org.craftercms.profile.management.services.TenantDAOService;

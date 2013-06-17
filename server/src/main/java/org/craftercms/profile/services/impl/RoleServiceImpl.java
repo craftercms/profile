@@ -55,8 +55,9 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	public void deleteAllRoles(String tenantName) {
 		List<Role> roles = getAllRoles(tenantName);
-		for (Role r: roles)
+		for (Role r: roles) {
 			roleRepository.delete(r);
+		}
 	}
 
 	@Override

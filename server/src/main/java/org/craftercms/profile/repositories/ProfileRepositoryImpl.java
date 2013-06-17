@@ -57,14 +57,15 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
 		}
 
 		if (sortBy != null) { 
-			if (! Arrays.asList(ProfileConstants.domainProfileFields).contains(sortBy)) {
-				sortBy = ProfileConstants.ATTRIBUTES_DOT + sortBy;
+			String sorting = sortBy;
+			if (! Arrays.asList(ProfileConstants.DOMAIN_PROFILE_FIELDS).contains(sortBy)) {
+				sorting = ProfileConstants.ATTRIBUTES_DOT + sortBy;
 			}
 
 			if (sortOrder != null) {
-				query.sort().on(sortBy, sortOrder.equalsIgnoreCase(ProfileConstants.SORT_ORDER_DESC) ? Order.DESCENDING : Order.ASCENDING);
+				query.sort().on(sorting, sortOrder.equalsIgnoreCase(ProfileConstants.SORT_ORDER_DESC) ? Order.DESCENDING : Order.ASCENDING);
 			} else {
-				query.sort().on(sortBy, Order.ASCENDING);
+				query.sort().on(sorting, Order.ASCENDING);
 			}
 		}
 

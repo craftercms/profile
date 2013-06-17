@@ -26,7 +26,7 @@ import org.bson.types.ObjectId;
 
 @Repository("roleRepository")
 public interface RoleRepository extends MongoRepository<Role, ObjectId>, RoleRepositoryCustom {
-	public List<Role> findAll();
-	public Role findByRoleNameAndTenantName(String roleName, String tenantName);
-	public List<Role> findByTenantName(String tenantName);
+	List<Role> findAll();
+	Role findByRoleNameAndTenantName(String roleName, String tenantName);
+	List<Role> findByTenantName(String tenantName);
 }

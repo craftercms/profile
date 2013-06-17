@@ -40,7 +40,7 @@ public interface ProfileService {
 	 * @param suffix
 	 * @param attributes
 	 */
-	public Profile createProfile(String userName, String password, Boolean active, String tenantName, Map<String, Serializable> attributes, List<String> roles);
+	Profile createProfile(String userName, String password, Boolean active, String tenantName, Map<String, Serializable> attributes, List<String> roles);
 
 	/**
 	 * Update profile
@@ -57,7 +57,7 @@ public interface ProfileService {
 	 * @param suffix
 	 * @param attributes
 	 */
-	public Profile updateProfile(String profileId, String userName, String password, Boolean active, String tenantName, 
+	Profile updateProfile(String profileId, String userName, String password, Boolean active, String tenantName, 
 			Map<String, Serializable> attributes, List<String> roles);
 
 	/**
@@ -66,7 +66,7 @@ public interface ProfileService {
 	 * @param ticket
 	 * @return
 	 */
-	public Profile getProfileByTicket(String ticket);
+	Profile getProfileByTicket(String ticket);
 
 	/**
 	 * Get Profile
@@ -75,7 +75,7 @@ public interface ProfileService {
 	 * @param attributes
 	 * @return
 	 */
-	public Profile getProfileByTicket(String ticket, List<String> attributes);
+	Profile getProfileByTicket(String ticket, List<String> attributes);
 
 	/**
 	 * Get Profile
@@ -83,7 +83,7 @@ public interface ProfileService {
 	 * @param ticket
 	 * @return
 	 */
-	public Profile getProfileByTicketWithAllAttributes(String ticket);
+	Profile getProfileByTicketWithAllAttributes(String ticket);
 	
 	/**
 	 * Get Profile
@@ -92,7 +92,7 @@ public interface ProfileService {
 	 * @param profileId
 	 * @return
 	 */
-	public Profile getProfile(String profileId);
+	Profile getProfile(String profileId);
 
 	/**
 	 * Get Profile with requested Attributes
@@ -101,7 +101,7 @@ public interface ProfileService {
 	 * @param attributes
 	 * @return
 	 */
-	public Profile getProfile(String profileId, List<String> attributes);
+	Profile getProfile(String profileId, List<String> attributes);
 
 	/**
 	 * Get Profile with Attributes
@@ -110,7 +110,7 @@ public interface ProfileService {
 	 * @param profileId
 	 * @return
 	 */
-	public Profile getProfileWithAllAttributes(String profileId);
+	Profile getProfileWithAllAttributes(String profileId);
 
 	/**
 	 * Get Profiles in Range with Sort Order
@@ -119,7 +119,7 @@ public interface ProfileService {
 	 * @param end
 	 * @return
 	 */
-	public List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder, List<String> attributesList, int start, int end);
+	List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder, List<String> attributesList, int start, int end);
 
 	/**
 	 * Get Profiles
@@ -128,7 +128,7 @@ public interface ProfileService {
 	 * @param profileIdList
 	 * @return
 	 */
-	public List<Profile> getProfiles(List<String> profileIdList);
+	List<Profile> getProfiles(List<String> profileIdList);
 
 	/**
 	 * Get Profiles with Attributes
@@ -137,14 +137,14 @@ public interface ProfileService {
 	 * @param profileIdList
 	 * @return
 	 */
-	public List<Profile> getProfilesWithAttributes(List<String> profileIdList);
+	List<Profile> getProfilesWithAttributes(List<String> profileIdList);
 
 	/**
 	 * Get Total Number of Profiles Count
 	 * 
 	 * @return
 	 */
-	public long getProfilesCount(String tenantName);
+	long getProfilesCount(String tenantName);
 
 	/**
 	 * Delete Profile
@@ -152,12 +152,12 @@ public interface ProfileService {
 	 * @param appToken
 	 * @param profileId
 	 */
-	public void deleteProfile(String profileId);
+	void deleteProfile(String profileId);
 
 	/**
 	 * Delete all profiles
 	 */
-	public void deleteProfiles();
+	void deleteProfiles();
 
 	/**
 	 * Set attributes to Profile
@@ -167,7 +167,7 @@ public interface ProfileService {
 	 * @param key
 	 * @param value
 	 */
-	public void setAttributes(String profileId, Map<String, Serializable> attributes);
+	void setAttributes(String profileId, Map<String, Serializable> attributes);
 
 	/**
 	 * 
@@ -177,7 +177,7 @@ public interface ProfileService {
 	 * @param attributes
 	 * @return
 	 */
-	public Map<String, Serializable> getAttributes(String profileId, List<String> attributes);
+	Map<String, Serializable> getAttributes(String profileId, List<String> attributes);
 
 	/**
 	 * Get Attributes
@@ -186,7 +186,7 @@ public interface ProfileService {
 	 * @param profileId
 	 * @return
 	 */
-	public Map<String, Serializable> getAllAttributes(String profileId);
+	Map<String, Serializable> getAllAttributes(String profileId);
 
 	/**
 	 * Get Attribute
@@ -195,7 +195,7 @@ public interface ProfileService {
 	 * @param attributeKey
 	 * @return
 	 */
-	public Map<String, Serializable> getAttribute(String profileId, String attributeKey);
+	Map<String, Serializable> getAttribute(String profileId, String attributeKey);
 
 	/**
 	 * Delete All Attributes
@@ -203,14 +203,14 @@ public interface ProfileService {
 	 * @param appToken
 	 * @param profileId
 	 */
-	public void deleteAllAttributes(String profileId);
+	void deleteAllAttributes(String profileId);
 
 	/**
 	 * Delete Attributes
 	 * 
 	 * @param attributesMap
 	 */
-	public void deleteAttributes(String profileId, List<String> attributes);
+	void deleteAttributes(String profileId, List<String> attributes);
 
 	/**
 	 * Get Profile
@@ -218,7 +218,7 @@ public interface ProfileService {
 	 * @param userName
 	 * @return
 	 */
-	public Profile getProfileByUserName(String userName, String tenantName);
+	Profile getProfileByUserName(String userName, String tenantName);
 
 	/**
 	 * Get Profile
@@ -227,7 +227,7 @@ public interface ProfileService {
 	 * @param attributes
 	 * @return
 	 */
-	public Profile getProfileByUserName(String userName, String tenantName, List<String> attributes);
+	Profile getProfileByUserName(String userName, String tenantName, List<String> attributes);
 
 	/**
 	 * Get Profile
@@ -235,11 +235,11 @@ public interface ProfileService {
 	 * @param userName
 	 * @return
 	 */
-	public Profile getProfileByUserNameWithAllAttributes(String userName, String tenantName);
+	Profile getProfileByUserNameWithAllAttributes(String userName, String tenantName);
 
 	void deleteProfiles(String tenantName);
 	
-	public List<Profile> getProfilesByRoleName(String roleName, String tenantName);
+	List<Profile> getProfilesByRoleName(String roleName, String tenantName);
 
 	void deleteRole(String roleName, String tenantName);
 

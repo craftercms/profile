@@ -14,8 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.craftercms.crafterprofile.controllers.rest;
+package org.craftercms.profile.impl.domain;
 
-public class ProfileRestControllerTest {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Schema bean
+ * 
+ * @author Alvaro Gonzalez
+ *
+ */
+public class Schema implements Serializable {
+	
+	private List<Attribute> attributes;
+	
+	public Schema() {
+        attributes = new ArrayList<Attribute>();
+	}
+
+	public List<Attribute> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(List<Attribute> attributes) {
+		this.attributes = attributes;
+	}
 
 }

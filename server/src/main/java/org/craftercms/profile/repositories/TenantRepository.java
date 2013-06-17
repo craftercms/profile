@@ -25,6 +25,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface TenantRepository extends MongoRepository<Tenant, ObjectId>,
 		TenantRepositoryCustom {
-	public List<Tenant> findAll();
-	public Tenant findTenantById(ObjectId id);
+	List<Tenant> findAll();
+	Tenant findTenantById(ObjectId id);
 }

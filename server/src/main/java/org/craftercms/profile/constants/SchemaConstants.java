@@ -16,7 +16,10 @@
  */
 package org.craftercms.profile.constants;
 
-public class SchemaConstants {
+public final class SchemaConstants {
+	
+	private SchemaConstants() {
+	}
 
 	// Request Parameter Constants
 	public static final String APP_TOKEN = "appToken";
