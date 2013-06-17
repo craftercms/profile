@@ -20,7 +20,7 @@ import org.craftercms.profile.domain.Attribute;
 import org.craftercms.profile.domain.Schema;
 
 public interface SchemaService {
-	public void setAttribute(String tenantName, Attribute attribute);
-	public void deleteAttribute(String tenantName, String attributeName);
-	public Schema geSchemaByTenantName(String tenantName);
+	void setAttribute(String tenantName, Attribute attribute);
+	void deleteAttribute(String tenantName, String attributeName);
+	Schema geSchemaByTenantName(String tenantName);
 }

@@ -74,41 +74,41 @@ public class ProfileServiceImpl implements ProfileService {
 				Map<String, Serializable> attributes, List<String> roles) {
 		Profile profile = profileRepository.findOne(new ObjectId(profileId));
 
-		if (profile != null) {
-			if (userName != null && !userName.trim().isEmpty()) {
-				profile.setUserName(userName);
-			}
-
-			if (password != null && !password.trim().isEmpty()) {
-			    PasswordEncoder encoder = new Md5PasswordEncoder();
-		    	String hashedPassword = encoder.encodePassword(password, null);
-				profile.setPassword(hashedPassword);
-			}
-
-			if (active != null) {
-				profile.setActive(active);
-			}
-			
-			if (tenantName != null && !tenantName.trim().isEmpty()) { 
-				profile.setTenantName(tenantName);
-			}
-			
-			if (roles != null) {
-				profile.setRoles(roles);
-			}
-			
-			Map<String, Serializable> currentAttributes = profile.getAttributes();
-			if (currentAttributes != null) {
-				currentAttributes.putAll(attributes);
-			} else {
-				currentAttributes = attributes;
-			}
-
-			profile.setAttributes(currentAttributes);
-			profile.setModified(new Date());
-			profile = profileRepository.save(profile);
+		if (profile == null) {
+			return profile;
+		}
+		if (userName != null && !userName.trim().isEmpty()) {
+			profile.setUserName(userName);
 		}
 
+		if (password != null && !password.trim().isEmpty()) {
+		    PasswordEncoder encoder = new Md5PasswordEncoder();
+	    	String hashedPassword = encoder.encodePassword(password, null);
+			profile.setPassword(hashedPassword);
+		}
+
+		if (active != null) {
+			profile.setActive(active);
+		}
+		
+		if (tenantName != null && !tenantName.trim().isEmpty()) { 
+			profile.setTenantName(tenantName);
+		}
+		
+		if (roles != null) {
+			profile.setRoles(roles);
+		}
+		
+		Map<String, Serializable> currentAttributes = profile.getAttributes();
+		if (currentAttributes != null) {
+			currentAttributes.putAll(attributes);
+		} else {
+			currentAttributes = attributes;
+		}
+
+		profile.setAttributes(currentAttributes);
+		profile.setModified(new Date());
+		profile = profileRepository.save(profile);
 		return profile;
 	}
 

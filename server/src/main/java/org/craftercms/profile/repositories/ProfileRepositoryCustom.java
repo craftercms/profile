@@ -23,22 +23,22 @@ import java.util.Map;
 import org.craftercms.profile.domain.Profile;
 
 public interface ProfileRepositoryCustom {
-	public List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder, List<String> attributesList, int start, int end);
-	public long getProfilesCount(String tenantName);
-	public Profile getProfile(String profileId);
-	public Profile getProfile(String profileId, List<String> attributes);
-	public List<Profile> getProfiles(List<String> profileIdList);
-	public List<Profile> getProfilesWithAttributes(List<String> profileIdList);
-	public void setAttributes(String profileId, Map<String, Serializable> attributes);
-	public Map<String, Serializable> getAllAttributes(String profileId);
-	public Map<String, Serializable> getAttributes(String profileId, List<String> attributes);
-	public Map<String, Serializable> getAttribute(String profileId, String attributeKey);
-	public void deleteAllAttributes(String profileId);
-	public void deleteAttributes(String profileId, List<String> attributesMap);
-	public Profile getProfileByUserName(String userName, String tenantName);
-	public Profile getProfileByUserName(String userName, String tenantName, List<String> attributes);
-	public Profile getProfileByUserNameWithAllAttributes(String userName, String tenantName);
-	public List<Profile> getProfilesByTenantName(String tenantName);
+	List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder, List<String> attributesList, int start, int end);
+	long getProfilesCount(String tenantName);
+	Profile getProfile(String profileId);
+	Profile getProfile(String profileId, List<String> attributes);
+	List<Profile> getProfiles(List<String> profileIdList);
+	List<Profile> getProfilesWithAttributes(List<String> profileIdList);
+	void setAttributes(String profileId, Map<String, Serializable> attributes);
+	Map<String, Serializable> getAllAttributes(String profileId);
+	Map<String, Serializable> getAttributes(String profileId, List<String> attributes);
+	Map<String, Serializable> getAttribute(String profileId, String attributeKey);
+	void deleteAllAttributes(String profileId);
+	void deleteAttributes(String profileId, List<String> attributesMap);
+	Profile getProfileByUserName(String userName, String tenantName);
+	Profile getProfileByUserName(String userName, String tenantName, List<String> attributes);
+	Profile getProfileByUserNameWithAllAttributes(String userName, String tenantName);
+	List<Profile> getProfilesByTenantName(String tenantName);
 	void deleteRole(String profileId, String roleName);
 	
 }

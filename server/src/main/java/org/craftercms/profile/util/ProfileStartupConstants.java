@@ -18,34 +18,34 @@ package org.craftercms.profile.util;
 
 public interface ProfileStartupConstants {
 	
-	static final String ADMIN_USER = "admin.username";
-	static final String ADMIN_PASSWORD = "admin.password";
+	final String ADMIN_USER = "admin.username";
+	final String ADMIN_PASSWORD = "admin.password";
 	
-	static final String BASE_SCHEMA = "base.schema.name";
+	final String BASE_SCHEMA = "base.schema.name";
 	
-	static final String TOKEN_USERNAME = "token.username";
-	static final String TOKEN_PASSWORD = "token.password";
+	final String TOKEN_USERNAME = "token.username";
+	final String TOKEN_PASSWORD = "token.password";
 	
 	
-	public static final String PORT = "port";
-	public static final String SCHEME = "scheme";
-	public static final String HOST = "host";
-	public static final String APP_PATH = "appPath";
-	public static final String PROFILE_USERNAME = "profile-username";
-	public static final String PROFILE_PASSWORD = "profile-password";
-	public static final String SUPER_ADMIN_USER = "profile-superadmin-user";
-	public static final String SUPER_ADMIN_PASSWORD = "profile-superadmin-password";
+	final String PORT = "port";
+	final String SCHEME = "scheme";
+	final String HOST = "host";
+	final String APP_PATH = "appPath";
+	final String PROFILE_USERNAME = "profile-username";
+	final String PROFILE_PASSWORD = "profile-password";
+	final String SUPER_ADMIN_USER = "profile-superadmin-user";
+	final String SUPER_ADMIN_PASSWORD = "profile-superadmin-password";
 	
-	public static final String PROFILE_APP_USERNAME = "profile-app-username";
-	public static final String PROFILE_APP_PASSWORD = "profile-app-password";
-	public static final String TARGET = "target";
-	public static final String IS_DEFAULT_ROLES = "defaultRoles";
+	final String PROFILE_APP_USERNAME = "profile-app-username";
+	final String PROFILE_APP_PASSWORD = "profile-app-password";
+	final String TARGET = "target";
+	final String IS_DEFAULT_ROLES = "defaultRoles";
 	
-	public static final String TENANT_NAME = "tenant-name";
+	final String TENANT_NAME = "tenant-name";
 	
-	public static final String PROFILES_FILE = "profileNameFile";
-	public static final String ADMIN_ROLES = "admin-roles";
-	public static final String SUPERADMIN_ROLES = "superadmin-roles";
-	public static final String DEFAULT_ROLES = "default-roles";
+	final String PROFILES_FILE = "profileNameFile";
+	final String ADMIN_ROLES = "admin-roles";
+	final String SUPERADMIN_ROLES = "superadmin-roles";
+	final String DEFAULT_ROLES = "default-roles";
 	
 }

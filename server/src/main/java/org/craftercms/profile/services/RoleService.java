@@ -21,9 +21,9 @@ import java.util.List;
 import org.craftercms.profile.domain.Role;
 
 public interface RoleService {
-	public Role createRole(String roleName,String tenantName);
-	public void deleteRole(String roleName, String tenantName);
-	public List<Role> getAllRoles(String tenantName);
-    public List<Role> getAllRoles();
+	Role createRole(String roleName,String tenantName);
+	void deleteRole(String roleName, String tenantName);
+	List<Role> getAllRoles(String tenantName);
+    List<Role> getAllRoles();
 	void deleteAllRoles(String tenantName);
 }

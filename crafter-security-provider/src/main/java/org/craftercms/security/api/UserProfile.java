@@ -18,7 +18,7 @@ package org.craftercms.security.api;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.impl.domain.Profile;
 
 import java.util.HashMap;
 import java.util.List;

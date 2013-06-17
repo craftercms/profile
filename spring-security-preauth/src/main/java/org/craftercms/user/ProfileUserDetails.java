@@ -18,7 +18,7 @@ package org.craftercms.user;
 
 import java.util.List;
 
-import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.impl.domain.Profile;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.GrantedAuthority;
 

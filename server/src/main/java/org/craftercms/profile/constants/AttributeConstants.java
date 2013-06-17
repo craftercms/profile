@@ -17,7 +17,7 @@
 package org.craftercms.profile.constants;
 
 
-public class AttributeConstants {
+public final class AttributeConstants {
 
     // Domain Constants
     public static final String NAME = "name";
@@ -29,4 +29,7 @@ public class AttributeConstants {
 
     public static final String[] attributeFields = {NAME, LABEL, ORDER,
             TYPE, CONSTRAINT, REQUIRED};
+    
+    private AttributeConstants() {
+    }
 }

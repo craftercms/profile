@@ -16,7 +16,10 @@
  */
 package org.craftercms.profile.constants;
 
-public class ProfileConstants {
+public final class ProfileConstants {
+	
+	private ProfileConstants(){
+	}
 
 	// Domain Constants
 	public static final String FIELD_ID = "_id";
@@ -56,9 +59,9 @@ public class ProfileConstants {
     public static final String[] DEFAULT_TENANT_ROLES = new String[] {"SOCIAL_USER"};
     public static final String[] DEFAULT_TENANT_DOMAINS = new String[] {"127.0.0.1", "localhost"};
 
-	public static final String[] domainProfileFields = {ProfileConstants.USER_NAME, ProfileConstants.PASSWORD, ProfileConstants.ACTIVE};
-	public static final String[] baseProfileFields = {ProfileConstants.USER_NAME, ProfileConstants.PASSWORD, ProfileConstants.ACTIVE, ProfileConstants.TENANT_NAME, ProfileConstants.ROLES, 
+	public static final String[] DOMAIN_PROFILE_FIELDS = {ProfileConstants.USER_NAME, ProfileConstants.PASSWORD, ProfileConstants.ACTIVE};
+	public static final String[] BASE_PROFILE_FIELDS = {ProfileConstants.USER_NAME, ProfileConstants.PASSWORD, ProfileConstants.ACTIVE, ProfileConstants.TENANT_NAME, ProfileConstants.ROLES, 
 															ProfileConstants.APP_TOKEN, ProfileConstants.PROFILE_ID, ProfileConstants.PROFILE_ID_LIST};
 
-    public static final String[] tenantOrderByFields = {ProfileConstants.FIELD_ID, ProfileConstants.TENANT_NAME};
+    public static final String[] TENANT_ORDER_BY_FIELDS = {ProfileConstants.FIELD_ID, ProfileConstants.TENANT_NAME};
 }

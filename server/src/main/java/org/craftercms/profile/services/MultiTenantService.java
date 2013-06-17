@@ -32,25 +32,25 @@ public interface MultiTenantService {
      *          domains that can access content in this tenant
      * @return
      */
-	public Tenant createTenant(String tenantName, boolean createDefaults,
+	Tenant createTenant(String tenantName, boolean createDefaults,
                                List<String> roles, List<String> domains);
 
-    public Tenant updateTenant(String id, String tenantName, List<String> roles, List<String> domains);
+    Tenant updateTenant(String id, String tenantName, List<String> roles, List<String> domains);
 
-    public void deleteTenant(String tenantName);
+    void deleteTenant(String tenantName);
 	
-	public Tenant getTenantByName(String tenantName);
+	Tenant getTenantByName(String tenantName);
 
 	Tenant getTenantByTicket(String ticket);
 
 	Tenant getTenantById(String tenantName);
 
-    public long getTenantsCount();
+    long getTenantsCount();
 
-    public boolean exists(String tenantName);
+    boolean exists(String tenantName);
 
-    public List<Tenant> getTenantRange(String sortBy, String sortOrder, int start, int end);
+    List<Tenant> getTenantRange(String sortBy, String sortOrder, int start, int end);
 
-    public List<Tenant> getAllTenants();
+    List<Tenant> getAllTenants();
 
 }

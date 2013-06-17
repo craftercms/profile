@@ -19,8 +19,11 @@ package org.craftercms.profile.security.util;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.util.StringUtils;
 
-public class TicketUtils {
+public  final class TicketUtils {
 	private static final String DELIMITER = ":";
+	
+	private TicketUtils() {
+	}
 
 	public static String getTicketSeries(String ticket) {
 		return decodeTicket(ticket)[0];
@@ -28,14 +31,14 @@ public class TicketUtils {
 
 	public static String[] decodeTicket(String ticket) {
 		String[] tokens = new String[]{null,null};
-		
-		for (int j = 0; j < ticket.length() % 4; j++) {
-			ticket = ticket + "=";
+		String decodeTicket = ticket;
+		for (int j = 0; j < decodeTicket.length() % 4; j++) {
+			decodeTicket = decodeTicket + "=";
 		}
 
-		if (Base64.isBase64(ticket.getBytes())) {
+		if (Base64.isBase64(decodeTicket.getBytes())) {
 
-			String cookieAsPlainText = new String(Base64.decode(ticket.getBytes()));
+			String cookieAsPlainText = new String(Base64.decode(decodeTicket.getBytes()));
 
 			tokens = StringUtils.delimitedListToStringArray(cookieAsPlainText, DELIMITER);
 

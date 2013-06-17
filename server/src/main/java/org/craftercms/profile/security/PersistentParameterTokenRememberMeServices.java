@@ -47,7 +47,6 @@ public class PersistentParameterTokenRememberMeServices extends PersistentTokenB
 	@Override
 	protected void cancelCookie(HttpServletRequest request, HttpServletResponse response) {
 		// Do nothing
-		// super.cancelCookie(request, response);
 		logger.debug("cancelCookie");
 
 		String tokenStr = extractRememberMeCookie(request);

@@ -41,14 +41,15 @@ public class TenantRepositoryImpl implements TenantRepositoryCustom {
         Query query = new Query();
 
         if (sortBy != null) {
-            if ( ! Arrays.asList(ProfileConstants.tenantOrderByFields).contains(sortBy) ) {
-                sortBy = ProfileConstants.TENANT_NAME;
+        	String sortingBy = sortBy;
+            if ( ! Arrays.asList(ProfileConstants.TENANT_ORDER_BY_FIELDS).contains(sortBy) ) {
+            	sortingBy = ProfileConstants.TENANT_NAME;
             }
 
             if (sortOrder != null) {
-                query.sort().on(sortBy, sortOrder.equalsIgnoreCase(ProfileConstants.SORT_ORDER_DESC) ? Order.DESCENDING : Order.ASCENDING);
+                query.sort().on(sortingBy, sortOrder.equalsIgnoreCase(ProfileConstants.SORT_ORDER_DESC) ? Order.DESCENDING : Order.ASCENDING);
             } else {
-                query.sort().on(sortBy, Order.ASCENDING);
+                query.sort().on(sortingBy, Order.ASCENDING);
             }
         }
 
@@ -71,7 +72,6 @@ public class TenantRepositoryImpl implements TenantRepositoryCustom {
         query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
         Update update = new Update();
         Tenant t = getTenantByName(tenantName);
-        //Tenant t = mongoTemplate.findById(new ObjectId(tenantId), Tenant.class);
         if(t!= null){
             Iterator<Attribute> i = t.getSchema().getAttributes().iterator();
             boolean added = false;
@@ -97,7 +97,7 @@ public class TenantRepositoryImpl implements TenantRepositoryCustom {
     @Override
     public void deleteAttribute(String tenantName, String attributeName) {
         Query query = new Query();
-        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(tenantName));
+        query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
         Update update = new Update();
         Tenant t = getTenantByName(tenantName);
         if(t!= null){

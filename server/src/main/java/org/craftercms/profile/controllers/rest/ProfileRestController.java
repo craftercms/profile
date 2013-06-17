@@ -339,7 +339,7 @@ public class ProfileRestController {
 			@RequestParam(required = false, value = ProfileConstants.PASSWORD) String password,
 			@RequestParam(required = false, value = ProfileConstants.ACTIVE) Boolean active, 
 			@RequestParam(required = false, value = ProfileConstants.TENANT_NAME) String tenantName,
-            @RequestParam(value=ProfileConstants.ROLES) String[] rolesArray,
+            @RequestParam(required = false, value=ProfileConstants.ROLES) String[] rolesArray,
             HttpServletResponse response) {
 		return profileService.updateProfile(profileId, userName, password, active, tenantName, getAttributeMap(request),
                 (rolesArray != null ? Arrays.asList(rolesArray) : null));
@@ -482,7 +482,7 @@ public class ProfileRestController {
 
 			while (it.hasNext()) {
 				String key = (String) it.next();
-				if (!Arrays.asList(ProfileConstants.baseProfileFields).contains(key)) {
+				if (!Arrays.asList(ProfileConstants.BASE_PROFILE_FIELDS).contains(key)) {
 					String[] value = (String[]) reqParams.get(key);
 					attributes.put(key, value[0]);
 				}

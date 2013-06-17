@@ -16,9 +16,9 @@
  */
 package org.craftercms.profile.management.util;
 
-import org.craftercms.profile.domain.Attribute;
-import org.craftercms.profile.domain.Profile;
-import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.impl.domain.Attribute;
+import org.craftercms.profile.impl.domain.Profile;
+import org.craftercms.profile.impl.domain.Tenant;
 
 import java.io.Serializable;
 import java.util.HashMap;

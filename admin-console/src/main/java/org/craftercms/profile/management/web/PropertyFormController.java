@@ -21,9 +21,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.craftercms.profile.domain.Attribute;
-import org.craftercms.profile.domain.Schema;
-import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.impl.domain.Attribute;
+import org.craftercms.profile.impl.domain.Schema;
+import org.craftercms.profile.impl.domain.Tenant;
 
 import org.craftercms.profile.management.services.TenantDAOService;
 import org.craftercms.profile.management.util.ProfilePropertyFormValidator;

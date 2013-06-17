@@ -41,30 +41,20 @@ import org.springframework.context.event.ContextRefreshedEvent;
 
 public class ProfileStartupServiceImpl implements ApplicationListener {
 	
-	private InputStream io;
-	
-	public Map<String,String> adminAttributes = new HashMap(){
-				{
-					put("last-name","Administrator");
-					put("first-name","Administrator"); 
-				}
-			};
-	       
-   public Map<String,String> schemaAttributes = new HashMap(){
+   private Map<String,String> schemaAttributes = new HashMap<String,String>(){
 	   		{
 	   			put("last-name","Last Name");	
 	   			put("first-name","First Name"); 
 	   		}
 	   };
-	private Properties properties;
 	
 	private String profilePassword = "admin";
 	private String profileUsername = "admin";
 	private String superAdminPassword = "superadmin";
 	private String superAdminUsername = "superadmin";
 	private String tenantName = "craftercms"; 
-	private ArrayList<String> adminRoles;
-	private ArrayList<String> superadminRoles;
+	private List<String> adminRoles;
+	private List<String> superadminRoles;
 	
 	@Autowired
 	private MultiTenantService multiTenantService;
@@ -84,13 +74,11 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
 	
 	private String propertiesFile;
 
-	private ArrayList<String> appRoles;
+	private List<String> appRoles;
 
-	private ArrayList<String> defaultUserRoles;
+	private List<String> tenantDefaultDomains;
 
-	private ArrayList<String> tenantDefaultDomains;
-
-	private ArrayList<String> tenantDefaultRoles;
+	private List<String> tenantDefaultRoles;
 	
 	@Override
     public void onApplicationEvent(ApplicationEvent event) {
@@ -103,10 +91,10 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
         }
     }
 
-	public void startup() throws Exception {
+	public void startup() {
 		if (!isTenantExist()) {
 
-			Tenant tenant = createBasicCollections(tenantName);
+			createBasicCollections(tenantName);
 			createBaseProfiles(tenantName);
 			
 		} 
@@ -114,7 +102,7 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
 		
 	}
 	
-	private Tenant createBasicCollections(String tenantName) throws Exception {
+	private Tenant createBasicCollections(String tenantName) {
 		Tenant tenant = null;
         
 		tenant = this.multiTenantService.createTenant(tenantName, false, tenantDefaultRoles, tenantDefaultDomains);
@@ -148,10 +136,8 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
 		}
 	}
 	
-	private void createBaseProfiles(String tenantName) throws Exception {
+	private void createBaseProfiles(String tenantName) {
 		
-		ArrayList<String> roles = new ArrayList<String>();
-
 		if (this.adminRoles.size()==0) {
 			adminRoles.add("ADMIN");
 		}
@@ -217,13 +203,8 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
 		this.appRoles = convertLineToList(roles);
 		
 	}
-	@Value("#{ssrSettings['default-user-role']}")
-	public void setDefaultUserRoles(String roles) {
-		this.defaultUserRoles = convertLineToList(roles);
-		
-	}
 	
-	private boolean isTenantExist() throws Exception {
+	private boolean isTenantExist() {
 		boolean exist = false;
 		
 		Tenant tenant = null;
@@ -251,8 +232,8 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
 		this.propertiesFile = propertiesFile;
 	}
 	
-	private ArrayList<String> convertLineToList(String list) {
-		ArrayList<String> values = new ArrayList<String>();
+	private List<String> convertLineToList(String list) {
+		List<String> values = new ArrayList<String>();
 		if (list==null || list.length() ==0) { 
 			return values;
 		}
