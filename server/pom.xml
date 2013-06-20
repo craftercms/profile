@@ -72,15 +72,6 @@
 		<org.bouncycastle.crypto.version>1.46</org.bouncycastle.crypto.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	<!-- <pluginRepositories>
-	    <pluginRepository>
-	        <id>atlassian-m2-repository</id>
-	        <url>http://repository.atlassian.com/maven2</url>
-	        <snapshots>
-	           <enabled>false</enabled>
-	        </snapshots>
-	    </pluginRepository>
-	</pluginRepositories> -->
 	<repositories>
 		<repository>
 			<id>spring-release</id>
@@ -357,7 +348,6 @@
 	<build>
 		<outputDirectory>target/classes</outputDirectory>
 		<plugins>
-			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -389,7 +379,7 @@
                     <execution>
                         <goals>
                             <goal>integration-test</goal>
-                            <goal>verify</goal>
+                            <!-- <goal>verify</goal> -->
                         </goals>
                     </execution>
                 </executions>
@@ -494,7 +484,8 @@
 							<goal>start</goal>
 						</goals>
 						<configuration>
-							<port>28017</port> 
+							<port>28017</port>
+							<databaseDirectory>${basedir}/target</databaseDirectory> 
 							<randomPort>false</randomPort>  
 						</configuration>
 					</execution>
@@ -526,9 +517,6 @@
 					<scanIntervalSeconds>10</scanIntervalSeconds>
 					<stopKey>foo</stopKey>
 					<stopPort>9999</stopPort>
-					<systemProperties>
-					
-				</systemProperties>
 				</configuration>
 				<executions>
 					<execution>
@@ -545,7 +533,6 @@
 					</execution>
 					<execution>
 						<id>stop-jetty</id>
-						<!-- <phase>verify</phase> -->
 						<phase>post-integration-test</phase>
 						<goals>
 							<goal>stop</goal>
@@ -558,19 +545,7 @@
 				<groupId>com.atlassian.maven.plugins</groupId>
 				<artifactId>maven-clover2-plugin</artifactId>
 				<version>${clover.version}</version>
-				<executions>
-					   <execution>
-							<id>main</id>
-							<phase>package</phase>
-							<goals>
-								<goal>instrument</goal>
-								<goal>aggregate</goal>
-								<goal>clover</goal>
-							</goals>
-						</execution>
-				</executions>
 			</plugin>
-			
 		</plugins>
 	</build>
 	<profiles>
