@@ -18,7 +18,7 @@ package org.craftercms.profile.management.util;
 
 import java.util.Comparator;
 
-import org.craftercms.profile.domain.Attribute;
+import org.craftercms.profile.impl.domain.Attribute;
 
 public class AttributeFieldsComparator implements Comparator {
 	

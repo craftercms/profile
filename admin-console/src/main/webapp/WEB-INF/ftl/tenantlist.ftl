@@ -49,7 +49,7 @@
     <#list tenantList as t>
 
       <tr>
-        <td><input type=checkbox name="item" value="${t.id}" unchecked></td>
+        <td><input type=checkbox name="item" value="${t.id}" id="${t.tenantName}" unchecked></td>
       	<td><a name="${t.tenantName}" id="${t.tenantName}"   href="tenant?tenantName=${t.tenantName}">${t.tenantName!""}</a></td>
 
       </tr>

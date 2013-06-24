@@ -16,9 +16,9 @@
  */
 package org.craftercms.profile.management.services;
 
-import org.craftercms.profile.domain.Attribute;
-import org.craftercms.profile.domain.Schema;
-import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.impl.domain.Attribute;
+import org.craftercms.profile.impl.domain.Schema;
+import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.management.model.TenantFilterForm;
 

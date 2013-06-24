@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<title>Crafter Admin Console</title>
+<title>Crafter Admin Console - Attribute List</title>
 <link href="resources/image/favicon.ico" rel="Shortcut Icon">
 <link rel="stylesheet" href="resources/css/profile.css">
 <script src="resources/js/jquery-1.9.1.min.js"></script>
@@ -42,10 +42,8 @@
     </tr>
     <#list propList as prop>
       <tr>
-        <td>
-        	<input type=checkbox name="item" value="${prop.name}" unchecked>
-        </td>
-      	<td><a name="name" href="prop?property=${prop.name}">${prop.name!""}</a></td>
+        <td><input id="${prop.name}" "type=checkbox name="item" value="${prop.name}" unchecked>/td>
+      	<td><a id="${prop.name}" name="name" href="prop?property=${prop.name}">${prop.name!""}</a></td>
         <td>${prop.label!""}</td>
       </tr>
     </#list>

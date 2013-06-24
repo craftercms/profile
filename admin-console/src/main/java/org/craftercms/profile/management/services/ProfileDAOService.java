@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
-import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.impl.domain.Profile;
 
 /**
  * 

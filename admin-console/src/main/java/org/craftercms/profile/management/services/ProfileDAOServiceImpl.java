@@ -26,7 +26,7 @@ import org.craftercms.profile.api.ProfileClient;
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.RestException;
-import org.craftercms.profile.domain.*;
+import org.craftercms.profile.impl.domain.*;
 
 import org.craftercms.profile.management.model.SchemaModel;
 import org.craftercms.profile.management.util.ProfileUserAccountConstants;
