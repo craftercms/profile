@@ -26,7 +26,8 @@
 	<authentication-manager id="appAuthenticationManager">
 		<authentication-provider>
 			<user-service id="appUserDetailService" properties="classpath:crafter/profile/extension/apps.properties" />
-		</authentication-provider> 
+		</authentication-provider>
+		<!-- <authentication-provider user-service-ref="appUserDetailService" /> -->
         <authentication-provider ref="appRememberMeAuthenticationProvider" />
 		<authentication-provider user-service-ref="userUserDetailsService"/>
 		<authentication-provider ref="userRememberMeAuthenticationProvider"/>
@@ -64,6 +65,10 @@
 	<beans:bean id="appRememberMeAuthenticationProvider" class="org.springframework.security.authentication.RememberMeAuthenticationProvider">
 		<beans:property name="key" value="Apps" />
 	</beans:bean>
+	
+	<!-- <beans:bean id="appUserDetailService" class="org.craftercms.profile.security.UserDetailCustomService">
+		
+	</beans:bean> -->
 
 	<!-- User Auth section -->
 

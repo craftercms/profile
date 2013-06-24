@@ -18,7 +18,7 @@ package org.craftercms.profile.management.services;
 
 import org.apache.log4j.Logger;
 import org.craftercms.profile.api.ProfileClient;
-import org.craftercms.profile.domain.Role;
+import org.craftercms.profile.impl.domain.Role;
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 

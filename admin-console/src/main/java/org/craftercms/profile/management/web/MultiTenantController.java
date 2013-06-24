@@ -121,7 +121,7 @@ public class MultiTenantController {
     @RequestMapping(value = "/newtenant", method = RequestMethod.POST)
     public String newAccount(@ModelAttribute("tenant") Tenant tenant,
                              BindingResult bindingResult, Model model) throws Exception {
-        validateNewTenant(tenant, bindingResult);
+    	validateNewTenant(tenant, bindingResult);
         if (!bindingResult.hasErrors()) {
             tenantDAOService.createNewTenant(tenant);
             return "redirect:/gettenants";

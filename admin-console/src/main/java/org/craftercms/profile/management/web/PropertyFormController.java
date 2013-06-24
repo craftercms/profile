@@ -81,7 +81,7 @@ public class PropertyFormController {
     @RequestMapping(value = "/newprop", method = RequestMethod.POST)
     public String newProp(@ModelAttribute("tenant") Tenant tenant,
             @ModelAttribute("prop") Attribute prop, BindingResult bindingResult, Model model) throws Exception {
-        if (validateNewProperty(prop, tenant, bindingResult)) {
+    	if (validateNewProperty(prop, tenant, bindingResult)) {
             tenantDAOService.setSchemaAttribute(prop, tenant);
             return "redirect:/getprops";
         } else {
@@ -141,7 +141,7 @@ public class PropertyFormController {
     @ModelAttribute
     public ModelAndView deleteProp(@RequestParam("item") ArrayList<String> item,
             @ModelAttribute("tenant") Tenant tenant) throws Exception {
-        tenantDAOService.deleteSchemaAttributes(item, tenant);
+    	tenantDAOService.deleteSchemaAttributes(item, tenant);
         
         ModelAndView mav = new ModelAndView();
         
@@ -160,18 +160,18 @@ public class PropertyFormController {
         Pattern pattern = Pattern.compile("[,\\s]|@.*@");
         Matcher m = pattern.matcher(prop.getName());
         if(errors.hasErrors()) {
-            pass = false;
+        	pass = false;
         }
         if (m.find()) {
-            errors.rejectValue("name", "property.name.validation.error.empty",null,null);
+        	errors.rejectValue("name", "property.name.validation.error.empty",null,null);
             pass = false;
         }
         for (Attribute attribute: target.getSchema().getAttributes()) {
             if (attribute.getName().equals(prop.getName())) {
-                pass = false;
+            	pass = false;
                 errors.rejectValue("order", "property.value.validation.error.name",null,null);
             } else if (attribute.getOrder() == prop.getOrder()) {
-                pass = false;
+            	pass = false;
                 errors.rejectValue("order", "property.value.validation.error.order",null,null);
             }
         }

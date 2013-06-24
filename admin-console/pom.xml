@@ -28,12 +28,36 @@
 		<maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
 	</properties>
 	<dependencies>
+		<!-- Integration testing dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-firefox-driver</artifactId>
+			<version>2.33.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-server</artifactId>
+			<version>2.33.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.detro.ghostdriver</groupId>
+			<artifactId>phantomjsdriver</artifactId>
+			<version>1.0.3</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
 			<version>2.3.19</version>
 		</dependency>
+		
+		<!-- Crafter CMS dependencies -->
 		<dependency>
 			<groupId>org.craftercms</groupId>
 			<artifactId>crafter-profile-client</artifactId>
@@ -165,6 +189,91 @@
 		<finalName>crafter-profile-admin-console</finalName>
 		<plugins>
 			<plugin>
+				<groupId>com.github.joelittlejohn.embedmongo</groupId>
+				<artifactId>embedmongo-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>start</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>start</goal>
+						</goals>
+						<configuration>
+							<port>26017</port>
+							<databaseDirectory>${basedir}/target</databaseDirectory> 
+							<randomPort>false</randomPort>  
+						</configuration>
+					</execution>
+					<execution>
+            			<id>stop</id>
+            			<goals>
+                			<goal>stop</goal>
+            			</goals>
+        			</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<!-- <groupId>org.eclipse.jetty</groupId>
+      			<artifactId>jetty-maven-plugin</artifactId> -->
+				<configuration>
+					<!-- <useTestClasspath>true</useTestClasspath> -->
+					
+					<!-- <systemPropertiesFile>${basedir}/config/crafter/profile/extension/apps.properties</systemPropertiesFile> -->
+					
+					<webXml>${basedir}/src/test/resources/test-web.xml</webXml>
+					<webDefaultXml>${basedir}/src/test/resources/test-web.xml</webDefaultXml>
+					<overrideWebXml>${basedir}/src/test/resources/test-web.xml</overrideWebXml>
+					<connectors>
+		            	<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+		              		<port>8888</port>
+		            	</connector>
+		          	</connectors>
+		          	<webAppConfig>
+		            	<contextPath>/crafter-profile-admin-console</contextPath>
+		            	<extraClasspath>${basedir}/config/</extraClasspath>
+		            </webAppConfig>
+		            <!-- <baseResource implementation="org.eclipse.jetty.util.resource.ResourceCollection">
+				      
+				      	<resourcesAsCSV>${basedir}/config/crafter/profile/extension/apps.properties</resourcesAsCSV>
+    				</baseResource> -->
+    				<!-- <scanTargets>
+			            <scanTarget>${basedir}/config/crafter/profile/extension/apps.properties</scanTarget>
+					</scanTargets> -->  
+		            <contextHandlers>
+						<contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
+							<war>../server/target/crafter-profile.war</war>
+							<contextPath>/crafter-profile</contextPath>
+							<extraClasspath>${basedir}/config/</extraClasspath>
+						</contextHandler>
+					</contextHandlers>
+					<scanIntervalSeconds>10</scanIntervalSeconds>
+					<stopKey>foo</stopKey>
+					<stopPort>9999</stopPort>
+				</configuration>
+				<executions>
+					<execution>
+						<id>start-jetty</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>start</goal>
+						</goals>
+						<configuration>
+							<scanIntervalSeconds>0</scanIntervalSeconds>
+							<daemon>true</daemon>
+						</configuration>
+					</execution>
+					<execution>
+						<id>stop-jetty</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>stop</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven.compiler.plugin.version}</version>
@@ -189,8 +298,48 @@
 					</archive>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.14.1</version>
+				<configuration>
+					<includes>
+						<include>**/unit/**/*.java</include>
+					</includes>
+					<excludes>
+						<exclude>**/integration/**/*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <testFailureIgnore>false</testFailureIgnore>
+                    <includes>
+                        <include>
+                            **/integration/**/*.java
+                        </include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/*$__CLR*</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
-
+		<testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
 	</build>
 		<profiles>
 		<profile>

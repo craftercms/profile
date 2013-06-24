@@ -22,7 +22,7 @@
   	  <form id="form-item" onsubmit="return onsubmitform();">
   	  	<div class="box pad mt40 style-inputs">
 		  	<p>
-		        <label  id="tenantName" for="tenantName">*Tenant Name:</label>
+		        <label  id="tenantNameLabel" for="tenantName">*Tenant Name:</label>
     			<@crafter.formInput "tenant.tenantName", "tenantName", "style=width:270", "text"/>
                 <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
@@ -30,7 +30,7 @@
 		        <label  id="roleLabel" for="role">*Roles:</label>
 	            <@spring.bind "tenant.roles"/>
 				<#assign selectedRoles = spring.status.value?default(" ")>
-				<select style="width:270px;" multiple="multiple" id="${spring.status.expression}" name="${spring.status.expression}"}>
+				<select style="width:270px;" multiple="multiple" id="${spring.status.expression}" name="${spring.status.expression}">
 				    <#list roleOption as role>
 					    <#if selectedRoles?contains(role.roleName) >
 					        <#assign isSelected = true>
@@ -51,10 +51,10 @@
                 <br />
                 <div id="domainList">
                     <#if tenant.domains?size == 0>
-                        <input type="text" class="field" name="${spring.status.expression}" value="" "style=width:270" />
+                        <input id="field" type="text" class="field" name="${spring.status.expression}" value="" "style=width:270" />
 					<#else>
 				        <#list tenant.domains as domain>
-                            <input type="text" class="field" name="${spring.status.expression}" value="${domain}" "style=width:270" />
+                            <input id="field" type="text" class="field" name="${spring.status.expression}" value="${domain}" "style=width:270" />
 				        </#list>
 					</#if>
                 </div>
