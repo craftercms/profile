@@ -29,9 +29,14 @@
 		</authentication-provider>
 		<!-- <authentication-provider user-service-ref="appUserDetailService" /> -->
         <authentication-provider ref="appRememberMeAuthenticationProvider" />
-		<authentication-provider user-service-ref="userUserDetailsService"/>
+        <!-- user details authentication provider with sso capabilities -->
+        <authentication-provider ref="ssoDaoAuthenticationProvider"/>
 		<authentication-provider ref="userRememberMeAuthenticationProvider"/>
 	</authentication-manager>
+
+    <beans:bean id="ssoDaoAuthenticationProvider" class="org.craftercms.profile.security.SSODaoAuthenticationProvider">
+        <beans:property name="userDetailsService" ref="userUserDetailsService" />
+    </beans:bean>
 
 	<beans:bean id="appAuthenticationSuccessHandler" class="org.craftercms.profile.security.RestAuthenticationSuccessHandler" />
 

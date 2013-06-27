@@ -237,7 +237,20 @@ public interface ProfileClient {
 	 * @throws UserAuthenticationFailedException if an exception occurs
 	 */
 	public String getTicket(String appToken, String username, String password, String tenantName) throws UserAuthenticationFailedException;
-	/**
+
+    /**
+     * Gets a ticket based of the username and password
+     * @param appToken previously returned by Profile server
+     * @param username ticket's user name
+     * @param password ticket's password
+     * @param tenantName
+     * @param sso indication whether this is an sso request or not, if not password is ignored if provided
+     * @return The ticket found
+     * @throws UserAuthenticationFailedException if an exception occurs
+     */
+    public String getTicket(String appToken, String username, String password, String tenantName, boolean sso) throws UserAuthenticationFailedException;
+
+    /**
 	 * Gets if a ticket value is valid
 	 * @param appToken previously returned by Profile server
 	 * @param ticket to be verified
