@@ -47,5 +47,6 @@ public class ProfileConstants {
 	public static final String ACTIVE = "active";
 	public static final String TICKET = "ticket";
 	public static final String ROLE_NAME = "roleName";
+    public static final String SSO = "sso";
 	
 }
