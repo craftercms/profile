@@ -30,6 +30,7 @@
 		<nav>
 			<ul class="main-nav clearfix">
 	    		<li><a type="submit" href="javascript:onsubmitform('NewTenant');" value="New Tenant" id="NewTenant" name="operation">New Tenant</a></li>
+	    		<li><a type="submit" href="javascript:onsubmitform('Roles');" value="Roles" id="Roles" name="operation">Manage System Roles</a></li>
 	    		<li><a type="submit" href="javascript:onsubmitform('Accounts');" value="Accounts" id="Accounts" name="operation">Back to Profiles</a></li>
 	    	</ul>
 	    	<ul class="page-actions">
@@ -43,15 +44,12 @@
    </div>
   <table id="mytable">
   	<tr>
-    	<th scope="col"><input type=checkbox onclick="checkAll();" name="all" value="all" unchecked></th>
     	<th scope="col">Tenant Name</th>
     </tr>
     <#list tenantList as t>
 
       <tr>
-        <td><input type=checkbox name="item" value="${t.id}" id="${t.tenantName}" unchecked></td>
-      	<td><a name="${t.tenantName}" id="${t.tenantName}"   href="tenant?tenantName=${t.tenantName}">${t.tenantName!""}</a></td>
-
+        <td><a name="${t.tenantName}" id="${t.tenantName}"   href="tenant?tenantName=${t.tenantName}">${t.tenantName!""}</a></td>
       </tr>
 
     </#list>

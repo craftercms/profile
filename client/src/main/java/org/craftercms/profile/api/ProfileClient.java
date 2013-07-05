@@ -294,15 +294,6 @@ public interface ProfileClient {
 	public String getPropertiesFile();
 
 	/**
-	 * Get all roles from the tenant
-	 * 
-	 * @param appToken Current app token
-	 * @param tenantName Tenant identifier
-	 * @return the role list already setup
-	 */
-	public List<Role> getAllRoles(String appToken, String tenantName);
-
-    /**
      * Get all roles from the tenant
      *
      * @param appToken Current app token
@@ -314,12 +305,16 @@ public interface ProfileClient {
 	 * Creates a new role
 	 * @param appToken Current app token
 	 * @param roleName
-	 * @param tenantName
 	 * @return
 	 */
-	public Role createRole(String appToken, String roleName,String tenantName);
+	public Role createRole(String appToken, String roleName);
 	
-	public void deleteRole(String appToken, String roleName, String tenantName);
+	/**
+	 * Deletes a system role based on its name
+	 * @param appToken Current app token
+	 * @param roleName The role name to be deleted
+	 */
+	public void deleteRole(String appToken, String roleName);
 
     /**
      * Creates a new Tenant
@@ -331,7 +326,6 @@ public interface ProfileClient {
      * @param createDefaults
      * @return
      */
-
 	public Tenant createTenant(String appToken, String tenantName, List<String> roles, List<String> domains, boolean createDefaults);
 
     /**
@@ -409,6 +403,13 @@ public interface ProfileClient {
      * @return
      */
     public List<Tenant> getAllTenants(String appToken);
+    
+    /**
+     * Get a list of all the tenants
+     *
+     * @return
+     */
+    public List<Tenant> getTenantsByRoleName(String appToken, String roleName);
 
     /**
      * Get a list of all the profiles that has the given Role
@@ -454,5 +455,70 @@ public interface ProfileClient {
 	 * @param path to the server
 	 */
 	public void setProfileAppPath(String path);
+	
+	 /**
+     * Creates a new GroupRole Mapping
+     *
+     * @param appToken Current app token
+     * @param tenantName Tenant name
+     * @param groupName The group name
+     * @param roles The roles mapped to this group
+     * @return the new group mapped instance.
+     */
+	public GroupRole createGroupRoleMapping(String appToken, String tenantName, String groupName, List<String>roles);
+
+    /**
+     * Update the group-role mapping that match the given group id
+     * @param appToken Current application token
+     * @param groupId Group id to be update
+     * @param tenantName Tenant name
+     * @param roles new role list to be mapped
+     * 
+     * @return the group mapped updated.
+     */
+    public GroupRole updateGroupRoleMapping(String appToken,  String groupId,  String tenantName, List<String> role);
+    
+    /**
+     * gets a list of roles that are in one profile and also are in the groups passed as parameters
+      * @param appToken Current application token
+     * @param profileId to be used to compare its roles with the groups
+     * @param tenantName The tenant name
+     * 
+     * @param groups is an array of group mapping role names.
+     * @return Lists of roles that are in the profile and also in the groups pass as argument
+     */
+    public List<String> getRoles(String appToken, String profileId, String tenantName, String[] groups);
+    /**
+     * gets a list of roles that are in one profile and also are in the groups mapping of the tenant passes as argument
+      * @param appToken Current application token
+     * @param profileId to be used to compare its roles with the groups
+     * @param tenantName The tenant name
+     * 
+     * @return Lists of roles that are in the profile and also in the groups pass as argument
+     */
+    public List<String> getRoles(String appToken, String profileId, String tenantName);
+    /**
+     * Gets the list of Groups- Role mapping for a tenant
+     * 
+     * @param appToken Current application token
+     * @param tenantName used to get the Group - Role mapping list
+     * @return
+     */
+    public List<GroupRole> getGroupRoleMappingByTenant(String appToken, String tenantName);
+    /**
+     * Deletes a group role Mapping
+     * 
+     * @param appToken Current application token
+     * @param grouoId will be used to delte the group mapping
+     */
+    public void deleteGroupRoleMapping(String appToken, String groupId);
+    /**
+     * Gets a group - role mapping based on the groupId passes as argument
+     * @param appToken Current application token
+     * @param groupId Used to get the group role mapping
+     * 
+     * @return The group role retrieve
+     */
+    public GroupRole getGroupRoleMapping(String appToken, String groupId);
 		
 }

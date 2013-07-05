@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.craftercms.profile.domain.Profile;
 
 
@@ -40,7 +42,8 @@ public interface ProfileService {
 	 * @param suffix
 	 * @param attributes
 	 */
-	Profile createProfile(String userName, String password, Boolean active, String tenantName, Map<String, Serializable> attributes, List<String> roles);
+	Profile createProfile(String userName, String password, Boolean active, String tenantName, Map<String, Serializable> attributes, List<String> roles,
+			HttpServletResponse response);
 
 	/**
 	 * Update profile
@@ -240,7 +243,5 @@ public interface ProfileService {
 	void deleteProfiles(String tenantName);
 	
 	List<Profile> getProfilesByRoleName(String roleName, String tenantName);
-
-	void deleteRole(String roleName, String tenantName);
 
 }

@@ -43,12 +43,13 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
+import org.craftercms.profile.exceptions.ConflictRequestException;
 import org.craftercms.profile.exceptions.RestException;
 import org.craftercms.profile.management.model.FilterForm;
 import org.craftercms.profile.management.model.ProfileUserAccountForm;
 
 import org.craftercms.profile.management.services.ProfileAccountService;
-import org.craftercms.profile.management.services.ProfileDAOServiceImpl;
+import org.craftercms.profile.management.services.impl.ProfileDAOServiceImpl;
 import org.craftercms.profile.management.util.ProfileAccountPaging;
 import org.craftercms.profile.management.util.ProfileUserAccountValidator;
 import org.craftercms.security.api.RequestContext;
@@ -194,9 +195,22 @@ public class AccountController {
             BindingResult bindingResult, Model model) throws Exception {
         validateNewAccount(account, bindingResult, account.getTenantName());
         if (!bindingResult.hasErrors()) {
-            profileAccountService.createUserAccount(account);
-            model.addAttribute("selectedTenantName",account.getTenantName());
-            return "redirect:/get";
+        	try {
+        		profileAccountService.createUserAccount(account);
+        		model.addAttribute("selectedTenantName",account.getTenantName());
+                return "redirect:/get";
+        	} catch(ConflictRequestException e) {
+        		bindingResult.rejectValue("username", "user.validation.fields.errors.user.already.exist", null, "user.validation.fields.errors.user.already.exist");
+        		List<Tenant> tenantList = tenantDAOService.getAllTenants();
+                Map<String, String> tenantNames = TenantUtil.getTenantsMap(tenantList);
+                Tenant tenant = tenantDAOService.getTenantByName(account.getTenantName());
+                model.addAttribute("account", account);
+                model.addAttribute("attributeList", tenant.getSchema().getAttributes());
+                model.addAttribute("tenantNames", tenantNames);
+                model.addAttribute("currentuser", RequestContext.getCurrent().getAuthenticationToken().getProfile());
+                return "new";
+        	} 
+            
         } else {
             List<Tenant> tenantList = tenantDAOService.getAllTenants();
             Map<String, String> tenantNames = TenantUtil.getTenantsMap(tenantList);

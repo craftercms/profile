@@ -27,4 +27,5 @@ public interface TenantRepositoryCustom {
 	Tenant getTenantByName(String tenantName);
     void setAttribute(String tenantName, Attribute attribute);
     void deleteAttribute(String tenantName, String attributeName);
+	List<Tenant> getTenants(String[] roles);
 }

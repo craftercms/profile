@@ -67,7 +67,7 @@ public class ProfileRestController {
             @RequestParam(value=ProfileConstants.ROLES) String[] rolesArray,
 			HttpServletResponse response) {
 		return profileService.createProfile(userName, password, active, tenantName, getAttributeMap(request),
-                (rolesArray != null ? Arrays.asList(rolesArray) : null));
+                (rolesArray != null ? Arrays.asList(rolesArray) : null), response);
 	}
 
 	/**

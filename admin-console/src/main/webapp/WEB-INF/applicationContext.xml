@@ -33,8 +33,19 @@ http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
 		<property name="scheme" value="${profile.scheme}"/>
 		<property name="profileAppPath" value="${profile.profileAppPath}"/>
 	</bean>	
-
-	<bean id="messageSource"
+	
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="org.craftercms.profile.management.services.impl.ProfileServiceManager.initStaticValues"/>
+        <property name="arguments">
+            <list>
+                <ref bean="profileRestClient"/>
+                <value>${crafter.profile.app.username}</value>
+                <value>${crafter.profile.app.password}</value>
+            </list>
+       </property>
+    </bean>
+    
+    <bean id="messageSource"
 		class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basenames">
 			<list>
