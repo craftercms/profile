@@ -8,7 +8,7 @@
 <link href="resources/image/favicon.ico" rel="Shortcut Icon">
 <link rel="stylesheet" href="resources/css/profile.css">
 <script src="resources/js/jquery-1.9.1.min.js"></script>
-<script language="javascript" src="resources/js/util.js"></script>
+<script language="javascript" src="resources/js/util-props.js"></script>
 </head>
 <body>
 	
@@ -42,7 +42,7 @@
     </tr>
     <#list propList as prop>
       <tr>
-        <td><input id="${prop.name}" "type=checkbox name="item" value="${prop.name}" unchecked>/td>
+        <td><input id="${prop.name}" type=checkbox name="item" value="${prop.name}" unchecked></td>
       	<td><a id="${prop.name}" name="name" href="prop?property=${prop.name}">${prop.name!""}</a></td>
         <td>${prop.label!""}</td>
       </tr>

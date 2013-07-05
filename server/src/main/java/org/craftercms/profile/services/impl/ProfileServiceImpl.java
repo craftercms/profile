@@ -16,10 +16,13 @@
  */
 package org.craftercms.profile.services.impl;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
 import org.craftercms.profile.domain.Profile;
@@ -27,14 +30,19 @@ import org.craftercms.profile.domain.Ticket;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.craftercms.profile.services.ProfileService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class ProfileServiceImpl implements ProfileService {
+	
+	private final transient Logger log = LoggerFactory
+			.getLogger(ProfileServiceImpl.class);
 
 	@Autowired
 	private ProfileRepository profileRepository;
@@ -42,7 +50,8 @@ public class ProfileServiceImpl implements ProfileService {
 	@Autowired
 	private TicketRepository ticketRepository;
 	@Override
-	public Profile createProfile(String userName, String password, Boolean active, String tenantName, Map<String, Serializable> attributes, List<String> roles) {
+	public Profile createProfile(String userName, String password, Boolean active, String tenantName, Map<String, Serializable> attributes, List<String> roles,
+			HttpServletResponse response) {
 	    PasswordEncoder encoder = new Md5PasswordEncoder();
 	    String hashedPassword = encoder.encodePassword(password, null);
 
@@ -55,8 +64,18 @@ public class ProfileServiceImpl implements ProfileService {
 		profile.setModified(new Date());
 		profile.setAttributes(attributes);
 		profile.setRoles(roles);
-		
-		return profileRepository.save(profile);
+		try {
+			return profileRepository.save(profile);
+		} catch (DuplicateKeyException e) {
+			try {
+				if (response!=null) {
+					response.sendError(HttpServletResponse.SC_CONFLICT);
+				}
+			} catch(IOException e1) {
+				log.error("Can't set error status after a DuplicateKey exception was received.");
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -232,11 +251,4 @@ public class ProfileServiceImpl implements ProfileService {
 		profileRepository.deleteAttributes(profileId, attributes);
 	}
 	
-	@Override
-	public void deleteRole(String roleName, String tenantName) {
-		List<Profile> profiles = getProfilesByRoleName(roleName, tenantName);
-		for (Profile p: profiles) {
-			profileRepository.deleteRole(p.getId().toString(), roleName);
-		}
-	}
 }

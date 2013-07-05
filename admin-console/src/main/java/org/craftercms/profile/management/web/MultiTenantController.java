@@ -17,15 +17,18 @@
 package org.craftercms.profile.management.web;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.craftercms.profile.exceptions.ConflictRequestException;
 import org.craftercms.profile.impl.domain.Role;
 import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.management.model.TenantFilterForm;
 import org.craftercms.profile.management.services.RoleDAOService;
 import org.craftercms.profile.management.services.TenantDAOService;
 import org.craftercms.profile.management.util.TenantPaging;
+import org.craftercms.profile.management.util.TenantUtil;
 import org.craftercms.profile.management.util.TenantValidator;
 import org.craftercms.security.api.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,12 +122,26 @@ public class MultiTenantController {
     }
 
     @RequestMapping(value = "/newtenant", method = RequestMethod.POST)
-    public String newAccount(@ModelAttribute("tenant") Tenant tenant,
+    public String newTenant(@ModelAttribute("tenant") Tenant tenant,
                              BindingResult bindingResult, Model model) throws Exception {
     	validateNewTenant(tenant, bindingResult);
         if (!bindingResult.hasErrors()) {
-            tenantDAOService.createNewTenant(tenant);
-            return "redirect:/gettenants";
+        	try {
+	            tenantDAOService.createNewTenant(tenant);
+	            return "redirect:/gettenants";
+        	} catch(ConflictRequestException e) {
+        		bindingResult.rejectValue("tenantName", "tenant.name.validation.tenant.already.exist", null, "tenant.name.validation.tenant.already.exist");
+        		List<Role> roleOption = roleDAOService.getAllRoles();
+                List<Tenant> tenantList = tenantDAOService.getAllTenants();
+
+                model.addAttribute("tenant", tenant);
+                model.addAttribute("roleOption", roleOption);
+                model.addAttribute("tenantList", tenantList);
+                RequestContext context = RequestContext.getCurrent();
+                model.addAttribute("currentuser", context.getAuthenticationToken().getProfile());
+                return "newtenant";
+
+        	}
         } else {
             List<Role> roleOption = roleDAOService.getAllRoles();
             List<Tenant> tenantList = tenantDAOService.getAllTenants();
@@ -180,13 +197,7 @@ public class MultiTenantController {
                 "[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b))" +
                 "(\\/[a-zA-Z0-9\\_\\-\\s\\.\\/\\?\\%\\#\\&\\=]*)?)|localhost$");
         tenantValidator.validate(t, result);
-//        try {
-//            if (tenantDAOService.getTenantByName(t.getTenantName()) != null) {
-//                result.rejectValue("tenantName", "tenant.name.validation.tenant.already.exist", null, "tenant.name.validation.tenant.already.exist");
-//            }
-//        }catch (Exception e){
-//
-//        }
+
         if(t.getRoles().isEmpty()){
             result.rejectValue("roles", "tenant.roles.validation.error.empty", null, "tenant.roles.validation.error.empty");
         }

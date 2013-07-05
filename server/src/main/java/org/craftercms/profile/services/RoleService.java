@@ -16,14 +16,16 @@
  */
 package org.craftercms.profile.services;
 
+import java.io.IOException;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.profile.domain.Role;
 
 public interface RoleService {
-	Role createRole(String roleName,String tenantName);
-	void deleteRole(String roleName, String tenantName);
-	List<Role> getAllRoles(String tenantName);
-    List<Role> getAllRoles();
-	void deleteAllRoles(String tenantName);
+	Role createRole(String roleName, HttpServletResponse response);
+	void deleteRole(String roleName, HttpServletResponse response);
+	List<Role> getAllRoles();
+    void deleteAllRoles();
 }

@@ -20,6 +20,8 @@ import org.craftercms.profile.domain.Tenant;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 public interface MultiTenantService {
 
     /**
@@ -33,7 +35,7 @@ public interface MultiTenantService {
      * @return
      */
 	Tenant createTenant(String tenantName, boolean createDefaults,
-                               List<String> roles, List<String> domains);
+                               List<String> roles, List<String> domains, HttpServletResponse response);
 
     Tenant updateTenant(String id, String tenantName, List<String> roles, List<String> domains);
 
@@ -52,5 +54,7 @@ public interface MultiTenantService {
     List<Tenant> getTenantRange(String sortBy, String sortOrder, int start, int end);
 
     List<Tenant> getAllTenants();
+
+	List<Tenant> getTenantsByRoleName(String roleName);
 
 }

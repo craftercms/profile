@@ -49,11 +49,14 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.craftercms.profile.api.ProfileClient;
 import org.craftercms.profile.constants.AttributeConstants;
+import org.craftercms.profile.constants.GroupConstants;
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.impl.domain.*;
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.BadRequestException;
+import org.craftercms.profile.exceptions.ConflictRequestException;
+import org.craftercms.profile.exceptions.ResourceExistException;
 import org.craftercms.profile.exceptions.ResourceNotFoundException;
 import org.craftercms.profile.exceptions.RestException;
 import org.craftercms.profile.exceptions.UnauthorizedException;
@@ -93,6 +96,10 @@ public class ProfileRestClientImpl implements ProfileClient {
 	private final TypeReference<List<Profile>> PROFILE_LIST_TYPE = new TypeReference<List<Profile>>() {
 	};
 	private final TypeReference<List<Role>> ROLE_LIST_TYPE = new TypeReference<List<Role>>() {
+	};
+	private final TypeReference<List<String>> ROLE_MAP_LIST_TYPE = new TypeReference<List<String>>() {
+	};
+	private final TypeReference<List<GroupRole>> GROUP_ROLE_LIST_TYPE = new TypeReference<List<GroupRole>>() {
 	};
 	private final TypeReference<List<Tenant>> TENANT_LIST_TYPE = new TypeReference<List<Tenant>>() {
 	};
@@ -2139,6 +2146,51 @@ public class ProfileRestClientImpl implements ProfileClient {
 
 		return tenantList;
 	}
+	
+	@Override
+	public List<Tenant> getTenantsByRoleName(String appToken, String roleName) {
+		if (log.isDebugEnabled()) {
+			log.debug("Getting tenants by role name");
+		}
+		List<Tenant> tenantList = null;
+		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
+		qparams.add(new BasicNameValuePair(ProfileConstants.ROLE_NAME, roleName));
+		HttpEntity entity = null;
+
+		try {
+			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
+					+ "/api/2/tenant/get/by_role_name.json",
+					URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+			HttpGet httpget = new HttpGet(uri);
+
+			HttpResponse response = clientService.getHttpClient().execute(
+					httpget);
+			entity = response.getEntity();
+			if (response.getStatusLine().getStatusCode() == 200) {
+				tenantList = (List<Tenant>) objectMapper.readValue(
+						entity.getContent(), TENANT_LIST_TYPE);
+			} else {
+				handleErrorStatus(response.getStatusLine(), entity);
+			}
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
+		} finally {
+			try {
+				EntityUtils.consume(entity);
+			} catch (IOException e) {
+				log.error("Could not consume entity", e);
+			}
+		}
+
+		return tenantList;
+	}
 
 	/*** END TENANT services *******/
 
@@ -2478,12 +2530,16 @@ public class ProfileRestClientImpl implements ProfileClient {
 			break;
 		case HttpStatus.SC_NOT_FOUND:
 			throw new ResourceNotFoundException(errorMsg);
+		case HttpStatus.SC_CONFLICT:
+			throw new ConflictRequestException(errorMsg);
 		case HttpStatus.SC_UNAUTHORIZED:
 			throw new UnauthorizedException(errorMsg);
 		case HttpStatus.SC_BAD_REQUEST:
 			throw new BadRequestException(errorMsg);
 		case HttpStatus.SC_FORBIDDEN:
 			throw new AppAuthenticationException(errorMsg);
+		case HttpStatus.SC_PRECONDITION_FAILED:
+			throw new ResourceExistException(errorMsg);
 		default:
 			throw new RestException(errorMsg);
 		}
@@ -2522,50 +2578,50 @@ public class ProfileRestClientImpl implements ProfileClient {
 	}
 
 	/***************** ROLES SERVICES ******************************/
-	@Override
-	public List<Role> getAllRoles(String appToken, String tenantName) {
-		List<Role> roles = new ArrayList<Role>();
-
-		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
-		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
-		qparams.add(new BasicNameValuePair(ProfileConstants.TENANT_NAME,
-				tenantName));
-		HttpEntity entity = null;
-
-		try {
-			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
-					+ "/api/2/role/get_roles.json",
-					URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
-			HttpGet httpget = new HttpGet(uri);
-
-			HttpResponse response = clientService.getHttpClient().execute(
-					httpget);
-			entity = response.getEntity();
-			if (response.getStatusLine().getStatusCode() == 200) {
-				roles = (List<Role>) objectMapper.readValue(
-						entity.getContent(), ROLE_LIST_TYPE);
-
-			} else {
-				handleErrorStatus(response.getStatusLine(), entity);
-			}
-		} catch (URISyntaxException e) {
-			log.error(e.getMessage(),e);
-		} catch (ClientProtocolException e) {
-			log.error(e.getMessage(),e);
-		} catch (IOException e) {
-			log.error(e.getMessage(),e);
-		} catch (RestException e) {
-			log.error(e.getMessage(),e);
-		} finally {
-			try {
-				EntityUtils.consume(entity);
-			} catch (IOException e) {
-				log.error("Could not consume entity", e);
-			}
-		}
-
-		return roles;
-	}
+//	@Override
+//	public List<Role> getAllRoles(String appToken, String tenantName) {
+//		List<Role> roles = new ArrayList<Role>();
+//
+//		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+//		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
+//		qparams.add(new BasicNameValuePair(ProfileConstants.TENANT_NAME,
+//				tenantName));
+//		HttpEntity entity = null;
+//
+//		try {
+//			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
+//					+ "/api/2/role/get_roles.json",
+//					URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+//			HttpGet httpget = new HttpGet(uri);
+//
+//			HttpResponse response = clientService.getHttpClient().execute(
+//					httpget);
+//			entity = response.getEntity();
+//			if (response.getStatusLine().getStatusCode() == 200) {
+//				roles = (List<Role>) objectMapper.readValue(
+//						entity.getContent(), ROLE_LIST_TYPE);
+//
+//			} else {
+//				handleErrorStatus(response.getStatusLine(), entity);
+//			}
+//		} catch (URISyntaxException e) {
+//			log.error(e.getMessage(),e);
+//		} catch (ClientProtocolException e) {
+//			log.error(e.getMessage(),e);
+//		} catch (IOException e) {
+//			log.error(e.getMessage(),e);
+//		} catch (RestException e) {
+//			log.error(e.getMessage(),e);
+//		} finally {
+//			try {
+//				EntityUtils.consume(entity);
+//			} catch (IOException e) {
+//				log.error("Could not consume entity", e);
+//			}
+//		}
+//
+//		return roles;
+//	}
 
 	@Override
 	public List<Role> getAllRoles(String appToken) {
@@ -2611,14 +2667,14 @@ public class ProfileRestClientImpl implements ProfileClient {
 	}
 
 	@Override
-	public Role createRole(String appToken, String roleName, String tenantName) {
+	public Role createRole(String appToken, String roleName) {
 		HttpEntity entity = null;
 		Role role = new Role();
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
 		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
 		qparams.add(new BasicNameValuePair(ProfileConstants.ROLE_NAME, roleName));
-		qparams.add(new BasicNameValuePair(ProfileConstants.TENANT_NAME,
-				tenantName));
+//		qparams.add(new BasicNameValuePair(ProfileConstants.TENANT_NAME,
+//				tenantName));
 
 		try {
 			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
@@ -2655,14 +2711,14 @@ public class ProfileRestClientImpl implements ProfileClient {
 	}
 
 	@Override
-	public void deleteRole(String appToken, String roleName, String tenantName) {
+	public void deleteRole(String appToken, String roleName) {
 		HttpEntity entity = null;
 
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
 		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
 		qparams.add(new BasicNameValuePair(ProfileConstants.ROLE_NAME, roleName));
-		qparams.add(new BasicNameValuePair(ProfileConstants.TENANT_NAME,
-				tenantName));
+//		qparams.add(new BasicNameValuePair(ProfileConstants.TENANT_NAME,
+//				tenantName));
 
 		try {
 			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
@@ -2744,7 +2800,321 @@ public class ProfileRestClientImpl implements ProfileClient {
 		return profiles;
 
 	}
-
 	/***************** END ROLES SERVICES ******************************/
+	
+	/***************** GROUP ROLE MAP SERVICES ******************************/
 
+	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#createGroupRoleMapping(java.lang.String, java.lang.String, java.lang.String, java.util.List)
+	 */
+	public GroupRole createGroupRoleMapping(String appToken, String tenantName,
+			String groupName, List<String> roles) {
+		HttpEntity entity = null;
+		//Role role = new Role();
+		GroupRole group = new GroupRole();
+		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
+		qparams.add(new BasicNameValuePair(GroupConstants.GROUP_NAME, groupName));
+		qparams.add(new BasicNameValuePair(GroupConstants.TENANT_NAME,
+				tenantName));
+		for (String s : roles) {
+			qparams.add(new BasicNameValuePair(
+					GroupConstants.ROLES, s));
+		}
+		
+		try {
+			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
+					+ "/api/2/group/create.json",
+					URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+			HttpPost httppost = new HttpPost(uri);
+			HttpResponse response = clientService.getHttpClient().execute(
+					httppost);
+			entity = response.getEntity();
+			if (response.getStatusLine().getStatusCode() == 200) {
+				group = (GroupRole) objectMapper.readValue(entity.getContent(),
+						GroupRole.class);
+			} else {
+				handleErrorStatus(response.getStatusLine(), entity);
+			}
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
+		} finally {
+			try {
+				EntityUtils.consume(entity);
+			} catch (IOException e) {
+				log.error("Could not consume entity", e);
+			}
+		}
+
+		return group;
+	}
+
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#updateGroupRoleMapping(java.lang.String, java.lang.String, java.lang.String, java.util.List)
+	 */
+	@Override
+	public GroupRole updateGroupRoleMapping(String appToken, 
+			String tenantName, String groupId, List<String> role) {
+		HttpEntity entity = null;
+		//Role role = new Role();
+		GroupRole group = new GroupRole();
+		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
+		qparams.add(new BasicNameValuePair(GroupConstants.ID, groupId));
+		qparams.add(new BasicNameValuePair(GroupConstants.TENANT_NAME,
+				tenantName));
+		for (String s : role) {
+			qparams.add(new BasicNameValuePair(
+					GroupConstants.ROLES, s));
+		}
+		try {
+			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
+					+ "/api/2/group/update.json",
+					URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+			HttpPost httppost = new HttpPost(uri);
+			HttpResponse response = clientService.getHttpClient().execute(
+					httppost);
+			entity = response.getEntity();
+			if (response.getStatusLine().getStatusCode() == 200) {
+				group = (GroupRole) objectMapper.readValue(entity.getContent(),
+						GroupRole.class);
+			} else {
+				handleErrorStatus(response.getStatusLine(), entity);
+			}
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
+		} finally {
+			try {
+				EntityUtils.consume(entity);
+			} catch (IOException e) {
+				log.error("Could not consume entity", e);
+			}
+		}
+		return group;
+	}
+	
+	@Override
+	public void deleteGroupRoleMapping(String appToken,String groupId) {
+		HttpEntity entity = null;
+		//Role role = new Role();
+		GroupRole group = new GroupRole();
+		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
+		qparams.add(new BasicNameValuePair(GroupConstants.ID, groupId));
+		
+		try {
+			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
+					+ "/api/2/group/delete.json",
+					URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+			HttpPost httppost = new HttpPost(uri);
+			HttpResponse response = clientService.getHttpClient().execute(
+					httppost);
+			entity = response.getEntity();
+			if (response.getStatusLine().getStatusCode() != 200) {
+				handleErrorStatus(response.getStatusLine(),
+						response.getEntity());
+			} else {
+				handleErrorStatus(response.getStatusLine(), entity);
+			}
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
+		} finally {
+			try {
+				EntityUtils.consume(entity);
+			} catch (IOException e) {
+				log.error("Could not consume entity", e);
+			}
+		}
+		
+	}
+	
+	public List<String> getRoles(String appToken, String profileId, String tenantName, String[] groups) {
+		HttpEntity entity = null;
+		//Role role = new Role();
+		List<String> roles = new ArrayList<String>();
+		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
+		qparams.add(new BasicNameValuePair(GroupConstants.PROFILE_ID, profileId));
+		qparams.add(new BasicNameValuePair(GroupConstants.TENANT_NAME,
+				tenantName));
+		for (String s : groups) {
+			qparams.add(new BasicNameValuePair(
+					GroupConstants.GROUPS, s));
+		}
+		try {
+			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
+					+ "/api/2/group/get.json",
+					URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+			HttpGet httpget = new HttpGet(uri);
+			HttpResponse response = clientService.getHttpClient().execute(
+					httpget);
+			entity = response.getEntity();
+			if (response.getStatusLine().getStatusCode() == 200) {
+				roles = (List<String>) objectMapper.readValue(entity.getContent(),
+						ROLE_MAP_LIST_TYPE);
+			} else {
+				handleErrorStatus(response.getStatusLine(), entity);
+			}
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
+		} finally {
+			try {
+				EntityUtils.consume(entity);
+			} catch (IOException e) {
+				log.error("Could not consume entity", e);
+			}
+		}
+		return roles;
+	}
+	public List<String> getRoles(String appToken, String profileId, String tenantName) {
+		HttpEntity entity = null;
+		//Role role = new Role();
+		List<String> roles = new ArrayList<String>();
+		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
+		qparams.add(new BasicNameValuePair(GroupConstants.PROFILE_ID, profileId));
+		qparams.add(new BasicNameValuePair(GroupConstants.TENANT_NAME,
+				tenantName));
+		try {
+			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
+					+ "/api/2/group/get_all.json",
+					URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+			HttpGet httpget = new HttpGet(uri);
+			HttpResponse response = clientService.getHttpClient().execute(
+					httpget);
+			entity = response.getEntity();
+			if (response.getStatusLine().getStatusCode() == 200) {
+				roles = (List<String>) objectMapper.readValue(entity.getContent(),
+						ROLE_MAP_LIST_TYPE);
+			} else {
+				handleErrorStatus(response.getStatusLine(), entity);
+			}
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
+		} finally {
+			try {
+				EntityUtils.consume(entity);
+			} catch (IOException e) {
+				log.error("Could not consume entity", e);
+			}
+		}
+		return roles;
+	}
+	
+	public List<GroupRole> getGroupRoleMappingByTenant(String appToken, String tenantName) {
+		HttpEntity entity = null;
+		//Role role = new Role();
+		List<GroupRole> groupRole = new ArrayList<GroupRole>();
+		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
+		qparams.add(new BasicNameValuePair(GroupConstants.TENANT_NAME,
+				tenantName));
+		try {
+			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
+					+ "/api/2/group/get_all_tenant.json",
+					URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+			HttpGet httpget = new HttpGet(uri);
+			HttpResponse response = clientService.getHttpClient().execute(
+					httpget);
+			entity = response.getEntity();
+			if (response.getStatusLine().getStatusCode() == 200) {
+				groupRole = (List<GroupRole>) objectMapper.readValue(entity.getContent(),
+						GROUP_ROLE_LIST_TYPE);
+			} else {
+				handleErrorStatus(response.getStatusLine(), entity);
+			}
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
+		} finally {
+			try {
+				EntityUtils.consume(entity);
+			} catch (IOException e) {
+				log.error("Could not consume entity", e);
+			}
+		}
+		return groupRole;
+	}
+	
+	public GroupRole getGroupRoleMapping(String appToken, String groupId) {
+		HttpEntity entity = null;
+		//Role role = new Role();
+		GroupRole groupRole = null;
+		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
+		qparams.add(new BasicNameValuePair(GroupConstants.ID,
+				groupId));
+		try {
+			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
+					+ "/api/2/group/get_item.json",
+					URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+			HttpGet httpget = new HttpGet(uri);
+			HttpResponse response = clientService.getHttpClient().execute(
+					httpget);
+			entity = response.getEntity();
+			if (response.getStatusLine().getStatusCode() == 200) {
+				groupRole = (GroupRole) objectMapper.readValue(entity.getContent(),
+						GroupRole.class);
+			} else {
+				handleErrorStatus(response.getStatusLine(), entity);
+			}
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
+		} finally {
+			try {
+				EntityUtils.consume(entity);
+			} catch (IOException e) {
+				log.error("Could not consume entity", e);
+			}
+		}
+		return groupRole;
+	}
+	/***************** END GROUP ROLE MAP SERVICES ******************************/
+
+	
 }

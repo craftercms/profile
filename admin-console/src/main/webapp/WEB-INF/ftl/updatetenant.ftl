@@ -20,11 +20,22 @@
 		<h1 class="mainTitle">Manage Tenants</h1>
 	</div>
   	  <form id="form-item" onsubmit="return onsubmitform();">
-  	  	<div class="box pad mt40 style-inputs">
+  	  	<div class="top">
+  			<div class="pad">
+			<nav>
+				<ul class="main-nav clearfix">
+					<li><a type="submit" href="javascript:onsubmitform('Groups');" onclick="javascript:onsubmitform('Groups');" value="Manage Groups" id="Groups" name="operation">Manage Groups-Roles Mapping</a></li>
+		    	</ul>
+			   </ul>
+		    </nav>
+	    </div>
+	    </div>   
+  	  	<div class="box pad style-inputs">
            <p>
                 <label  id="tenantName" for="tenantName">Tenant Name:</label>
                 <span class="unit size1of3">${tenant.tenantName!""}</span><br/>
            </p>
+           <@crafter.formInput "tenant.tenantName", "tenantName", "style=width:270", "hidden"/>
             <p>
 		        <label  id="roleLabel" for="role">*Roles:</label>
 	            <@spring.bind "tenant.roles"/>

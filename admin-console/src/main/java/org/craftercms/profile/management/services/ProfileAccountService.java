@@ -30,6 +30,7 @@ import org.craftercms.profile.management.model.SchemaForm;
 
 import org.craftercms.profile.management.model.ProfileUserAccountForm;
 
+import org.craftercms.profile.management.services.impl.ProfileDAOServiceImpl;
 import org.craftercms.profile.management.util.ProfileAccountPaging;
 import org.craftercms.profile.management.util.ProfileUserAccountConstants;
 import org.craftercms.profile.management.util.ProfileUserAccountUtil;
