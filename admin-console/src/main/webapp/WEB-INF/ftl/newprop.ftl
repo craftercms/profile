@@ -7,7 +7,7 @@
 <link href="resources/image/favicon.ico" rel="Shortcut Icon">
 <link rel="stylesheet" href="resources/css/profile.css">
 <script src="resources/js/jquery-1.9.1.min.js"></script>
-<script language="javascript" src="resources/js/util.js"></script>
+<script language="javascript" src="resources/js/util-props.js"></script>
 </head> 
 <body>
 <div id="content">
@@ -22,18 +22,21 @@
   	  <form id="form-item" onsubmit="return onsubmitform();">
   	  	<div class="box pad mt40 style-inputs">
 		  	<p>
+		  		<@spring.bind "prop.name"/>
 		        <label  id="attributeName" for="name">Attribute Name:</label>
     			<@crafter.formInput "prop.name", "name", "style=width:270", "text"/>
     			<span  class="hintField">It is used to store the information on each profile</span>
                 <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
 		    <p>
+		    	<@spring.bind "prop.label"/>
 		        <label  id="attributeLabel" for="label">Attribute Label:</label>
     			<@crafter.formInput "prop.label", "label", "style=width:270", "text"/>
     			<span  class="hintField">Label displayed to request data in the profile page</span>
                 <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
             <p>
+            	<@spring.bind "prop.order"/>
 		        <label  id="attributeOrder" for="order">Attribute Order:</label>
     			<@crafter.formInput "prop.order", "order", "style=width:270", "text"/>
     			<span  class="hintField">Order where this field is displayed in the profile page</span>
@@ -57,6 +60,7 @@
     			<@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
             <p>
+            	<@spring.bind "prop.constraint"/>
 		        <label  id="attributeConstraint" for="constraint">Attribute Constraint:</label>
     			<@crafter.formInput "prop.constraint", "constraint", "style=width:270", "text"/>
     			<span  class="hintField">Regular expression used during the validation</span>

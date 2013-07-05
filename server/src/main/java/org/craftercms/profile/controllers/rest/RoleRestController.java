@@ -49,9 +49,8 @@ public class RoleRestController {
 	@ModelAttribute
 	public Role createRole(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
 			@RequestParam(ProfileConstants.ROLE_NAME) String roleName,
-			@RequestParam(ProfileConstants.TENANT_NAME) String tenantName,
 			HttpServletResponse response) {
-		return roleService.createRole(roleName, tenantName);
+		return roleService.createRole(roleName, response);
 	}
 	
 	/**
@@ -64,27 +63,10 @@ public class RoleRestController {
 	@ModelAttribute
 	public void deleteRole(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
 			@RequestParam(ProfileConstants.ROLE_NAME) String roleName,
-			@RequestParam(ProfileConstants.TENANT_NAME) String tenantName,
 			HttpServletResponse response) {
-		roleService.deleteRole(roleName, tenantName);
+		roleService.deleteRole(roleName, response);
 	}
 	
-	/**
-	 * Get all roles by tenant Id
-	 * 
-	 * @param appToken The application token
-	 * @param tenantName used to list the roles
-	 * 
-	 * @return a role list
-	 */
-	@RequestMapping(value = "get_roles", method = RequestMethod.GET)
-	@ModelAttribute
-	public List<Role> getRoles(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-			@RequestParam(ProfileConstants.TENANT_NAME) String tenantName,
-			HttpServletResponse response) {
-		return roleService.getAllRoles(tenantName);
-	}
-
     /**
      * Get all roles in the database
      * 

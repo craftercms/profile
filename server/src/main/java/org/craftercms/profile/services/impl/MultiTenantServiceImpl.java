@@ -16,9 +16,12 @@
  */
 package org.craftercms.profile.services.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
 import org.craftercms.profile.constants.ProfileConstants;
@@ -30,11 +33,17 @@ import org.craftercms.profile.repositories.TenantRepository;
 import org.craftercms.profile.services.MultiTenantService;
 import org.craftercms.profile.services.ProfileService;
 import org.craftercms.profile.services.RoleService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MultiTenantServiceImpl implements MultiTenantService {
+	
+	private final transient Logger log = LoggerFactory
+			.getLogger(MultiTenantServiceImpl.class);
 	
 	@Autowired
 	private TenantRepository tenantRepository;
@@ -47,7 +56,7 @@ public class MultiTenantServiceImpl implements MultiTenantService {
 
 	@Override
 	public Tenant createTenant(String tenantName, boolean createDefaults,
-                               List<String> roles, List<String> domains) {
+                               List<String> roles, List<String> domains, HttpServletResponse response) {
 
         Schema schema = new Schema();
         schema.setAttributes(new ArrayList<Attribute>());
@@ -58,13 +67,18 @@ public class MultiTenantServiceImpl implements MultiTenantService {
         tenant.setRoles(roles);
         tenant.setDomains(domains);
 
-		Tenant current = tenantRepository.save(tenant);
-
-		if (createDefaults) {
-			for (String r:ProfileConstants.DEFAULT_ROLES) {
-				roleService.createRole(r, current.getId().toString());
+		Tenant current = null;
+		try {
+			current = tenantRepository.save(tenant);
+		} catch (DuplicateKeyException e) {
+			try {
+				if (response!=null) {
+					response.sendError(HttpServletResponse.SC_CONFLICT);
+				}
+			} catch(IOException e1) {
+				log.error("Can't set error status after a DuplicateKey exception was received.");
 			}
-		}
+		}		
 		return current;
 	}
 
@@ -103,7 +117,7 @@ public class MultiTenantServiceImpl implements MultiTenantService {
     @Override
 	public void deleteTenant(String tenantName) {
 		
-		roleService.deleteAllRoles(tenantName);
+		//roleService.deleteAllRoles(tenantName); SYSTEM ROLES SHOULD NOT BE DELETED
 		
 		profileService.deleteProfiles(tenantName);
 		Tenant t = tenantRepository.getTenantByName(tenantName);
@@ -154,4 +168,9 @@ public class MultiTenantServiceImpl implements MultiTenantService {
     public List<Tenant> getAllTenants() {
         return tenantRepository.findAll();
     }
+
+	@Override
+	public List<Tenant> getTenantsByRoleName(String roleName) {
+		return tenantRepository.getTenants(new String[]{roleName});
+	}
 }

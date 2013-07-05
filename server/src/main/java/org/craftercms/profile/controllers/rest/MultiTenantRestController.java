@@ -52,7 +52,7 @@ public class MultiTenantRestController {
 
         return multiTenantService.createTenant(tenantName, createDefaultRoles==null?false:Boolean.valueOf(createDefaultRoles).booleanValue(),
                 (rolesArray != null ? Arrays.asList(rolesArray) : null),
-                (domainsArray != null ? Arrays.asList(domainsArray) : null));
+                (domainsArray != null ? Arrays.asList(domainsArray) : null), response);
 	}
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
@@ -89,6 +89,14 @@ public class MultiTenantRestController {
 			@PathVariable String tenantId,
 			HttpServletResponse response) {
 		return multiTenantService.getTenantById(tenantId);
+	}
+	
+	@RequestMapping(value = "get/by_role_name", method = RequestMethod.GET)
+	@ModelAttribute
+	public List<Tenant> getTenantByRoleName(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+			@RequestParam String roleName,
+			HttpServletResponse response) {
+		return multiTenantService.getTenantsByRoleName(roleName);
 	}
 	
 	@RequestMapping(value = "ticket/{ticket}", method = RequestMethod.GET)

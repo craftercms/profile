@@ -58,6 +58,18 @@ public class TenantRepositoryImpl implements TenantRepositoryCustom {
 
         return mongoTemplate.find(query, Tenant.class);
     }
+    
+    @Override
+    public List<Tenant> getTenants(String[] roles) {
+        Query query = new Query();
+
+        
+		if (roles!= null && roles.length > 0) {
+			 query.addCriteria(Criteria.where("roles").in(roles));
+		}
+
+        return mongoTemplate.find(query, Tenant.class);
+    }
 
     @Override
 	public Tenant getTenantByName(String tenantName) {

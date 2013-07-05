@@ -24,8 +24,6 @@ public class Role  implements Serializable {
 
 	private String roleName;
 	
-	private String tenantName;
-
 	public String getId() {
 		return id;
 	}
@@ -40,14 +38,6 @@ public class Role  implements Serializable {
 
 	public void setRoleName(String roleName) {
 		this.roleName = roleName;
-	}
-
-	public String getTenantName() {
-		return tenantName;
-	}
-
-	public void setTenantName(String tenantName) {
-		this.tenantName = tenantName;
 	}
 
 }

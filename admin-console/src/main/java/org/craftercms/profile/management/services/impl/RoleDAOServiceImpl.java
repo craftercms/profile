@@ -14,11 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.management.services;
+package org.craftercms.profile.management.services.impl;
 
 import org.apache.log4j.Logger;
 import org.craftercms.profile.api.ProfileClient;
 import org.craftercms.profile.impl.domain.Role;
+import org.craftercms.profile.management.services.RoleDAOService;
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 

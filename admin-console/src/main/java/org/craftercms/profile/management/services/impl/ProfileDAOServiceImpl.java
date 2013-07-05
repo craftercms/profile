@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.management.services;
+package org.craftercms.profile.management.services.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +29,7 @@ import org.craftercms.profile.exceptions.RestException;
 import org.craftercms.profile.impl.domain.*;
 
 import org.craftercms.profile.management.model.SchemaModel;
+import org.craftercms.profile.management.services.ProfileDAOService;
 import org.craftercms.profile.management.util.ProfileUserAccountConstants;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,7 +105,7 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
 			setAppToken();
 		}
 		try {
-			return profileRestClient.getAllRoles(appToken, tenantName);
+			return profileRestClient.getAllRoles(appToken);
 		} catch(AppAuthenticationException e) {
 			try {
 				
@@ -113,7 +114,7 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
 			} catch (AppAuthenticationFailedException e1) {
 				log.error("could not get an AppToken", e);
 			}
-			return profileRestClient.getAllRoles(appToken, tenantName);
+			return profileRestClient.getAllRoles(appToken);
 		}
 	}
 	 

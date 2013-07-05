@@ -39,6 +39,8 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
+import com.mongodb.MongoException;
+
 public class ProfileStartupServiceImpl implements ApplicationListener {
 	
    private Map<String,String> schemaAttributes = new HashMap<String,String>(){
@@ -50,11 +52,17 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
 	
 	private String profilePassword = "admin";
 	private String profileUsername = "admin";
+	private String authorPassword = "author";
+	private String authorUsername = "author";
+	private String regularPassword = "regular";
+	private String regularUsername = "regular";
 	private String superAdminPassword = "superadmin";
 	private String superAdminUsername = "superadmin";
 	private String tenantName = "craftercms"; 
 	private List<String> adminRoles;
 	private List<String> superadminRoles;
+	private List<String> authorRoles;
+	private List<String> regularRoles;
 	
 	@Autowired
 	private MultiTenantService multiTenantService;
@@ -79,6 +87,8 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
 	private List<String> tenantDefaultDomains;
 
 	private List<String> tenantDefaultRoles;
+
+	private boolean createBasicUser = false;
 	
 	@Override
     public void onApplicationEvent(ApplicationEvent event) {
@@ -93,23 +103,19 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
 
 	public void startup() {
 		if (!isTenantExist()) {
-
 			createBasicCollections(tenantName);
 			createBaseProfiles(tenantName);
-			
 		} 
-		
-		
 	}
 	
 	private Tenant createBasicCollections(String tenantName) {
 		Tenant tenant = null;
         
-		tenant = this.multiTenantService.createTenant(tenantName, false, tenantDefaultRoles, tenantDefaultDomains);
+		tenant = this.multiTenantService.createTenant(tenantName, false, tenantDefaultRoles, tenantDefaultDomains, null);
 		addAttributes(tenantName,schemaAttributes);
 		
 		if (this.isDefaultRolesOn) {
-			createAppRoles(tenantName);
+			createSystemAppRoles(tenantName);
 		}
 		return tenant;
 	}
@@ -130,31 +136,49 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
 	}
 	
 
-	private void createAppRoles(String tenantName) {
+	private void createSystemAppRoles(String tenantName) {
 		for (String role: this.appRoles) {
-			this.roleService.createRole(role, tenantName);
+			try {
+				this.roleService.createRole(role, null);
+			} catch(MongoException.DuplicateKey e) {}
 		}
 	}
 	
 	private void createBaseProfiles(String tenantName) {
 		
-		if (this.adminRoles.size()==0) {
+		if (this.adminRoles==null || this.adminRoles.size()==0) {
+			if (this.adminRoles==null) {
+				this.adminRoles = convertLineToList("");
+			}
 			adminRoles.add("ADMIN");
 		}
 
-		this.profileService.createProfile(profileUsername, profilePassword,true,tenantName,new HashMap<String,Serializable>(),this.adminRoles);
+		this.profileService.createProfile(profileUsername, profilePassword,true,tenantName,new HashMap<String,Serializable>(),this.adminRoles, null);
 		log.info("ADMIN profile created");
 		
 		if (superAdminUsername==null) {
 			return;
 		}
 		
-		if (this.superadminRoles.size()==0) {
+		if (superadminRoles==null || this.superadminRoles.size()==0) {
+			if (this.superadminRoles==null) {
+				this.superadminRoles = convertLineToList("");
+			}
 			adminRoles.add("SUPERADMIN");
 		}
 
-		this.profileService.createProfile(superAdminUsername, superAdminPassword,true,tenantName,new HashMap<String,Serializable>(),this.superadminRoles);
+		this.profileService.createProfile(superAdminUsername, superAdminPassword,true,tenantName,new HashMap<String,Serializable>(),this.superadminRoles, null);
 		log.info("SUPERADMIN profile created");
+		
+		if (createBasicUser) {
+			this.authorRoles = convertLineToList("SOCIAL_AUTHOR");
+			this.profileService.createProfile(authorUsername, authorPassword,true,tenantName,new HashMap<String,Serializable>(),this.authorRoles, null);
+			log.info("AUTHOR profile created");
+			
+			this.regularRoles = convertLineToList("SOCIAL_USER");
+			this.profileService.createProfile(regularUsername, regularPassword,true,tenantName,new HashMap<String,Serializable>(),this.regularRoles, null);
+			log.info("REGULAR profile created");
+		}
 	}
 	
 	@Value("#{ssrSettings['default-domains']}")
@@ -197,6 +221,49 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
 		this.superadminRoles = convertLineToList(roles); 
 		
 	}
+	@Value("#{ssrSettings['profile.create.basic.user']}")
+	public void setCreateBasicUser(String createBasicUser) {
+		if (createBasicUser!=null && !createBasicUser.isEmpty()) {
+			this.createBasicUser  = Boolean.parseBoolean(createBasicUser);
+		}
+		
+	}
+	@Value("#{ssrSettings['profile.create.system.roles']}")
+	public void setCreateSystemRoles(String createDefaultSystemRoles) {
+		if (createDefaultSystemRoles!=null && !createDefaultSystemRoles.isEmpty()) {
+			isDefaultRolesOn = Boolean.parseBoolean(createDefaultSystemRoles);
+		}
+		
+	}
+	@Value("#{ssrSettings['profile.regular.username']}")
+	public void setRegularUsername(String username) {
+		if (username!=null && !username.isEmpty()) {
+			this.regularUsername = username;
+		}
+	}
+	@Value("#{ssrSettings['profile.regular.password']}")
+	public void setRegularPassword(String password) {
+		if (password!=null && !password.isEmpty()) {
+			this.regularPassword = password;
+		}
+		
+	}
+	@Value("#{ssrSettings['profile.author.username']}")
+	public void setAuthorUsername(String username) {
+		if (username!=null && !username.isEmpty()) {
+			this.authorUsername = username;
+		}
+		
+	}
+	@Value("#{ssrSettings['profile.author.password']}")
+	public void setAuthorPassword(String password) {
+		if (password!=null && !password.isEmpty()) {
+			this.authorPassword = password;
+		}
+		
+	}
+	
+	
 
 	@Value("#{ssrSettings['app-roles']}")
 	public void setAppRoles(String roles) {
