@@ -2503,60 +2503,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 		return this.propertiesFile;
 	}
 
-	private InputStream initPropertiesInputStream() {
-		if (this.propertiesFile != null && !this.propertiesFile.equals("")) {
-			return this.getClass().getResourceAsStream(propertiesFile);
-		}
-		return this.getClass().getResourceAsStream(
-				"/profile-client-custom.properties");
-	}
-
 	/***************** ROLES SERVICES ******************************/
-//	@Override
-//	public List<Role> getAllRoles(String appToken, String tenantName) {
-//		List<Role> roles = new ArrayList<Role>();
-//
-//		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
-//		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
-//		qparams.add(new BasicNameValuePair(ProfileConstants.TENANT_NAME,
-//				tenantName));
-//		HttpEntity entity = null;
-//
-//		try {
-//			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
-//					+ "/api/2/role/get_roles.json",
-//					URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
-//			HttpGet httpget = new HttpGet(uri);
-//
-//			HttpResponse response = clientService.getHttpClient().execute(
-//					httpget);
-//			entity = response.getEntity();
-//			if (response.getStatusLine().getStatusCode() == 200) {
-//				roles = (List<Role>) objectMapper.readValue(
-//						entity.getContent(), ROLE_LIST_TYPE);
-//
-//			} else {
-//				handleErrorStatus(response.getStatusLine(), entity);
-//			}
-//		} catch (URISyntaxException e) {
-//			log.error(e.getMessage(),e);
-//		} catch (ClientProtocolException e) {
-//			log.error(e.getMessage(),e);
-//		} catch (IOException e) {
-//			log.error(e.getMessage(),e);
-//		} catch (RestException e) {
-//			log.error(e.getMessage(),e);
-//		} finally {
-//			try {
-//				EntityUtils.consume(entity);
-//			} catch (IOException e) {
-//				log.error("Could not consume entity", e);
-//			}
-//		}
-//
-//		return roles;
-//	}
-
 	@Override
 	public List<Role> getAllRoles(String appToken) {
 		List<Role> roles = new ArrayList<Role>();
