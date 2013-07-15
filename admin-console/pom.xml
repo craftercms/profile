@@ -226,13 +226,13 @@
 		          	</connectors>
 		          	<webAppConfig>
 		            	<contextPath>/crafter-profile-admin-console</contextPath>
-		            	<extraClasspath>${basedir}/config/</extraClasspath>
+		            	<extraClasspath>${basedir}/src/test/resources/</extraClasspath>
 		            </webAppConfig>
 		            <contextHandlers>
 						<contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
 							<war>../server/target/crafter-profile.war</war>
 							<contextPath>/crafter-profile</contextPath>
-							<extraClasspath>${basedir}/config/</extraClasspath>
+							<extraClasspath>${basedir}/src/test/resources/</extraClasspath>
 						</contextHandler>
 					</contextHandlers>
 					<scanIntervalSeconds>10</scanIntervalSeconds>
