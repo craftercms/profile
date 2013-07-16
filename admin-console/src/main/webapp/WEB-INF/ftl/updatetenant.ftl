@@ -20,7 +20,7 @@
 		<h1 class="mainTitle">Manage Tenants</h1>
 	</div>
   	  <form id="form-item" onsubmit="return onsubmitform();">
-  	  	<div class="top">
+  	  	<!--div class="top">
   			<div class="pad">
 			<nav>
 				<ul class="main-nav clearfix">
@@ -29,7 +29,7 @@
 			   </ul>
 		    </nav>
 	    </div>
-	    </div>   
+	    </div-->   
   	  	<div class="box pad style-inputs">
            <p>
                 <label  id="tenantName" for="tenantName">Tenant Name:</label>
@@ -52,6 +52,10 @@
 				</select>
 				<span  class="hintField">Roles will be assigned to the Profiles of this Tenant</span>
     			<@crafter.showErrors "error-msg", "mbs", ""/>
+            	 <label>&nbsp;</label>
+            	<!--a type="submit" href="javascript:onsubmitform('Groups');" onclick="javascript:onsubmitform('Groups');" value="Manage Groups" id="Groups" name="operation">Manage Groups-Roles Mapping</a-->
+            	<button class="btn btn-info" id="Groups" type="submit" value="Groups" onclick="document.pressed=this.id">Manage Groups-Roles Mapping</button>
+            	<span  class="hintField">Mappings between the tenant roles and enterprise groups.</span>
             </p>
             <p>
                 <label  id="tenantDomains" for="name">*Tenant Domains:</label>
