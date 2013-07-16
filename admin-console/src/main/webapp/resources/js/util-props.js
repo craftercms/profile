@@ -3,8 +3,7 @@ function onsubmitform(param) {
 	if (cForm == null || cForm == undefined) {
 		cForm = document.getElementById('form-item');
 	}
-	
-	} if  param == 'DeleteProp'
+	if  (param == 'DeleteProp'
 			||  document.pressed == 'DeleteProp') {
 		var checklist = document.getElementsByName("item");
 		var selectedItems = false;
