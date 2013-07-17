@@ -23,7 +23,8 @@ import java.util.List;
 import org.craftercms.profile.impl.domain.Profile;
 
 /**
- * Main constanst for Profile Client project
+ * Main constanst for Profile services
+ * 
  * @author Alvaro Gonzalez
  *
  */
@@ -33,7 +34,9 @@ public class ProfileConstants {
 			add("ANONYMOUS"); 
 		}
 	};
-	public static final Profile ANONYMOUS = new Profile(null, "anonymous", null, true, new Date(), new Date(), null, ANONYMOUS_ROLES,"");
+	
+	//Anonymous user
+	public static final Profile ANONYMOUS = new Profile("Anonymous", "anonymous", null, true, new Date(), new Date(), null, ANONYMOUS_ROLES,"");
 	
 	public static final String ROLES = "roles";
     public static final String DOMAINS = "domains";

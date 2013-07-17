@@ -16,6 +16,13 @@
  */
 package org.craftercms.profile.exceptions;
 
+/**
+ * Thrown whenever the <code>ProfileClient</code> receives NOT_FOUND (404) error code from
+ * the profile server response.
+ * 
+ * @author Alvaro Gonzalez
+ *
+ */
 public class ResourceNotFoundException extends RestException {
 	private static final long serialVersionUID = -9073276419200375932L;
 

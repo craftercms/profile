@@ -16,10 +16,7 @@
  */
 package org.craftercms.profile.impl;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -51,16 +48,20 @@ import org.craftercms.profile.api.ProfileClient;
 import org.craftercms.profile.constants.AttributeConstants;
 import org.craftercms.profile.constants.GroupConstants;
 import org.craftercms.profile.constants.ProfileConstants;
-import org.craftercms.profile.impl.domain.*;
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.BadRequestException;
 import org.craftercms.profile.exceptions.ConflictRequestException;
-import org.craftercms.profile.exceptions.ResourceExistException;
 import org.craftercms.profile.exceptions.ResourceNotFoundException;
 import org.craftercms.profile.exceptions.RestException;
 import org.craftercms.profile.exceptions.UnauthorizedException;
 import org.craftercms.profile.exceptions.UserAuthenticationFailedException;
+import org.craftercms.profile.impl.domain.Attribute;
+import org.craftercms.profile.impl.domain.GroupRole;
+import org.craftercms.profile.impl.domain.Profile;
+import org.craftercms.profile.impl.domain.Role;
+import org.craftercms.profile.impl.domain.Schema;
+import org.craftercms.profile.impl.domain.Tenant;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 
@@ -105,9 +106,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 	};
 	private final TypeReference<Map<String, Serializable>> MAP_STRING_SERIALIZABLE_TYPE = new TypeReference<Map<String, Serializable>>() {
 	};
-	private String propertiesFile;
-	private List<String> locations = new ArrayList<String>();
-
+	
 	public ProfileRestClientImpl() {
 
 	}
@@ -163,7 +162,6 @@ public class ProfileRestClientImpl implements ProfileClient {
 				log.error("Could not consume entity", e);
 			}
 		}
-
 		return count;
 	}
 
@@ -1108,7 +1106,6 @@ public class ProfileRestClientImpl implements ProfileClient {
 				log.error("Could not consume entity", e);
 			}
 		}
-
 		return result;
 	}
 
@@ -1144,14 +1141,6 @@ public class ProfileRestClientImpl implements ProfileClient {
 				
 				result = (Map<String, Serializable>) objectMapper.readValue(
 						entity.getContent(), MAP_STRING_SERIALIZABLE_TYPE);
-//				BufferedReader br = new BufferedReader(new InputStreamReader(
-//						(response.getEntity().getContent())));
-//
-//				String output;
-//				System.out.println("Output from Server .... \n");
-//				while ((output = br.readLine()) != null) {
-//					System.out.println(output);
-//				}
 			} else {
 				handleErrorStatus(response.getStatusLine(), entity);
 			}
@@ -1365,6 +1354,10 @@ public class ProfileRestClientImpl implements ProfileClient {
 		return profiles;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#getAppToken(java.lang.String, java.lang.String)
+	 */
 	public String getAppToken(String appUsername, String appPassword)
 			throws AppAuthenticationFailedException {
 		if (log.isDebugEnabled()) {
@@ -1418,7 +1411,6 @@ public class ProfileRestClientImpl implements ProfileClient {
 				log.error("Could not consume entity", e);
 			}
 		}
-
 		return appToken;
 	}
 
@@ -1597,6 +1589,10 @@ public class ProfileRestClientImpl implements ProfileClient {
 	// ****** TENANT services *****//
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#createTenant(java.lang.String, java.lang.String, java.util.List, java.util.List, boolean)
+	 */
 	public Tenant createTenant(String appToken, String tenantName,
 			List<String> roles, List<String> domains, boolean createDefaultRoles) {
 		if (log.isDebugEnabled()) {
@@ -1659,6 +1655,10 @@ public class ProfileRestClientImpl implements ProfileClient {
 	}
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#updateTenant(java.lang.String, java.lang.String, java.lang.String, java.util.List, java.util.List)
+	 */
 	public Tenant updateTenant(String appToken, String id, String tenantName,
 			List<String> roles, List<String> domains) {
 		if (log.isDebugEnabled()) {
@@ -1763,6 +1763,10 @@ public class ProfileRestClientImpl implements ProfileClient {
 	}
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#getTenantByName(java.lang.String, java.lang.String)
+	 */
 	public Tenant getTenantByName(String appToken, String tenantName) {
 		if (log.isDebugEnabled()) {
 			log.debug("Getting the tenant: " + tenantName);
@@ -1807,6 +1811,10 @@ public class ProfileRestClientImpl implements ProfileClient {
 	}
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#getTenantById(java.lang.String, java.lang.String)
+	 */
 	public Tenant getTenantById(String appToken, String tenantName) {
 		if (log.isDebugEnabled()) {
 			log.debug("Getting a tenant by id: " + tenantName);
@@ -1851,6 +1859,10 @@ public class ProfileRestClientImpl implements ProfileClient {
 	}
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#getTenantByTicket(java.lang.String, java.lang.String)
+	 */
 	public Tenant getTenantByTicket(String appToken, String ticket) {
 		if (log.isDebugEnabled()) {
 			log.debug("Getting a tenant by a ticket: " + ticket);
@@ -1895,6 +1907,10 @@ public class ProfileRestClientImpl implements ProfileClient {
 	}
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#exitsTenant(java.lang.String, java.lang.String)
+	 */
 	public boolean exitsTenant(String appToken, String tenantName) {
 		if (log.isDebugEnabled()) {
 			log.debug("Getting if a tenant exists : " + tenantName);
@@ -1941,6 +1957,10 @@ public class ProfileRestClientImpl implements ProfileClient {
 	}
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#getTenantCount(java.lang.String)
+	 */
 	public long getTenantCount(String appToken) {
 		if (log.isDebugEnabled()) {
 			log.debug("Getting tenant count ");
@@ -1986,6 +2006,10 @@ public class ProfileRestClientImpl implements ProfileClient {
 	}
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#getTenantRange(java.lang.String, java.lang.String, java.lang.String, int, int)
+	 */
 	public List<Tenant> getTenantRange(String appToken, String sortBy,
 			String sortOrder, int start, int end) {
 		if (log.isDebugEnabled()) {
@@ -2038,6 +2062,10 @@ public class ProfileRestClientImpl implements ProfileClient {
 	}
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#getAllTenants(java.lang.String)
+	 */
 	public List<Tenant> getAllTenants(String appToken) {
 		if (log.isDebugEnabled()) {
 			log.debug("Getting all tenants ");
@@ -2077,11 +2105,14 @@ public class ProfileRestClientImpl implements ProfileClient {
 				log.error("Could not consume entity", e);
 			}
 		}
-
 		return tenantList;
 	}
 	
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#getTenantsByRoleName(java.lang.String, java.lang.String)
+	 */
 	public List<Tenant> getTenantsByRoleName(String appToken, String roleName) {
 		if (log.isDebugEnabled()) {
 			log.debug("Getting tenants by role name");
@@ -2294,7 +2325,6 @@ public class ProfileRestClientImpl implements ProfileClient {
 				log.error("Could not consume entity", e);
 			}
 		}
-
 		return schema;
 	}
 
@@ -2472,39 +2502,18 @@ public class ProfileRestClientImpl implements ProfileClient {
 			throw new BadRequestException(errorMsg);
 		case HttpStatus.SC_FORBIDDEN:
 			throw new AppAuthenticationException(errorMsg);
-		case HttpStatus.SC_PRECONDITION_FAILED:
-			throw new ResourceExistException(errorMsg);
 		default:
 			throw new RestException(errorMsg);
 		}
 	}
 
-	@Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.craftercms.profile.httpclient.ProfileRestClient#setPropertiesFile
-	 * (java.lang.String)
-	 */
-	public void setPropertiesFile(String fileUrl) {
-		this.propertiesFile = fileUrl;
-
-	}
-
-	@Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.craftercms.profile.httpclient.ProfileRestClient#getPropertiesFile()
-	 */
-	public String getPropertiesFile() {
-		return this.propertiesFile;
-	}
-
 	/***************** ROLES SERVICES ******************************/
 	@Override
+	/**
+	 * Gets all the system roles
+	 * @param appToken Current app token
+     * @return the role list already setup
+	 */
 	public List<Role> getAllRoles(String appToken) {
 		List<Role> roles = new ArrayList<Role>();
 
@@ -2548,14 +2557,16 @@ public class ProfileRestClientImpl implements ProfileClient {
 	}
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#createRole(java.lang.String, java.lang.String)
+	 */
 	public Role createRole(String appToken, String roleName) {
 		HttpEntity entity = null;
 		Role role = new Role();
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
 		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
 		qparams.add(new BasicNameValuePair(ProfileConstants.ROLE_NAME, roleName));
-//		qparams.add(new BasicNameValuePair(ProfileConstants.TENANT_NAME,
-//				tenantName));
 
 		try {
 			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
@@ -2592,15 +2603,16 @@ public class ProfileRestClientImpl implements ProfileClient {
 	}
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#deleteRole(java.lang.String, java.lang.String)
+	 */
 	public void deleteRole(String appToken, String roleName) {
 		HttpEntity entity = null;
 
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
 		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
 		qparams.add(new BasicNameValuePair(ProfileConstants.ROLE_NAME, roleName));
-//		qparams.add(new BasicNameValuePair(ProfileConstants.TENANT_NAME,
-//				tenantName));
-
 		try {
 			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
 					+ "/api/2/role/" + "delete.json",
@@ -2632,9 +2644,12 @@ public class ProfileRestClientImpl implements ProfileClient {
 				log.error("Could not consume entity", e);
 			}
 		}
-
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#getProfilesByRoleName(java.lang.String, java.lang.String, java.lang.String)
+	 */
 	public List<Profile> getProfilesByRoleName(String appToken,
 			String roleName, String tenantName) {
 		List<Profile> profiles = new ArrayList<Profile>();
@@ -2693,7 +2708,6 @@ public class ProfileRestClientImpl implements ProfileClient {
 	public GroupRole createGroupRoleMapping(String appToken, String tenantName,
 			String groupName, List<String> roles) {
 		HttpEntity entity = null;
-		//Role role = new Role();
 		GroupRole group = new GroupRole();
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
 		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
@@ -2747,7 +2761,6 @@ public class ProfileRestClientImpl implements ProfileClient {
 	public GroupRole updateGroupRoleMapping(String appToken, 
 			String tenantName, String groupId, List<String> role) {
 		HttpEntity entity = null;
-		//Role role = new Role();
 		GroupRole group = new GroupRole();
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
 		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
@@ -2791,9 +2804,12 @@ public class ProfileRestClientImpl implements ProfileClient {
 	}
 	
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#deleteGroupRoleMapping(java.lang.String, java.lang.String)
+	 */
 	public void deleteGroupRoleMapping(String appToken,String groupId) {
 		HttpEntity entity = null;
-		//Role role = new Role();
 		GroupRole group = new GroupRole();
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
 		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
@@ -2828,12 +2844,10 @@ public class ProfileRestClientImpl implements ProfileClient {
 				log.error("Could not consume entity", e);
 			}
 		}
-		
 	}
 	
 	public List<String> getRoles(String appToken, String profileId, String tenantName, String[] groups) {
 		HttpEntity entity = null;
-		//Role role = new Role();
 		List<String> roles = new ArrayList<String>();
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
 		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
@@ -2877,7 +2891,6 @@ public class ProfileRestClientImpl implements ProfileClient {
 	}
 	public List<String> getRoles(String appToken, String profileId, String tenantName) {
 		HttpEntity entity = null;
-		//Role role = new Role();
 		List<String> roles = new ArrayList<String>();
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
 		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
@@ -2916,9 +2929,15 @@ public class ProfileRestClientImpl implements ProfileClient {
 		return roles;
 	}
 	
+	/**
+     * Gets the list of Groups- Role mapping for a tenant
+     * 
+     * @param appToken Current application token
+     * @param tenantName used to get the Group - Role mapping list
+     * @return
+     */
 	public List<GroupRole> getGroupRoleMappingByTenant(String appToken, String tenantName) {
 		HttpEntity entity = null;
-		//Role role = new Role();
 		List<GroupRole> groupRole = new ArrayList<GroupRole>();
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
 		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
@@ -2956,9 +2975,12 @@ public class ProfileRestClientImpl implements ProfileClient {
 		return groupRole;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.api.ProfileClient#getGroupRoleMapping(java.lang.String, java.lang.String)
+	 */
 	public GroupRole getGroupRoleMapping(String appToken, String groupId) {
 		HttpEntity entity = null;
-		//Role role = new Role();
 		GroupRole groupRole = null;
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
 		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));

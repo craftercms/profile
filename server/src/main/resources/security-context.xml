@@ -66,10 +66,6 @@
 		<beans:property name="key" value="Apps" />
 	</beans:bean>
 	
-	<!-- <beans:bean id="appUserDetailService" class="org.craftercms.profile.security.UserDetailCustomService">
-		
-	</beans:bean> -->
-
 	<!-- User Auth section -->
 
 	<beans:bean id="userAuthenticationSuccessHandler" class="org.craftercms.profile.security.RestAuthenticationSuccessHandler" />

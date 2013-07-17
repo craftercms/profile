@@ -310,6 +310,7 @@
                     </includes>
                     <excludes>
                         <exclude>**/*$__CLR*</exclude>
+                        <exclude>**/*$*</exclude>
                     </excludes>
                 </configuration>
                 <executions>
