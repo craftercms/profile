@@ -13,6 +13,7 @@
 	    <property name="locations">
 	        <list>
 	            <value>classpath:test/system.properties</value>
+	            <value>classpath:test/profile-bootstrap.properties</value>
 	        </list>
 	    </property>
 	    <property name="ignoreResourceNotFound" value="true"/>
