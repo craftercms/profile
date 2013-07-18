@@ -287,27 +287,9 @@ public interface ProfileClient {
 	 * @param attributeName name of the attribute to be deleted
 	 */
 	public void deleteAttributeForSchema(String appToken, String tenantName, String attributeName);
-	/**
-	 * Sets the property configuration file. If this file is not set then the Profile Rest Client will try to find a property file name:
-	 * profile-client-custom.properties.
-	 * If that file is not found then it will used the default values:
-	 * port=8080
-	 * scheme = "http";
-	 * host = "localhost";
-	 * profileAppPath = "/crafter-profile";
-	 * @param fileUrl Path and filename to the properties file. 
-	 */
-	public void setPropertiesFile(String fileUrl);
 	
 	/**
-	 * Gets the config properties file name
-	 * 
-	 * @return properties file config name
-	 */
-	public String getPropertiesFile();
-
-	/**
-     * Get all roles from the tenant
+     * Get system roles
      *
      * @param appToken Current app token
      * @return the role list already setup

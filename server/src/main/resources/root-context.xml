@@ -14,6 +14,8 @@
 	        <list>
 	            <value>classpath:crafter/profile/system.properties</value>
 	            <value>classpath:crafter/profile/extension/system.properties</value>
+	            <value>classpath:crafter/profile/profile-bootstrap.properties</value>
+	            <value>classpath:crafter/profile/extension/profile-bootstrap.properties</value>
 	        </list>
 	    </property>
 	    <property name="ignoreResourceNotFound" value="true"/>

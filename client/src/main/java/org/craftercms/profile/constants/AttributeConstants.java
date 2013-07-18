@@ -17,6 +17,9 @@
 package org.craftercms.profile.constants;
 
 /**
+ * 
+ * Constants values used it to manage attributes request.
+ * 
  * @author David Escalante
  */
 public class AttributeConstants {
