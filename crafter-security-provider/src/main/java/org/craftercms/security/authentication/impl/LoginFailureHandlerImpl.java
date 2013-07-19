@@ -36,8 +36,7 @@ import java.io.IOException;
  *
  * <ol>
  *     <li>Saves authentication exception in session for later use.</li>
- *     <li>Redirects to target URL after logout (normally the same login page), if there's one, and if not, sends 401
- *     UNAUTHORIZED error.</li>
+ *     <li>Redirects to target URL, if there's one, and if not, sends 401 UNAUTHORIZED error.</li>
  * </ol>
  *
  * @author Alfonso Vásquez
@@ -48,10 +47,25 @@ public class LoginFailureHandlerImpl implements LoginFailureHandler {
 
     protected String targetUrl;
 
+    /**
+     * Sets the URL to redirect to.
+     */
     public void setTargetUrl(String targetUrl) {
         this.targetUrl = targetUrl;
     }
 
+    /**
+     * Saves the authentication exception in the session, under the {@link SecurityConstants#AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE}
+     * or the {@link SecurityConstants#USER_AUTHENTICATION_EXCEPTION_ATTRIBUTE}, depending on the exception type, and then redirects to
+     * the target URL or sends a 401 if there's no target URL.
+     *
+     * @param e
+     *          the exception that caused the login to fail.
+     * @param context
+     *          the request context
+     * @throws CrafterSecurityException
+     * @throws IOException
+     */
     public void onLoginFailure(AuthenticationException e, RequestContext context) throws CrafterSecurityException, IOException {
         saveException(e, context);
 
@@ -62,6 +76,10 @@ public class LoginFailureHandlerImpl implements LoginFailureHandler {
         }
     }
 
+    /**
+     * Saves the authentication exception in the session, under the {@link SecurityConstants#AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE}
+     * or the {@link SecurityConstants#USER_AUTHENTICATION_EXCEPTION_ATTRIBUTE}, depending on the exception type.
+     */
     protected void saveException(AuthenticationException e, RequestContext context) {
         if (logger.isDebugEnabled()) {
             logger.debug("Saving authentication exception in session for use after redirect");
@@ -75,6 +93,9 @@ public class LoginFailureHandlerImpl implements LoginFailureHandler {
         }
     }
 
+    /**
+     * Redirects to the target URL.
+     */
     protected void redirectToTargetUrl(RequestContext context) throws IOException {
         String redirectUrl = context.getRequest().getContextPath() + targetUrl;
 
@@ -85,6 +106,9 @@ public class LoginFailureHandlerImpl implements LoginFailureHandler {
         context.getResponse().sendRedirect(redirectUrl);
     }
 
+    /**
+     * Sends a 401 UNAUTHORIZED error.
+     */
     protected void sendError(AuthenticationException e, RequestContext context) throws IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("Sending 401 UNAUTHORIZED error");

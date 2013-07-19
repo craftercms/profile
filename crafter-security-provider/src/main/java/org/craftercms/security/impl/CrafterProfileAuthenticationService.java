@@ -42,21 +42,33 @@ public class CrafterProfileAuthenticationService implements AuthenticationServic
     protected String appUsername;
     protected String appPassword;
 
+    /**
+     * Sets the profile client.
+     */
     @Required
     public void setProfileClient(ProfileClient profileClient) {
         this.profileClient = profileClient;
     }
 
+    /**
+     * Sets the username for app authentication with Crafter Profile.
+     */
     @Required
     public void setAppUsername(String appUsername) {
         this.appUsername = appUsername;
     }
 
+    /**
+     * Sets the password for app authentication with Crafter Profile.
+     */
     @Required
     public void setAppPassword(String appPassword) {
         this.appPassword = appPassword;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public UserProfile getProfile(String ticket) throws AuthenticationException {
         Profile profile = profileClient.getProfileByTicketWithAllAttributes(getAppToken(), ticket);
         if (profile != null) {
@@ -66,6 +78,9 @@ public class CrafterProfileAuthenticationService implements AuthenticationServic
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String authenticate(String tenantName, String username, String password) throws AuthenticationException {
         String appToken = getAppToken();
 
@@ -76,10 +91,19 @@ public class CrafterProfileAuthenticationService implements AuthenticationServic
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void invalidateTicket(String ticket) throws AuthenticationException{
         profileClient.invalidateTicket(getAppToken(), ticket);
     }
 
+    /**
+     * Returns the authentication token for the application, by login with the application username and password.
+     *
+     * @return the app authentication token, which is used for all calls to Crafter Profile
+     * @throws AuthenticationException
+     */
     protected String getAppToken() throws AuthenticationException {
         try {
             return profileClient.getAppToken(appUsername, appPassword);

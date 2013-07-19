@@ -34,26 +34,44 @@ public class AccessRestrictionExpressionRoot {
         this.profile = profile;
     }
 
+    /**
+     * Returns trues if the profile is anonymous.
+     */
     public boolean isAnonymous() {
         return profile.isAnonymous();
     }
 
+    /**
+     * Returns trues if the profile is authenticated.
+     */
     public boolean isAuthenticated() {
         return profile.isAuthenticated();
     }
 
+    /**
+     * Returns trues if the profile has the specified role.
+     */
     public boolean hasRole(String role) {
         return profile.hasRole(role);
     }
 
+    /**
+     * Returns trues if the profile has any of the specified roles.
+     */
     public boolean hasAnyRole(List<String> roles) {
         return profile.hasAnyRole(roles);
     }
 
+    /**
+     * Always returns true (allow access to everyone).
+     */
     public boolean permitAll() {
         return true;
     }
 
+    /**
+     * Always returns false (deny access to everyone).
+     */
     public boolean denyAll() {
         return false;
     }
