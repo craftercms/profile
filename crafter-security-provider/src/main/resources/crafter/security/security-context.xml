@@ -24,6 +24,7 @@
         <property name="locations">
             <list>
                 <value>classpath:crafter/security/security.properties</value>
+                <value>classpath*:crafter/security/extension/security.properties</value>
             </list>
         </property>
         <property name="ignoreUnresolvablePlaceholders" value="true" />
