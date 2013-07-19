@@ -44,8 +44,7 @@
 		<module>spring-security-preauth</module>			
 		<module>spring-security-provider-filter</module>
 		<module>server</module>
-		<!-- Needs to be refactor due compilation errors skiping -->
-		<!-- <module>admin-console</module> -->
+        <module>admin-console</module>
     </modules>
     <profiles>
 		<profile>

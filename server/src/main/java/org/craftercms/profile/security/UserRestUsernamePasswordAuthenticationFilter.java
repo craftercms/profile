@@ -76,6 +76,7 @@ public class UserRestUsernamePasswordAuthenticationFilter extends UsernamePasswo
         String username = obtainUsername(request);
         String password = obtainPassword(request);
         String tenantName = request.getParameter("tenantName");
+        boolean isSSO = Boolean.valueOf(request.getParameter("sso"));
 
         if (username == null) {
             username = "";
@@ -90,7 +91,16 @@ public class UserRestUsernamePasswordAuthenticationFilter extends UsernamePasswo
         	username = username.trim();
         }
 
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+        UsernamePasswordAuthenticationToken authRequest = null;
+
+        if (isSSO) {
+            // by calling this constructor, the isAuthenticated flag is set to true
+            // in the SSODaoAuthenticationProvider, we can look at this to tell is authentication
+            // needs to be carried out or not
+            authRequest = new UsernamePasswordAuthenticationToken(username, password, null);
+        } else {
+            authRequest = new UsernamePasswordAuthenticationToken(username, password);
+        }
 
         // Allow subclasses to set the "details" property
         setDetails(request, authRequest);

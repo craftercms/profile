@@ -20,10 +20,10 @@ http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="ignoreUnresolvablePlaceholders" value="true"/>
 		<property name="locations">
-			<list>
-				<value>classpath:admin-console/profile.properties</value>
-				<value>classpath*:admin-console/extension/profile.properties</value>
-			</list>
+            <list>
+                <value>classpath:crafter/profile/admin-console/profile.properties</value>
+                <value>classpath*:crafter/profile/admin-console/extension/profile.properties</value>
+            </list>
 		</property>
 	</bean>
 	

@@ -1478,6 +1478,72 @@ public class ProfileRestClientImpl implements ProfileClient {
 		return ticket;
 	}
 
+    @Override
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.craftercms.profile.httpclient.ProfileRestClient#getTicket(java.lang
+	 * .String, java.lang.String, java.lang.String, boolean)
+	 */
+    public String getTicket(String appToken, String username, String password,
+                            String tenantName, boolean sso) throws UserAuthenticationFailedException {
+        if (log.isDebugEnabled()) {
+            log.debug("Getting a ticket for the username: " + username);
+        }
+        String ticket = null;
+        HttpResponse response = null;
+        HttpEntity entity = null;
+
+        try {
+            PasswordEncoder encoder = new Md5PasswordEncoder();
+            String hashedPassword = encoder.encodePassword(password, null);
+
+            List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+            qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN,
+                    appToken));
+            qparams.add(new BasicNameValuePair("username",
+                    username));
+            qparams.add(new BasicNameValuePair(ProfileConstants.PASSWORD,
+                    hashedPassword));
+            qparams.add(new BasicNameValuePair(ProfileConstants.TENANT_NAME,
+                    tenantName));
+            qparams.add(new BasicNameValuePair(ProfileConstants.SSO,
+                    String.valueOf(sso)));
+
+            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
+                    + "/api/2/auth/ticket.json",
+                    URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+
+            HttpGet httpget = new HttpGet(uri);
+
+            response = clientService.getHttpClient().execute(httpget);
+            entity = response.getEntity();
+            if (response.getStatusLine().getStatusCode() == 200) {
+                ticket = (String) objectMapper.readValue(entity.getContent(),
+                        String.class);
+            } else {
+                handleErrorStatus(response.getStatusLine(), entity);
+            }
+        } catch (URISyntaxException e) {
+            log.error(e.getMessage(),e);
+        } catch (ClientProtocolException e) {
+            log.error(e.getMessage(),e);
+        } catch (IOException e) {
+            log.error(e.getMessage(),e);
+        } catch (RestException e) {
+            log.error(e.getMessage(),e);
+        } finally {
+            try {
+                EntityUtils.consume(entity);
+            } catch (IOException e) {
+                log.error("Could not consume entity", e);
+            }
+        }
+
+        return ticket;
+    }
+
 	@Override
 	/*
 	 * (non-Javadoc)
