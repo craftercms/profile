@@ -256,3 +256,37 @@ function onsubmitform(param) {
 		cForm.submit();
 	}
 }
+
+$(document)
+.ready(
+		function() {
+
+			var appName = 'admin-console';
+
+			var i = $('.field').size();
+
+			$('#add')
+					.click(
+							function() {
+								$(
+										'<input type="text" class="field" name="domains" value="" "style=width:270" />')
+										.fadeIn('slow').appendTo(
+												'#domainList');
+								i++;
+							});
+
+			$('#remove').click(function() {
+				if (i > 1) {
+					$('.field:last').remove();
+					i--;
+				}
+			});
+
+			$('#reset').click(function() {
+				while (i > 1) {
+					$('.field:last').remove();
+					i--;
+				}
+			});
+});			
+			
