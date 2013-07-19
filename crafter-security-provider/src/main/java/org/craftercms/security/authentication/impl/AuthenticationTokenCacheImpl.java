@@ -23,13 +23,10 @@ import net.sf.ehcache.config.CacheConfiguration;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.authentication.AuthenticationToken;
 import org.craftercms.security.authentication.AuthenticationTokenCache;
-import org.craftercms.security.utils.request.SaveOrDeleteAuthenticationCookieResponse;
 import org.springframework.beans.factory.annotation.Required;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
 /**
@@ -50,26 +47,41 @@ public class AuthenticationTokenCacheImpl implements AuthenticationTokenCache {
     protected CacheManager cacheManager;
     protected Cache cache;
 
+    /**
+     * Sets the max number of tokens the cache can hold. Any more than that, and old tokens are evicted.
+     */
     @Required
     public void setMaxElementsInCache(int maxElementsInCache) {
         this.maxElementsInCache = maxElementsInCache;
     }
 
+    /**
+     * Sets the time until a profile is considered outdated (in seconds).
+     */
     @Required
     public void setProfileTimeToOutdated(int profileTimeToOutdated) {
         this.profileTimeToOutdated = profileTimeToOutdated;
     }
 
+    /**
+     * Sets the max age of the authentication cookies.
+     */
     @Required
     public void setCookieMaxAge(int cookieMaxAge) {
         this.cookieMaxAge = cookieMaxAge;
     }
 
+    /**
+     * Sets the {@link AuthenticationCookieFactory}.
+     */
     @Required
     public void setCookieFactory(AuthenticationCookieFactory cookieFactory) {
         this.cookieFactory = cookieFactory;
     }
 
+    /**
+     * Create a new {@link CacheManager} and {@link Cache} with the {@code maxElementsInCache}.
+     */
     @PostConstruct
     public void init() {
         cacheManager = CacheManager.create();
@@ -78,11 +90,17 @@ public class AuthenticationTokenCacheImpl implements AuthenticationTokenCache {
         cacheManager.addCache(cache);
     }
 
+    /**
+     * Shutdowns the {@link CacheManager}.
+     */
     @PreDestroy
     public void destroy() {
         cacheManager.shutdown();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public AuthenticationToken getToken(RequestContext context) {
         AuthenticationCookie cookie = cookieFactory.getCookie(context);
         if (cookie != null) {
@@ -91,8 +109,7 @@ public class AuthenticationTokenCacheImpl implements AuthenticationTokenCache {
             // If token is not null and profile isn't outdated, update the profile-outdated-after date and save the cookie.
             if (token != null && cookie.getProfileOutdatedAfter().after(new Date())) {
                 cookie.setProfileOutdatedAfter(createProfileOutdatedAfterDate());
-
-                registerCookieForSaving(context, cookie);
+                cookie.save(context, cookieMaxAge);
             } else {
                 // If profile is outdated, set profile outdated to true in token and remove token from the cache.
                 if (token != null) {
@@ -105,7 +122,7 @@ public class AuthenticationTokenCacheImpl implements AuthenticationTokenCache {
                     token = new AuthenticationToken();
                     token.setTicket(cookie.getTicket());
 
-                    registerCookieForDeleting(context, cookie);
+                    cookie.delete(context);
                 }
             }
 
@@ -115,20 +132,29 @@ public class AuthenticationTokenCacheImpl implements AuthenticationTokenCache {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void saveToken(RequestContext context, AuthenticationToken authToken) {
         saveToken(authToken);
 
         AuthenticationCookie cookie = cookieFactory.getCookie(authToken.getTicket(), createProfileOutdatedAfterDate());
-        registerCookieForSaving(context, cookie);
+        cookie.save(context, cookieMaxAge);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void removeToken(RequestContext context, AuthenticationToken authToken) {
         removeToken(authToken);
 
         AuthenticationCookie cookie = cookieFactory.getCookie(authToken.getTicket(), new Date());
-        registerCookieForDeleting(context, cookie);
+        cookie.delete(context);
     }
 
+    /**
+     * Returns a new profile outdated after date based on the current time and the time to outdate a profile.
+     */
     protected Date createProfileOutdatedAfterDate() {
         long timeToOutdatedMillis = profileTimeToOutdated * 1000;
         long now = System.currentTimeMillis();
@@ -136,6 +162,9 @@ public class AuthenticationTokenCacheImpl implements AuthenticationTokenCache {
         return new Date(now + timeToOutdatedMillis);
     }
 
+    /**
+     * Gets the token associated to the specified ticket in the cache.
+     */
     protected AuthenticationToken getToken(String ticket) {
         Element element = cache.get(ticket);
         if (element != null) {
@@ -145,40 +174,18 @@ public class AuthenticationTokenCacheImpl implements AuthenticationTokenCache {
         }
     }
 
+    /**
+     * Saves the specified token in the cache, using the token's ticket as cache key.
+     */
     protected void saveToken(AuthenticationToken token) {
         cache.put(new Element(token.getTicket(), token));
     }
 
+    /**
+     * Removes the specified token from the cache.
+     */
     protected void removeToken(AuthenticationToken token) {
         cache.remove(token.getTicket());
-    }
-
-    protected void registerCookieForSaving(RequestContext context, AuthenticationCookie cookie) {
-        // Save the cookie only on error, redirect, or before writing response to client.
-        SaveOrDeleteAuthenticationCookieResponse response;
-        if (context.getResponse() instanceof SaveOrDeleteAuthenticationCookieResponse) {
-            response = (SaveOrDeleteAuthenticationCookieResponse) context.getResponse();
-            response.setCookie(cookie);
-            response.setSave(true);
-        } else {
-            response = new SaveOrDeleteAuthenticationCookieResponse(context, cookie, cookieMaxAge, true);
-        }
-
-        context.setResponse(response);
-    }
-
-    protected void registerCookieForDeleting(RequestContext context, AuthenticationCookie cookie) {
-        // Delete the cookie only on error, redirect, or before writing response to client.
-        SaveOrDeleteAuthenticationCookieResponse response;
-        if (context.getResponse() instanceof SaveOrDeleteAuthenticationCookieResponse) {
-            response = (SaveOrDeleteAuthenticationCookieResponse) context.getResponse();
-            response.setCookie(cookie);
-            response.setSave(false);
-        } else {
-            response = new SaveOrDeleteAuthenticationCookieResponse(context, cookie, cookieMaxAge, false);
-        }
-
-        context.setResponse(response);
     }
 
 }

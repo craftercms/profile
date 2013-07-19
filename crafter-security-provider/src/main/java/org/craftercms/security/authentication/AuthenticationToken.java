@@ -30,26 +30,44 @@ public class AuthenticationToken {
     private UserProfile profile;
     private boolean profileOutdated;
 
+    /**
+     * Returns the user profile.
+     */
     public UserProfile getProfile() {
         return profile;
     }
 
+    /**
+     * Sets the user profile.
+     */
     public void setProfile(UserProfile profile) {
         this.profile = profile;
     }
 
+    /**
+     * Returns true if the profile is outdated (needs to be updated from the authentication service).
+     */
     public boolean isProfileOutdated() {
         return profileOutdated;
     }
 
+    /**
+     * Sets if the profile is outdated (needs to be updated from the authentication service).
+     */
     public void setProfileOutdated(boolean profileOutdated) {
         this.profileOutdated = profileOutdated;
     }
 
+    /**
+     * Returns the authentication ticket.
+     */
     public String getTicket() {
         return ticket;
     }
 
+    /**
+     * Sets the authentication ticket.
+     */
     public void setTicket(String ticket) {
         this.ticket = ticket;
     }

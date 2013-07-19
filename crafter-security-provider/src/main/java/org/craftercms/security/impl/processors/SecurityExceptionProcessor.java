@@ -53,16 +53,33 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
     protected AuthenticationRequiredHandler authenticationRequiredHandler;
     protected AccessDeniedHandler accessDeniedHandler;
 
+    /**
+     * Sets the {@link AuthenticationRequiredHandler}, to handle any {@link AuthenticationRequiredException}s thrown.
+     */
     @Required
     public void setAuthenticationRequiredHandler(AuthenticationRequiredHandler authenticationRequiredHandler) {
         this.authenticationRequiredHandler = authenticationRequiredHandler;
     }
 
+    /**
+     * Sets the {@link AccessDeniedHandler}, to handle any {@link AccessDeniedException}s thrown.
+     */
     @Required
     public void setAccessDeniedHandler(AccessDeniedHandler accessDeniedHandler) {
         this.accessDeniedHandler = accessDeniedHandler;
     }
 
+    /**
+     * Catches any exception thrown by the processor chain. If the exception is an instance of a {@link CrafterSecurityException}, the
+     * exception is handled to see if authentication is required ({@link AuthenticationRequiredException}), if access to the resource is
+     * denied ({@link AccessDeniedException}) or if a security cookie is invalid ({@link InvalidCookieException}).
+     *
+     * @param context
+     *      the context which holds the current request and other security info pertinent to the request
+     * @param processorChain
+     *          the processor chain, used to call the next processor
+     * @throws Exception
+     */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         try {
             processorChain.processRequest(context);
@@ -78,6 +95,9 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
         }
     }
 
+    /**
+     * Returns the security exception, if any, inside the specified's exception stack trace.
+     */
     public CrafterSecurityException findSecurityException(Exception topException) {
         Throwable[] exceptionChain = ExceptionUtils.getThrowables(topException);
         for (Throwable e : exceptionChain) {
@@ -89,6 +109,10 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
         return null;
     }
 
+    /**
+     * Handles the specified security exception, if it is an {@link AuthenticationRequiredException}, an {@link AccessDeniedException} or
+     * a {@link InvalidCookieException}.
+     */
     protected void handleSecurityException(CrafterSecurityException e, RequestContext context) throws CrafterSecurityException,
             IOException {
         if (e instanceof AuthenticationRequiredException) {
@@ -102,6 +126,9 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
         }
     }
 
+    /**
+     * Handles the specified {@link AuthenticationRequiredException}, by calling the {@link AuthenticationRequiredHandler}.
+     */
     protected void handleAuthenticationRequiredException(AuthenticationRequiredException e, RequestContext context)
             throws CrafterSecurityException, IOException {
         logger.warn("Authentication is required", e);
@@ -109,6 +136,9 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
         authenticationRequiredHandler.onAuthenticationRequired(e, context);
     }
 
+    /**
+     * Handles the specified {@link AccessDeniedException}, by calling the {@link AccessDeniedHandler}.
+     */
     protected void handleAccessDeniedException(AccessDeniedException e, RequestContext context) throws CrafterSecurityException,
             IOException {
         UserProfile profile = context.getAuthenticationToken().getProfile();
@@ -130,6 +160,9 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
         }
     }
 
+    /**
+     * Handles the specified {@link InvalidCookieException}, by sending a 400 BAD REQUEST error.
+     */
     protected void handleInvalidCookieException(InvalidCookieException e, RequestContext context) throws CrafterSecurityException,
             IOException {
         logger.warn("Invalid security cookie in request", e);

@@ -43,10 +43,24 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
 
     protected String errorPageUrl;
 
+    /**
+     * Sets the error page URL to forward to.
+     */
     public void setErrorPageUrl(String errorPageUrl) {
         this.errorPageUrl = errorPageUrl;
     }
 
+    /**
+     * Saves the access denied in the request, so it can be used after the request is forwarded. It then forwards to the error page,
+     * but if not error page was specified, a 403 error is sent.
+     *
+     * @param e
+     *          the exception with the reason of the access deny
+     * @param context
+     *          the request context
+     * @throws CrafterSecurityException
+     * @throws IOException
+     */
     public void onAccessDenied(AccessDeniedException e, RequestContext context) throws CrafterSecurityException, IOException {
         saveException(e, context);
 
@@ -57,6 +71,9 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         }
     }
 
+    /**
+     * Saves the exception in the request.
+     */
     protected void saveException(AccessDeniedException e, RequestContext context) {
         if (logger.isDebugEnabled()) {
             logger.debug("Saving access denied exception in request to use after forward");
@@ -65,6 +82,9 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         context.getRequest().setAttribute(SecurityConstants.ACCESS_DENIED_EXCEPTION_ATTRIBUTE, e);
     }
 
+    /**
+     * Forwards the request to the error page (to preserve the browser URL).
+     */
     protected void forwardToErrorPage(RequestContext context) throws CrafterSecurityException, IOException {
         HttpServletRequest request = context.getRequest();
         HttpServletResponse response = context.getResponse();
@@ -83,6 +103,9 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         }
     }
 
+    /**
+     * Sends a 403 FORBIDDEN error.
+     */
     protected void sendError(AccessDeniedException e, RequestContext requestContext) throws IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("Sending 403 FORBIDDEN error");

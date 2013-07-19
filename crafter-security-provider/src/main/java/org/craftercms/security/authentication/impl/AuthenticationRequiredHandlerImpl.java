@@ -45,24 +45,46 @@ public class AuthenticationRequiredHandlerImpl implements AuthenticationRequired
     protected String loginFormUrl;
     protected RequestCache requestCache;
 
+    /**
+     * Default constructor
+     */
     public AuthenticationRequiredHandlerImpl() {
         requestCache = new HttpSessionRequestCache();
     }
 
+    /**
+     * Sets the URL of the login form page.
+     */
     @Required
     public void setLoginFormUrl(String loginFormUrl) {
         this.loginFormUrl = loginFormUrl;
     }
 
+    /**
+     * Sets the cache where the current request is saved.
+     */
     public void setRequestCache(RequestCache requestCache) {
         this.requestCache = requestCache;
     }
 
+    /**
+     * Saves the current request in the request cache and then redirects to the login form page.
+     *
+     * @param e
+     *          the exception with the reason for requiring authentication
+     * @param context
+     *          the request security context
+     * @throws CrafterSecurityException
+     * @throws IOException
+     */
     public void onAuthenticationRequired(AuthenticationException e, RequestContext context) throws CrafterSecurityException, IOException {
         saveRequest(context);
         redirectToLoginForm(context);
     }
 
+    /**
+     * Saves the specified request in the request cache.
+     */
     protected void saveRequest(RequestContext context) {
         if (logger.isDebugEnabled()) {
             logger.debug("Saving current request for use after login");
@@ -71,6 +93,9 @@ public class AuthenticationRequiredHandlerImpl implements AuthenticationRequired
         requestCache.saveRequest(context.getRequest(), context.getResponse());
     }
 
+    /**
+     * Redirects the request to the login form page.
+     */
     protected void redirectToLoginForm(RequestContext context) throws IOException {
         String redirectUrl = context.getRequest().getContextPath() + loginFormUrl;
 

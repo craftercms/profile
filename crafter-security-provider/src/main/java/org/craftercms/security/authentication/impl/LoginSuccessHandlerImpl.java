@@ -38,8 +38,8 @@ import java.io.IOException;
  *
  * <ol>
  *     <li>Deletes any authentication exception saved in the session.</li>
- *     <li>Saves the user profile and ticket in the request context.</li>
- *     <li>Caches the profile.</li>
+ *     <li>Stores the authentication token in the request context.</li>
+ *     <li>Caches the authentication token.</li>
  *     <li>Uses the Spring {@link RequestCache} to obtain the previous request before login and redirect to it.</li>
  * </ol>
  *
@@ -57,20 +57,46 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
         requestCache = new HttpSessionRequestCache();
     }
 
+    /**
+     * Sets the cache to store the authentication token after login success.
+     */
     @Required
     public void setAuthenticationTokenCache(AuthenticationTokenCache authenticationTokenCache) {
         this.authenticationTokenCache = authenticationTokenCache;
     }
 
+    /**
+     * Cache where the previous request is stored.
+     */
     public void setRequestCache(RequestCache requestCache) {
         this.requestCache = requestCache;
     }
 
+    /**
+     * The target URL to redirect to if it's not possible to redirect to the previous request.
+     */
     @Required
     public void setDefaultTargetUrl(String defaultTargetUrl) {
         this.defaultTargetUrl = defaultTargetUrl;
     }
 
+    /**
+     * <ol>
+     *     <li>Deletes any authentication exception saved in the session.</li>
+     *     <li>Stores the authentication token created from the specified ticket and profile in the cache.</li>
+     *     <li>Caches the authentication token.</li>
+     *     <li>Uses the Spring {@link RequestCache} to obtain the previous request before login and redirect to it.</li>
+     * </ol>
+     *
+     * @param ticket
+     *          the authentication ticket, product of the recent login
+     * @param profile
+     *          the user profile
+     * @param context
+     *          the request context
+     * @throws CrafterSecurityException
+     * @throws IOException
+     */
     public void onLoginSuccess(String ticket, UserProfile profile, RequestContext context) throws CrafterSecurityException, IOException {
         AuthenticationToken token = new AuthenticationToken();
         token.setTicket(ticket);
@@ -83,6 +109,9 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
         redirectToSavedUrl(context);
     }
 
+    /**
+     * Remove any previous saved authentication exception from the cache.
+     */
     protected void clearException(RequestContext context) {
         if (logger.isDebugEnabled()) {
             logger.debug("Removing any authentication exceptions from session, not needed anymore");
@@ -93,6 +122,9 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
         session.removeAttribute(SecurityConstants.USER_AUTHENTICATION_EXCEPTION_ATTRIBUTE);
     }
 
+    /**
+     * Saves the authentication token in the cache.
+     */
     protected void cacheAuthenticationToken(AuthenticationToken token, RequestContext context) {
         if (logger.isDebugEnabled()) {
             logger.debug("Caching authentication token " + token);
@@ -101,6 +133,9 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
         authenticationTokenCache.saveToken(context, token);
     }
 
+    /**
+     * Redirects to the previous request URL, if found in the request cache. If not found, redirects to the default target URL.
+     */
     protected void redirectToSavedUrl(RequestContext context) throws IOException {
         SavedRequest savedRequest = requestCache.getRequest(context.getRequest(), context.getResponse());
 
@@ -117,6 +152,9 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
         }
     }
 
+    /**
+     * Redirects to the default target URL.
+     */
     protected void redirectToDefaultTargetUrl(RequestContext context) throws IOException {
         String redirectUrl = context.getRequest().getContextPath() + defaultTargetUrl;
 

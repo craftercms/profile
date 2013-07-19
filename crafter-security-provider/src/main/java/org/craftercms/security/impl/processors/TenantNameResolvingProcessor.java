@@ -34,11 +34,23 @@ public class TenantNameResolvingProcessor implements RequestSecurityProcessor {
 
     protected String defaultTenantName;
 
+    /**
+     * Sets a default tenant name.
+     */
     @Required
     public void setDefaultTenantName(String defaultTenantName) {
         this.defaultTenantName = defaultTenantName;
     }
 
+    /**
+     * Sets the default tenant name in the context.
+     *
+     * @param context
+     *      the context which holds the current request and other security info pertinent to the request
+     * @param processorChain
+     *          the processor chain, used to call the next processor
+     * @throws Exception
+     */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         if (logger.isDebugEnabled()) {
             logger.debug("Tenant name resolved for current request: " + defaultTenantName);
