@@ -45,34 +45,63 @@ public class LogoutProcessor implements RequestSecurityProcessor {
     protected AuthenticationTokenCache authenticationTokenCache;
     protected AuthenticationService authenticationService;
 
+    /**
+     * Default constructor.
+     */
     public LogoutProcessor() {
         logoutUrl = DEFAULT_LOGOUT_URL;
         logoutMethod = DEFAULT_LOGOUT_METHOD;
     }
 
+    /**
+     * Sets the logout URL this processor should respond to.
+     */
     public void setLogoutUrl(String logoutUrl) {
         this.logoutUrl = logoutUrl;
     }
 
+    /**
+     * Sets the HTTP method for the logout request this processor should respond to.
+     */
     public void setLogoutMethod(String logoutMethod) {
         this.logoutMethod = logoutMethod;
     }
 
+    /**
+     * Sets the target URL, to redirect to after logout.
+     */
     @Required
     public void setTargetUrl(String targetUrl) {
         this.targetUrl = targetUrl;
     }
 
+    /**
+     * Sets the {@link AuthenticationTokenCache}.
+     */
     @Required
     public void setAuthenticationTokenCache(AuthenticationTokenCache authenticationTokenCache) {
         this.authenticationTokenCache = authenticationTokenCache;
     }
 
+    /**
+     * Sets the {@link AuthenticationService}.
+     */
     @Required
     public void setAuthenticationService(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
+    /**
+     * Checks if the request URL matches the {@code logoutUrl} and the HTTP method matches the {@code logoutMethod}. If it does, it
+     * proceeds to logout the user, by removing the user's token from the {@link AuthenticationToken} and invalidating the user ticket
+     * from the {@link AuthenticationService}. After this, the user is redirected to the {@code targetUrl}.
+     *
+     * @param context
+     *          the context which holds the current request and other security info pertinent to the request
+     * @param processorChain
+     *          the processor chain, used to call the next processor
+     * @throws Exception
+     */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         if (isLogoutRequest(context.getRequest())) {
             if (logger.isDebugEnabled()) {
@@ -107,10 +136,16 @@ public class LogoutProcessor implements RequestSecurityProcessor {
         }
     }
 
+    /**
+     * Returns true if the request URL matches the {@code logoutUrl} and the HTTP method matches the {@code logoutMethod}.
+     */
     protected boolean isLogoutRequest(HttpServletRequest request) {
         return request.getRequestURI().equals(request.getContextPath() + logoutUrl) && request.getMethod().equals(logoutMethod);
     }
 
+    /**
+     * Redirects the user to the {@code targetUrl}.
+     */
     protected void redirectToTargetUrl(RequestContext context) throws IOException {
         context.getResponse().sendRedirect(context.getRequest().getContextPath() + targetUrl);
     }

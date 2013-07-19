@@ -36,23 +36,48 @@ public class AuthenticationCookie {
     protected String ticket;
     protected Date profileOutdatedAfter;
 
+    /**
+     * Default constructor.
+     *
+     * @param ticket
+     *          the Crafter Profile ticket
+     * @param profileOutdatedAfter
+     *          date when the profile is considered outdated and should be refreshed
+     */
     public AuthenticationCookie(String ticket, Date profileOutdatedAfter) {
         this.ticket = ticket;
         this.profileOutdatedAfter = profileOutdatedAfter;
     }
 
+    /**
+     * Returns the Crafter Profile ticket.
+     */
     public String getTicket() {
         return ticket;
     }
 
+    /**
+     * Returns the date when the profile is considered outdated and should be refreshed
+     */
     public Date getProfileOutdatedAfter() {
         return profileOutdatedAfter;
     }
 
+    /**
+     * Sets the date when the profile is considered outdated and should be refreshed
+     */
     public void setProfileOutdatedAfter(Date profileOutdatedAfter) {
         this.profileOutdatedAfter = profileOutdatedAfter;
     }
 
+    /**
+     * Saves the cookie in the context's response.
+     *
+     * @param context
+     *          the context that holds the response to where the cookie is written.
+     * @param cookieMaxAge
+     *          the max age of the cookie.
+     */
     public void save(RequestContext context, int cookieMaxAge) {
         String contextPath = context.getRequest().getContextPath();
 
@@ -63,6 +88,12 @@ public class AuthenticationCookie {
         context.getResponse().addCookie(cookie);
     }
 
+    /**
+     * Deletes the cookies from the context's response.
+     *
+     * @param context
+     *          the context that holds the response to where an empty cookie is written (so the cookie is removed from the browser).
+     */
     public void delete(RequestContext context) {
         String contextPath = context.getRequest().getContextPath();
 
@@ -73,6 +104,9 @@ public class AuthenticationCookie {
         context.getResponse().addCookie(cookie);
     }
 
+    /**
+     * Returns the cookie as a string value.
+     */
     public String toCookieValue() {
         return ticket + COOKIE_SEP + DateFormat.getDateTimeInstance().format(profileOutdatedAfter);
     }

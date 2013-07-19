@@ -29,13 +29,21 @@
         <property name="ignoreUnresolvablePlaceholders" value="true" />
     </bean>
 
-    <!-- ===== ASPECTS ===== -->
+    <!-- ////////////////////////////////// -->
+    <!--								 	-->
+    <!--			 Aspects				-->
+    <!--									-->
+    <!-- ////////////////////////////////// -->
 
     <bean id="crafter.runIfSecurityEnabledAspect" class="org.craftercms.security.aop.RunIfSecurityEnabledAspect">
         <property name="securityEnabled" value="${crafter.security.enabled}"/>
     </bean>
 
-    <!-- ===== FILTERS ===== -->
+    <!-- ////////////////////////////////// -->
+    <!--								 	-->
+    <!--			 Filters				-->
+    <!--									-->
+    <!-- ////////////////////////////////// -->
 
     <bean id="crafter.requestContextBindingFilter" class="org.craftercms.security.servlet.filters.RequestContextBindingFilter"/>
 
@@ -44,6 +52,7 @@
         <property name="securityEnabled" value="${crafter.security.enabled}"/>
         <property name="securityProcessors">
             <list>
+                <ref bean="crafter.saveAuthenticationCookieResponseWrappingProcessor"/>
                 <ref bean="crafter.tenantNameResolvingProcessor"/>
                 <ref bean="crafter.authTokenResolvingProcessor"/>
                 <ref bean="crafter.loginProcessor"/>
@@ -57,13 +66,21 @@
         <property name="urlsToExclude" value="${crafter.security.urlsToExclude}"/>
     </bean>
 
-    <!-- ===== SECURITY PROCESSORS ===== -->
+    <!-- ////////////////////////////////// -->
+    <!--								 	-->
+    <!--	    Security Processors			-->
+    <!--									-->
+    <!-- ////////////////////////////////// -->
+
+    <bean id="crafter.saveAuthenticationCookieResponseWrappingProcessor"
+          class="org.craftercms.security.impl.processors.SaveAuthenticationCookieResponseWrappingProcessor"/>
 
     <bean id="crafter.tenantNameResolvingProcessor" class="org.craftercms.security.impl.processors.TenantNameResolvingProcessor">
         <property name="defaultTenantName" value="${crafter.security.tenant.default.name}"/>
     </bean>
 
-    <bean id="crafter.authTokenResolvingProcessor" class="org.craftercms.security.impl.processors.AuthenticationTokenResolvingProcessor">
+    <bean id="crafter.authTokenResolvingProcessor"
+          class="org.craftercms.security.impl.processors.AuthenticationTokenResolvingProcessor">
         <property name="authenticationTokenCache" ref="crafter.authenticationTokenCache"/>
         <property name="authenticationService" ref="crafter.authenticationService"/>
     </bean>
@@ -87,11 +104,16 @@
         <property name="accessDeniedHandler" ref="crafter.accessDeniedHandler"/>
     </bean>
 
-    <bean id="crafter.urlAccessRestrictionCheckingProcessor" class="org.craftercms.security.impl.processors.UrlAccessRestrictionCheckingProcessor">
+    <bean id="crafter.urlAccessRestrictionCheckingProcessor"
+          class="org.craftercms.security.impl.processors.UrlAccessRestrictionCheckingProcessor">
         <property name="urlRestrictions" ref="crafter.urlRestrictions"/>
     </bean>
 
-    <!-- ===== PROFILE ===== -->
+    <!-- ////////////////////////////////// -->
+    <!--								 	-->
+    <!--			 Profile				-->
+    <!--									-->
+    <!-- ////////////////////////////////// -->
 
     <bean id="crafter.profileClient" class="org.craftercms.profile.impl.ProfileRestClientImpl">
         <property name="scheme" value="${crafter.security.profile.server.url.scheme}"/>
@@ -100,7 +122,11 @@
         <property name="profileAppPath" value="${crafter.security.profile.server.url.path}"/>
     </bean>
 
-    <!-- ===== AUTHENTICATION  ===== -->
+    <!-- ////////////////////////////////// -->
+    <!--								 	-->
+    <!--		   Authentication			-->
+    <!--									-->
+    <!-- ////////////////////////////////// -->
 
     <bean id="crafter.authenticationTokenCache" class="org.craftercms.security.authentication.impl.AuthenticationTokenCacheImpl">
         <property name="maxElementsInCache" value="${crafter.security.authentication.token.cache.maxElementsInMemory}"/>
@@ -109,8 +135,9 @@
         <property name="cookieFactory" ref="crafter.authenticationCookieFactory"/>
     </bean>
 
-    <bean id="crafter.authenticationCookieFactory" class="org.craftercms.security.authentication.impl.CipheredAuthenticationCookieFactory">
-        <property name="encryptionKey" value="${crafter.security.authentication.cookie.encryptionKey}"/>
+    <bean id="crafter.authenticationCookieFactory"
+          class="org.craftercms.security.authentication.impl.CipheredAuthenticationCookieFactory">
+        <property name="encryptionKeyFile" value="${crafter.security.authentication.cookie.encryptionKey.file}"/>
     </bean>
 
     <bean id="crafter.authenticationService" class="org.craftercms.security.impl.CrafterProfileAuthenticationService">
@@ -133,13 +160,21 @@
         <property name="loginFormUrl" value="${crafter.security.login.form.url}"/>
     </bean>
 
-    <!-- ===== AUTHORIZATION ===== -->
+    <!-- ////////////////////////////////// -->
+    <!--								 	-->
+    <!--		   Authorization			-->
+    <!--									-->
+    <!-- ////////////////////////////////// -->
 
     <bean id="crafter.accessDeniedHandler" class="org.craftercms.security.authorization.impl.AccessDeniedHandlerImpl">
         <property name="errorPageUrl" value="${crafter.security.accessDenied.error.url}"/>
     </bean>
 
-    <!-- ===== URL RESTRICTIONS ===== -->
+    <!-- ////////////////////////////////// -->
+    <!--								 	-->
+    <!--		  URL Restrictions			-->
+    <!--									-->
+    <!-- ////////////////////////////////// -->
 
     <util:map id="crafter.urlRestrictions">
     </util:map>

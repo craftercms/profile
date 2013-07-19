@@ -32,6 +32,16 @@ import java.io.IOException;
  */
 public class RequestContextBindingFilter extends OncePerRequestFilter {
 
+    /**
+     * Binds a new {@link RequestContext} to the current thread, and after the the filter chain has finished executing, removes it
+     * from the current thread.
+     *
+     * @param request
+     * @param response
+     * @param chain
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException,
             IOException {
@@ -54,6 +64,9 @@ public class RequestContextBindingFilter extends OncePerRequestFilter {
         }
     }
 
+    /**
+     * Returns a new {@link RequestContext}, using the specified {@link HttpServletRequest} and {@link HttpServletResponse}.
+     */
     protected RequestContext createRequestContext(HttpServletRequest request, HttpServletResponse response) {
         RequestContext context = new RequestContext();
         context.setRequest(request);

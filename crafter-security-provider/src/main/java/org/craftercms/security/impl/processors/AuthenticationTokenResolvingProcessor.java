@@ -46,6 +46,18 @@ public class AuthenticationTokenResolvingProcessor implements RequestSecurityPro
         this.authenticationTokenCache = authenticationTokenCache;
     }
 
+    /**
+     * Sets the authentication token for the current request. It first tries to retrieve the token from the cache, and if a ticket was
+     * found in the request but no profile, or if the token's profile iss outdated, it tries to retrieve the profile from the authentication
+     * service. If not even the authentication service has the profile, or if no ticket was found in the request, an anonymous profile is
+     * set.
+     *
+     * @param context
+     *          the context which holds the current request and other security info pertinent to the request
+     * @param processorChain
+     *          the processor chain, used to call the next processor
+     * @throws Exception
+     */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         // Make sure not to run the logic if there's already a token in the context
         if (context.getAuthenticationToken() == null) {
@@ -86,7 +98,7 @@ public class AuthenticationTokenResolvingProcessor implements RequestSecurityPro
 
                     // Authentication token was cached, profile was outdated and authentication service couldn't retrieve a profile
                     // for the ticket, which means the authentication as a whole expired, so remove token from cache.
-                    if (token.getProfile() != null) {
+                    if (token.isProfileOutdated()) {
                         if (logger.isDebugEnabled()) {
                             logger.debug("Authentication expired: removing authentication token " + token + " from cache");
                         }

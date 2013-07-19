@@ -37,10 +37,28 @@ public class AuthenticationCookieFactory {
     public static final int TICKET =                    0;
     public static final int PROFILE_OUTDATED_AFTER =    1;
 
-    public AuthenticationCookie getCookie(String ticket, Date expirationDate) {
-        return createCookie(ticket, expirationDate);
+    /**
+     * Creates a new cookie for the specified ticket and profile outdated after date.
+     *
+     * @param ticket
+     *          the ticket
+     * @param profileOutdateAfter
+     *          date when the profile is considered outdated and should be refreshed
+     * @return the newly created profile.
+     */
+    public AuthenticationCookie getCookie(String ticket, Date profileOutdateAfter) {
+        return createCookie(ticket, profileOutdateAfter);
     }
 
+    /**
+     * Returns the authentication cookie for the context's request.
+     *
+     * @param context
+     *          the context that holds the request.
+     * @return the authentication cookie for the context's request, or null if not found.
+     * @throws InvalidCookieException
+     *          if the authentication cookie found in the request is in an invalid format
+     */
     public AuthenticationCookie getCookie(RequestContext context) throws InvalidCookieException {
         String cookieValue = getCookieValueFromRequest(context.getRequest());
 
@@ -55,6 +73,9 @@ public class AuthenticationCookieFactory {
         }
     }
 
+    /**
+     * Returns the authentication cookie string value from the request.
+     */
     protected String getCookieValueFromRequest(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
 
@@ -69,6 +90,9 @@ public class AuthenticationCookieFactory {
         return null;
     }
 
+    /**
+     * Checks if the cookie has the expected number of components. If not, an {@link InvalidCookieException} is thrown.
+     */
     protected void checkCookieDataLength(String[] cookieData) throws InvalidCookieException {
         if (cookieData.length != 2) {
             throw new InvalidCookieException("Profile cookie: cookie should be composed of TICKET" + AuthenticationCookie.COOKIE_SEP +
@@ -76,10 +100,16 @@ public class AuthenticationCookieFactory {
         }
     }
 
+    /**
+     * Returns the ticket component of the cookie.
+     */
     protected String getTicket(String[] cookieData) {
         return cookieData[TICKET];
     }
 
+    /**
+     * Returns the profile outdated after component of the cookie.
+     */
     protected Date getProfileOutdatedAfterDate(String[] cookieData) {
         try {
             return DateFormat.getDateTimeInstance().parse(cookieData[PROFILE_OUTDATED_AFTER]);
@@ -88,6 +118,9 @@ public class AuthenticationCookieFactory {
         }
     }
 
+    /**
+     * Creates a new cookie for the specified ticket and profile outdated after date.
+     */
     protected AuthenticationCookie createCookie(String ticket, Date profileOutdatedAfter) {
         return new AuthenticationCookie(ticket, profileOutdatedAfter);
     }

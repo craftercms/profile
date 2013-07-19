@@ -31,10 +31,23 @@ public class RequestSecurityProcessorChainImpl implements RequestSecurityProcess
 
     private Iterator<RequestSecurityProcessor> processorIterator;
 
+    /**
+     * Default constructor
+     *
+     * @param processorIterator
+     *          iterator of {@link RequestSecurityProcessor}s.
+     */
     public RequestSecurityProcessorChainImpl(Iterator<RequestSecurityProcessor> processorIterator) {
         this.processorIterator = processorIterator;
     }
 
+    /**
+     * Calls the next {@link RequestSecurityProcessor} of the iterator.
+     *
+     * @param context
+     *          the request context
+     * @throws Exception
+     */
     public void processRequest(RequestContext context) throws Exception {
        if (processorIterator.hasNext()) {
            processorIterator.next().processRequest(context, this);

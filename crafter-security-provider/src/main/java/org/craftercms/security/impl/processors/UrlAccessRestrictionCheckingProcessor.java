@@ -74,14 +74,25 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
     protected PathMatcher pathMatcher;
     protected Map<String, Expression> urlRestrictions;
 
+    /**
+     * Default constructor. Creates {@link AntPathMatcher} as default path matcher.
+     */
     public UrlAccessRestrictionCheckingProcessor() {
         pathMatcher = new AntPathMatcher();
     }
 
+    /**
+     * Sets the path matcher to use to match the URLs for restriction checking.
+     */
     public void setPathMatcher(PathMatcher pathMatcher) {
         this.pathMatcher = pathMatcher;
     }
 
+    /**
+     * Sets the map of restrictions. Each key of the map is ANT-style path pattern, used to match the URLs of incoming requests, and
+     * each value is a Spring EL expression that is executed using an {@link AccessRestrictionExpressionRoot}, with the user profile, as
+     * root object to ensure the user should or shouldn't have access to the resource assigned to the URL.
+     */
     @Required
     public void setUrlRestrictions(Map<String, String> restrictions) {
         urlRestrictions = new LinkedHashMap<String, Expression>();
@@ -93,6 +104,18 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
         }
     }
 
+    /**
+     * Matches the request URL against the keys of the {@code restriction} map, which are ANT-style path patterns. If a key matches, the
+     * value is interpreted as a Spring EL expression, the expression is executed using an {@link AccessRestrictionExpressionRoot}. with
+     * the user profile, as root object, and if it returns true, the processor chain is continued, if not an  {@link AccessDeniedException}
+     * is thrown.
+     *
+     * @param context
+     *          the context which holds the current request and other security info pertinent to the request
+     * @param processorChain
+     *          the processor chain, used to call the next processor
+     * @throws Exception
+     */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         if (MapUtils.isNotEmpty(urlRestrictions)) {
             if (logger.isDebugEnabled()) {
@@ -137,10 +160,17 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
         processorChain.processRequest(context);
     }
 
+    /**
+     * Returns the request URL without the context path.
+     */
     protected String getRequestUrl(HttpServletRequest request) {
         return request.getRequestURI().substring(request.getContextPath().length());
     }
 
+    /**
+     * Executes the Spring EL expression using an {@link AccessRestrictionExpressionRoot}, with the user profile, as root object. The
+     * expression should return a boolean: true if access is allowed, false otherwise.
+     */
     protected boolean isAccessAllowed(UserProfile profile, Expression expression) {
         Object value = expression.getValue(createExpressionRoot(profile));
         if (!(value instanceof Boolean)) {
@@ -150,6 +180,9 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
         return (Boolean) value;
     }
 
+    /**
+     * Creates an {@link AccessRestrictionExpressionRoot}, using the specified {@link UserProfile}.
+     */
     protected AccessRestrictionExpressionRoot createExpressionRoot(UserProfile profile) {
         return new AccessRestrictionExpressionRoot(profile);
     }

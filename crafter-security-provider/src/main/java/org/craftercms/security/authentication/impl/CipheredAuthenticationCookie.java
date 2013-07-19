@@ -22,7 +22,6 @@ import org.craftercms.security.exception.CrafterSecurityException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import java.security.Key;
-import java.security.SecureRandom;
 import java.util.Date;
 
 /**
@@ -31,11 +30,6 @@ import java.util.Date;
  * @author Alfonso Vásquez
  */
 public class CipheredAuthenticationCookie extends AuthenticationCookie {
-
-    public static final SecureRandom secureRandom = new SecureRandom();
-
-    public static final String CIPHER_ALGORITHM = "AES";
-    public static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";
 
     protected Key encryptionKey;
 
@@ -50,11 +44,14 @@ public class CipheredAuthenticationCookie extends AuthenticationCookie {
         return encrypt(super.toCookieValue());
     }
 
+    /**
+     * Encrypts the cookie values using the AES cipher and returns it as a Base 64 string.
+     */
     protected String encrypt(String rawValue) throws CrafterSecurityException {
         try {
             byte[] iv = generateIv();
 
-            Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
+            Cipher cipher = Cipher.getInstance(CipheredAuthenticationCookieFactory.CIPHER_TRANSFORMATION);
             cipher.init(Cipher.ENCRYPT_MODE, encryptionKey, new IvParameterSpec(iv));
 
             byte[] encryptedValue = cipher.doFinal(rawValue.getBytes("UTF-8"));
@@ -66,10 +63,13 @@ public class CipheredAuthenticationCookie extends AuthenticationCookie {
         }
     }
 
+    /**
+     * Generates an initialization vector for the cipher.
+     */
     protected byte[] generateIv() {
         byte[] iv = new byte[16];
 
-        secureRandom.nextBytes(iv);
+        CipheredAuthenticationCookieFactory.secureRandom.nextBytes(iv);
 
         return iv;
     }
