@@ -44,6 +44,10 @@ public class ProfileServiceManager {
 		return !(appToken==null);
 	}
 	
+	public static void resetAppToken() {
+		appToken=null;
+	}
+	
 	public static void setAppToken() throws AppAuthenticationFailedException {
 		appToken = profileRestClient.getAppToken(username, password);		
 	}

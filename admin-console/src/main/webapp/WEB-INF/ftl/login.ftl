@@ -13,7 +13,7 @@
   <div id="content">
 	  <div id="header">
 	    <a class="logo" href="http://craftercms.org" title="Visit to Crafter CMS"></a> 
-	    <h1 class="mainTitle">Profile Admin Console</h1>
+	    <h1 class="mainTitle">Crafter Profile Admin Console</h1>
 	  </div>  
 	  
 	<form class="login-form" action="crafter-security-login" method="post" accept-charset="UTF-8" id="loginForm">

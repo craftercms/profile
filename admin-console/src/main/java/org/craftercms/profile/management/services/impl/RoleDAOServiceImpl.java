@@ -36,71 +36,25 @@ import java.util.List;
 @Service
 public class RoleDAOServiceImpl implements RoleDAOService{
 
-    // <editor-fold defaultstate="collapsed" desc="Attributes">
-    private ProfileClient profileRestClient;
-
-    private String username;
-    private String password;
-    private String crafterProfileAppTenantName;
-
-    private String appToken;
-
     private static final Logger log = Logger.getLogger(RoleDAOServiceImpl.class);
-
-    // </editor-fold>
-
-    // <editor-fold defaultstate="collapsed" desc="Interface Implementations">
 
     @Override
     public List<Role> getAllRoles() throws AppAuthenticationFailedException {
-        if (appToken == null) {
-            setAppToken();
-        }
+    	if (!ProfileServiceManager.isAppTokenInit()) {
+			ProfileServiceManager.setAppToken();
+		}
         try {
-        return profileRestClient.getAllRoles(appToken);
+        	return ProfileServiceManager.getProfileClient().getAllRoles(ProfileServiceManager.getAppToken());
 	    } catch(AppAuthenticationException e) {
 			try {
 				
-				setAppToken();
+				ProfileServiceManager.setAppToken();
 				
 			} catch (AppAuthenticationFailedException e1) {
 				log.error("could not get an AppToken", e);
 			}
-			return profileRestClient.getAllRoles(appToken);
+			return ProfileServiceManager.getProfileClient().getAllRoles(ProfileServiceManager.getAppToken());
 		}
     }
 
-    // </editor-fold>
-
-    // <editor-fold defaultstate="collapsed" desc="Util Functions">
-
-    private void setAppToken() throws AppAuthenticationFailedException {
-        appToken = profileRestClient.getAppToken(username, password);
-    }
-
-    // </editor-fold>
-
-    // <editor-fold defaultstate="collapsed" desc="Attribute Setters">
-
-    @Value("${crafter.profile.app.username}")
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @Value("${crafter.profile.app.password}")
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    @Autowired
-    public void setProfileRestClient(ProfileClient profileRestClient) {
-        this.profileRestClient = profileRestClient;
-    }
-
-    @Value("${crafter.profile.app.tenant.name}")
-    public void setCrafterProfileAppTenantName(String crafterProfileAppTenantName) {
-        this.crafterProfileAppTenantName = crafterProfileAppTenantName;
-    }
-
-    // </editor-fold>
 }

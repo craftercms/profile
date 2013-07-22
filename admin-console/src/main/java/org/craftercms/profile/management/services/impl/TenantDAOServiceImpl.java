@@ -38,17 +38,12 @@ import java.util.*;
 
 /**
  * @author David Escalante
+ * @author Alvaro
  */
 @Service
 public class TenantDAOServiceImpl implements TenantDAOService {
 
-    private String username;
-    private String password;
-    
-    private ProfileClient profileRestClient;
     private TenantPaging tenantPaging;
-
-    private String appToken;
 
     private static final Logger log = Logger.getLogger(TenantDAOServiceImpl.class);
 
@@ -59,28 +54,27 @@ public class TenantDAOServiceImpl implements TenantDAOService {
 
     @Override
     public Tenant createNewTenant(Tenant tenant) throws AppAuthenticationFailedException{
-        if (appToken == null) {
-            setAppToken();
-        }
+    	if (!ProfileServiceManager.isAppTokenInit()) {
+			ProfileServiceManager.setAppToken();
+		}
         
         Tenant created = null;
         try {
-        	created = profileRestClient.createTenant(appToken, tenant.getTenantName(),
+        	created = ProfileServiceManager.getProfileClient().createTenant(ProfileServiceManager.getAppToken(), tenant.getTenantName(),
                     tenant.getRoles(), tenant.getDomains(), false);
 	    } catch(AppAuthenticationException e) {
 			try {
 				
-				setAppToken();
-				
+				ProfileServiceManager.setAppToken();
 			} catch (AppAuthenticationFailedException e1) {
 				log.error("could not get an AppToken", e);
 			}
-			created = profileRestClient.createTenant(appToken, tenant.getTenantName(),
+			created = ProfileServiceManager.getProfileClient().createTenant(ProfileServiceManager.getAppToken(), tenant.getTenantName(),
                     tenant.getRoles(), tenant.getDomains(), false);
 		}
         if (created != null && created.getTenantName() != null){
             for (Attribute attribute : tenant.getSchema().getAttributes()){
-                profileRestClient.setAttributeForSchema(appToken, created.getTenantName(), attribute);
+            	ProfileServiceManager.getProfileClient().setAttributeForSchema(ProfileServiceManager.getAppToken(), created.getTenantName(), attribute);
             }
         }
         return created;
@@ -89,39 +83,39 @@ public class TenantDAOServiceImpl implements TenantDAOService {
 
     @Override
     public boolean exists(String tenantName) throws AppAuthenticationFailedException {
-        if (appToken == null) {
-            setAppToken();
-        }
+    	if (!ProfileServiceManager.isAppTokenInit()) {
+			ProfileServiceManager.setAppToken();
+		}
         try {
-        	return profileRestClient.exitsTenant(appToken, tenantName);
+        	return ProfileServiceManager.getProfileClient().exitsTenant(ProfileServiceManager.getAppToken(), tenantName);
         } catch(AppAuthenticationException e) {
 			try {
 				
-				setAppToken();
+				ProfileServiceManager.setAppToken();
 				
 			} catch (AppAuthenticationFailedException e1) {
 				log.error("could not get an AppToken", e);
 			}
-			return profileRestClient.exitsTenant(appToken, tenantName);
+			return ProfileServiceManager.getProfileClient().exitsTenant(ProfileServiceManager.getAppToken(), tenantName);
 		}
     }
 
     @Override
     public long getTenantCount() throws AppAuthenticationFailedException {
-        if (appToken == null) {
-            setAppToken();
-        }
+    	if (!ProfileServiceManager.isAppTokenInit()) {
+			ProfileServiceManager.setAppToken();
+		}
         try {
-        	return profileRestClient.getTenantCount(appToken);
+        	return ProfileServiceManager.getProfileClient().getTenantCount(ProfileServiceManager.getAppToken());
         } catch(AppAuthenticationException e) {
 			try {
 				
-				setAppToken();
+				ProfileServiceManager.setAppToken();
 				
 			} catch (AppAuthenticationFailedException e1) {
 				log.error("could not get an AppToken", e);
 			}
-			return profileRestClient.getTenantCount(appToken);
+			return ProfileServiceManager.getProfileClient().getTenantCount(ProfileServiceManager.getAppToken());
 		}
     }
 
@@ -163,30 +157,42 @@ public class TenantDAOServiceImpl implements TenantDAOService {
 
     @Override
     public List<Tenant> getAllTenants() throws AppAuthenticationFailedException {
-        if (appToken == null) {
-            setAppToken();
-        }
+    	if (!ProfileServiceManager.isAppTokenInit()) {
+			ProfileServiceManager.setAppToken();
+		}
         try {
-        	return profileRestClient.getAllTenants(appToken);
+        	return ProfileServiceManager.getProfileClient().getAllTenants(ProfileServiceManager.getAppToken());
     	} catch(AppAuthenticationException e) {
 			try {
 				
-				setAppToken();
+				ProfileServiceManager.setAppToken();
 				
 			} catch (AppAuthenticationFailedException e1) {
 				log.error("could not get an AppToken", e);
 			}
-	        return profileRestClient.getAllTenants(appToken);
+	        return ProfileServiceManager.getProfileClient().getAllTenants(ProfileServiceManager.getAppToken());
     	}
     }
 
     @Override
     public Tenant getTenantByName(String tenantName) throws AppAuthenticationFailedException {
-        if (appToken == null) {
-            setAppToken();
-        }
+    	if (!ProfileServiceManager.isAppTokenInit()) {
+			ProfileServiceManager.setAppToken();
+		}
 
-        Tenant result = profileRestClient.getTenantByName(appToken, tenantName);
+        Tenant result = null;
+        try {
+        	result = ProfileServiceManager.getProfileClient().getTenantByName(ProfileServiceManager.getAppToken(), tenantName);
+	    } catch(AppAuthenticationException e) {
+			try {
+				
+				ProfileServiceManager.setAppToken();
+				
+			} catch (AppAuthenticationFailedException e1) {
+				log.error("could not get an AppToken", e);
+			}
+			result = ProfileServiceManager.getProfileClient().getTenantByName(ProfileServiceManager.getAppToken(), tenantName);
+		}
         if(result != null)
         {
             Collections.sort(result.getSchema().getAttributes(), new AttributeFieldsComparator());
@@ -202,7 +208,7 @@ public class TenantDAOServiceImpl implements TenantDAOService {
 	    } catch(AppAuthenticationException e) {
 			try {
 				
-				setAppToken();
+				ProfileServiceManager.setAppToken();
 				
 			} catch (AppAuthenticationFailedException e1) {
 				log.error("could not get an AppToken", e);
@@ -214,20 +220,20 @@ public class TenantDAOServiceImpl implements TenantDAOService {
 
     @Override
     public Tenant updateTenant(Tenant tenant) throws AppAuthenticationFailedException {
-        if (appToken == null) {
-            setAppToken();
-        }
+    	if (!ProfileServiceManager.isAppTokenInit()) {
+			ProfileServiceManager.setAppToken();
+		}
         try {
-        	return profileRestClient.updateTenant(appToken, tenant.getId(), tenant.getTenantName(), tenant.getRoles(), tenant.getDomains());
+        	return ProfileServiceManager.getProfileClient().updateTenant(ProfileServiceManager.getAppToken(), tenant.getId(), tenant.getTenantName(), tenant.getRoles(), tenant.getDomains());
         } catch(AppAuthenticationException e) {
 			try {
 				
-				setAppToken();
+				ProfileServiceManager.setAppToken();
 				
 			} catch (AppAuthenticationFailedException e1) {
 				log.error("could not get an AppToken", e);
 			}
-			return profileRestClient.updateTenant(appToken, tenant.getId(), tenant.getTenantName(), tenant.getRoles(), tenant.getDomains());
+			return  ProfileServiceManager.getProfileClient().updateTenant(ProfileServiceManager.getAppToken(), tenant.getId(), tenant.getTenantName(), tenant.getRoles(), tenant.getDomains());
 		}
     }
 
@@ -266,20 +272,20 @@ public class TenantDAOServiceImpl implements TenantDAOService {
             Collections.sort(tenant.getSchema().getAttributes(), new AttributeFieldsComparator());
         }
         if(tenant.getTenantName() != null && exists(tenant.getTenantName())){
-            if (appToken == null) {
-                setAppToken();
-            }
+        	if (!ProfileServiceManager.isAppTokenInit()) {
+    			ProfileServiceManager.setAppToken();
+    		}
             try {
-            	profileRestClient.setAttributeForSchema(appToken, tenant.getTenantName(), attribute);
+            	ProfileServiceManager.getProfileClient().setAttributeForSchema(ProfileServiceManager.getAppToken(), tenant.getTenantName(), attribute);
             } catch(AppAuthenticationException e) {
     			try {
     				
-    				setAppToken();
+    				ProfileServiceManager.setAppToken();
     				
     			} catch (AppAuthenticationFailedException e1) {
     				log.error("could not get an AppToken", e);
     			}
-    			profileRestClient.setAttributeForSchema(appToken, tenant.getTenantName(), attribute);
+    			 ProfileServiceManager.getProfileClient().setAttributeForSchema(ProfileServiceManager.getAppToken(), tenant.getTenantName(), attribute);
     		}
         }
     }
@@ -292,62 +298,43 @@ public class TenantDAOServiceImpl implements TenantDAOService {
             if (attributes.contains(attribute.trim())){
                 it.remove();
                 if(tenant.getTenantName() != null && exists(tenant.getTenantName())){
-                    if (appToken == null) {
-                        setAppToken();
-                    }
+                	if (!ProfileServiceManager.isAppTokenInit()) {
+            			ProfileServiceManager.setAppToken();
+            		}
                     try {
-                    	profileRestClient.deleteAttributeForSchema(appToken, tenant.getTenantName(), attribute);
+                    	ProfileServiceManager.getProfileClient().deleteAttributeForSchema(ProfileServiceManager.getAppToken(), tenant.getTenantName(), attribute);
 	                } catch(AppAuthenticationException e) {
 	        			try {
 	        				
-	        				setAppToken();
+	        				ProfileServiceManager.setAppToken();
 	        				
 	        			} catch (AppAuthenticationFailedException e1) {
 	        				log.error("could not get an AppToken", e);
 	        			}
-	        			profileRestClient.deleteAttributeForSchema(appToken, tenant.getTenantName(), attribute);
+	        			ProfileServiceManager.getProfileClient().deleteAttributeForSchema(ProfileServiceManager.getAppToken(), tenant.getTenantName(), attribute);
 	        		}
                 }
             }
         }
     }
 
-    private void setAppToken() throws AppAuthenticationFailedException {
-        appToken = profileRestClient.getAppToken(username, password);
-    }
-
     private List<Tenant> getTenants(String sortBy, String sortOrder, int start, int end)
             throws AppAuthenticationFailedException{
-        if (appToken == null) {
-            setAppToken();
-        }
+    	if (!ProfileServiceManager.isAppTokenInit()) {
+			ProfileServiceManager.setAppToken();
+		}
         try {
-        	return profileRestClient.getTenantRange(appToken, sortBy, sortOrder, start, end);
+        	return ProfileServiceManager.getProfileClient().getTenantRange(ProfileServiceManager.getAppToken(), sortBy, sortOrder, start, end);
         } catch(AppAuthenticationException e) {
 			try {
 				
-				setAppToken();
+				ProfileServiceManager.setAppToken();
 				
 			} catch (AppAuthenticationFailedException e1) {
 				log.error("could not get an AppToken", e);
 			}
-			return profileRestClient.getTenantRange(appToken, sortBy, sortOrder, start, end);
+			return  ProfileServiceManager.getProfileClient().getTenantRange(ProfileServiceManager.getAppToken(), sortBy, sortOrder, start, end);
 		}
-    }
-
-    @Value("${crafter.profile.app.username}")
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @Value("${crafter.profile.app.password}")
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    @Autowired
-    public void setProfileRestClient(ProfileClient profileRestClient) {
-        this.profileRestClient = profileRestClient;
     }
 
     @Autowired
@@ -357,7 +344,7 @@ public class TenantDAOServiceImpl implements TenantDAOService {
 
 	@Override
 	public void restartAppToken() {
-		this.appToken = null;
+		ProfileServiceManager.resetAppToken();
 		
 	}
 
