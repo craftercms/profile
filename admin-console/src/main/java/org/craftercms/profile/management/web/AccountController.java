@@ -50,6 +50,7 @@ import org.craftercms.profile.management.model.ProfileUserAccountForm;
 
 import org.craftercms.profile.management.services.ProfileAccountService;
 import org.craftercms.profile.management.services.impl.ProfileDAOServiceImpl;
+import org.craftercms.profile.management.services.impl.ProfileServiceManager;
 import org.craftercms.profile.management.util.ProfileAccountPaging;
 import org.craftercms.profile.management.util.ProfileUserAccountValidator;
 import org.craftercms.security.api.RequestContext;
@@ -71,8 +72,7 @@ public class AccountController {
     
     @RequestMapping(value = "/init-get", method = RequestMethod.GET)
     public String getAccounts(@RequestParam(required=false) String selectedTenantName) throws Exception {
-        tenantDAOService.restartAppToken();
-        profileDao.restartAppToken();
+    	ProfileServiceManager.resetAppToken();
         return "redirect:/get";
     }
 
