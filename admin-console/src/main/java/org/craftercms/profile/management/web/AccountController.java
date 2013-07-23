@@ -283,6 +283,11 @@ public class AccountController {
         mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
+
+    @ExceptionHandler(org.craftercms.security.exception.AuthenticationRequiredException.class)
+    public String loginRequiredException() {
+        return "redirect:/login?logout=true";
+    }
     
     @ExceptionHandler(AppAuthenticationFailedException.class)
     public String logoutException() {

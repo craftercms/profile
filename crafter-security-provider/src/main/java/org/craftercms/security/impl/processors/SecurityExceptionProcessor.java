@@ -131,7 +131,7 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
      */
     protected void handleAuthenticationRequiredException(AuthenticationRequiredException e, RequestContext context)
             throws CrafterSecurityException, IOException {
-        logger.warn("Authentication is required", e);
+        logger.info("Authentication is required", e);
 
         authenticationRequiredHandler.onAuthenticationRequired(e, context);
     }
@@ -149,12 +149,12 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
                 // Throw ex just to initialize stack trace
                 throw new AuthenticationRequiredException("Anonymous user: authentication needed to access a resource", e);
             } catch (AuthenticationRequiredException ae) {
-                logger.warn("Authentication is required", ae);
+                logger.info("Authentication is required", ae);
 
                 authenticationRequiredHandler.onAuthenticationRequired(ae, context);
             }
         } else {
-            logger.warn("Access denied to user '" + profile.getUserName() + "'", e);
+            logger.info("Access denied to user '" + profile.getUserName() + "'", e);
 
             accessDeniedHandler.onAccessDenied(e, context);
         }
@@ -165,7 +165,7 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
      */
     protected void handleInvalidCookieException(InvalidCookieException e, RequestContext context) throws CrafterSecurityException,
             IOException {
-        logger.warn("Invalid security cookie in request", e);
+        logger.info("Invalid security cookie in request", e);
 
         context.getResponse().sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
     }
