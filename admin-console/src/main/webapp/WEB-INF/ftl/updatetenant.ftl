@@ -60,7 +60,7 @@
             <p>
                 <label  id="tenantDomains" for="name">*Tenant Domains:</label>
                 <@spring.bind "tenant.domains"/>
-                <a href="#" id="add">Add</a> | <a href="#" id="remove">Remove</a> | <a href="#" id="reset">Reset</a>
+                <a id="add" style="text-decoration: none;cursor: pointer;">Add</a> | <a id="remove" style="text-decoration: none;cursor: pointer;">Remove</a> | <a id="reset" style="text-decoration: none;cursor: pointer;">Reset</a>
                 <div id="domainList">
                     <#if tenant.domains?size == 0>
                         <input type="text" class="field" name="${spring.status.expression}" value="" "style=width:270" />

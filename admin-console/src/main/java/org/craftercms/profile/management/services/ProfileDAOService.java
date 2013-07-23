@@ -80,5 +80,5 @@ public interface ProfileDAOService {
 	 * 
 	 * @throws AppAuthenticationFailedException
 	 */
-	void setAppToken() throws AppAuthenticationFailedException;
+//	void setAppToken() throws AppAuthenticationFailedException;
 }
