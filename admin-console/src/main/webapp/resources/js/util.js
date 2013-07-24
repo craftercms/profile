@@ -254,6 +254,8 @@ function onsubmitform(param) {
 		cForm.method = "post";
 		cForm.action = "updatetenant";
 		cForm.submit();
+	} else {
+		return false;
 	}
 }
 

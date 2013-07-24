@@ -16,7 +16,7 @@
 <div id="content">
 
 	<div id="header">
-	 	<a class="logo" href="http://craftercms.org" title="Visit Crafter CMS"></a>
+	 	<a class="logo" href="index.jsp" title="Crafter Profile Admin Console"></a>
 	 	<ul class="page-actions">
 	 		<li><a type="submit" href="javascript:onsubmitform('Logout');" value="Logout" id="Logout" name="operation">Logout</a></li>
 	 		<li><a style="float:right" name="currentuser" href="item?username=${currentuser.userName}">User: ${currentuser.userName!""}</a></li>
