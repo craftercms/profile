@@ -187,7 +187,7 @@ public class MultiTenantController {
             model.addAttribute("tenantList", tenantList);
             RequestContext context = RequestContext.getCurrent();
             model.addAttribute("currentuser", context.getAuthenticationToken().getProfile());
-            return "newtenant";
+            return "updatetenant";
         }
     }
 

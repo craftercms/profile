@@ -12,7 +12,7 @@
 <body>
   <div id="content">
 	  <div id="header">
-	    <a class="logo" href="http://craftercms.org" title="Visit to Crafter CMS"></a> 
+	    <a class="logo" href="index.jsp" title="Crafter Profile Admin Console"></a> 
 	    <h1 class="mainTitle">Crafter Profile Admin Console</h1>
 	  </div>  
 	  
