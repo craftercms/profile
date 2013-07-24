@@ -169,7 +169,7 @@ public class PropertyFormController {
         for (Attribute attribute: target.getSchema().getAttributes()) {
             if (attribute.getName().equals(prop.getName())) {
             	pass = false;
-                errors.rejectValue("order", "property.value.validation.error.name",null,null);
+                errors.rejectValue("name", "property.value.validation.error.name",null,null);
             } else if (attribute.getOrder() == prop.getOrder()) {
             	pass = false;
                 errors.rejectValue("order", "property.value.validation.error.order",null,null);
