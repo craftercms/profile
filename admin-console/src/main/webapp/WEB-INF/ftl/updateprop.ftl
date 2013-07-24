@@ -73,27 +73,6 @@
                 <button class="btn btn-info" name="operation" id="cancel-account-btn" type="submit" value="CancelProp" onclick="document.pressed=this.value">Cancel</button>
             </p>
          </form>
-         <table id="mytable">
-		  	<tr>
-		    	<th scope="col">Attribute Order</th>
-		    	<th scope="col"">Attribute Name</th>
-		    	<th scope="col"">Attribute Label</th>
-		    	<th scope="col">Attribute Type</th>
-		    	<th scope="col">Attribute Constraint</th>
-		    	<th scope="col">Attribute Required</th>
-		    </tr>
-		    <#list propList as prop>
-		      <tr>
-		        <td>${prop.order!""}</td>
-		      	<td>${prop.name!""}</td>
-		        <td>${prop.label!""}</td>
-		        <td>${prop.type!""}</td>
-		        <td>${prop.constraint!"Not Defined"}</td>
-		        <td>${prop.required?string("Yes", "No")}</td>
-		      </tr>
-		    </#list>
-		   </table>
-		
   
 </div>  
 <div class="footer" style="margin: 0 auto; width: 960px; padding: 10px 0pt;">

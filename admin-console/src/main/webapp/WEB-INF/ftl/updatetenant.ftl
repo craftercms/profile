@@ -87,16 +87,7 @@
             </p>
             </div>
 		  </form>
-		  <table id="mytable">
-		  	<tr>
-		    	<th scope="col"">Tenant Name</th>
-		    </tr>
-		    <#list tenantList as t>
-		      <tr>
-		      	<td>${t.tenantName!""}</td>
-		      </tr>
-		    </#list>
-		   </table>
+		  
 </div>
 <div class="footer" style="margin: 0 auto; width: 960px; padding: 10px 0pt;">
 &copy; 2007-2013 Crafter SoftwareCorporation. All Rights Reserved.
