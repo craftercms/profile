@@ -242,10 +242,20 @@ public class AccountController {
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String updateAccount(@ModelAttribute("account") ProfileUserAccountForm account,
             BindingResult bindingResult, Model model) throws Exception {
-    
-        profileAccountService.updateUserAccount(account);
-        model.addAttribute("selectedTenantName",account.getTenantName());
-        return "redirect:/get";
+    	validateUpdateAccount(account, bindingResult);
+    	if (!bindingResult.hasErrors()) {
+    		profileAccountService.updateUserAccount(account);
+    		model.addAttribute("selectedTenantName",account.getTenantName());
+            return "redirect:/get";
+    	} else {
+            Tenant tenant = tenantDAOService.getTenantByName(account.getTenantName());
+            model.addAttribute("account", account);
+            model.addAttribute("tenantName", tenant.getTenantName());
+            model.addAttribute("attributeList", tenant.getSchema().getAttributes());
+            RequestContext context = RequestContext.getCurrent();
+            model.addAttribute("currentuser", context.getAuthenticationToken().getProfile());
+            return "update";
+        }
     }
     
     @RequestMapping(value = "/item", method = RequestMethod.GET)
@@ -350,6 +360,19 @@ public class AccountController {
         if (m.find()){
             bindingResult.rejectValue("username", "user.validation.error.empty.or.whitespace", null, "user.validation.error.empty.or.whitespace");
         }
+    }
+    
+    private void validateUpdateAccount(ProfileUserAccountForm account, BindingResult bindingResult) {
+        Pattern pattern = Pattern.compile("[,\\s]|@.*@");
+        Matcher m = pattern.matcher(account.getUsername());
+        
+
+        if (!account.getPassword().equals(account.getConfirmPassword())) {
+
+            bindingResult.rejectValue("password", "user.validation.fields.errors.confirm.password", null, "user.validation.fields.errors.confirm.password");
+
+        }
+        
     }
     
     private Tenant getSelectedTenantObject(List<Tenant> tenantList,
