@@ -9,7 +9,7 @@ public class GroupRole {
 	private String name;
 	private String tenantName;
 	private List<String> roles = new ArrayList();
-//	private String toString;
+
 	public String getId() {
 		return id;
 	}
@@ -34,16 +34,5 @@ public class GroupRole {
 	public void setRoles(List<String> roles) {
 		this.roles = roles;
 	}
-	
-//	public String toString() {
-//		if (roles==null) {
-//			return "";
-//		}
-//		toString = "";
-//		for (String r: roles) {
-//			toString = toString + " " + r;
-//		}
-//		return toString;
-//	}
 
 }
