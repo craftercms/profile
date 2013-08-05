@@ -10,7 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
-public class SchemaRestControllerTest extends BaseTest {
+public class ITSchemaRestControllerTest extends BaseTest {
 	
 	@Test
 	public void testSetAttributeforSchema() throws AppAuthenticationFailedException {
