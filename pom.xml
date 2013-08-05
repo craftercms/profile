@@ -39,14 +39,47 @@
 		<url>scm:git:git://github.com/craftercms/profile/tree/master/server</url>
 	</scm>
 	<modules>
+		<module>server</module>
 		<module>client</module>
 		<module>crafter-security-provider</module>	
 		<module>spring-security-preauth</module>			
 		<module>spring-security-provider-filter</module>
-		<module>server</module>
-        <module>admin-console</module>
+		<module>admin-console</module>
     </modules>
     <profiles>
+    	<profile>
+			<id>Sonar</id>
+			<properties>
+				<clover.version>3.1.8</clover.version>
+				<sonar.core.codeCoveragePlugin>clover</sonar.core.codeCoveragePlugin>
+				<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+				<sonar.clover.reportPath>${project.build.directory}/clover.xml</sonar.clover.reportPath>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.atlassian.maven.plugins</groupId>
+						<artifactId>maven-clover2-plugin</artifactId>
+						<version>${clover.version}</version>
+						<configuration>
+							<license>${clover.license}</license>
+							<reportDescriptor>clover-report.xml</reportDescriptor>
+						</configuration>
+						<executions>
+							<execution>
+								<id>main</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>instrument</goal>
+									<goal>aggregate</goal>
+									<goal>clover</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 		<profile>
 			<id>release-sign-artifacts</id>
 			<activation>
