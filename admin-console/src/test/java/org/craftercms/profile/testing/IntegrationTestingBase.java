@@ -9,6 +9,7 @@ import org.junit.BeforeClass;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -65,7 +66,8 @@ public class IntegrationTestingBase {
 
 	@Before
 	public void prepareDriver() throws Exception {
-		mDriver = new PhantomJSDriver(sCaps);
+		//mDriver = new PhantomJSDriver(sCaps);
+		mDriver = new FirefoxDriver();
 	}
 
 	protected WebDriver getDriver() {
