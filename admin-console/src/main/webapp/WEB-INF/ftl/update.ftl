@@ -31,7 +31,7 @@
                 <span class="unit size1of3">${tenantName!""}</span><br/>
            </p>
     		<p>
-		        <label  id="password" for="password">Password:</label>
+		        <label  id="pass" for="pass">Password:</label>
     			<@crafter.formInput "account.password", "password", "style=width:270", "password"/>
                 <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>

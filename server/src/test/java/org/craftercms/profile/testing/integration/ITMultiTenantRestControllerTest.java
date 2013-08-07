@@ -14,7 +14,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
-public class MultiTenantRestControllerTest extends BaseTest {
+public class ITMultiTenantRestControllerTest extends BaseTest {
 	
 	@Test
 	public void testCreateTenant() throws AppAuthenticationFailedException {

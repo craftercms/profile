@@ -129,7 +129,6 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.13</version>
 				<configuration>
-					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -186,9 +185,55 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                	<reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                    <testFailureIgnore>false</testFailureIgnore>
+                    <includes>
+                        <include>
+                            **/integration/**/*.java
+                        </include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/*$__CLR*</exclude>
+                        <exclude>**/*$*</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 	<profiles>
+		<profile>
+			<id>Sonar</id>
+			<properties>
+				<clover.version>3.1.8</clover.version>
+				<sonar.core.codeCoveragePlugin>clover</sonar.core.codeCoveragePlugin>
+				<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+				<sonar.clover.reportPath>${project.build.directory}/clover.xml</sonar.clover.reportPath>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.atlassian.maven.plugins</groupId>
+						<artifactId>maven-clover2-plugin</artifactId>
+						<version>${clover.version}</version>
+						<configuration>
+							<license>${clover.license}</license>
+							<reportDescriptor>clover-report.xml</reportDescriptor>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 		<profile>
 			<id>release-sign-artifacts</id>
 			<activation>

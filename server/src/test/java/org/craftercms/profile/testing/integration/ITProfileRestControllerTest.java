@@ -37,7 +37,7 @@ import org.junit.Test;
 import org.craftercms.profile.testing.BaseTest;
 
 
-public class ProfileRestControllerTest extends BaseTest {
+public class ITProfileRestControllerTest extends BaseTest {
 	
 	@Test
 	public void testGetProfileCount() throws AppAuthenticationFailedException {

@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 
-public class AuthenticationRestControllerTest extends BaseTest {
+public class ITAuthenticationRestControllerTest extends BaseTest {
 	
 	@Test
 	public void testGetAppToken() throws AppAuthenticationFailedException {
