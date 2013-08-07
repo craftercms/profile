@@ -248,7 +248,7 @@ public class AccountController {
     		model.addAttribute("selectedTenantName",account.getTenantName());
             return "redirect:/get";
     	} else {
-            Tenant tenant = tenantDAOService.getTenantByName(account.getTenantName());
+    		Tenant tenant = tenantDAOService.getTenantByName(account.getTenantName());
             model.addAttribute("account", account);
             model.addAttribute("tenantName", tenant.getTenantName());
             model.addAttribute("attributeList", tenant.getSchema().getAttributes());
@@ -363,14 +363,8 @@ public class AccountController {
     }
     
     private void validateUpdateAccount(ProfileUserAccountForm account, BindingResult bindingResult) {
-        Pattern pattern = Pattern.compile("[,\\s]|@.*@");
-        Matcher m = pattern.matcher(account.getUsername());
-        
-
         if (!account.getPassword().equals(account.getConfirmPassword())) {
-
             bindingResult.rejectValue("password", "user.validation.fields.errors.confirm.password", null, "user.validation.fields.errors.confirm.password");
-
         }
         
     }
