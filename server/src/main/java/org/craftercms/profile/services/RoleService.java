@@ -28,4 +28,5 @@ public interface RoleService {
 	void deleteRole(String roleName, HttpServletResponse response);
 	List<Role> getAllRoles();
     void deleteAllRoles();
+	Role getRole(String roleName);
 }
