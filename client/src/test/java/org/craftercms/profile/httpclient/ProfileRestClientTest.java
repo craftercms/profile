@@ -16,11 +16,15 @@
  */
 package org.craftercms.profile.httpclient;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.craftercms.profile.impl.ProfileRestClientImpl;
 import org.craftercms.profile.impl.domain.GroupRole;
+import org.craftercms.profile.impl.domain.Profile;
 
 
 
@@ -30,25 +34,22 @@ public class ProfileRestClientTest {
 		c.setPort(8090);
 		try { 
 			String appToken = c.getAppToken("crafterengine", "crafterengine");
-			c.getTicket(appToken, "admin", "admin", "craftercms");
-			List<String> roles = new ArrayList<String>();
-			//roles.add("SOCIAL_ADMIN");
-			roles.add("SOCIAL_AUTHOR");
-			roles.add("SOCIAL_USER");
-			//roles.add("ANONYMOUS");
-			//GroupRole g = c.createGroupRoleMapping(appToken, "craftercms", "social_high_level_group", roles);
-			//GroupRole g = c.updateGroupRoleMapping(appToken, "craftercms", "51d43fe403642fee97a22a3f", roles);
-//			System.out.println("NEW GROUP " + g.getId() + " name " + g.getName() );
-//			for (String cr:g.getRoles()) {
-//				System.out.println("NEW GROUP Roles " + cr);
+			String ticket = c.getTicket(appToken, "admin", "admin", "craftercms");
+			Profile p = c.getProfileByUsername(appToken, "test", "craftercms");
+			Map queryParams = new HashMap<String, Serializable>();
+			queryParams.put("Direccion", "Address");
+			c.setAttributesForProfile(appToken, p.getId(), queryParams);
+//			List<String> roles = new ArrayList<String>();
+//			roles.add("SOCIAL_AUTHOR");
+//			roles.add("SOCIAL_USER");
+//			
+//			
+//			List<String> roles1 = c.getRoles(appToken, "51d3380103641b01aa71cc03", "craftercms", new String[]{"social_based_group","social_high_level_group"});
+//			if(roles1!=null) {
+//				for(String s:roles1) {
+//					System.out.println("Role " +s);
+//				}
 //			}
-			
-			List<String> roles1 = c.getRoles(appToken, "51d3380103641b01aa71cc03", "craftercms", new String[]{"social_based_group","social_high_level_group"});
-			if(roles1!=null) {
-				for(String s:roles1) {
-					System.out.println("Role " +s);
-				}
-			}
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

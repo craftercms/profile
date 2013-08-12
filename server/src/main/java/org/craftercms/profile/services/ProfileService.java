@@ -44,7 +44,7 @@ public interface ProfileService {
 	 */
 	Profile createProfile(String userName, String password, Boolean active, String tenantName, Map<String, Serializable> attributes, List<String> roles,
 			HttpServletResponse response);
-
+	
 	/**
 	 * Update profile
 	 * 
