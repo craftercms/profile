@@ -46,9 +46,6 @@ public class RoleServiceImpl implements RoleService {
 	@Autowired
 	private RoleRepository roleRepository;
 	
-	@Autowired
-	private ProfileService profileService;
-
 	@Override
 	public Role createRole(String roleName, HttpServletResponse response) {
 		Role role = new Role();
@@ -99,6 +96,7 @@ public class RoleServiceImpl implements RoleService {
 		return roleRepository.findAll();
 	}
 
+	@Override
     public Role getRole(String roleName) {
 		return roleRepository.findByRoleName(roleName);
 	}

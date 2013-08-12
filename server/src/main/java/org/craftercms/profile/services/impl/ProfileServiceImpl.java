@@ -77,7 +77,7 @@ public class ProfileServiceImpl implements ProfileService {
 		}
 		return null;
 	}
-
+	
 	@Override
 	public List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder, List<String> attributesList, int start, int end) {
 		return profileRepository.getProfileRange(tenantName, sortBy, sortOrder, attributesList, start, end);
