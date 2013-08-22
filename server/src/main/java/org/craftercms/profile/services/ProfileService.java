@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.exceptions.InvalidEmailException;
 
 
 public interface ProfileService {
@@ -41,9 +42,10 @@ public interface ProfileService {
 	 * @param role
 	 * @param suffix
 	 * @param attributes
+	 * @throws InvalidEmailException If the email is not following a correct format
 	 */
-	Profile createProfile(String userName, String password, Boolean active, String tenantName, Map<String, Serializable> attributes, List<String> roles,
-			HttpServletResponse response);
+	Profile createProfile(String userName, String password, Boolean active, String tenantName, String email, Map<String, Serializable> attributes, List<String> roles,
+			HttpServletResponse response) throws InvalidEmailException;
 	
 	/**
 	 * Update profile
@@ -60,7 +62,7 @@ public interface ProfileService {
 	 * @param suffix
 	 * @param attributes
 	 */
-	Profile updateProfile(String profileId, String userName, String password, Boolean active, String tenantName, 
+	Profile updateProfile(String profileId, String userName, String password, Boolean active, String tenantName,String email,
 			Map<String, Serializable> attributes, List<String> roles);
 
 	/**

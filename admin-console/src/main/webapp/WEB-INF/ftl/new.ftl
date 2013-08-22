@@ -47,6 +47,11 @@
                 <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
             <p>
+		        <label  id="emailLabel" for="email">Email:</label>
+    			<@crafter.formInput "account.email", "email", "style=width:270 class='test'", "text"/>
+                <@crafter.showErrors "error-msg", "mbs", ""/>
+            </p>
+            <p>
 		        <label  id="passwordLabel" for="password">Password:</label>
     			<@crafter.formInput "account.password", "password", "style=width:270 class='test'", "password"/>
                 <@crafter.showErrors "error-msg", "mbs", ""/>
@@ -63,6 +68,7 @@
                     <#assign attributePath = "account.attributes['"+ attribute.name + "']">
                     <label  id="${attribute.name+"Label"}" for="attribute.name" class='schemaAttribute'>${attribute.label}:</label>
                     <@crafter.formInput attributePath, "attribute.name","style=width:270 class='test schemaAttribute' ", "text" />
+                    <@crafter.showErrors "error-msg", "mbs", ""/>
                     </p>
                 </#list>
                 <p>

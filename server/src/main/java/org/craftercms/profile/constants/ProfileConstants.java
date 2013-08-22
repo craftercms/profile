@@ -25,11 +25,13 @@ public final class ProfileConstants {
 	public static final String FIELD_ID = "_id";
 	public static final String USER_NAME = "userName";
 	public static final String PASSWORD = "password";
+	public static final String EMAIL = "email";
 	public static final String ACTIVE = "active";
 	public static final String CREATED = "created";
 	public static final String MODIFIED = "modified";
 	public static final String ROLES = "roles";
     public static final String DOMAINS = "domains";
+    
 	// Request Parameter Constants
 	public static final String APP_TOKEN = "appToken";
 	public static final String SORT_BY = "sortBy";
@@ -60,7 +62,7 @@ public final class ProfileConstants {
     public static final String[] DEFAULT_TENANT_DOMAINS = new String[] {"127.0.0.1", "localhost"};
 
 	public static final String[] DOMAIN_PROFILE_FIELDS = {ProfileConstants.USER_NAME, ProfileConstants.PASSWORD, ProfileConstants.ACTIVE};
-	public static final String[] BASE_PROFILE_FIELDS = {ProfileConstants.USER_NAME, ProfileConstants.PASSWORD, ProfileConstants.ACTIVE, ProfileConstants.TENANT_NAME, ProfileConstants.ROLES, 
+	public static final String[] BASE_PROFILE_FIELDS = {ProfileConstants.USER_NAME, ProfileConstants.PASSWORD, ProfileConstants.ACTIVE, ProfileConstants.TENANT_NAME, ProfileConstants.ROLES, ProfileConstants.EMAIL, 
 															ProfileConstants.APP_TOKEN, ProfileConstants.PROFILE_ID, ProfileConstants.PROFILE_ID_LIST};
 
     public static final String[] TENANT_ORDER_BY_FIELDS = {ProfileConstants.FIELD_ID, ProfileConstants.TENANT_NAME};

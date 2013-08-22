@@ -43,6 +43,7 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
 	public List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder, List<String> attributesList, int start, int end) {
 		Query query = new Query();
 		query.fields().include(ProfileConstants.USER_NAME);
+		query.fields().include(ProfileConstants.EMAIL);
 		query.fields().include(ProfileConstants.PASSWORD);
 		query.fields().include(ProfileConstants.ACTIVE);
 		query.fields().include(ProfileConstants.CREATED);
@@ -86,6 +87,7 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
 	public Profile getProfile(String profileId) {
 		Query query = new Query();
 		query.fields().include(ProfileConstants.USER_NAME);
+		query.fields().include(ProfileConstants.EMAIL);
 		query.fields().include(ProfileConstants.PASSWORD);
 		query.fields().include(ProfileConstants.ACTIVE);
 		query.fields().include(ProfileConstants.CREATED);
@@ -103,6 +105,7 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
 	
 		query.fields().include(ProfileConstants.USER_NAME);
 		query.fields().include(ProfileConstants.PASSWORD);
+		query.fields().include(ProfileConstants.EMAIL);
 		query.fields().include(ProfileConstants.ACTIVE);
 		query.fields().include(ProfileConstants.CREATED);
 		query.fields().include(ProfileConstants.MODIFIED);
@@ -121,6 +124,7 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
 		Query query = new Query();
 		query.fields().include(ProfileConstants.USER_NAME);
 		query.fields().include(ProfileConstants.PASSWORD);
+		query.fields().include(ProfileConstants.EMAIL);
 		query.fields().include(ProfileConstants.ACTIVE);
 		query.fields().include(ProfileConstants.CREATED);
 		query.fields().include(ProfileConstants.MODIFIED);
@@ -138,6 +142,7 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
 		query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
 	
 		query.fields().include(ProfileConstants.USER_NAME);
+		query.fields().include(ProfileConstants.EMAIL);
 		query.fields().include(ProfileConstants.PASSWORD);
 		query.fields().include(ProfileConstants.ACTIVE);
 		query.fields().include(ProfileConstants.CREATED);
@@ -154,6 +159,7 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
 		query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
 	
 		query.fields().include(ProfileConstants.USER_NAME);
+		query.fields().include(ProfileConstants.EMAIL);
 		query.fields().include(ProfileConstants.PASSWORD);
 		query.fields().include(ProfileConstants.ACTIVE);
 		query.fields().include(ProfileConstants.CREATED);
@@ -176,6 +182,7 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
 		query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
 	
 		query.fields().include(ProfileConstants.USER_NAME);
+		query.fields().include(ProfileConstants.EMAIL);
 		query.fields().include(ProfileConstants.PASSWORD);
 		query.fields().include(ProfileConstants.ACTIVE);
 		query.fields().include(ProfileConstants.CREATED);

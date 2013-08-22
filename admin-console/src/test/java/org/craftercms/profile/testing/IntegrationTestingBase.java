@@ -32,7 +32,7 @@ public class IntegrationTestingBase {
 	public static void configure() throws IOException {
 		// Read config file
 		sConfig = new Properties();
-		// sConfig.load(new FileReader(CONFIG_FILE));
+		
 		sConfig.load(IntegrationTestingBase.class.getClassLoader().getResourceAsStream(
 				CONFIG_FILE));
 
@@ -40,26 +40,6 @@ public class IntegrationTestingBase {
 		sCaps = new DesiredCapabilities();
 		sCaps.setJavascriptEnabled(true);
 		sCaps.setCapability("takesScreenshot", false);
-
-		// Fetch configuration parameters
-		// "phantomjs_exec_path"
-//		if (sConfig.getProperty("craftercms.test.phantomjs.executable.path") != null) {
-//			sCaps.setCapability(
-//					PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
-//					sConfig.getProperty("craftercms.test.phantomjs.executable.path"));
-//		} else {
-//			throw new IOException(String.format("Property '%s' not set!",
-//					PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY));
-//		}
-//		// "phantomjs_driver_path"
-//		if (sConfig.getProperty("craftercms.test.phantomjs.driver.path") != null) {
-//			System.out.println("Test will use an external GhostDriver");
-//			sCaps.setCapability(
-//					PhantomJSDriverService.PHANTOMJS_GHOSTDRIVER_PATH_PROPERTY,
-//					sConfig.getProperty("craftercms.test.phantomjs.driver.path"));
-//		} else {
-//			System.out.println("Test will use PhantomJS internal GhostDriver");
-//		}
 
 		baseUrl = sConfig.getProperty("craftercms.test.base.url");
 	}

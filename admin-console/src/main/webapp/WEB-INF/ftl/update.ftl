@@ -30,6 +30,11 @@
                 <label  id="attributeValue" for="attributeValue">Tenant Name:</label>
                 <span class="unit size1of3">${tenantName!""}</span><br/>
            </p>
+           <p>
+		        <label  id="emailLabel" for="email">Email:</label>
+    			<@crafter.formInput "account.email", "email", "style=width:270 class='test'", "text"/>
+                <@crafter.showErrors "error-msg", "mbs", ""/>
+            </p>
     		<p>
 		        <label  id="pass" for="pass">Password:</label>
     			<@crafter.formInput "account.password", "password", "style=width:270", "password"/>

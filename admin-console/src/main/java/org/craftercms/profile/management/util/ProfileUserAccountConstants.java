@@ -23,6 +23,7 @@ public class ProfileUserAccountConstants {
 	public static final String MODIFIED_PROPERTY = "modified";
 	public static final String USERNAME_PROPERTY = "userName";
 	public static final String PASSWORD_PROPERTY = "password";
+	public static final String EMAIL = "email";
 	public static final String ACTIVE_PROPERTY = "active";
 	public static final String TEMPORARY_PASSWORD = "temporary-password";
 	public static final String ROLES = "roles";
