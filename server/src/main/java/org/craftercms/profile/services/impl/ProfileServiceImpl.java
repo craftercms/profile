@@ -27,8 +27,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.domain.Ticket;
+import org.craftercms.profile.exceptions.InvalidEmailException;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TicketRepository;
+import org.craftercms.profile.services.EmailValidatorService;
 import org.craftercms.profile.services.ProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,20 +51,25 @@ public class ProfileServiceImpl implements ProfileService {
 
 	@Autowired
 	private TicketRepository ticketRepository;
+	@Autowired
+	private EmailValidatorService emailValidatorService;
 	@Override
-	public Profile createProfile(String userName, String password, Boolean active, String tenantName, Map<String, Serializable> attributes, List<String> roles,
-			HttpServletResponse response) {
-	    PasswordEncoder encoder = new Md5PasswordEncoder();
+	public Profile createProfile(String userName, String password, Boolean active, String tenantName, String email, Map<String, Serializable> attributes, List<String> roles,
+			HttpServletResponse response) throws InvalidEmailException {
+		if (!emailValidatorService.validateEmail(email)) {
+			throw new InvalidEmailException("Invalid email account format");
+		}
+		PasswordEncoder encoder = new Md5PasswordEncoder();
 	    String hashedPassword = encoder.encodePassword(password, null);
-
-		Profile profile = new Profile();
-		profile.setUserName(userName);
+	    Profile profile = new Profile();
+	    profile.setUserName(userName);
 		profile.setPassword(hashedPassword);
 		profile.setActive(active);
 		profile.setTenantName(tenantName);
 		profile.setCreated(new Date());
 		profile.setModified(new Date());
 		profile.setAttributes(attributes);
+		profile.setEmail(email);
 		profile.setRoles(roles);
 		try {
 			return profileRepository.save(profile);
@@ -87,9 +94,11 @@ public class ProfileServiceImpl implements ProfileService {
 	public long getProfilesCount(String tenantName) {
 		return profileRepository.getProfilesCount(tenantName);
 	}
+	
+	
 
 	@Override
-	public Profile updateProfile(String profileId, String userName, String password, Boolean active, String tenantName, 
+	public Profile updateProfile(String profileId, String userName, String password, Boolean active, String tenantName, String email, 
 				Map<String, Serializable> attributes, List<String> roles) {
 		Profile profile = profileRepository.findOne(new ObjectId(profileId));
 
@@ -118,8 +127,11 @@ public class ProfileServiceImpl implements ProfileService {
 			profile.setRoles(roles);
 		}
 		
+		if (email != null) {
+			profile.setEmail(email);
+		}
 		Map<String, Serializable> currentAttributes = profile.getAttributes();
-		if (currentAttributes != null) {
+		if (currentAttributes != null && attributes != null) {
 			currentAttributes.putAll(attributes);
 		} else {
 			currentAttributes = attributes;

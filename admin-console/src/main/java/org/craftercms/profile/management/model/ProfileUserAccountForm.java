@@ -31,6 +31,8 @@ public class ProfileUserAccountForm implements Serializable{
     private String id;
 
     private String username;
+    
+    private String email;
 
 	private String password;
 
@@ -65,6 +67,7 @@ public class ProfileUserAccountForm implements Serializable{
 			this.username = profile.getUserName();
 			this.password = profile.getPassword();
 			this.confirmPassword = password;
+			this.email = profile.getEmail();
             this.active = profile.getActive();
 			this.roles = (ArrayList<String>) profile.getRoles();
             this.tenantName = profile.getTenantName();
@@ -86,6 +89,7 @@ public class ProfileUserAccountForm implements Serializable{
 		this.id = profile.getId();
 		this.roles = (ArrayList<String>) profile.getRoles();
 		this.active = profile.getActive();
+		this.email = profile.getEmail();
         this.tenantName = profile.getTenantName();
 	}
 
@@ -166,4 +170,12 @@ public class ProfileUserAccountForm implements Serializable{
     public void setActive(boolean active) {
         this.active = active;
     }
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 }

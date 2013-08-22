@@ -152,11 +152,12 @@ public interface ProfileClient {
 	 * @param password of the new profile
 	 * @param active <code>true</code indicates the new profile will be activated otherwise <code>false</code>
 	 * @param tenantName of the new profile
+	 * @param email Email profile
 	 * @param queryParams is a key pair list of parameters that will be sent to the profile server to create the new profile
      *
 	 * @return the new profile object
 	 */
-	public Profile createProfile(String appToken, String userName, String password, Boolean active, String tenantName, Map<String, Serializable> queryParams);
+	public Profile createProfile(String appToken, String userName, String password, Boolean active, String tenantName, String email, Map<String, Serializable> queryParams);
 
 	/**
 	 * Updates a profile using the parameters data
@@ -606,5 +607,8 @@ public interface ProfileClient {
      * @return The group role retrieve
      */
     public GroupRole getGroupRoleMapping(String appToken, String groupId);
+    
+    public void forgotPassword(String appToken, String changePasswordUrl, String tenantName, String username);
+    public void changePassword(String appToken, String token, String newPassword);
 		
 }

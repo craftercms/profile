@@ -26,6 +26,7 @@ import java.util.Properties;
 
 import org.craftercms.profile.domain.Attribute;
 import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.exceptions.InvalidEmailException;
 import org.craftercms.profile.services.MultiTenantService;
 import org.craftercms.profile.services.ProfileService;
 import org.craftercms.profile.services.RoleService;
@@ -52,13 +53,19 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
 	
 	private String profilePassword = "admin";
 	private String profileUsername = "admin";
+	private String profileEmail = "adminprofile@craftercms.com";
+	
 	private String authorPassword = "author";
 	private String authorUsername = "author";
+	private String authorEmail = "authorprofile@craftercms.com";
 	private String regularPassword = "regular";
 	private String regularUsername = "regular";
+	private String regularEmail = "regularprofile@craftercms.com";
 	private String superAdminPassword = "superadmin";
 	private String superAdminUsername = "superadmin";
+	private String superAdminEmail = "superadminprofile@craftercms.com";
 	private String tenantName = "craftercms"; 
+	
 	private List<String> adminRoles;
 	private List<String> superadminRoles;
 	private List<String> authorRoles;
@@ -95,13 +102,13 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
 		if (event instanceof ContextRefreshedEvent) {
         	try {
         		startup();
-        	} catch(Exception e) {
+        	} catch(InvalidEmailException e) {
         		log.error("Profile startup error: ", e);
         	}
         }
     }
 
-	public void startup() {
+	public void startup() throws InvalidEmailException {
 		if (!isTenantExist()) {
 			createBasicCollections(tenantName);
 			createBaseProfiles(tenantName);
@@ -144,7 +151,7 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
 		}
 	}
 	
-	private void createBaseProfiles(String tenantName) {
+	private void createBaseProfiles(String tenantName) throws InvalidEmailException {
 		
 		if (this.adminRoles==null || this.adminRoles.size()==0) {
 			if (this.adminRoles==null) {
@@ -153,7 +160,7 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
 			adminRoles.add("ADMIN");
 		}
 
-		this.profileService.createProfile(profileUsername, profilePassword,true,tenantName,new HashMap<String,Serializable>(),this.adminRoles, null);
+		this.profileService.createProfile(profileUsername, profilePassword,true,tenantName,profileEmail, new HashMap<String,Serializable>(),this.adminRoles, null);
 		log.info("ADMIN profile created");
 		
 		if (superAdminUsername==null) {
@@ -167,16 +174,16 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
 			adminRoles.add("SUPERADMIN");
 		}
 
-		this.profileService.createProfile(superAdminUsername, superAdminPassword,true,tenantName,new HashMap<String,Serializable>(),this.superadminRoles, null);
+		this.profileService.createProfile(superAdminUsername, superAdminPassword,true,tenantName,superAdminEmail,new HashMap<String,Serializable>(),this.superadminRoles, null);
 		log.info("SUPERADMIN profile created");
 		
 		if (createBasicUser) {
 			this.authorRoles = convertLineToList("SOCIAL_AUTHOR");
-			this.profileService.createProfile(authorUsername, authorPassword,true,tenantName,new HashMap<String,Serializable>(),this.authorRoles, null);
+			this.profileService.createProfile(authorUsername, authorPassword,true,tenantName, authorEmail, new HashMap<String,Serializable>(),this.authorRoles, null);
 			log.info("AUTHOR profile created");
 			
 			this.regularRoles = convertLineToList("SOCIAL_USER");
-			this.profileService.createProfile(regularUsername, regularPassword,true,tenantName,new HashMap<String,Serializable>(),this.regularRoles, null);
+			this.profileService.createProfile(regularUsername, regularPassword,true,tenantName, regularEmail, new HashMap<String,Serializable>(),this.regularRoles, null);
 			log.info("REGULAR profile created");
 		}
 	}

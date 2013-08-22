@@ -31,6 +31,12 @@
 			<label for=""></label>
 			<button class="btn btn-info" type="submit" id="login" name="login">Login</button>
 			</p>
+			<p>
+					<label for=""></label>
+				  	<a target="_top" href="forgot-password" id="forgot-password">
+			  			Forgot your password?
+			  		</a>
+			</p>  
 			<#if RequestParameters.logout??>
 		<p class="logout-success">You have been successfully logged out.</p>
 	</#if>

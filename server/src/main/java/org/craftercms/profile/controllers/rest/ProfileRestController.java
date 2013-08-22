@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.exceptions.InvalidEmailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.services.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,7 @@ public class ProfileRestController {
 	 * @param lastName
 	 * @param suffix
 	 * @return
+	 * @throws InvalidEmailException 
 	 */
 	@RequestMapping(value = "create", method = RequestMethod.POST)
 	@ModelAttribute
@@ -64,9 +66,10 @@ public class ProfileRestController {
 			@RequestParam(ProfileConstants.USER_NAME) String userName, @RequestParam(ProfileConstants.PASSWORD) String password,
 			@RequestParam(ProfileConstants.ACTIVE) Boolean active, 
 			@RequestParam(ProfileConstants.TENANT_NAME) String tenantName,
+			@RequestParam(ProfileConstants.EMAIL) String email,
             @RequestParam(value=ProfileConstants.ROLES) String[] rolesArray,
-			HttpServletResponse response) {
-		return profileService.createProfile(userName, password, active, tenantName, getAttributeMap(request),
+			HttpServletResponse response) throws InvalidEmailException {
+		return profileService.createProfile(userName, password, active, tenantName, email, getAttributeMap(request),
                 (rolesArray != null ? Arrays.asList(rolesArray) : null), response);
 	}
 
@@ -339,9 +342,10 @@ public class ProfileRestController {
 			@RequestParam(required = false, value = ProfileConstants.PASSWORD) String password,
 			@RequestParam(required = false, value = ProfileConstants.ACTIVE) Boolean active, 
 			@RequestParam(required = false, value = ProfileConstants.TENANT_NAME) String tenantName,
+			@RequestParam(ProfileConstants.EMAIL) String email,
             @RequestParam(required = false, value=ProfileConstants.ROLES) String[] rolesArray,
             HttpServletResponse response) {
-		return profileService.updateProfile(profileId, userName, password, active, tenantName, getAttributeMap(request),
+		return profileService.updateProfile(profileId, userName, password, active, tenantName, email, getAttributeMap(request),
                 (rolesArray != null ? Arrays.asList(rolesArray) : null));
 	}
 

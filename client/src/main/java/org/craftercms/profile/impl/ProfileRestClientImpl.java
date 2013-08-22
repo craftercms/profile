@@ -16,7 +16,10 @@
  */
 package org.craftercms.profile.impl;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -47,6 +50,7 @@ import org.codehaus.jackson.type.TypeReference;
 import org.craftercms.profile.api.ProfileClient;
 import org.craftercms.profile.constants.AttributeConstants;
 import org.craftercms.profile.constants.GroupConstants;
+import org.craftercms.profile.constants.PasswordChangeConstants;
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
@@ -104,7 +108,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 	};
 	private final TypeReference<List<Tenant>> TENANT_LIST_TYPE = new TypeReference<List<Tenant>>() {
 	};
-	private final TypeReference<Map<String, Serializable>> MAP_STRING_SERIALIZABLE_TYPE = new TypeReference<Map<String, Serializable>>() {
+	private final TypeReference<HashMap<String, Serializable>> MAP_STRING_SERIALIZABLE_TYPE = new TypeReference<HashMap<String, Serializable>>() {
 	};
 	
 	public ProfileRestClientImpl() {
@@ -752,7 +756,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 	 * java.util.Map)
 	 */
 	public Profile createProfile(String appToken, String userName,
-			String password, Boolean active, String tenantName,
+			String password, Boolean active, String tenantName, String email,
 			Map<String, Serializable> attributes) {
 		if (log.isDebugEnabled()) {
 			log.debug("Creating a new profile  with the username " + userName);
@@ -761,6 +765,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 		attributes.put(ProfileConstants.PASSWORD, password);
 		attributes.put(ProfileConstants.ACTIVE, active);
 		attributes.put(ProfileConstants.TENANT_NAME, tenantName);
+		attributes.put(ProfileConstants.EMAIL, email);
 		return createProfile(appToken, attributes);
 	}
 
@@ -1138,9 +1143,13 @@ public class ProfileRestClientImpl implements ProfileClient {
 					httpget);
 			entity = response.getEntity();
 			if (response.getStatusLine().getStatusCode() == 200) {
-				
+//				inputStreamToString(response.getEntity().getContent());
 				result = (Map<String, Serializable>) objectMapper.readValue(
 						entity.getContent(), MAP_STRING_SERIALIZABLE_TYPE);
+//				result = (HashMap<String, Serializable>) objectMapper.readValue(
+//						entity.getContent(), MAP_STRING_SERIALIZABLE_TYPE);
+				
+				
 			} else {
 				handleErrorStatus(response.getStatusLine(), entity);
 			}
@@ -1161,6 +1170,24 @@ public class ProfileRestClientImpl implements ProfileClient {
 		}
 
 		return result;
+	}
+
+	private StringBuilder inputStreamToString(InputStream is) throws IOException {
+		String line = "";
+	    StringBuilder total = new StringBuilder();
+	    
+	    // Wrap a BufferedReader around the InputStream
+	    BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+
+	    // Read response until the end
+	    while ((line = rd.readLine()) != null) {
+	    	System.out.println("***RESPONSE " + line);
+	        total.append(line); 
+	    }
+	    
+	    // Return full string
+	    return total;
+		
 	}
 
 	@SuppressWarnings("unchecked")
@@ -3084,6 +3111,93 @@ public class ProfileRestClientImpl implements ProfileClient {
 		return groupRole;
 	}
 	/***************** END GROUP ROLE MAP SERVICES ******************************/
+	
+	/*** CHANGING PASSWORD ***/
+	
+	public void changePassword(String appToken, String token, String newPassword) {
+		HttpEntity entity = null;
+		GroupRole groupRole = null;
+		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
+		qparams.add(new BasicNameValuePair(PasswordChangeConstants.TOKEN, token));
+		qparams.add(new BasicNameValuePair(PasswordChangeConstants.NEW_PASSWORD, newPassword));
+		
+		try {
+			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
+					+ "/api/2/password/change-password.json",
+					URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+			HttpPost httppost = new HttpPost(uri);
+			HttpResponse response = clientService.getHttpClient().execute(
+					httppost);
+
+			entity = response.getEntity();
+			if (response.getStatusLine().getStatusCode() == 200) {
+//				profile = (Profile) objectMapper.readValue(entity.getContent(),
+//						Profile.class);
+			} else {
+				handleErrorStatus(response.getStatusLine(), entity);
+			}
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
+		} finally {
+			try {
+				EntityUtils.consume(entity);
+			} catch (IOException e) {
+				log.error("Could not consume entity", e);
+			}
+		}
+//		return groupRole;
+	}
+	
+	public void forgotPassword(String appToken, String changePasswordUrl, String tenantName, String username) {
+		HttpEntity entity = null;
+		GroupRole groupRole = null;
+		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
+		qparams.add(new BasicNameValuePair(PasswordChangeConstants.CHANGE_PASSWORD_URL, changePasswordUrl));
+		qparams.add(new BasicNameValuePair(ProfileConstants.TENANT_NAME, tenantName));
+		qparams.add(new BasicNameValuePair(PasswordChangeConstants.USERNAME,
+				username));
+		try {
+			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
+					+ "/api/2/password/forgot-password.json",
+					URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+			HttpPost httppost = new HttpPost(uri);
+			HttpResponse response = clientService.getHttpClient().execute(
+					httppost);
+
+			entity = response.getEntity();
+			if (response.getStatusLine().getStatusCode() == 200) {
+//				profile = (Profile) objectMapper.readValue(entity.getContent(),
+//						Profile.class);
+			} else {
+				handleErrorStatus(response.getStatusLine(), entity);
+			}
+		} catch (URISyntaxException e) {
+			log.error(e.getMessage(),e);
+		} catch (ClientProtocolException e) {
+			log.error(e.getMessage(),e);
+		} catch (IOException e) {
+			log.error(e.getMessage(),e);
+		} catch (RestException e) {
+			log.error(e.getMessage(),e);
+		} finally {
+			try {
+				EntityUtils.consume(entity);
+			} catch (IOException e) {
+				log.error("Could not consume entity", e);
+			}
+		}
+//		return groupRole;
+	}
+	
+	/*** END CHANGING PASSWORD services ***/
 
 	
 }
