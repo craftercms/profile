@@ -1,3 +1,6 @@
+function removeDomain(param) {
+	document.getElementById(param).remove();
+}
 function onsubmitform(param) {
 	var cForm = document.getElementById('form-list');
 	if (cForm == null || cForm == undefined) {
@@ -57,30 +60,22 @@ $(document)
 		.ready(
 				function() {
 
-					var appName = 'admin-console';
-
 					var i = $('.field').size();
-
+					var index = 1;
 					$('#add')
-							.click(
-									function() {
-										$(
-												'<input type="text" class="field" name="domains" value="" "style=width:270" />')
-												.fadeIn('slow').appendTo(
-														'#domainList');
-										i++;
-									});
-
-					$('#remove').click(function() {
-						if (i > 1) {
-							$('.field:last').remove();
-							i--;
-						}
-					});
-
+					.click(
+							function() {
+								domainParent = 'domainParent' + index ;
+								$(
+										'<div id="' + domainParent + '" class="domainParent"><input type="text" class="field" name="domains" id="domains" value="" "style=width:270" /><button name="domainsButton" id="domainsButton" onclick="removeDomain(\''+domainParent+'\')">X</button></div>')
+										.fadeIn('slow').appendTo(
+												'#domainList');
+								i++;
+								index++;
+							});
 					$('#reset').click(function() {
 						while (i > 1) {
-							$('.field:last').remove();
+							$('.domainParent:last').remove();
 							i--;
 						}
 					});
@@ -88,40 +83,6 @@ $(document)
 					$('#backTenant').click(function() {
 						window.close();
 					});
-
-					$('#tenantName')
-							.change(
-									function() {
-										var data = {
-											tenantName : $(this).val()
-										};
-										var url = '/'
-												+ appName
-												+ '/tenant_attributes_and_roles';
-
-										$
-												.ajax({
-													url : url,
-													data : data,
-													dataType : 'html',
-													contentTypeString : "text/html;charset=UTF-8",
-													cache : false,
-													type : 'GET',
-													success : function(aData,
-															textStatus, jqXHR) {
-														$('#schemaAttributes')
-																.children()
-																.remove();
-														$('#schemaAttributes')
-																.append(aData);
-													},
-													error : function(xhr,
-															ajaxOptions,
-															thrownError) {
-														alert(xhr.status);
-													}
-												});
-									});
 
 					$('#selectedTenantName').change(function() {
 						this.form.submit();
