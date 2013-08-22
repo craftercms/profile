@@ -2252,7 +2252,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 
 	/*** END TENANT services *******/
 
-	/*************** BASE SCHEMA SERVICES ****************/
+	/*************** SCHEMA SERVICES ****************/
 
 	@Override
 	/*
@@ -2421,7 +2421,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 		return schema;
 	}
 
-	/*************** END BASE SCHEMA SERVICES *****************/
+	/*************** END SCHEMA SERVICES *****************/
 
 	/**
 	 * Gets object mapper

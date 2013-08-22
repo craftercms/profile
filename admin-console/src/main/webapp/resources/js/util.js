@@ -1,3 +1,9 @@
+function removeDomain(param) {
+	if ($('.domainParent').size() >= 2) {
+		document.getElementById(param).remove();
+	}
+	
+}
 function checkAll() {
 	var all = document.getElementsByName('all');
 	if (all.length > 0) {
@@ -9,50 +15,6 @@ function checkAll() {
 			checklist[j].checked = true;
 		} else {
 			checklist[j].checked = false;
-		}
-	}
-}
-
-function moveoutid() {
-	var sda = document.getElementsByName('rolesTenant')[0];
-	
-	var len = sda.length;
-	var sda1 = document.getElementsByName('roles')[0];
-	for ( var j = 0; j < len; j++) {
-		if (sda[j] != null && sda[j].selected) {
-			var tmp = sda.options[j].text;
-			var tmp1 = sda.options[j].value;
-			sda.remove(j);
-			j--;
-			var y = document.createElement('option');
-			y.text = tmp;
-			try {
-				sda1.add(y, null);
-			} catch (ex) {
-				sda1.add(y);
-			}
-		}
-	}
-}
-
-function moveinid() {
-	var sda = document.getElementsByName('rolesTenant')[0];
-	var sda1 = document.getElementsByName('roles')[0];
-	var len = sda1.length;
-	for ( var j = 0; j < len; j++) {
-		if (sda1[j] != null && sda1[j].selected) {
-			var tmp = sda1.options[j].text;
-			var tmp1 = sda1.options[j].value;
-			sda1.remove(j);
-			j--;
-			var y = document.createElement('option');
-			y.text = tmp;
-			try {
-				sda.add(y, null);
-			} catch (ex) {
-				sda.add(y);
-			}
-
 		}
 	}
 }
@@ -263,32 +225,25 @@ $(document)
 .ready(
 		function() {
 
-			var appName = 'admin-console';
-
+			var index = 1;
 			var i = $('.field').size();
 
 			$('#add')
 					.click(
 							function() {
+								domainParent = 'domainParent' + index ;
 								$(
-										'<input type="text" class="field" name="domains" value="" "style=width:270" />')
+										'<div id="' + domainParent + '" class="domainParent"><input type="text" class="field" name="domains" id="domains" value="" "style=width:270" /><button name="domainsButton" id="domainsButton" onclick="removeDomain(\''+domainParent+'\')">X</button></div>')
 										.fadeIn('slow').appendTo(
 												'#domainList');
 								i++;
+								index++;
 							});
-
-			$('#remove').click(function() {
-				if (i > 1) {
-					$('.field:last').remove();
-					i--;
-				}
-			});
-
 			$('#reset').click(function() {
 				while (i > 1) {
-					$('.field:last').remove();
+					$('.domainParent:last').remove();
 					i--;
 				}
 			});
-});			
-			
+
+});

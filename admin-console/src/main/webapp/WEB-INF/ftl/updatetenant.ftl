@@ -60,13 +60,19 @@
             <p>
                 <label  id="tenantDomains" for="name">*Tenant Domains:</label>
                 <@spring.bind "tenant.domains"/>
-                <a id="add" style="text-decoration: none;cursor: pointer;">Add</a> | <a id="remove" style="text-decoration: none;cursor: pointer;">Remove</a> | <a id="reset" style="text-decoration: none;cursor: pointer;">Reset</a>
+                <a id="add" style="text-decoration: none;cursor: pointer;">Add</a> | <a id="reset" style="text-decoration: none;cursor: pointer;">Reset</a>
                 <div id="domainList">
                     <#if tenant.domains?size == 0>
-                        <input type="text" class="field" name="${spring.status.expression}" value="" "style=width:270" />
+                        <div id='${spring.status.expression}Parent'>
+	                        <input type="text" class="field" name="${spring.status.expression}" id="${spring.status.expression}" value="" "style=width:270" />
+	                        <button name="${spring.status.expression}Button" id="${spring.status.expression}Button" onclick="removeDomain('${spring.status.expression}')">X</button>
+                        </div> 
 					<#else>
 				        <#list tenant.domains as domain>
-                            <input type="text" class="field" name="${spring.status.expression}" value="${domain}" "style=width:270" />
+				        	<div id='${domain}Parent' class="domainParent">
+	                            <input type="text" class="field" id="${domain}" name="${spring.status.expression}" value="${domain}" "style=width:270" />
+	                            <button name="${domain}Button" id="${domain}Button" onclick="removeDomain('${domain}Parent')">X</button>
+                            </div>
 				        </#list>
 					</#if>
                 </div>

@@ -452,9 +452,15 @@ header .top, header .bottom {
     position: relative;
 }
 
-.field {
+domainParent {
     clear: both;
     margin-bottom: 5px;
     margin-left: 310px;
     margin-right: 310px;
+}
+
+.field {
+    clear: both;
+    margin-bottom: 5px;
+    margin-left: 310px;
 }
