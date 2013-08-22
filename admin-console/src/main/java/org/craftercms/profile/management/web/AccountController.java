@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.management.services.TenantDAOService;
 import org.craftercms.profile.management.util.TenantUtil;
+import org.craftercms.profile.impl.domain.Attribute;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -344,11 +345,10 @@ public class AccountController {
         this.profileAccountPaging = paging;
     }
     
-    private void validateNewAccount(ProfileUserAccountForm account, BindingResult bindingResult, String selectedTenantName) {
+    private void validateNewAccount(ProfileUserAccountForm account, BindingResult bindingResult, String selectedTenantName) throws AppAuthenticationFailedException {
         Pattern pattern = Pattern.compile("[,\\s]|@.*@");
         Matcher m = pattern.matcher(account.getUsername());
         profileUserAccountValidator.validate(account, bindingResult);
-
         if (!account.getPassword().equals(account.getConfirmPassword())) {
 
             bindingResult.rejectValue("password", "user.validation.fields.errors.confirm.password", null, "user.validation.fields.errors.confirm.password");
@@ -360,13 +360,38 @@ public class AccountController {
         if (m.find()){
             bindingResult.rejectValue("username", "user.validation.error.empty.or.whitespace", null, "user.validation.error.empty.or.whitespace");
         }
+        validateAttributes(account.getAttributes(), bindingResult, tenantDAOService.getTenantByName(selectedTenantName));
     }
     
-    private void validateUpdateAccount(ProfileUserAccountForm account, BindingResult bindingResult) {
+    private void validateAttributes(Map<String, Object> attributes,
+			BindingResult bindingResult, Tenant tenant) {
+		if (tenant.getSchema().getAttributes() == null) {
+			return;
+		}
+		Object value;
+		for(Attribute a:tenant.getSchema().getAttributes()) {
+			if (!a.isRequired()) {
+				continue;
+			}
+			value = attributes.get(a.getName());
+			if (value == null) {
+				bindingResult.rejectValue("attributes[" + a.getName()+ "]", "user.validation.attribute.error.empty.or.whitespace", null, "user.validation.attribute.error.empty.or.whitespace");
+			} else if ((a.getType() == null || a.getType().equalsIgnoreCase("text")) && value.equals("")) {
+				bindingResult.rejectValue("attributes[" +a.getName() + "]", "user.validation.attribute.error.empty.or.whitespace", null, "user.validation.attribute.error.empty.or.whitespace");
+			}
+			//}
+		}
+		
+	}
+
+	private void validateUpdateAccount(ProfileUserAccountForm account, BindingResult bindingResult) throws AppAuthenticationFailedException {
+		if (account.getEmail().equals("")) {
+            bindingResult.rejectValue("email", "user.validation.error.empty.or.whitespace", null, "user.validation.error.empty.or.whitespace");
+        }
         if (!account.getPassword().equals(account.getConfirmPassword())) {
             bindingResult.rejectValue("password", "user.validation.fields.errors.confirm.password", null, "user.validation.fields.errors.confirm.password");
         }
-        
+        validateAttributes(account.getAttributes(), bindingResult, tenantDAOService.getTenantByName(account.getTenantName()));
     }
     
     private Tenant getSelectedTenantObject(List<Tenant> tenantList,

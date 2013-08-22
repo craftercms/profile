@@ -10,8 +10,10 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.domain.Ticket;
+import org.craftercms.profile.exceptions.InvalidEmailException;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TicketRepository;
+import org.craftercms.profile.services.EmailValidatorService;
 import org.craftercms.profile.services.impl.ProfileServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +35,8 @@ public class ProfileServiceTest {
 	private TicketRepository ticketRepository;
 	@Mock
 	ProfileRepository profileRepository;
+	@Mock
+	EmailValidatorService emailValidatorService;
 	
 	@InjectMocks 
 	private ProfileServiceImpl profileService;
@@ -64,6 +68,7 @@ public class ProfileServiceTest {
 		when(profileRepository.getProfile("ok",attributesNames)).thenReturn(current);
 		
 		when(profileRepository.save(Mockito.<Profile>any())).thenReturn(new Profile());
+		when(emailValidatorService.validateEmail(Mockito.<String>any())).thenReturn(true);
 	
 		
 		when(profileRepository.getAllAttributes("ok")).thenReturn(current.getAttributes());
@@ -157,8 +162,13 @@ public class ProfileServiceTest {
     }
     
     @Test
-    public void testCreateProfile(){
-    	Profile p = profileService.createProfile(current.getUserName(), "test", true, "test", current.getAttributes(), current.getRoles(), null);
+    public void testCreateProfile() {
+    	Profile p = null;
+    	try {
+    		p = profileService.createProfile(current.getUserName(), "test", true, "test","test@test.com", current.getAttributes(), current.getRoles(), null);
+    	} catch(InvalidEmailException e) {
+    		fail(e.getMessage());
+    	}
     	assertNotNull(p);
 
     }
@@ -200,7 +210,7 @@ public class ProfileServiceTest {
     	Map<String,Serializable> map = new HashMap<String, Serializable>();
     	map.put("address", "CR");
     	map.put("phone-number", "911");
-    	Profile p = profileService.updateProfile(VALID_ID, "test", "test", false, "test", map, current.getRoles());
+    	Profile p = profileService.updateProfile(VALID_ID, "test", "test", false, "test", "test@test.com", map, current.getRoles());
     	assertNotNull(p);
     	//Mockito.verify(profileRepository).setAttributes(Mockito.eq("ok"),Mockito.eq(map));
     }

@@ -191,6 +191,7 @@ public class ITProfileRestControllerTest extends BaseTest {
 		params.put("appToken", appToken);
 		params.put("tenantName", "craftercms");
 		params.put("userName", "adminupdateuser");
+		params.put("email", "adminupdateuser@email.com");
 		params.put("password", "admin3");
 		
 		params.put("active", "true");
@@ -209,6 +210,7 @@ public class ITProfileRestControllerTest extends BaseTest {
 		params.put("profileId", updateProfile.getId());
 		params.put("first-name", "adminupdateuser");
 		params.put("last-name", "adminupdateuser");
+		params.put("email", "adminupdateuser@email.com");
 		params.put("tenantName", "craftercms");
 		profileRestClientImpl.updateProfile(appToken, params);
 		
@@ -230,7 +232,6 @@ public class ITProfileRestControllerTest extends BaseTest {
 		} catch(Exception e) {
 			
 		}
-		
 		Map<String, Serializable> params = new HashMap<String, Serializable>();
 		ArrayList<String> roles = new ArrayList<String>();
 		roles.add("SOCIAL_ADMIN");
@@ -242,23 +243,17 @@ public class ITProfileRestControllerTest extends BaseTest {
 		params.put("active", "true");
 
 		params.put("roles", roles);
-		
 		Profile adminattruser = profileRestClientImpl.createProfile(appToken, params);
 		assertNotNull(adminattruser);
 		assertEquals("adminattruser",adminattruser.getUserName());
-		
 		params = new HashMap<String, Serializable>();
 		params.put("first-name", "adminattruser");
 		params.put("last-name", "adminattruser");
-
 		params.put("telephone", "911");
 		profileRestClientImpl.setAttributesForProfile(appToken, adminattruser.getId().toString(), params);
-		
 		Profile attrProfile = profileRestClientImpl.getProfileWithAllAttributes(appToken, adminattruser.getId().toString());
 		assertNotNull(attrProfile);
 		assertEquals("Set attributes failed to set the first-name attribute", "adminattruser", attrProfile.getAttributes().get("first-name"));
-		
-		assertEquals("Set attributes failed to have the email attribute", "adminattruser@profile.com", attrProfile.getAttributes().get("email"));
 		
 	}
 	
@@ -375,79 +370,70 @@ public class ITProfileRestControllerTest extends BaseTest {
 		
 	}
 	
-//	@Test
-//	public void testGetAtttributesForProfile() throws AppAuthenticationFailedException {
-//		initAppToken(); 
-//		
-//		Map<String, Serializable> params = new HashMap<String, Serializable>();
-//		ArrayList<String> roles = new ArrayList<String>();
-//		roles.add("SOCIAL_ADMIN");
-//		params.put("appToken", appToken);
-//		params.put("tenantName", "craftercms");
-//		params.put("userName", "adminGetAttrsuser");
-//		params.put("password", "adminGetAttrsuser");
-//		
-//		params.put("active", "true");
-//		params.put("first-name", "adminGetAttrsuser");
-//		params.put("last-name", "Admin");
-//		//params.put("email", "adminGetAttrsuser@profile.com");
-//		params.put("telephone", "999999");
-//		params.put("roles", roles);
-//		
-//		Profile newProfile = profileRestClientImpl.createProfile(appToken, params);
-//		assertNotNull(newProfile);
-//		if (newProfile.getUserName() == null) {
-//			newProfile = profileRestClientImpl.getProfileByUsernameWithAllAttributes(appToken, "adminGetAttrsuser", "craftercms");
-//		}
-//		assertEquals("adminGetAttrsuser",newProfile.getUserName());
-//		
+	@Test
+	public void testGetAtttributesForProfile() throws AppAuthenticationFailedException {
+		initAppToken(); 
+		
+		Map<String, Serializable> params = new HashMap<String, Serializable>();
+		ArrayList<String> roles = new ArrayList<String>();
+		roles.add("SOCIAL_ADMIN");
+		params.put("appToken", appToken);
+		params.put("tenantName", "craftercms");
+		params.put("userName", "adminGetAttrsuser");
+		params.put("password", "adminGetAttrsuser");
+		
+		params.put("active", "true");
+		params.put("first-name", "adminGetAttrsuser");
+		params.put("last-name", "Admin");
+		params.put("email", "adminGetAttrsuser@profile.com");
+		params.put("telephone", "999999");
+		params.put("roles", roles);
+		
+		Profile newProfile = profileRestClientImpl.createProfile(appToken, params);
+		assertNotNull(newProfile);
+		if (newProfile.getUserName() == null) {
+			newProfile = profileRestClientImpl.getProfileByUsernameWithAllAttributes(appToken, "adminGetAttrsuser", "craftercms");
+		}
+		assertEquals("adminGetAttrsuser",newProfile.getUserName());
+		
+		List<String> attributes = new ArrayList<String>();
+		attributes.add("telephone");
+		Map<String, Serializable> result = profileRestClientImpl.getAttributesForProfile(appToken, newProfile.getId(), attributes);
+		
+		assertNotNull(result);
+		//assertNotNull(result.get("email"));
+		assertTrue(result.get("first-name")==null);
+		
+		
+	}
+	
+	@Test
+	public void testGetAllAtttributesForProfile() throws AppAuthenticationFailedException {
+		initAppToken(); 
+		Map<String, Serializable> params = new HashMap<String, Serializable>();
+		ArrayList<String> roles = new ArrayList<String>();
+		roles.add("SOCIAL_ADMIN");
+		params.put("appToken", appToken);
+		params.put("tenantName", "craftercms");
+		params.put("userName", "adminGetAllAttrsuser");
+		params.put("password", "adminGetAllAttrsuser");
+		params.put("active", "true");
+		params.put("first-name", "adminGetAllAttrsuser");
+		params.put("last-name", "Admin");
+		params.put("email", "adminGetAllAttruser@profile.com");
+		params.put("roles", roles);
+		Profile newProfile = profileRestClientImpl.createProfile(appToken, params);
+		assertNotNull(newProfile);
+		if (newProfile.getUserName() == null) {
+			newProfile = profileRestClientImpl.getProfileByUsernameWithAllAttributes(appToken, "adminGetAllAttrsuser", "craftercms");
+		}
+		assertNotNull(newProfile);
 //		List<String> attributes = new ArrayList<String>();
 //		attributes.add("telephone");
-//		Map<String, Serializable> result = profileRestClientImpl.getAttributesForProfile(appToken, newProfile.getId(), attributes);
-//		
-//		assertNotNull(result);
-//		assertNotNull(result.get("email"));
-//		assertTrue(result.get("first-email")==null);
-//		
-//		
-//	}
-//	
-//	@Test
-//	public void testGetAllAtttributesForProfile() throws AppAuthenticationFailedException {
-//		initAppToken(); 
-//		
-//		Map<String, Serializable> params = new HashMap<String, Serializable>();
-//		ArrayList<String> roles = new ArrayList<String>();
-//		roles.add("SOCIAL_ADMIN");
-//		params.put("appToken", appToken);
-//		params.put("tenantName", "craftercms");
-//		params.put("userName", "adminGetAttrsuser");
-//		params.put("password", "adminGetAttrsuser");
-//		
-//		params.put("active", "true");
-//		params.put("first-name", "adminGetAttrsuser");
-//		params.put("last-name", "Admin");
-//		//params.put("email", "adminGetAttrsuser@profile.com");
-//		params.put("telephone", "999999");
-//		params.put("roles", roles);
-//		
-//		Profile newProfile = profileRestClientImpl.createProfile(appToken, params);
-//		assertNotNull(newProfile);
-//		if (newProfile.getUserName() == null) {
-//			newProfile = profileRestClientImpl.getProfileByUsernameWithAllAttributes(appToken, "adminGetAttrsuser", "craftercms");
-//		}
-//		assertEquals("adminGetAttrsuser",newProfile.getUserName());
-//		
-//		List<String> attributes = new ArrayList<String>();
-//		attributes.add("telephone");
-//		
 //		Map<String, Serializable> result = profileRestClientImpl.getAllAttributesForProfile(appToken, newProfile.getId());
 //		assertNotNull(result);
-//		
-//		assertTrue(result.get("first-email")!=null);
-//		
-//		
-//	}
+//		assertTrue(result.get("first-name")!=null);
+	}
 	
 	@Test
 	public void testGetProfileRange() throws AppAuthenticationFailedException {
@@ -510,7 +496,7 @@ public class ITProfileRestControllerTest extends BaseTest {
 		assertNotNull(profiles);
 		assertTrue(profiles.size() == 1);
 		assertTrue(profiles.get(0).getUserName().equals("adminProfilesAllAtrs"));
-		assertTrue(profiles.get(0).getAttributes().size() >= 3);
+		assertTrue(profiles.get(0).getAttributes().size() >= 2);
 		
 		profileRestClientImpl.deleteProfile(appToken, newProfile.getId());
 		

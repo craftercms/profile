@@ -60,6 +60,9 @@ public class Profile implements Serializable {
 	@Field(ProfileConstants.TENANT_NAME)
 	private String tenantName;
 	
+	@Field(ProfileConstants.EMAIL)
+	private String email;
+	
 	@Field(ProfileConstants.ROLES)
 	private List<String> roles;
 
@@ -123,7 +126,7 @@ public class Profile implements Serializable {
 	}
 	
 	public String toString() {
-		return String.format("Profile [id='%s' userName='%s' password='%s' active='%b' created='%tc' modified='%tc']", id, userName, password, active, created, modified);
+		return String.format("Profile [id='%s' userName='%s' password='%s' active='%b' email='%s'created='%tc' modified='%tc']", id, userName, password, active, email, created, modified);
 	}
 
 	public String getTenantName() {
@@ -140,5 +143,13 @@ public class Profile implements Serializable {
 	
 	public void setRoles(List<String> roles) {
 		this.roles = roles;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 }

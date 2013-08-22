@@ -43,6 +43,8 @@ public class Profile implements Serializable {
 	private Date modified;
 	
 	private String tenantName;
+	
+	private String email;
 
     private Map<String, Object> attributes;
 	
@@ -144,5 +146,13 @@ public class Profile implements Serializable {
 
 	public void setRoles(List<String> roles) {
 		this.roles = roles;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 }

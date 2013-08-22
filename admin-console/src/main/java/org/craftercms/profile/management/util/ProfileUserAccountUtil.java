@@ -98,6 +98,7 @@ public class ProfileUserAccountUtil {
 	private static void setProfileUserAccountFormToMap(Map<String, Serializable> userData, ProfileUserAccountForm profile) {
 		userData.put(ProfileUserAccountConstants.USERNAME_PROPERTY, profile.getUsername());
 		userData.put(ProfileUserAccountConstants.PASSWORD_PROPERTY, profile.getPassword());
+		userData.put(ProfileUserAccountConstants.EMAIL, profile.getEmail());
 		userData.put(ProfileUserAccountConstants.ACTIVE_PROPERTY, String.valueOf(profile.isActive()));
 		userData.put(ProfileUserAccountConstants.PROFILE_ID_PROPERTY, profile.getId());
 		userData.put(ProfileUserAccountConstants.ROLES, profile.getRoles());
