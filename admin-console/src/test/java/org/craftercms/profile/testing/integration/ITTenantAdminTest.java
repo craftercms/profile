@@ -53,7 +53,7 @@ public class ITTenantAdminTest extends IntegrationTestingBase {
 		assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Admin Console - New Tenant"));
 		WebElement newTenant = driver.findElement(By.id("tenantName")); 
 		//WebElement domain = driver.findElement(By.cssSelector("input[id='field']"));
-		WebElement domain = driver.findElement(By.id("field"));
+		WebElement domain = driver.findElement(By.id("domains"));
 		WebElement role = driver.findElement(By.id("roles"));
 		List<WebElement> options = role.findElements(By.tagName("option"));
 		if (options != null) {
