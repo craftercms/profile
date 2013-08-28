@@ -178,12 +178,14 @@ public interface ProfileClient {
 	public void setAttributesForProfile(String appToken, String profileId, Map<String, Serializable> queryParams);
 
 	/**
-	 * Deletes a profile
+	 * Actives a profile
      *
 	 * @param appToken previously returned by Crafter Profile Server
 	 * @param profileId is going to be deleted
+	 * @param active indicates if the profile will be actived.
+	 * 
 	 */
-	public void deleteProfile(String appToken, String profileId);
+	public void activeProfile(String appToken, String profileId, boolean active);
 	/**
 	 * Deletes all the attributes for a profile
 	 * 
@@ -608,7 +610,24 @@ public interface ProfileClient {
      */
     public GroupRole getGroupRoleMapping(String appToken, String groupId);
     
+    /**
+     * Forgot password service request to start the change password process
+     * 
+     * @param changePasswordUrl valid url to the form will be used to capture the new password
+     * 
+     * @param username id to the profile that will be changed its password
+     * 
+     * @param tenantName of the username
+     */
     public void forgotPassword(String appToken, String changePasswordUrl, String tenantName, String username);
+    /**
+     * Change profile password service request
+     * 
+     * 
+     * @param password new password will be set for the profile
+     * 
+     * @param a token sent by email the user email account
+     */
     public void changePassword(String appToken, String token, String newPassword);
 		
 }

@@ -19,9 +19,9 @@
 	<div class="box pad mt40 style-inputs">
 	<br />
 	<p>
-	<h3>Mail sent to ${profile.email!""}</h2>
+	<h3>An email was sent to ${profile.email!""}</h2>
 	<br />
-	Password Recovery Process requires to access your email account and follow the instructions included in that email. 
+	Please follow the instructions included in that email. 
 	</p>
 	</div>		
   </div>	

@@ -38,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CrafterProfileAuthenticationService implements AuthenticationService {
 
-    protected ProfileClient profileClient;
+    protected ProfileClient profileClient; 
     protected String appUsername;
     protected String appPassword;
 
@@ -111,5 +111,23 @@ public class CrafterProfileAuthenticationService implements AuthenticationServic
             throw new AuthenticationSystemException("App authentication for '" + appUsername + "' failed", e);
         }
     }
+
+	@Override
+	/**
+     * {@inheritDoc}
+     */
+	public void forgotPassword(String changePasswordUrl, String username,
+			String tenantName) throws AuthenticationException {
+		profileClient.forgotPassword(getAppToken(), changePasswordUrl, tenantName, username);
+	}
+	
+	@Override
+	/**
+     * {@inheritDoc}
+     */
+	public void changePassword(String password, String token) throws AuthenticationException {
+		profileClient.changePassword(getAppToken(), token, password);
+		
+	}
 
 }

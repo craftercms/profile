@@ -64,5 +64,9 @@ public class ProfileServiceManager {
     public void setCrafterProfileAppTenantName(String crafterProfileAppTenantName) {
     	ProfileServiceManager.crafterProfileAppTenantName = crafterProfileAppTenantName;
     }
+    
+    public static String getCrafterProfileAppTenantName() {
+    	return ProfileServiceManager.crafterProfileAppTenantName;
+    }
 
 }

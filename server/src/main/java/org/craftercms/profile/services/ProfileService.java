@@ -156,13 +156,14 @@ public interface ProfileService {
 	 * 
 	 * @param appToken
 	 * @param profileId
+	 * @param active Activates the profile
 	 */
-	void deleteProfile(String profileId);
+	void activeProfile(String profileId, boolean active);
 
 	/**
-	 * Delete all profiles
+	 * Active all profiles
 	 */
-	void deleteProfiles();
+	void activeProfiles(boolean active);
 
 	/**
 	 * Set attributes to Profile

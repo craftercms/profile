@@ -33,41 +33,61 @@
            <p>
 		        <label  id="emailLabel" for="email">Email:</label>
     			<@crafter.formInput "account.email", "email", "style=width:270 class='test'", "text"/>
+    			<span  class="hintField">Valid Profile email account</span>
                 <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
     		<p>
 		        <label  id="pass" for="pass">Password:</label>
     			<@crafter.formInput "account.password", "password", "style=width:270", "password"/>
+    			<span  class="hintField">Profile password</span>
                 <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
             <p>
 		        <label  id="passwordConfirm" for="passwordConfirm">Confirm Password:</label>
     			<@crafter.formInput "account.confirmPassword", "confirmPassword", "style=width:270", "password"/>
+    			<span  class="hintField">Confirm password</span>
                 <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
-		     <#list attributeList as attribute>
-		        <#assign index=attributeList?seq_index_of(attribute)>
-		        <p>
-		        <#assign attributePath = "account.attributes['"+ attribute.name + "']">
-		        <label  id="${attribute.name+"Label"}" for="attribute.name">${attribute.label}:</label>
-    			<@crafter.formInput attributePath, "attribute.name","style=width:270", "text" />
-            	</p>
-			</#list>
             <p>
-		        <label  id="roleLabel" for="role">Roles:</label>
-	            <@spring.bind "account.roles"/>
-				<#assign selectedRoles = spring.status.value?default(" ")>
-				<select style="width:270px;" multiple="multiple" id="${spring.status.expression}" name="${spring.status.expression}"}>
-				    <#list account.roleOption?keys as value>
-					    <#if selectedRoles?contains(value) >
-					        <#assign isSelected = true>
-					    <#else>
-					        <#assign isSelected = false>
-					    </#if>
-				    	<option value="${value?html}"<#if isSelected> selected="selected"</#if>>${account.roleOption[value]?html}
-				    </#list>
-				</select>
-    			<@crafter.showErrors "error-msg", "mbs", ""/>
+		        <label  id="acountActive" for="active">Active?:</label>
+    			<@crafter.formCheckbox "account.active", "active"/>
+    			<span  class="hintField">Is this account active?</span>
+                <@crafter.showErrors "error-msg", "mbs", ""/>
+            </p>
+            <div id="schemaAttributes">
+			     <#list attributeList as attribute>
+			        <#assign index=attributeList?seq_index_of(attribute)>
+			        <p>
+			        <#assign attributePath = "account.attributes['"+ attribute.name + "']">
+			        <label  id="${attribute.name+"Label"}" for="attribute.name" class='schemaAttribute'>
+		            	<#if attribute.required>
+		            		*${attribute.label}:
+		            	<#else>
+		            		${attribute.label}:
+		            	</#if>
+		            </label>
+	    			<@crafter.formInput attributePath, "attribute.name","style=width:270", "text" />
+	            	</p>
+				</#list>
+	            <p>
+			        <label  id="roleLabel" for="role">Roles:</label>
+		            <@spring.bind "account.roles"/>
+					<#assign selectedRoles = spring.status.value?default(" ")>
+					<select style="width:270px;" multiple="multiple" id="${spring.status.expression}" name="${spring.status.expression}"}>
+					    <#list account.roleOption?keys as value>
+						    <#if selectedRoles?contains(value) >
+						        <#assign isSelected = true>
+						    <#else>
+						        <#assign isSelected = false>
+						    </#if>
+					    	<option value="${value?html}"<#if isSelected> selected="selected"</#if>>${account.roleOption[value]?html}
+					    </#list>
+					</select>
+	    			<@crafter.showErrors "error-msg", "mbs", ""/>
+	            </p>
+            </div>
+            <p>
+            <span  class="hintField">* Required fields mark</span>
             </p>
             <@crafter.formInput "account.username", "username", "style=width:270", "hidden"/>
             <@crafter.formInput "account.id", "id", "style=width:270", "hidden"/>

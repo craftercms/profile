@@ -30,7 +30,6 @@
 		<nav>
 			<ul class="main-nav clearfix">
 				<li><a type="submit" href="javascript:onsubmitform('New');" onclick="javascript:onsubmitform('New');" value="New Profile" id="New" name="operation">New Profile</a></li>
-	    		<li><a type="submit" href="javascript:onsubmitform('Delete');" value="Delete Profile" id="Delete" name="operation">Delete Profile</a></li>
 	    		<li><a type="submit" href="javascript:onsubmitform('GetTenants');" value="Get Tenants" id="GetTenants" name="operation">Manage Tenants</a></li>
 	    	</ul>
 	    	<ul class="page-actions">
@@ -57,13 +56,20 @@
    </div>      
   <table id="mytable">
   	<tr>
-    	<th scope="col"><input type=checkbox onclick="checkAll();" name="all" value="all" unchecked></th>
+    	<!--th scope="col"><input type=checkbox onclick="checkAll();" name="all" value="all" unchecked></th-->
     	<th scope="col">User Name</th>
+    	<th scope="col">Active?</th>
     </tr>
     <#list userList as u>
       <tr>
-        <td><input type=checkbox name="item" id="${u.username}" value="${u.id}" unchecked></td>
-      	<td><a name="username" href="item?username=${u.username}&tenantName=${u.tenantName}" id="${u.username}">${u.username!""}</a></td>
+        <td><a name="username" href="item?username=${u.username}&tenantName=${u.tenantName}" id="${u.username}">${u.username!""}</a></td>
+      	<td id="${u.username}Status">
+      		<#if u.active>
+      			Active
+      		<#else>
+                Inactive
+            </#if>	
+      	</td>
       </tr>
      
     </#list>

@@ -7,26 +7,36 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+//import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.ExpiryDateException;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
-import org.craftercms.profile.security.util.crypto.ProfileCipher;
-import org.craftercms.profile.services.MailService;
-import org.craftercms.profile.services.PasswordChangeService;
-import org.craftercms.profile.services.ProfileService;
-import org.craftercms.profile.security.util.crypto.impl.SimpleDesCipher;
 
+import org.craftercms.profile.security.util.crypto.ProfileCipher;
+import org.craftercms.profile.security.util.crypto.impl.SimpleDesCipher;
+import org.craftercms.profile.services.MailService;
+import org.craftercms.profile.services.PasswordService;
+import org.craftercms.profile.services.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.codec.Base64;
-import org.springframework.security.web.authentication.rememberme.InvalidCookieException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+/**
+ * Implements the funcionality for password management.
+ * 
+ * @author Alvaro Gonzalez
+ *
+ */
 @Service
-public class PasswordChangeServiceImpl implements PasswordChangeService {
+public class PasswordServiceImpl implements PasswordService {
+	
+	//private static final Logger log = Logger.getLogger(PasswordServiceImpl.class);
+	protected final Log log = LogFactory.getLog(getClass());
 	
 	private String profileCipherKey;
 	
@@ -36,32 +46,46 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
 	@Autowired
 	private MailService mailService;
 	
-	private String emailSubject;
+	private String resetEmailSubject;
 	
-	private String emailTemplate;
-	private String emailText;
+	private String resetEmailTemplate;
 	
 	private String fromAddress;
 	
-	private int expiryDays = 3;
+	private int expiryMinutes = 60;
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.services.PasswordService#forgotPassword(java.lang.String, java.lang.String, java.lang.String)
+	 */
 	@Override
 	public void forgotPassword(String changePasswordUrl, String username, String tenantName) throws CipherException, MailException, NoSuchProfileException {
+		if (log.isDebugEnabled()) {
+			log.debug("Starting forget process");
+		}
 		Profile profile = profileService.getProfileByUserName(username, tenantName);
 		if (profile == null) {
-			throw new NoSuchProfileException("Profile " + username + " was not found");
+			log.warn("Profile " + username + " doesn't exist for tenant " + tenantName);
+			throw new NoSuchProfileException("Profile " + username + " doesn't exist for tenant " + tenantName);
 		}
 		ProfileCipher profileCipher = new SimpleDesCipher(profileCipherKey);
-		 
 		String encryptedToken = profileCipher.encrypt(getRawValue(tenantName, username).getBytes());
+		if (log.isDebugEnabled()) {
+			log.debug("Token generated and encrypted");
+		}
 		String textMail = changePasswordUrl + "?token=" + encryptedToken;
 		if (changePasswordUrl != null && changePasswordUrl.endsWith("?")) {
 			textMail = changePasswordUrl + "token=" + encryptedToken;
 		} 
 		Map<String, Object> templateArgs = new HashMap<String, Object>();
 		templateArgs.put("changePasswordLink", textMail);
-		mailService.sendMailTLS(emailSubject, textMail, emailTemplate, templateArgs, profile.getEmail(), fromAddress);
-
+		if (log.isDebugEnabled()) {
+			log.debug("Mailing the url to change the password");
+		}
+		mailService.sendMailTLS(resetEmailSubject, textMail, resetEmailTemplate, templateArgs, profile.getEmail(), fromAddress);
+		if (log.isDebugEnabled()) {
+			log.debug("Email sent to change the password");
+		}
 	}
 
 	private String getRawValue(String tenantName, String username) {
@@ -79,22 +103,35 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
 		return data;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.services.PasswordService#changePassword(java.lang.String, java.lang.String)
+	 */
 	@Override
-	public void resetPassword(String password, String token) throws CipherException, NoSuchProfileException, ParseException, ExpiryDateException {
+	public void changePassword(String password, String token) throws CipherException, NoSuchProfileException, ParseException, ExpiryDateException {
+		if (log.isDebugEnabled()) {
+			log.debug("Change password process started");
+		}
 		ProfileCipher profileCipher = new SimpleDesCipher(profileCipherKey);
 		// tenant | username | date
 		String tokens = profileCipher.decrypt(token);
 		
 		String[] data = splitTokens(tokens);
 		if (data != null && data.length > 2 && profileService.getProfileByUserName(data[1], data[0]) == null) {
-			throw new NoSuchProfileException("Profile " + data[1] + " was not found");
+			log.warn("Profile " + data[1] + " doesn't exist for tenant " + data[0]);
+			throw new NoSuchProfileException("Profile " + data[1] + " doesn't exist for tenant " + data[0]);
 		} else if (data == null || data.length < 2) {
-			throw new CipherException("Error decrypting the token");
+			log.warn("Error decrypting the token " + token);
+			throw new CipherException("Error decrypting the token " + token);
 		} else if (!isValidTokenDate(data[2])) {
-			throw new ExpiryDateException("Token date is expired.");
+			log.warn("Token date is expired " + data[2]);
+			throw new ExpiryDateException("Token date is expired " + data[2]);
 		}
 		Profile profile = profileService.getProfileByUserNameWithAllAttributes(data[1], data[0]);
 		profileService.updateProfile(profile.getId().toString(), profile.getUserName(), password, profile.getActive(), profile.getTenantName(), profile.getEmail(), profile.getAttributes(), profile.getRoles());
+		if (log.isDebugEnabled()) {
+			log.debug("Password changed successfuly");
+		}
 	}
 	
 	@Value("#{ssrSettings['crafter.profile.cipher.key']}")
@@ -103,32 +140,34 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
     }
     
     @Value("#{ssrSettings['crafter.profile.password.reset.mail.ftl']}")
-	public void setPasswordResetFtl(String passwordResetFtl) {
-		this.emailTemplate = passwordResetFtl;
+	public void setResetEmailTemplateFtl(String resetEmailTemplate) {
+		this.resetEmailTemplate = resetEmailTemplate;
 	}
 
 	@Value("#{ssrSettings['crafter.profile.password.reset.mail.subject']}")
-	public void setPasswordResetSubject(String passwordResetSubject) {
-		this.emailSubject = passwordResetSubject;
+	public void setResetEmailSubject(String resetEmailSubject) {
+		this.resetEmailSubject = resetEmailSubject;
 	}
 	@Value("#{ssrSettings['crafter.profile.mail.from.address']}")
 	public void setMailFrom(String mailFrom) {
 		this.fromAddress = mailFrom;
 	}
 	
-	@Value("#{ssrSettings['crafter.profile.password.change.token.expiry']}")
+	@Value("#{ssrSettings['crafter.profile.password.change.token.expiry']}") //TODO: change to minutes
 	public void setPasswordChangeTokenExpiry(String value) {
 		if (value != null && value.equals("")) {
-			this.expiryDays = Integer.parseInt(value);
+			this.expiryMinutes = Integer.parseInt(value);
 		}
 	}
-	
 	private boolean isValidTokenDate(String dateStr) throws ParseException {
 		Date tokenDate = DateFormat.getDateTimeInstance().parse(dateStr);
 		Calendar expiryDate = Calendar.getInstance();
+		Calendar currentDate = Calendar.getInstance();
+		
 		expiryDate.setTime(tokenDate);
-		expiryDate.add(Calendar.DATE, this.expiryDays);
-		return new Date().before(expiryDate.getTime());
+		expiryDate.add(Calendar.MINUTE, this.expiryMinutes); //TODO: change to minutes
+		
+		return currentDate.before(expiryDate);
 	}
 
 }
