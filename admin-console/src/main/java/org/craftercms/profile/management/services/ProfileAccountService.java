@@ -112,8 +112,8 @@ public class ProfileAccountService {
 		return new ProfileUserAccountForm(p, tenant, false);
 	}
 	
-	public void deleteUsers(ArrayList<String> userIds) throws AppAuthenticationFailedException {
-		profileDao.deleteUsers(userIds);
+	public void activeUsers(ArrayList<String> userIds,boolean active) throws AppAuthenticationFailedException {
+		profileDao.activeUsers(userIds, active);
 	}
 	
 	public SchemaForm getSchema(String tenantName) throws AppAuthenticationFailedException  {

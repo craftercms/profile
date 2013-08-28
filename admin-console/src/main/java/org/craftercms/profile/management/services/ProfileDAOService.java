@@ -42,9 +42,9 @@ public interface ProfileDAOService {
 	 * Deletes a user
 	 * 
 	 * @param profileId
-	 * @return
+	 * @param active indicates if the user is actived
 	 */
-	void deleteUser(String profileId) throws AppAuthenticationFailedException;
+	void activeUser(String profileId, boolean active) throws AppAuthenticationFailedException;
 	
 	/**
 	 * Updates a user

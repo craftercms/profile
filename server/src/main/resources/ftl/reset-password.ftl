@@ -1,8 +1,8 @@
-The recover password process will start by clicking in the following link:
+Click on the link below to reset your password.
 <br/><br/>
-<a href="${changePasswordLink}">Go to Change Password</a>
+<a href="${changePasswordLink}">Reset Password</a>
 <br/><br/>
-If it does not work copy and past the URL to your browser.
+If it does not work copy and paste the URL to your browser.
 <br/><br/>
 Best regards,
 <br/>

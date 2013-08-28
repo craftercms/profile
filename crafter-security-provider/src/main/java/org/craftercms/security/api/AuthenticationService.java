@@ -50,5 +50,26 @@ public interface AuthenticationService {
      *          if a system error occurs
      */
     void invalidateTicket(String ticket) throws AuthenticationException;
+    /**
+     * Forgot password service request to start the change password process
+     * 
+     * @param changePasswordUrl valid url to the form will be used to capture the new password
+     * 
+     * @param username id to the profile that will be changed its password
+     * 
+     * @param tenantName of the username
+     */
+    void forgotPassword(String changePasswordUrl, String username, String tenantName) throws AuthenticationException;
+
+    /**
+     * Change profile password service request
+     * 
+     * 
+     * @param password new password will be set for the profile
+     * 
+     * @param a token sent by email the user email account
+     */
+	void changePassword(String password, String token)
+			throws AuthenticationException;
 
 }

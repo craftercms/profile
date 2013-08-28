@@ -20,16 +20,16 @@
 	    <div class="box pad mt40 style-inputs">
 			<p>
 			<label for="newpassLabel">New Password:</label>
-			<@crafter.formInput "changer.newpass", "newpass", "style=width:270 class='test'", "password"/>
+			<@crafter.formInput "passwordChange.newpass", "newpass", "style=width:270 class='test'", "password"/>
 			<@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
 			
 			<p>
 			<label for="confirmpassLabel">Confirm Password:</label>
-			<@crafter.formInput "changer.confirmPass", "confirmPass", "style=width:270 class='test'", "password"/>
+			<@crafter.formInput "passwordChange.confirmPass", "confirmPass", "style=width:270 class='test'", "password"/>
             <@crafter.showErrors "error-msg", "mbs", ""/>
 			</p>
-			<@crafter.formInput "changer.token", "token", "style=width:270", "hidden"/>
+			<@crafter.formInput "passwordChange.token", "token", "style=width:270", "hidden"/>
 			<p>
 			<label for=""></label>
 			<button class="btn btn-info" type="submit" id="changing-password" name="changing-password">Change Password</button>

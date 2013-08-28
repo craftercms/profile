@@ -211,13 +211,25 @@ public class ProfileServiceImpl implements ProfileService {
 	}
 
 	@Override
-	public void deleteProfile(String profileId) {
-		profileRepository.delete(new ObjectId(profileId));
+	public void activeProfile(String profileId, boolean active) {
+		Profile p = profileRepository.findOne(new ObjectId(profileId));
+		if (p != null) {
+			activeProfile(p, active);
+		}
+		
 	}
 	
 	@Override
-	public void deleteProfiles() {
-		profileRepository.deleteAll();
+	public void activeProfiles(boolean active) {
+		List<Profile> l = profileRepository.findAll();
+		for(Profile p: l) {
+			activeProfile(p, active);
+		}
+	}
+	
+	private void activeProfile(Profile p, boolean active) {
+		p.setActive(active);
+		profileRepository.save(p);
 	}
 	
 	@Override
