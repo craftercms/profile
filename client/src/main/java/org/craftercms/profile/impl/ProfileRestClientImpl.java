@@ -912,17 +912,18 @@ public class ProfileRestClientImpl implements ProfileClient {
 	 * org.craftercms.profile.httpclient.ProfileRestClient#deleteProfile(java
 	 * .lang.String, java.lang.String)
 	 */
-	public void deleteProfile(String appToken, String profileId) {
+	public void activeProfile(String appToken, String profileId, boolean active) {
 		if (log.isDebugEnabled()) {
-			log.debug("Delete a profile using the  profileId " + profileId);
+			log.debug("Actives a profile using the  profileId " + profileId);
 		}
 		List<NameValuePair> qparams = new ArrayList<NameValuePair>();
 		qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
+		qparams.add(new BasicNameValuePair(ProfileConstants.ACTIVE, String.valueOf(active)));
 		HttpEntity entity = null;
 
 		try {
 			URI uri = URIUtils.createURI(scheme, host, port, profileAppPath
-					+ "/api/2/profile/" + "delete/" + profileId + ".json",
+					+ "/api/2/profile/active/" + profileId + ".json",
 					URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
 			HttpGet httpget = new HttpGet(uri);
 
@@ -3132,8 +3133,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 
 			entity = response.getEntity();
 			if (response.getStatusLine().getStatusCode() == 200) {
-//				profile = (Profile) objectMapper.readValue(entity.getContent(),
-//						Profile.class);
+				//Log result
 			} else {
 				handleErrorStatus(response.getStatusLine(), entity);
 			}
@@ -3174,8 +3174,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 
 			entity = response.getEntity();
 			if (response.getStatusLine().getStatusCode() == 200) {
-//				profile = (Profile) objectMapper.readValue(entity.getContent(),
-//						Profile.class);
+				//Log result
 			} else {
 				handleErrorStatus(response.getStatusLine(), entity);
 			}

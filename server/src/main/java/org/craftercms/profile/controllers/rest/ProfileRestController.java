@@ -350,28 +350,31 @@ public class ProfileRestController {
 	}
 
 	/**
-	 * Delete All Profiles
+	 * Actives and inactives All Profiles
 	 * 
 	 */
-	@RequestMapping(value = "delete/all", method = RequestMethod.GET)
+	@RequestMapping(value = "active/all", method = RequestMethod.GET)
 	@ModelAttribute
-	public void deleteProfiles(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+	public void activeProfiles(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+			@RequestParam(ProfileConstants.ACTIVE) Boolean active,
 			HttpServletResponse response) {
-		profileService.deleteProfiles();
+		profileService.activeProfiles(active);
 	}
 
 	/**
-	 * Delete Profile for appToken and Id
+	 * Active Profile for appToken and profile Id
 	 * 
 	 * @param appToken The application token
 	 * @param profileId that is going to be deleted
+	 * @param active indicates if the profile will be actived or inactived.
 	 * @param response Servlet response instance
 	 */
-	@RequestMapping(value = "delete/{profileId}", method = RequestMethod.GET)
+	@RequestMapping(value = "active/{profileId}", method = RequestMethod.GET)
 	@ModelAttribute
-	public void deleteProfile(@RequestParam(ProfileConstants.APP_TOKEN) String appToken, @PathVariable String profileId,
+	public void activeProfile(@RequestParam(ProfileConstants.APP_TOKEN) String appToken, @PathVariable String profileId, 
+			@RequestParam(ProfileConstants.ACTIVE) Boolean active,
 			HttpServletResponse response) {
-		profileService.deleteProfile(profileId);
+		profileService.activeProfile(profileId, active);
 	}
 
 	/**

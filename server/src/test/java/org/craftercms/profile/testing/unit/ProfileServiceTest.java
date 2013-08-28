@@ -184,9 +184,9 @@ public class ProfileServiceTest {
     	Mockito.verify(profileRepository).deleteAttributes(Mockito.eq("ok"), Mockito.<List<String>>any());
     }
     @Test
-    public void testDeleteProfile(){
-    	profileService.deleteProfile(VALID_ID);
-    	Mockito.verify(profileRepository).delete(Mockito.eq(new ObjectId(VALID_ID)));
+    public void testActiveProfile(){
+    	profileService.activeProfile(VALID_ID,true);
+    	Mockito.verify(profileRepository).save(Mockito.<Profile>any());
     }
     @Test
     public void testDeleteProfiles(){

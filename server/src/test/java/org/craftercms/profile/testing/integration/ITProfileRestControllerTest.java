@@ -144,9 +144,9 @@ public class ITProfileRestControllerTest extends BaseTest {
 		initAppToken(); 
 		try {
 			Profile p = profileRestClientImpl.getProfileByUsername(appToken, "adminnewuser", "craftercms");
-			if (p!=null && p.getUserName().equals("adminnewuser")) {
-				profileRestClientImpl.deleteProfile(appToken, p.getId().toString());
-			}
+//			if (p!=null && p.getUserName().equals("adminnewuser")) {
+//				profileRestClientImpl.deleteProfile(appToken, p.getId().toString());
+//			}
 		} catch(Exception e) {
 			
 		}
@@ -178,9 +178,9 @@ public class ITProfileRestControllerTest extends BaseTest {
 		initAppToken(); 
 		try {
 			Profile p = profileRestClientImpl.getProfileByUsername(appToken, "adminupdateuser", "craftercms");
-			if (p!=null && p.getUserName().equals("adminupdateuser")) {
-				profileRestClientImpl.deleteProfile(appToken, p.getId().toString());
-			}
+//			if (p!=null && p.getUserName().equals("adminupdateuser")) {
+//				profileRestClientImpl.deleteProfile(appToken, p.getId().toString());
+//			}
 		} catch(Exception e) {
 			
 		}
@@ -226,9 +226,9 @@ public class ITProfileRestControllerTest extends BaseTest {
 		initAppToken(); 
 		try {
 			Profile p = profileRestClientImpl.getProfileByUsername(appToken, "adminattruser", "craftercms");
-			if (p!=null && p.getUserName().equals("adminattruser")) {
-				profileRestClientImpl.deleteProfile(appToken, p.getId().toString());
-			}
+//			if (p!=null && p.getUserName().equals("adminattruser")) {
+//				profileRestClientImpl.deleteProfile(appToken, p.getId().toString());
+//			}
 		} catch(Exception e) {
 			
 		}
@@ -258,13 +258,13 @@ public class ITProfileRestControllerTest extends BaseTest {
 	}
 	
 	@Test
-	public void testDeleteProfile() throws AppAuthenticationFailedException {
+	public void testActiveProfile() throws AppAuthenticationFailedException {
 		initAppToken(); 
 		try {
 			Profile p = profileRestClientImpl.getProfileByUsername(appToken, "admindeleteuser", "craftercms");
-			if (p!=null && p.getUserName().equals("admindeleteuser")) {
-				profileRestClientImpl.deleteProfile(appToken, p.getId().toString());
-			}
+//			if (p!=null && p.getUserName().equals("admindeleteuser")) {
+//				profileRestClientImpl.deleteProfile(appToken, p.getId().toString());
+//			}
 		} catch(Exception e) {
 			
 		}
@@ -274,7 +274,7 @@ public class ITProfileRestControllerTest extends BaseTest {
 		roles.add("SOCIAL_ADMIN");
 		params.put("appToken", appToken);
 		params.put("tenantName", "craftercms");
-		params.put("userName", "admindeleteuser");
+		params.put("userName", "adminactiveuser");
 		params.put("password", "admin3");
 		params.put("email", "admindeleteuser@profile.com");
 		params.put("active", "true");
@@ -283,50 +283,13 @@ public class ITProfileRestControllerTest extends BaseTest {
 		
 		Profile admindeleteuser = profileRestClientImpl.createProfile(appToken, params);
 		assertNotNull(admindeleteuser);
-		assertEquals("admindeleteuser",admindeleteuser.getUserName());
+		assertEquals("adminactiveuser",admindeleteuser.getUserName());
 		
-		profileRestClientImpl.deleteProfile(appToken, admindeleteuser.getId().toString());
+		profileRestClientImpl.activeProfile(appToken, admindeleteuser.getId().toString(),false);
 		
-		Profile deleted = profileRestClientImpl.getProfileByUsername(appToken, "admindeleteuser","craftercms");
-		assertTrue(deleted == null);
+		Profile inactive = profileRestClientImpl.getProfileByUsername(appToken, "adminactiveuser","craftercms");
+		assertTrue(inactive.getActive()==false);
 		
-		
-		
-	}
-	
-	@Test
-	public void testDeleteAllAttributesProfile() throws AppAuthenticationFailedException {
-		initAppToken(); 
-		try {
-			Profile p = profileRestClientImpl.getProfileByUsername(appToken, "admindeleteallattruser", "craftercms");
-			if (p!=null && p.getUserName().equals("admindeleteallattruser")) {
-				profileRestClientImpl.deleteProfile(appToken, p.getId().toString());
-			}
-		} catch(Exception e) {
-			
-		}
-		
-		Map<String, Serializable> params = new HashMap<String, Serializable>();
-		ArrayList<String> roles = new ArrayList<String>();
-		roles.add("SOCIAL_ADMIN");
-		params.put("appToken", appToken);
-		params.put("tenantName", "craftercms");
-		params.put("userName", "admindeleteallattruser");
-		params.put("password", "admin3");
-		params.put("email", "admindeleteallattruser@profile.com");
-		params.put("active", "true");
-
-		params.put("roles", roles);
-		
-		Profile admindeleteattruser = profileRestClientImpl.createProfile(appToken, params);
-		assertNotNull(admindeleteattruser);
-		assertEquals("admindeleteallattruser",admindeleteattruser.getUserName());
-		
-		profileRestClientImpl.deleteAllAttributesForProfile(appToken, admindeleteattruser.getId().toString());
-		
-		Profile notAttributeProfile = profileRestClientImpl.getProfileByUsername(appToken, "admindeleteallattruser","craftercms");
-		assertNotNull(notAttributeProfile);
-		assertTrue(notAttributeProfile.getAttributes() != null ? notAttributeProfile.getAttributes().size() == 0 : true);
 		
 		
 	}
@@ -336,9 +299,9 @@ public class ITProfileRestControllerTest extends BaseTest {
 		initAppToken(); 
 		try {
 			Profile p = profileRestClientImpl.getProfileByUsername(appToken, "admindeleteattruser", "craftercms");
-			if (p!=null && p.getUserName().equals("admindeleteattruser")) {
-				profileRestClientImpl.deleteProfile(appToken, p.getId().toString());
-			}
+//			if (p!=null && p.getUserName().equals("admindeleteattruser")) {
+//				profileRestClientImpl.deleteProfile(appToken, p.getId().toString());
+//			}
 		} catch(Exception e) {
 			
 		}
@@ -498,7 +461,7 @@ public class ITProfileRestControllerTest extends BaseTest {
 		assertTrue(profiles.get(0).getUserName().equals("adminProfilesAllAtrs"));
 		assertTrue(profiles.get(0).getAttributes().size() >= 2);
 		
-		profileRestClientImpl.deleteProfile(appToken, newProfile.getId());
+//		profileRestClientImpl.deleteProfile(appToken, newProfile.getId());
 		
 	}
 	

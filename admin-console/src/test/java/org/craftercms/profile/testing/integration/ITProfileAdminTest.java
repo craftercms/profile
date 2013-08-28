@@ -54,10 +54,15 @@ public class ITProfileAdminTest extends IntegrationTestingBase {
 			linkUpdateUser.click();
 		}
 		assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Admin Console - Update Profile"));
+		WebElement emailInput = driver.findElement(By.id("email")); 
 		WebElement updatePass = driver.findElement(By.id("password")); 
 		WebElement updateConffirmPass = driver.findElement(By.id("confirmPassword"));
+		updatePass.clear();
+		updateConffirmPass.clear();
 		updatePass.sendKeys("updatetestuser");
 		updateConffirmPass.sendKeys("updatetestuser");
+		emailInput.clear();
+		emailInput.sendKeys("testingmail@mail.com");
 		WebElement role = driver.findElement(By.id("roles"));
 		List<WebElement> options = role.findElements(By.tagName("option"));
 		if (options != null) {
@@ -74,19 +79,28 @@ public class ITProfileAdminTest extends IntegrationTestingBase {
 	}
 	
 	@Test
-	public void testDeleteProfile() {
+	public void testUpdateToInactiveProfile() {
 		WebDriver driver = getDriver();
-		System.out.println("----->>>> testDeleteProfile 1");
 		driver.get(baseUrl + WEB_APP_URL + "/login");
 		loginAsAdmin(driver);
-		createNewProfile(driver, "deletetestuser");
-		assertEquals("Title error, Wrong page, Expected Profile List " ,true, driver.getTitle().contains("Crafter Admin Console Profile List"));
-		WebElement linkDeleteUser = driver.findElement(By.id("deletetestuser"));
-		linkDeleteUser.click();
-		WebElement deleteLink = driver.findElement(By.id("Delete"));
-		deleteLink.click();
-		assertEquals("Title error, Wrong page, Expected Profile List " ,true, driver.getTitle().contains("Crafter Admin Console Profile List"));
-
+		assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Admin Console Profile List"));
+		try {
+			WebElement linkUpdateUser = driver.findElement(By.cssSelector("a[id='newtestuser']"));
+			linkUpdateUser.click();
+		} catch(Exception e) {
+			createNewProfile(driver, "newtestuser");
+			WebElement linkUpdateUser = driver.findElement(By.cssSelector("a[id='newtestuser']"));
+			linkUpdateUser.click();
+		}
+		assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Admin Console - Update Profile"));
+		WebElement activeInput = driver.findElement(By.id("active")); 
+		activeInput.sendKeys("testingmail@mail.com");
+		
+		WebElement updateButton = driver.findElement(By.id("Update"));
+		updateButton.click();
+		assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Admin Console Profile List"));
+		WebElement tdUpdateUser = driver.findElement(By.cssSelector("td[id='newtestuserStatus']"));
+		
 	}
 	
 	private void createNewProfile(WebDriver driver, String profileUserName) {
@@ -95,6 +109,7 @@ public class ITProfileAdminTest extends IntegrationTestingBase {
 		assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Admin Console - New Profile"));
 		WebElement newUsername = driver.findElement(By.id("username")); 
 		WebElement email = driver.findElement(By.id("email")); 
+		 
 		WebElement newPass = driver.findElement(By.id("password")); 
 		WebElement newConffirmPass = driver.findElement(By.id("confirmPassword"));
 		WebElement role = driver.findElement(By.id("roles"));

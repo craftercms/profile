@@ -36,7 +36,7 @@ public class ProfileConstants {
 	};
 	
 	//Anonymous user
-	public static final Profile ANONYMOUS = new Profile("Anonymous", "anonymous", null, true, new Date(), new Date(), null, ANONYMOUS_ROLES,"");
+	public static final Profile ANONYMOUS = new Profile("Anonymous", "anonymous", null, true, new Date(), new Date(), null, ANONYMOUS_ROLES,"","anonymous@email.com");
 	
 	public static final String ROLES = "roles";
     public static final String DOMAINS = "domains";

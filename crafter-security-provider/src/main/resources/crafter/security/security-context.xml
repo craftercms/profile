@@ -61,6 +61,8 @@
                 <ref bean="crafter.saveRequestAwareProcessor"/>
                 <ref bean="crafter.securityExceptionProcessor"/>
                 <ref bean="crafter.urlAccessRestrictionCheckingProcessor"/>
+                <ref bean="crafter.forgotPasswordProcessor"/>
+                <ref bean="crafter.changePasswordProcessor"/>
             </list>
         </property>
         <property name="urlsToInclude" value="${crafter.security.urlsToInclude}"/>
@@ -108,6 +110,13 @@
     <bean id="crafter.urlAccessRestrictionCheckingProcessor"
           class="org.craftercms.security.impl.processors.UrlAccessRestrictionCheckingProcessor">
         <property name="urlRestrictions" ref="crafter.urlRestrictions"/>
+    </bean>
+    
+    <bean id="crafter.changePasswordProcessor" class="org.craftercms.security.impl.processors.ChangePasswordProcessor">
+        <property name="authenticationService" ref="crafter.authenticationService"/>
+    </bean>
+    <bean id="crafter.forgotPasswordProcessor" class="org.craftercms.security.impl.processors.ForgotPasswordProcessor">
+        <property name="authenticationService" ref="crafter.authenticationService"/>
     </bean>
 
     <!-- ////////////////////////////////// -->

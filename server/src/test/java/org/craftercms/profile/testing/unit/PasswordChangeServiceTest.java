@@ -17,7 +17,7 @@ import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.services.MailService;
 import org.craftercms.profile.services.ProfileService;
-import org.craftercms.profile.services.impl.PasswordChangeServiceImpl;
+import org.craftercms.profile.services.impl.PasswordServiceImpl;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -47,7 +47,7 @@ public class PasswordChangeServiceTest {
 	private MailService mailService;
 	
 	@InjectMocks
-	private PasswordChangeServiceImpl passwordChangeServiceImpl;
+	private PasswordServiceImpl passwordChangeServiceImpl;
 
 	private Profile current;
 	
@@ -75,19 +75,19 @@ public class PasswordChangeServiceTest {
 		when(profileService.getProfileByUserName("admin", "craftercms")).thenReturn(current);
 		when(profileService.getProfileByUserNameWithAllAttributes("admin", "craftercms")).thenReturn(current);
 		passwordChangeServiceImpl.setProfileCipherKey("lF5wdKR5hy6nbVKsYRI8l7XflveFGRAFIX1cGzu1FAI=");
-		passwordChangeServiceImpl.resetPassword("newpass", REAL_TOKEN);
+		passwordChangeServiceImpl.changePassword("newpass", REAL_TOKEN);
 	}
 	
 	@Test(expected=NoSuchProfileException.class)
 	public void testChangePassword_invalid_user() throws CipherException, NoSuchProfileException, ParseException, ExpiryDateException  {
 		passwordChangeServiceImpl.setProfileCipherKey("lF5wdKR5hy6nbVKsYRI8l7XflveFGRAFIX1cGzu1FAI=");
-		passwordChangeServiceImpl.resetPassword("newpass", REAL_TOKEN);
+		passwordChangeServiceImpl.changePassword("newpass", REAL_TOKEN);
 	}
 	
 	@Test(expected=CipherException.class)
 	public void testChangePassword_dummy_token() throws CipherException, NoSuchProfileException, ParseException, ExpiryDateException  {
 		passwordChangeServiceImpl.setProfileCipherKey("lF5wdKR5hy6nbVKsYRI8l7XflveFGRAFIX1cGzu1FAI=");
-		passwordChangeServiceImpl.resetPassword("newpass", DUMMY_TOKEN);
+		passwordChangeServiceImpl.changePassword("newpass", DUMMY_TOKEN);
 	}
 	
 	private Profile getProfile() {

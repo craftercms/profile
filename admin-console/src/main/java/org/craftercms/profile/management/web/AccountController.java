@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.profile.impl.domain.Tenant;
+import org.craftercms.profile.management.services.EmailValidatorService;
 import org.craftercms.profile.management.services.TenantDAOService;
 import org.craftercms.profile.management.util.TenantUtil;
 import org.craftercms.profile.impl.domain.Attribute;
@@ -70,6 +71,9 @@ public class AccountController {
     private ProfileAccountPaging profileAccountPaging;
 
     private ProfileUserAccountValidator profileUserAccountValidator;
+    
+    @Autowired
+    private EmailValidatorService emailValidatorService;
     
     @RequestMapping(value = "/init-get", method = RequestMethod.GET)
     public String getAccounts(@RequestParam(required=false) String selectedTenantName) throws Exception {
@@ -274,26 +278,26 @@ public class AccountController {
         return mav;
     }
     
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ModelAttribute
-    public ModelAndView deleteAccount(@RequestParam("item") ArrayList<String> item,
-                                      @RequestParam String selectedTenantName,
-            HttpServletResponse response) throws Exception {
-        profileAccountService.deleteUsers(item);
-        ModelAndView mav = new ModelAndView();
-
-        List<Tenant> tenantList = tenantDAOService.getAllTenants();
-        Map<String, String> tenantNames = TenantUtil.getTenantsMap(tenantList);
-        List<ProfileUserAccountForm> list = profileAccountService.getProfileUsers(selectedTenantName);
-        mav.setViewName("accountlist");
-        mav.addObject("userList", list);
-        mav.addObject("filter", new FilterForm());
-        mav.addObject("tenantNames", tenantNames);
-        mav.addObject("selectedTenantName",selectedTenantName);
-        RequestContext context = RequestContext.getCurrent();
-        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
-        return mav;
-    }
+//    @RequestMapping(value = "/activate", method = RequestMethod.POST)
+//    @ModelAttribute
+//    public ModelAndView activateAccount(@RequestParam("item") ArrayList<String> item,
+//                                      @RequestParam String selectedTenantName, boolean active,
+//            HttpServletResponse response) throws Exception {
+//        profileAccountService.activeUsers(item, active);
+//        ModelAndView mav = new ModelAndView();
+//
+//        List<Tenant> tenantList = tenantDAOService.getAllTenants();
+//        Map<String, String> tenantNames = TenantUtil.getTenantsMap(tenantList);
+//        List<ProfileUserAccountForm> list = profileAccountService.getProfileUsers(selectedTenantName);
+//        mav.setViewName("accountlist");
+//        mav.addObject("userList", list);
+//        mav.addObject("filter", new FilterForm());
+//        mav.addObject("tenantNames", tenantNames);
+//        mav.addObject("selectedTenantName",selectedTenantName);
+//        RequestContext context = RequestContext.getCurrent();
+//        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
+//        return mav;
+//    }
 
     @ExceptionHandler(org.craftercms.security.exception.AuthenticationRequiredException.class)
     public String loginRequiredException() {
@@ -360,6 +364,9 @@ public class AccountController {
         if (m.find()){
             bindingResult.rejectValue("username", "user.validation.error.empty.or.whitespace", null, "user.validation.error.empty.or.whitespace");
         }
+        if (!account.getEmail().equals("") && !emailValidatorService.validateEmail(account.getEmail())) { 
+        	bindingResult.rejectValue("email", "user.validation.fields.errors.email.format", null, "user.validation.fields.errors.email.format");
+        }
         validateAttributes(account.getAttributes(), bindingResult, tenantDAOService.getTenantByName(selectedTenantName));
     }
     
@@ -379,17 +386,18 @@ public class AccountController {
 			} else if ((a.getType() == null || a.getType().equalsIgnoreCase("text")) && value.equals("")) {
 				bindingResult.rejectValue("attributes[" +a.getName() + "]", "user.validation.attribute.error.empty.or.whitespace", null, "user.validation.attribute.error.empty.or.whitespace");
 			}
-			//}
 		}
 		
 	}
 
 	private void validateUpdateAccount(ProfileUserAccountForm account, BindingResult bindingResult) throws AppAuthenticationFailedException {
 		if (account.getEmail().equals("")) {
-            bindingResult.rejectValue("email", "user.validation.error.empty.or.whitespace", null, "user.validation.error.empty.or.whitespace");
+			bindingResult.rejectValue("email", "user.validation.error.empty.or.whitespace", null, "user.validation.error.empty.or.whitespace");
+        } else if (!emailValidatorService.validateEmail(account.getEmail())) {
+        	bindingResult.rejectValue("email", "user.validation.fields.errors.email.format", null, "user.validation.fields.errors.email.format");
         }
         if (!account.getPassword().equals(account.getConfirmPassword())) {
-            bindingResult.rejectValue("password", "user.validation.fields.errors.confirm.password", null, "user.validation.fields.errors.confirm.password");
+        	bindingResult.rejectValue("password", "user.validation.fields.errors.confirm.password", null, "user.validation.fields.errors.confirm.password");
         }
         validateAttributes(account.getAttributes(), bindingResult, tenantDAOService.getTenantByName(account.getTenantName()));
     }

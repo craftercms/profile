@@ -46,28 +46,53 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
 
 	}
 
-	public void deleteUser(String profileId) throws AppAuthenticationFailedException {
+//	public void deleteUser(String profileId) throws AppAuthenticationFailedException {
+//		if (!ProfileServiceManager.isAppTokenInit()) {
+//			ProfileServiceManager.setAppToken();
+//		}
+//		try {
+//			ProfileServiceManager.getProfileClient().deleteProfile(ProfileServiceManager.getAppToken(), profileId);
+//		} catch(AppAuthenticationException e) {
+//			try {
+//				ProfileServiceManager.setAppToken();
+//			} catch (AppAuthenticationFailedException e1) {
+//				log.error("could not get an AppToken", e);
+//			}
+//			ProfileServiceManager.getProfileClient().deleteProfile(ProfileServiceManager.getAppToken(), profileId);
+//		}
+//	}
+	
+	public void activeUser(String profileId, boolean active) throws AppAuthenticationFailedException {
 		if (!ProfileServiceManager.isAppTokenInit()) {
 			ProfileServiceManager.setAppToken();
 		}
 		try {
-			ProfileServiceManager.getProfileClient().deleteProfile(ProfileServiceManager.getAppToken(), profileId);
+			ProfileServiceManager.getProfileClient().activeProfile(ProfileServiceManager.getAppToken(), profileId, active);
 		} catch(AppAuthenticationException e) {
 			try {
 				ProfileServiceManager.setAppToken();
 			} catch (AppAuthenticationFailedException e1) {
 				log.error("could not get an AppToken", e);
 			}
-			ProfileServiceManager.getProfileClient().deleteProfile(ProfileServiceManager.getAppToken(), profileId);
+			ProfileServiceManager.getProfileClient().activeProfile(ProfileServiceManager.getAppToken(), profileId, active);
 		}
 	}
 	
-	public void deleteUsers(List<String> users) throws AppAuthenticationFailedException {
+//	public void deleteUsers(List<String> users) throws AppAuthenticationFailedException {
+//		if (!ProfileServiceManager.isAppTokenInit()) {
+//			ProfileServiceManager.setAppToken();
+//		}
+//		for (String currentUser:users) {
+//			deleteUser(currentUser);
+//		}
+//	}
+	
+	public void activeUsers(List<String> users, boolean active) throws AppAuthenticationFailedException {
 		if (!ProfileServiceManager.isAppTokenInit()) {
 			ProfileServiceManager.setAppToken();
 		}
 		for (String currentUser:users) {
-			deleteUser(currentUser);
+			activeUser(currentUser, active);
 		}
 	}
 

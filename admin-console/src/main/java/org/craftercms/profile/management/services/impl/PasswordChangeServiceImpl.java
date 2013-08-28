@@ -7,6 +7,12 @@ import org.craftercms.profile.management.services.PasswordChangeService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+/**
+ * Change password service
+ * 
+ * @author Alvaro Gonzalez
+ *
+ */
 @Service
 public class PasswordChangeServiceImpl implements PasswordChangeService {
 	
@@ -14,6 +20,10 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
 	
 	private String changePasswordUrl;
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.management.services.PasswordChangeService#forgotPassword(java.lang.String, java.lang.String)
+	 */
 	@Override
 	public void forgotPassword(String tenantName, String username) throws AppAuthenticationFailedException {
 		if (!ProfileServiceManager.isAppTokenInit()) {
@@ -32,6 +42,10 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.craftercms.profile.management.services.PasswordChangeService#changePassword(java.lang.String, java.lang.String)
+	 */
 	@Override
 	public void changePassword(String token, String newPassword) throws AppAuthenticationFailedException {
 		if (!ProfileServiceManager.isAppTokenInit()) {
@@ -50,6 +64,11 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
 
 	}
 	
+	/**
+	 * Url to the form which capture the new password
+	 * 
+	 * @param url valid url to the form that will capture the new password
+	 */
 	@Value("${crafter.profile.app.change.password.url}")
     public void setCrafterProfileAppTenantName(String url) {
     	this.changePasswordUrl = url;
