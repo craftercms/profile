@@ -51,7 +51,7 @@ public class ITAttributesAdminTest extends IntegrationTestingBase {
 		assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Admin Console - Attribute List"));
 	}
 	
-	@Test
+	/*@Test
 	public void testUpdateAttributes() {
 		WebDriver driver = getDriver();
 		driver.get(baseUrl + WEB_APP_URL +"/login");
@@ -92,7 +92,7 @@ public class ITAttributesAdminTest extends IntegrationTestingBase {
 		create = driver.findElement(By.id("UpdateProp"));
 		create.click();
 		assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Admin Console - Attribute List"));
-	}
+	}*/
 	
 	@Test
 	public void testDeleteAttributes() {
@@ -129,10 +129,6 @@ public class ITAttributesAdminTest extends IntegrationTestingBase {
 		create.click();
 		assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Admin Console - Attribute List"));
 		deleteAttribute("a[id='testDeleteAttributes']", driver);
-	}
-	
-	private void newAttribute(String a) {
-		
 	}
 	
 	private void deleteAttribute(String selector, WebDriver driver) {
