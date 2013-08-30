@@ -17,7 +17,6 @@
 package org.craftercms.profile.security;
 
 import java.io.IOException;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,9 +31,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 public class UserRestUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-	@Override
-	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-			Authentication authResult) throws IOException, ServletException {
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                            FilterChain chain, Authentication authResult) throws IOException,
+        ServletException {
         if (logger.isDebugEnabled()) {
             logger.debug("Authentication success. Updating SecurityContextHolder to contain: " + authResult);
         }
@@ -47,13 +47,13 @@ public class UserRestUsernamePasswordAuthenticationFilter extends UsernamePasswo
         }
 
         getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
-        
+
         // Continue processing through the filter chain, this is needed for ReqeustMapping annotations to be processed.
         chain.doFilter(request, response);
-	}
+    }
 
-	@Override
-	protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
+    @Override
+    protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
         String uri = request.getRequestURI();
         int pathParamIndex = uri.indexOf(';');
 
@@ -65,14 +65,15 @@ public class UserRestUsernamePasswordAuthenticationFilter extends UsernamePasswo
         Authentication existingAuth = SecurityContextHolder.getContext().getAuthentication();
 
         if ("".equals(request.getContextPath())) {
-            return (existingAuth !=null) && (uri.indexOf(getFilterProcessesUrl()) >= 0);
+            return (existingAuth != null) && (uri.indexOf(getFilterProcessesUrl()) >= 0);
         }
-        
-        return (existingAuth !=null) && (uri.indexOf(request.getContextPath() + getFilterProcessesUrl()) >= 0);
-	}
-	
-	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+
+        return (existingAuth != null) && (uri.indexOf(request.getContextPath() + getFilterProcessesUrl()) >= 0);
+    }
+
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws
+        AuthenticationException {
         String username = obtainUsername(request);
         String password = obtainPassword(request);
         String tenantName = request.getParameter("tenantName");
@@ -86,9 +87,9 @@ public class UserRestUsernamePasswordAuthenticationFilter extends UsernamePasswo
             password = "";
         }
         if (tenantName != null && !tenantName.equals("")) {
-        	username = username.trim() + "@" + tenantName;
+            username = username.trim() + "@" + tenantName;
         } else {
-        	username = username.trim();
+            username = username.trim();
         }
 
         UsernamePasswordAuthenticationToken authRequest = null;

@@ -21,20 +21,20 @@ import java.util.Comparator;
 import org.craftercms.profile.impl.domain.Attribute;
 
 public class AttributeFieldsComparator implements Comparator {
-	
-	private int compareProfilePropertyForm(Attribute obj1, Attribute obj2) {
-		
-		int x = obj1.getOrder();
-		int y = obj2.getOrder();
-		return (x < y) ? -1 : ((x == y) ? 0 : 1);
-	}
 
-	@Override
-	public int compare(Object o1, Object o2) {
-		if (o1 instanceof Attribute && o2 instanceof Attribute) {
-			return compareProfilePropertyForm((Attribute)o1,(Attribute)o2);
-		}
-		return -1;
-	}
+    private int compareProfilePropertyForm(Attribute obj1, Attribute obj2) {
+
+        int x = obj1.getOrder();
+        int y = obj2.getOrder();
+        return (x < y)? -1: ((x == y)? 0: 1);
+    }
+
+    @Override
+    public int compare(Object o1, Object o2) {
+        if (o1 instanceof Attribute && o2 instanceof Attribute) {
+            return compareProfilePropertyForm((Attribute)o1, (Attribute)o2);
+        }
+        return -1;
+    }
 
 }

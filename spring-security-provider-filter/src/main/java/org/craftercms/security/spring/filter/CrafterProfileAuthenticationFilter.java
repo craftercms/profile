@@ -27,25 +27,24 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * 
  * @author Sandra O'Keeffe
  */
-public class CrafterProfileAuthenticationFilter extends
-		UsernamePasswordAuthenticationFilter {
+public class CrafterProfileAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-	
-	private static final Logger log = Logger.getLogger(CrafterProfileAuthenticationFilter.class);
-	
-	
-	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request,
-			HttpServletResponse response) throws AuthenticationException {
-       
-		Authentication authentication = super.attemptAuthentication(request, response); 
-		
-		log.debug("Authenticated user with username=" + ((UserProfile) authentication.getPrincipal()).getUsername());
-		request.getSession().setAttribute(SpringSecurityConstants.USER_PROFILE_SESSION_ID, authentication.getPrincipal());
-		
-		return authentication;
-	}
+
+    private static final Logger log = Logger.getLogger(CrafterProfileAuthenticationFilter.class);
+
+
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws
+        AuthenticationException {
+
+        Authentication authentication = super.attemptAuthentication(request, response);
+
+        log.debug("Authenticated user with username=" + ((UserProfile)authentication.getPrincipal()).getUsername());
+        request.getSession().setAttribute(SpringSecurityConstants.USER_PROFILE_SESSION_ID,
+            authentication.getPrincipal());
+
+        return authentication;
+    }
 }

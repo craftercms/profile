@@ -16,36 +16,34 @@
  */
 package org.craftercms.profile.services;
 
-import org.craftercms.profile.domain.Tenant;
-
 import java.util.List;
-
 import javax.servlet.http.HttpServletResponse;
+
+import org.craftercms.profile.domain.Tenant;
 
 public interface MultiTenantService {
 
     /**
      * Create a new tenant
+     *
      * @param tenantName
      * @param createDefaults
-     * @param roles
-     *          roles that can be assigned to profiles created in this tenant
-     * @param domains
-     *          domains that can access content in this tenant
+     * @param roles          roles that can be assigned to profiles created in this tenant
+     * @param domains        domains that can access content in this tenant
      * @return
      */
-	Tenant createTenant(String tenantName, boolean createDefaults,
-                               List<String> roles, List<String> domains, HttpServletResponse response);
+    Tenant createTenant(String tenantName, boolean createDefaults, List<String> roles, List<String> domains,
+                        HttpServletResponse response);
 
     Tenant updateTenant(String id, String tenantName, List<String> roles, List<String> domains);
 
     void deleteTenant(String tenantName);
-	
-	Tenant getTenantByName(String tenantName);
 
-	Tenant getTenantByTicket(String ticket);
+    Tenant getTenantByName(String tenantName);
 
-	Tenant getTenantById(String tenantName);
+    Tenant getTenantByTicket(String ticket);
+
+    Tenant getTenantById(String tenantName);
 
     long getTenantsCount();
 
@@ -55,6 +53,6 @@ public interface MultiTenantService {
 
     List<Tenant> getAllTenants();
 
-	List<Tenant> getTenantsByRoleName(String roleName);
+    List<Tenant> getTenantsByRoleName(String roleName);
 
 }

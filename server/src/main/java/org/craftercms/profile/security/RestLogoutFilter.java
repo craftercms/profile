@@ -25,12 +25,12 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 
 public class RestLogoutFilter extends LogoutFilter {
 
-	public RestLogoutFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler[] handlers) {
-		super(logoutSuccessHandler, handlers);
-	}
+    public RestLogoutFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler[] handlers) {
+        super(logoutSuccessHandler, handlers);
+    }
 
-	@Override
-	protected boolean requiresLogout(HttpServletRequest request, HttpServletResponse response) {
+    @Override
+    protected boolean requiresLogout(HttpServletRequest request, HttpServletResponse response) {
         String uri = request.getRequestURI();
         int pathParamIndex = uri.indexOf(';');
 
@@ -51,7 +51,7 @@ public class RestLogoutFilter extends LogoutFilter {
         }
 
         return uri.indexOf(request.getContextPath() + getFilterProcessesUrl()) >= 0;
-	}
+    }
 
-	
+
 }

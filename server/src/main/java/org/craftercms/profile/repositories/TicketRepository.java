@@ -22,6 +22,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository("ticketRepository")
 public interface TicketRepository extends MongoRepository<Ticket, String>, TicketRepositoryCustom {
-	public Ticket findByUsername(String username);
-	public Ticket findBySeries(String series);
+    public Ticket findByUsername(String username);
+
+    public Ticket findBySeries(String series);
 }

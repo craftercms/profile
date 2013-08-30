@@ -17,7 +17,6 @@
 package org.craftercms.profile.security;
 
 import java.io.IOException;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,9 +31,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 public class AppRestUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-	@Override
-	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-			Authentication authResult) throws IOException, ServletException {
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                            FilterChain chain, Authentication authResult) throws IOException,
+        ServletException {
         if (logger.isDebugEnabled()) {
             logger.debug("Authentication success. Updating SecurityContextHolder to contain: " + authResult);
         }
@@ -49,13 +49,13 @@ public class AppRestUsernamePasswordAuthenticationFilter extends UsernamePasswor
         }
 
         getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
-        
+
         // Continue processing through the filter chain, this is needed for ReqeustMapping annotations to be processed.
         chain.doFilter(request, response);
-	}
+    }
 
-	@Override
-	protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
+    @Override
+    protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
         String uri = request.getRequestURI();
         int pathParamIndex = uri.indexOf(';');
 
@@ -65,14 +65,15 @@ public class AppRestUsernamePasswordAuthenticationFilter extends UsernamePasswor
         }
 
         if ("".equals(request.getContextPath())) {
-            return uri.indexOf(getFilterProcessesUrl())>=0;
+            return uri.indexOf(getFilterProcessesUrl()) >= 0;
         }
 
         return uri.indexOf(request.getContextPath() + getFilterProcessesUrl()) >= 0;
-	}
-	
-	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+    }
+
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws
+        AuthenticationException {
         if (!request.getMethod().equals("POST")) {
             return super.attemptAuthentication(request, response);
         }
@@ -89,9 +90,9 @@ public class AppRestUsernamePasswordAuthenticationFilter extends UsernamePasswor
             password = "";
         }
         if (tenantName != null && !tenantName.equals("")) {
-        	username = username.trim() + "@" + tenantName;
+            username = username.trim() + "@" + tenantName;
         } else {
-        	username = username.trim();
+            username = username.trim();
         }
 
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);

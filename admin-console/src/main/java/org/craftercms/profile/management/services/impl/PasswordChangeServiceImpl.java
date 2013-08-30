@@ -9,69 +9,74 @@ import org.springframework.stereotype.Service;
 
 /**
  * Change password service
- * 
- * @author Alvaro Gonzalez
  *
+ * @author Alvaro Gonzalez
  */
 @Service
 public class PasswordChangeServiceImpl implements PasswordChangeService {
-	
-	private static final Logger log = Logger.getLogger(PasswordChangeServiceImpl.class);
-	
-	private String changePasswordUrl;
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.craftercms.profile.management.services.PasswordChangeService#forgotPassword(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public void forgotPassword(String tenantName, String username) throws AppAuthenticationFailedException {
-		if (!ProfileServiceManager.isAppTokenInit()) {
-			ProfileServiceManager.setAppToken();
-		}
-		try {
-        	ProfileServiceManager.getProfileClient().forgotPassword(ProfileServiceManager.getAppToken(), changePasswordUrl, tenantName, username);
-	    } catch(AppAuthenticationException e) {
-			try {
-				ProfileServiceManager.setAppToken();
-			} catch (AppAuthenticationFailedException e1) {
-				log.error("could not get an AppToken", e);
-			}
-			ProfileServiceManager.getProfileClient().forgotPassword(ProfileServiceManager.getAppToken(), changePasswordUrl, tenantName, username);
-		}
+    private static final Logger log = Logger.getLogger(PasswordChangeServiceImpl.class);
 
-	}
+    private String changePasswordUrl;
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.craftercms.profile.management.services.PasswordChangeService#changePassword(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public void changePassword(String token, String newPassword) throws AppAuthenticationFailedException {
-		if (!ProfileServiceManager.isAppTokenInit()) {
-			ProfileServiceManager.setAppToken();
-		}
-		try {
-        	ProfileServiceManager.getProfileClient().changePassword(ProfileServiceManager.getAppToken(), token, newPassword);
-	    } catch(AppAuthenticationException e) {
-			try {
-				ProfileServiceManager.setAppToken();
-			} catch (AppAuthenticationFailedException e1) {
-				log.error("could not get an AppToken", e);
-			}
-			ProfileServiceManager.getProfileClient().changePassword(ProfileServiceManager.getAppToken(), token, newPassword);
-		}
+    /*
+     * (non-Javadoc)
+     * @see org.craftercms.profile.management.services.PasswordChangeService#forgotPassword(java.lang.String,
+     * java.lang.String)
+     */
+    @Override
+    public void forgotPassword(String tenantName, String username) throws AppAuthenticationFailedException {
+        if (!ProfileServiceManager.isAppTokenInit()) {
+            ProfileServiceManager.setAppToken();
+        }
+        try {
+            ProfileServiceManager.getProfileClient().forgotPassword(ProfileServiceManager.getAppToken(),
+                changePasswordUrl, tenantName, username);
+        } catch (AppAuthenticationException e) {
+            try {
+                ProfileServiceManager.setAppToken();
+            } catch (AppAuthenticationFailedException e1) {
+                log.error("could not get an AppToken", e);
+            }
+            ProfileServiceManager.getProfileClient().forgotPassword(ProfileServiceManager.getAppToken(),
+                changePasswordUrl, tenantName, username);
+        }
 
-	}
-	
-	/**
-	 * Url to the form which capture the new password
-	 * 
-	 * @param url valid url to the form that will capture the new password
-	 */
-	@Value("${crafter.profile.app.change.password.url}")
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.craftercms.profile.management.services.PasswordChangeService#changePassword(java.lang.String,
+     * java.lang.String)
+     */
+    @Override
+    public void changePassword(String token, String newPassword) throws AppAuthenticationFailedException {
+        if (!ProfileServiceManager.isAppTokenInit()) {
+            ProfileServiceManager.setAppToken();
+        }
+        try {
+            ProfileServiceManager.getProfileClient().changePassword(ProfileServiceManager.getAppToken(), token,
+                newPassword);
+        } catch (AppAuthenticationException e) {
+            try {
+                ProfileServiceManager.setAppToken();
+            } catch (AppAuthenticationFailedException e1) {
+                log.error("could not get an AppToken", e);
+            }
+            ProfileServiceManager.getProfileClient().changePassword(ProfileServiceManager.getAppToken(), token,
+                newPassword);
+        }
+
+    }
+
+    /**
+     * Url to the form which capture the new password
+     *
+     * @param url valid url to the form that will capture the new password
+     */
+    @Value("${crafter.profile.app.change.password.url}")
     public void setCrafterProfileAppTenantName(String url) {
-    	this.changePasswordUrl = url;
+        this.changePasswordUrl = url;
     }
 
 }

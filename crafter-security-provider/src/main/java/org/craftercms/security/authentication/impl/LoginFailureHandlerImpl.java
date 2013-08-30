@@ -16,6 +16,10 @@
  */
 package org.craftercms.security.authentication.impl;
 
+import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang.StringUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
@@ -27,16 +31,12 @@ import org.craftercms.security.exception.UserAuthenticationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-
 /**
  * Default implementation of {@link LoginFailureHandler}:
- *
+ * <p/>
  * <ol>
- *     <li>Saves authentication exception in session for later use.</li>
- *     <li>Redirects to target URL, if there's one, and if not, sends 401 UNAUTHORIZED error.</li>
+ * <li>Saves authentication exception in session for later use.</li>
+ * <li>Redirects to target URL, if there's one, and if not, sends 401 UNAUTHORIZED error.</li>
  * </ol>
  *
  * @author Alfonso Vásquez
@@ -55,18 +55,19 @@ public class LoginFailureHandlerImpl implements LoginFailureHandler {
     }
 
     /**
-     * Saves the authentication exception in the session, under the {@link SecurityConstants#AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE}
-     * or the {@link SecurityConstants#USER_AUTHENTICATION_EXCEPTION_ATTRIBUTE}, depending on the exception type, and then redirects to
+     * Saves the authentication exception in the session,
+     * under the {@link SecurityConstants#AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE}
+     * or the {@link SecurityConstants#USER_AUTHENTICATION_EXCEPTION_ATTRIBUTE}, depending on the exception type,
+     * and then redirects to
      * the target URL or sends a 401 if there's no target URL.
      *
-     * @param e
-     *          the exception that caused the login to fail.
-     * @param context
-     *          the request context
+     * @param e       the exception that caused the login to fail.
+     * @param context the request context
      * @throws CrafterSecurityException
      * @throws IOException
      */
-    public void onLoginFailure(AuthenticationException e, RequestContext context) throws CrafterSecurityException, IOException {
+    public void onLoginFailure(AuthenticationException e, RequestContext context) throws CrafterSecurityException,
+        IOException {
         saveException(e, context);
 
         if (StringUtils.isNotEmpty(targetUrl)) {
@@ -77,7 +78,8 @@ public class LoginFailureHandlerImpl implements LoginFailureHandler {
     }
 
     /**
-     * Saves the authentication exception in the session, under the {@link SecurityConstants#AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE}
+     * Saves the authentication exception in the session,
+     * under the {@link SecurityConstants#AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE}
      * or the {@link SecurityConstants#USER_AUTHENTICATION_EXCEPTION_ATTRIBUTE}, depending on the exception type.
      */
     protected void saveException(AuthenticationException e, RequestContext context) {

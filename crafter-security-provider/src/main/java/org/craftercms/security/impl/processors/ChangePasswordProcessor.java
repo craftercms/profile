@@ -14,58 +14,58 @@ import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Manag
- * @author Alvaro Gonzalez
  *
+ * @author Alvaro Gonzalez
  */
 public class ChangePasswordProcessor implements RequestSecurityProcessor {
-	
-	public static final Logger logger = LoggerFactory.getLogger(LoginProcessor.class);
 
-    public static final String DEFAULT_FORGOT_PASSWORD_URL =      "/crafter-security-change-password";
-    public static final String DEFAULT_FORGOT_PASSWORD_METHOD =   "POST";
+    public static final Logger logger = LoggerFactory.getLogger(LoginProcessor.class);
+
+    public static final String DEFAULT_FORGOT_PASSWORD_URL = "/crafter-security-change-password";
+    public static final String DEFAULT_FORGOT_PASSWORD_METHOD = "POST";
     public static final String DEFAULT_PASSWORD_PARAM = "newPassword";
     public static final String DEFAULT_TOKEN_PARAM = "token";
-    
+
     protected String changePasswordUrl;
     protected String changePasswordMethod;
     protected String newPasswordParameter;
     protected String tokenParameter;
     protected String forgotPassUrlParameter;
-    
+
     protected AuthenticationService authenticationService;
-    
+
     public ChangePasswordProcessor() {
-    	this.changePasswordUrl = DEFAULT_FORGOT_PASSWORD_URL;
-    	this.changePasswordMethod = DEFAULT_FORGOT_PASSWORD_METHOD;
-    	this.newPasswordParameter = DEFAULT_PASSWORD_PARAM;
-    	this.tokenParameter = DEFAULT_TOKEN_PARAM;
+        this.changePasswordUrl = DEFAULT_FORGOT_PASSWORD_URL;
+        this.changePasswordMethod = DEFAULT_FORGOT_PASSWORD_METHOD;
+        this.newPasswordParameter = DEFAULT_PASSWORD_PARAM;
+        this.tokenParameter = DEFAULT_TOKEN_PARAM;
     }
 
-	public String getChangePasswordUrl() {
-		return changePasswordUrl;
-	}
+    public String getChangePasswordUrl() {
+        return changePasswordUrl;
+    }
 
-	public void setChangePasswordUrl(String changePasswordUrl) {
-		this.changePasswordUrl = changePasswordUrl;
-	}
+    public void setChangePasswordUrl(String changePasswordUrl) {
+        this.changePasswordUrl = changePasswordUrl;
+    }
 
-	public String getChangePasswordMethod() {
-		return changePasswordMethod;
-	}
+    public String getChangePasswordMethod() {
+        return changePasswordMethod;
+    }
 
-	public void setChangePasswordMethod(String forgotMethod) {
-		this.changePasswordMethod = forgotMethod;
-	}
+    public void setChangePasswordMethod(String forgotMethod) {
+        this.changePasswordMethod = forgotMethod;
+    }
 
-	public String getNewPasswordParameter() {
-		return newPasswordParameter;
-	}
+    public String getNewPasswordParameter() {
+        return newPasswordParameter;
+    }
 
-	public void setNewPasswordParameter(String newPasswordParameter) {
-		this.newPasswordParameter = newPasswordParameter;
-	}
+    public void setNewPasswordParameter(String newPasswordParameter) {
+        this.newPasswordParameter = newPasswordParameter;
+    }
 
-	public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
+    public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         HttpServletRequest request = context.getRequest();
 
         if (isChangePasswordRequest(request)) {
@@ -79,12 +79,12 @@ public class ChangePasswordProcessor implements RequestSecurityProcessor {
 
             String password = getPassword(request);
             String token = getToken(request);
-            
+
             if (password == null) {
-            	password = "";
+                password = "";
             }
             if (token == null) {
-            	token = "";
+                token = "";
             }
             try {
                 if (logger.isDebugEnabled()) {
@@ -92,40 +92,42 @@ public class ChangePasswordProcessor implements RequestSecurityProcessor {
                 }
 
                 authenticationService.changePassword(password, token);
-                
+
             } catch (AuthenticationException e) {
                 //onLoginFailure(e, context);
-            	logger.error(e.getMessage());
+                logger.error(e.getMessage());
             }
         } else {
             processorChain.processRequest(context);
         }
     }
-	
-	/**
+
+    /**
      * Returns the value of the password parameter from the request.
      */
     protected String getPassword(HttpServletRequest request) {
         return request.getParameter(newPasswordParameter);
     }
+
     /**
      * Returns the value of the token parameter from the request.
      */
     protected String getToken(HttpServletRequest request) {
-    	return request.getParameter(tokenParameter);
-    }
-    
-	
-	protected boolean isChangePasswordRequest(HttpServletRequest request) {
-        return request.getRequestURI().equals(request.getContextPath() + changePasswordUrl) && request.getMethod().equals(changePasswordMethod);
+        return request.getParameter(tokenParameter);
     }
 
-	/**
+
+    protected boolean isChangePasswordRequest(HttpServletRequest request) {
+        return request.getRequestURI().equals(request.getContextPath() + changePasswordUrl) && request.getMethod()
+            .equals(changePasswordMethod);
+    }
+
+    /**
      * Sets the {@link AuthenticationService}, to perform the login against.
      */
     @Required
-	public void setAuthenticationService(AuthenticationService authenticationService) {
-		this.authenticationService = authenticationService;
-	}
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
 }

@@ -24,76 +24,76 @@ import org.springframework.data.annotation.Id;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 
 public class Ticket implements Serializable {
-	private static final long serialVersionUID = 3599727071983459084L;
-	
-	@Id
-	private String series;
-	private String username;
-	private String tokenValue;
-	private Date date;
-	private String tenantName;
+    private static final long serialVersionUID = 3599727071983459084L;
 
-	public Ticket() {
-	}
-	
-	public Ticket(String username, String series, String tokenValue, Date date) {
-		super();
-		this.username = username;
-		this.series = series;
-		this.tokenValue = tokenValue;
-		this.date = date;
-	}
+    @Id
+    private String series;
+    private String username;
+    private String tokenValue;
+    private Date date;
+    private String tenantName;
 
-	public Ticket(PersistentTenantRememberMeToken token) {
-		this.username = token.getUsername();
-		this.series = token.getSeries();
-		this.tokenValue = token.getTokenValue();
-		this.date = token.getDate();
-		this.tenantName = token.getTenantName();
-	}
+    public Ticket() {
+    }
 
-	public String getUsername() {
-		return username;
-	}
+    public Ticket(String username, String series, String tokenValue, Date date) {
+        super();
+        this.username = username;
+        this.series = series;
+        this.tokenValue = tokenValue;
+        this.date = date;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public Ticket(PersistentTenantRememberMeToken token) {
+        this.username = token.getUsername();
+        this.series = token.getSeries();
+        this.tokenValue = token.getTokenValue();
+        this.date = token.getDate();
+        this.tenantName = token.getTenantName();
+    }
 
-	public String getSeries() {
-		return series;
-	}
+    public String getUsername() {
+        return username;
+    }
 
-	public void setSeries(String series) {
-		this.series = series;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	public String getTokenValue() {
-		return tokenValue;
-	}
+    public String getSeries() {
+        return series;
+    }
 
-	public void setTokenValue(String tokenValue) {
-		this.tokenValue = tokenValue;
-	}
+    public void setSeries(String series) {
+        this.series = series;
+    }
 
-	public Date getDate() {
-		return date;
-	}
+    public String getTokenValue() {
+        return tokenValue;
+    }
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
-	
-	public PersistentRememberMeToken toPersistentRememberMeToken() {
-		return new PersistentTenantRememberMeToken(username, series, tokenValue, date, tenantName);
-	}
+    public void setTokenValue(String tokenValue) {
+        this.tokenValue = tokenValue;
+    }
 
-	public String getTenantName() {
-		return tenantName;
-	}
+    public Date getDate() {
+        return date;
+    }
 
-	public void setTenantName(String tenantName) {
-		this.tenantName = tenantName;
-	}
-	
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public PersistentRememberMeToken toPersistentRememberMeToken() {
+        return new PersistentTenantRememberMeToken(username, series, tokenValue, date, tenantName);
+    }
+
+    public String getTenantName() {
+        return tenantName;
+    }
+
+    public void setTenantName(String tenantName) {
+        this.tenantName = tenantName;
+    }
+
 }

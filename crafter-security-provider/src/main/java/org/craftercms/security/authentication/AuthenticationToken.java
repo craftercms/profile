@@ -19,7 +19,8 @@ package org.craftercms.security.authentication;
 import org.craftercms.security.api.UserProfile;
 
 /**
- * Represents a successful authentication, and houses security information like the authentication ticket, the user profile, and if
+ * Represents a successful authentication, and houses security information like the authentication ticket,
+ * the user profile, and if
  * the profile is outdated (needs to be updated from the authentication service).
  *
  * @author Alfonso Vásquez
@@ -75,10 +76,10 @@ public class AuthenticationToken {
     @Override
     public String toString() {
         return "AuthenticationToken[" +
-                "ticket='" + ticket + '\'' +
-                ", profile=" + profile +
-                ", profileOutdated=" + profileOutdated +
-                ']';
+            "ticket='" + ticket + '\'' +
+            ", profile=" + profile +
+            ", profileOutdated=" + profileOutdated +
+            ']';
     }
 
 }

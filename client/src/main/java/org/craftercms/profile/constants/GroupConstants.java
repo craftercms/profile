@@ -17,17 +17,15 @@
 package org.craftercms.profile.constants;
 
 /**
- * 
  * Constants values used it to send request to The GROUP-ROLE mapping services
- * 
- * @author Alvaro Gonzalez
  *
+ * @author Alvaro Gonzalez
  */
 public interface GroupConstants {
-	String ID = "groupId";
-	String PROFILE_ID = "profileId";
-	String ROLES = "roles";
-	String GROUPS = "groups";
-	String GROUP_NAME = "groupName";
-	String TENANT_NAME = "tenantName";
+    String ID = "groupId";
+    String PROFILE_ID = "profileId";
+    String ROLES = "roles";
+    String GROUPS = "groups";
+    String GROUP_NAME = "groupName";
+    String TENANT_NAME = "tenantName";
 }

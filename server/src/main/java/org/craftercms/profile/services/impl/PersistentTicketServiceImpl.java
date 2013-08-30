@@ -31,30 +31,30 @@ import org.springframework.stereotype.Service;
 @Service("persistentTicketService")
 public class PersistentTicketServiceImpl implements PersistentTokenRepository, PersistentTicketService {
 
-	@Autowired
-	private TicketRepository ticketRepository;
+    @Autowired
+    private TicketRepository ticketRepository;
 
-	@Override
-	public void createNewToken(PersistentRememberMeToken token) {
-		ticketRepository.save(new Ticket((PersistentTenantRememberMeToken)token));
-	}
+    @Override
+    public void createNewToken(PersistentRememberMeToken token) {
+        ticketRepository.save(new Ticket((PersistentTenantRememberMeToken)token));
+    }
 
-	@Override
-	public void updateToken(String series, String tokenValue, Date lastUsed) {
-		Ticket ticket = ticketRepository.findBySeries(series);
-		ticket.setTokenValue(tokenValue);
-		ticket.setDate(lastUsed);
-		ticketRepository.save(ticket);
-	}
+    @Override
+    public void updateToken(String series, String tokenValue, Date lastUsed) {
+        Ticket ticket = ticketRepository.findBySeries(series);
+        ticket.setTokenValue(tokenValue);
+        ticket.setDate(lastUsed);
+        ticketRepository.save(ticket);
+    }
 
-	@Override
-	public PersistentRememberMeToken getTokenForSeries(String seriesId) {
-		Ticket ticket = ticketRepository.findBySeries(seriesId);
-		return (ticket != null) ? ticket.toPersistentRememberMeToken() : null;
-	}
+    @Override
+    public PersistentRememberMeToken getTokenForSeries(String seriesId) {
+        Ticket ticket = ticketRepository.findBySeries(seriesId);
+        return (ticket != null)? ticket.toPersistentRememberMeToken(): null;
+    }
 
-	@Override
-	public void removeUserTokens(String username) {
-		ticketRepository.removeUserTickets(username);
-	}
+    @Override
+    public void removeUserTokens(String username) {
+        ticketRepository.removeUserTickets(username);
+    }
 }

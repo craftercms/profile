@@ -24,26 +24,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Processor that wraps the response in a {@link SaveAuthenticationCookieResponseWrapper}. This wrapper avoids adding the authentication
- * cookie multiple times in the response (which can happen depending on the request, like a logout or login request). The processor also
- * calls {@link SaveAuthenticationCookieResponseWrapper#saveAuthenticationCookie()} in a finally block in case the cookie wasn't saved
+ * Processor that wraps the response in a {@link SaveAuthenticationCookieResponseWrapper}. This wrapper avoids adding
+ * the authentication
+ * cookie multiple times in the response (which can happen depending on the request,
+ * like a logout or login request). The processor also
+ * calls {@link SaveAuthenticationCookieResponseWrapper#saveAuthenticationCookie()} in a finally block in case the
+ * cookie wasn't saved
  * (this could happen if an exception wasn't handled in the processor chain, for example).
  *
  * @author Alfonso Vásquez
  */
 public class SaveAuthenticationCookieResponseWrappingProcessor implements RequestSecurityProcessor {
 
-    public static final Logger logger = LoggerFactory.getLogger(SaveAuthenticationCookieResponseWrappingProcessor.class);
+    public static final Logger logger = LoggerFactory.getLogger(SaveAuthenticationCookieResponseWrappingProcessor
+        .class);
 
     /**
-     * Wraps the current {@link javax.servlet.http.HttpServletResponse} in a {@link SaveAuthenticationCookieResponseWrappingProcessor}.
-     * This processor also ensures that {@link SaveAuthenticationCookieResponseWrapper#saveAuthenticationCookie()} is called even if the
+     * Wraps the current {@link javax.servlet.http.HttpServletResponse} in a {@link
+     * SaveAuthenticationCookieResponseWrappingProcessor}.
+     * This processor also ensures that {@link SaveAuthenticationCookieResponseWrapper#saveAuthenticationCookie()} is
+     * called even if the
      * processor chain throws an exception.
      *
-     * @param context
-     *      the context which holds the current request and other security info pertinent to the request
-     * @param processorChain
-     *          the processor chain, used to call the next processor
+     * @param context        the context which holds the current request and other security info pertinent to the
+     *                       request
+     * @param processorChain the processor chain, used to call the next processor
      * @throws Exception
      */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {

@@ -19,8 +19,10 @@ package org.craftercms.profile.repositories;
 import org.craftercms.profile.domain.Ticket;
 
 public interface TicketRepositoryCustom {
-	
-	void removeUserTickets(String username);
-	void removeTicketsOlderThan(long expirationSeconds);
-	Ticket getByTicket(String ticketStr);
+
+    void removeUserTickets(String username);
+
+    void removeTicketsOlderThan(long expirationSeconds);
+
+    Ticket getByTicket(String ticketStr);
 }

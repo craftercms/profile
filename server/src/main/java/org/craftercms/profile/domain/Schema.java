@@ -17,7 +17,6 @@
 package org.craftercms.profile.domain;
 
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.craftercms.profile.constants.SchemaConstants;

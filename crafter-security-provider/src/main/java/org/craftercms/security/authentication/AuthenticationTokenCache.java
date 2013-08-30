@@ -27,11 +27,13 @@ public interface AuthenticationTokenCache {
 
     /**
      * Returns an authentication token for the request:
-     *
+     * <p/>
      * <ol>
-     *     <li>If the profile is considered outdated, the token is returned with profile outdated = true and is removed from cache.</li>
-     *     <li>If a ticket was found in request, but no token cached for it, a new token is returned with just the ticket.</li>
-     *     <li>If no ticket was found, null is returned.</li>
+     * <li>If the profile is considered outdated, the token is returned with profile outdated = true and is removed
+     * from cache.</li>
+     * <li>If a ticket was found in request, but no token cached for it, a new token is returned with just the ticket
+     * .</li>
+     * <li>If no ticket was found, null is returned.</li>
      * </ol>
      */
     AuthenticationToken getToken(RequestContext context);

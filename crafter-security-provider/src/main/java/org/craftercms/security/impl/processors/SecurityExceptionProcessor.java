@@ -16,6 +16,9 @@
  */
 package org.craftercms.security.impl.processors;
 
+import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.RequestSecurityProcessor;
@@ -31,17 +34,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
 /**
  * Handles certain security exceptions:
- *
+ * <p/>
  * <ul>
- *     <li>If it's an {@link AuthenticationRequiredException}, the {@link AuthenticationRequiredHandler} is used.</li>
- *     <li>If it's an {@link AccessDeniedException}, and the user is anonymous, the {@link AuthenticationRequiredHandler} is used.
- *     If not, the {@link AccessDeniedHandler} is used.</li>
- *     <li>If it's an {@link InvalidCookieException}, a 400 error is sent.</li>
+ * <li>If it's an {@link AuthenticationRequiredException}, the {@link AuthenticationRequiredHandler} is used.</li>
+ * <li>If it's an {@link AccessDeniedException}, and the user is anonymous, the {@link AuthenticationRequiredHandler}
+ * is used.
+ * If not, the {@link AccessDeniedHandler} is used.</li>
+ * <li>If it's an {@link InvalidCookieException}, a 400 error is sent.</li>
  * </ul>
  *
  * @author Alfonso Vásquez
@@ -70,14 +71,15 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
     }
 
     /**
-     * Catches any exception thrown by the processor chain. If the exception is an instance of a {@link CrafterSecurityException}, the
-     * exception is handled to see if authentication is required ({@link AuthenticationRequiredException}), if access to the resource is
+     * Catches any exception thrown by the processor chain. If the exception is an instance of a {@link
+     * CrafterSecurityException}, the
+     * exception is handled to see if authentication is required ({@link AuthenticationRequiredException}),
+     * if access to the resource is
      * denied ({@link AccessDeniedException}) or if a security cookie is invalid ({@link InvalidCookieException}).
      *
-     * @param context
-     *      the context which holds the current request and other security info pertinent to the request
-     * @param processorChain
-     *          the processor chain, used to call the next processor
+     * @param context        the context which holds the current request and other security info pertinent to the
+     *                       request
+     * @param processorChain the processor chain, used to call the next processor
      * @throws Exception
      */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
@@ -102,7 +104,7 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
         Throwable[] exceptionChain = ExceptionUtils.getThrowables(topException);
         for (Throwable e : exceptionChain) {
             if (e instanceof CrafterSecurityException) {
-                return (CrafterSecurityException) e;
+                return (CrafterSecurityException)e;
             }
         }
 
@@ -110,27 +112,30 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
     }
 
     /**
-     * Handles the specified security exception, if it is an {@link AuthenticationRequiredException}, an {@link AccessDeniedException} or
+     * Handles the specified security exception, if it is an {@link AuthenticationRequiredException},
+     * an {@link AccessDeniedException} or
      * a {@link InvalidCookieException}.
      */
-    protected void handleSecurityException(CrafterSecurityException e, RequestContext context) throws CrafterSecurityException,
-            IOException {
+    protected void handleSecurityException(CrafterSecurityException e, RequestContext context) throws
+        CrafterSecurityException, IOException {
         if (e instanceof AuthenticationRequiredException) {
-            handleAuthenticationRequiredException((AuthenticationRequiredException) e, context);
+            handleAuthenticationRequiredException((AuthenticationRequiredException)e, context);
         } else if (e instanceof AccessDeniedException) {
-            handleAccessDeniedException((AccessDeniedException) e, context);
+            handleAccessDeniedException((AccessDeniedException)e, context);
         } else if (e instanceof InvalidCookieException) {
-            handleInvalidCookieException((InvalidCookieException) e, context);
+            handleInvalidCookieException((InvalidCookieException)e, context);
         } else {
             throw e;
         }
     }
 
     /**
-     * Handles the specified {@link AuthenticationRequiredException}, by calling the {@link AuthenticationRequiredHandler}.
+     * Handles the specified {@link AuthenticationRequiredException},
+     * by calling the {@link AuthenticationRequiredHandler}.
      */
-    protected void handleAuthenticationRequiredException(AuthenticationRequiredException e, RequestContext context)
-            throws CrafterSecurityException, IOException {
+    protected void handleAuthenticationRequiredException(AuthenticationRequiredException e,
+                                                         RequestContext context) throws CrafterSecurityException,
+        IOException {
         logger.info("Authentication is required", e);
 
         authenticationRequiredHandler.onAuthenticationRequired(e, context);
@@ -139,15 +144,16 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
     /**
      * Handles the specified {@link AccessDeniedException}, by calling the {@link AccessDeniedHandler}.
      */
-    protected void handleAccessDeniedException(AccessDeniedException e, RequestContext context) throws CrafterSecurityException,
-            IOException {
+    protected void handleAccessDeniedException(AccessDeniedException e, RequestContext context) throws
+        CrafterSecurityException, IOException {
         UserProfile profile = context.getAuthenticationToken().getProfile();
 
         // If user is anonymous, authentication is required
         if (profile.isAnonymous()) {
             try {
                 // Throw ex just to initialize stack trace
-                throw new AuthenticationRequiredException("Anonymous user: authentication needed to access a resource", e);
+                throw new AuthenticationRequiredException("Anonymous user: authentication needed to access a " +
+                    "resource", e);
             } catch (AuthenticationRequiredException ae) {
                 logger.info("Authentication is required", ae);
 
@@ -163,8 +169,8 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
     /**
      * Handles the specified {@link InvalidCookieException}, by sending a 400 BAD REQUEST error.
      */
-    protected void handleInvalidCookieException(InvalidCookieException e, RequestContext context) throws CrafterSecurityException,
-            IOException {
+    protected void handleInvalidCookieException(InvalidCookieException e, RequestContext context) throws
+        CrafterSecurityException, IOException {
         logger.info("Invalid security cookie in request", e);
 
         context.getResponse().sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());

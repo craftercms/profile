@@ -16,11 +16,11 @@
  */
 package org.craftercms.security.authentication;
 
+import java.io.IOException;
+
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.CrafterSecurityException;
-
-import java.io.IOException;
 
 /**
  * Handles the request when authentication is required.
@@ -32,11 +32,10 @@ public interface AuthenticationRequiredHandler {
     /**
      * Handles the request when authentication is required.
      *
-     * @param e
-     *          the exception with the reason for requiring authentication
-     * @param context
-     *          the request context
+     * @param e       the exception with the reason for requiring authentication
+     * @param context the request context
      */
-    void onAuthenticationRequired(AuthenticationException e, RequestContext context) throws CrafterSecurityException, IOException;
+    void onAuthenticationRequired(AuthenticationException e, RequestContext context) throws CrafterSecurityException,
+        IOException;
 
 }

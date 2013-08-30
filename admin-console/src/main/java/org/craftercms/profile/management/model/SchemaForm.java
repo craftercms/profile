@@ -27,12 +27,12 @@ import org.craftercms.profile.impl.domain.Attribute;
 import org.craftercms.profile.management.util.AttributeFieldsComparator;
 
 public class SchemaForm extends SchemaModel implements Serializable {
-	
-	public SchemaForm(SchemaModel schema) {
-		this.setTenantName(schema.getTenantName());
-		this.setAttributes(schema.getAttributes());
+
+    public SchemaForm(SchemaModel schema) {
+        this.setTenantName(schema.getTenantName());
+        this.setAttributes(schema.getAttributes());
         Collections.sort(getAttributes(), new AttributeFieldsComparator());
-	}
+    }
 
     /**
      * Insert a new Attribute to the Attributes List
@@ -48,6 +48,7 @@ public class SchemaForm extends SchemaModel implements Serializable {
 
     /**
      * Update an existing attribute with the given Attribute name
+     *
      * @param attribute
      */
     public void updateAttribute(Attribute attribute) {
@@ -68,6 +69,7 @@ public class SchemaForm extends SchemaModel implements Serializable {
 
     /**
      * Return the Attribue that match the given name
+     *
      * @param attributeName
      * @return
      */
@@ -88,6 +90,7 @@ public class SchemaForm extends SchemaModel implements Serializable {
 
     /**
      * Remove all Attributes from the names list
+     *
      * @param names
      */
 
@@ -104,15 +107,16 @@ public class SchemaForm extends SchemaModel implements Serializable {
 
     /**
      * Get a map wth the name of the attributes list as keys and null values
+     *
      * @return
      */
-    public Map<String, Object> getAttributesAsMap(){
-        Map attributesMap = new HashMap<String,Serializable>();
+    public Map<String, Object> getAttributesAsMap() {
+        Map attributesMap = new HashMap<String, Serializable>();
         Attribute current;
         Iterator<Attribute> it = this.getAttributes().iterator();
         while (it.hasNext()) {
             current = it.next();
-            attributesMap.put(current.getName().trim(),"");
+            attributesMap.put(current.getName().trim(), "");
         }
         return attributesMap;
     }

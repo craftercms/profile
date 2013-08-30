@@ -17,20 +17,19 @@
 package org.craftercms.profile.constants;
 
 public final class SchemaConstants {
-	
-	private SchemaConstants() {
-	}
 
-	// Request Parameter Constants
-	public static final String APP_TOKEN = "appToken";
+    private SchemaConstants() {
+    }
+
+    // Request Parameter Constants
+    public static final String APP_TOKEN = "appToken";
     public static final String TENANT_ID = "tenantId";
-	
-	public static final String ATTRIBUTES = "attributes";
-	public static final String ATTRIBUTES_DOT = ATTRIBUTES + ".";
-	
 
-    public static final String[] baseSchemaFields = {TENANT_ID,
-            APP_TOKEN};
+    public static final String ATTRIBUTES = "attributes";
+    public static final String ATTRIBUTES_DOT = ATTRIBUTES + ".";
+
+
+    public static final String[] baseSchemaFields = {TENANT_ID, APP_TOKEN};
 
     public static final String DEFAULT_SCHEMA_NAME = "SYSTEM_SCHEMA";
 }

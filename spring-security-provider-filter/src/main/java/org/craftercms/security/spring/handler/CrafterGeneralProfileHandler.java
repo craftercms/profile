@@ -17,57 +17,57 @@
 package org.craftercms.security.spring.handler;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 public class CrafterGeneralProfileHandler implements AuthenticationSuccessHandler {
-	
-	private static final Logger log = Logger.getLogger(CrafterProfileSuccessHandler.class);
-	
-	private AuthenticationSuccessHandler target;
-	private String successUrl;
-	
-	/* (non-Javadoc)
-	 * @see org.springframework.security.web.authentication.AuthenticationSuccessHandler#onAuthenticationSuccess(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.springframework.security.core.Authentication)
-	 */
-	public void onAuthenticationSuccess(HttpServletRequest request,
-        HttpServletResponse response, Authentication auth) {
-    	try {
-    		 
-	    	if (successUrl != null && !successUrl.equals("")) {
-	    		response.sendRedirect(successUrl);
-	        } else {
-	            target.onAuthenticationSuccess(request, response, auth);
-	        }
-    	} catch (IOException e) {
-			log.error("Error executing authentication success handler. "  + e);
-			try {
-				response.sendError(500);
-			} catch (IOException e1) {
-				log.error("Error sending error 500. "  + e);
-			} 
-		} catch (ServletException e) {
-			log.error("Error executing authentication success handler. "  + e);
-			try {
-				response.sendError(500);
-			} catch (IOException e1) {
-				log.error("Error sending error 500. "  + e);
-			} 
-		}
+
+    private static final Logger log = Logger.getLogger(CrafterProfileSuccessHandler.class);
+
+    private AuthenticationSuccessHandler target;
+    private String successUrl;
+
+    /* (non-Javadoc)
+     * @see org.springframework.security.web.authentication.AuthenticationSuccessHandler#onAuthenticationSuccess
+     * (javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
+     * org.springframework.security.core.Authentication)
+     */
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
+        try {
+
+            if (successUrl != null && !successUrl.equals("")) {
+                response.sendRedirect(successUrl);
+            } else {
+                target.onAuthenticationSuccess(request, response, auth);
+            }
+        } catch (IOException e) {
+            log.error("Error executing authentication success handler. " + e);
+            try {
+                response.sendError(500);
+            } catch (IOException e1) {
+                log.error("Error sending error 500. " + e);
+            }
+        } catch (ServletException e) {
+            log.error("Error executing authentication success handler. " + e);
+            try {
+                response.sendError(500);
+            } catch (IOException e1) {
+                log.error("Error sending error 500. " + e);
+            }
+        }
     }
-	
-	public void setSuccessUrl(String successUrl) {
-		this.successUrl = successUrl;
-	}
+
+    public void setSuccessUrl(String successUrl) {
+        this.successUrl = successUrl;
+    }
+
     public void setTarget(AuthenticationSuccessHandler target) {
-		this.target = target;
-	}
+        this.target = target;
+    }
 
 }

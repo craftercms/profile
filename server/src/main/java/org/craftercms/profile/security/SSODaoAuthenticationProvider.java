@@ -30,8 +30,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class SSODaoAuthenticationProvider extends DaoAuthenticationProvider {
 
     @Override
-    protected void additionalAuthenticationChecks(UserDetails userDetails,
-                                                  UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+    protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken
+        authentication) throws AuthenticationException {
 
         if (!authentication.isAuthenticated()) {
             super.additionalAuthenticationChecks(userDetails, authentication);

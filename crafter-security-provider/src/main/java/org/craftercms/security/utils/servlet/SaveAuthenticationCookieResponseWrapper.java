@@ -16,19 +16,20 @@
  */
 package org.craftercms.security.utils.servlet;
 
-import org.craftercms.security.authentication.impl.AuthenticationCookie;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.io.IOException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-import java.io.IOException;
+
+import org.craftercms.security.authentication.impl.AuthenticationCookie;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Response wrapper that saves the authentication cookie until the response is about to be committed. This is done to avoid adding
+ * Response wrapper that saves the authentication cookie until the response is about to be committed. This is done to
+ * avoid adding
  * the cookie several times to the response.
  *
  * @author Alfonso Vásquez
@@ -43,8 +44,7 @@ public class SaveAuthenticationCookieResponseWrapper extends HttpServletResponse
     /**
      * Constructs a response adaptor wrapping the given response.
      *
-     * @throws IllegalArgumentException
-     *          if the response is null
+     * @throws IllegalArgumentException if the response is null
      */
     public SaveAuthenticationCookieResponseWrapper(HttpServletResponse response) {
         super(response);
@@ -114,12 +114,12 @@ public class SaveAuthenticationCookieResponseWrapper extends HttpServletResponse
     }
 
     protected String cookieAsString(Cookie cookie) {
-        return  "[domain='" + cookie.getDomain() + "'" +
-                ", path='" + cookie.getPath() + "'" +
-                ", name='" + cookie.getName() + "'" +
-                ", maxAge=" + cookie.getMaxAge() +
-                ", value='" + cookie.getValue() + "']";
+        return "[domain='" + cookie.getDomain() + "'" +
+            ", path='" + cookie.getPath() + "'" +
+            ", name='" + cookie.getName() + "'" +
+            ", maxAge=" + cookie.getMaxAge() +
+            ", value='" + cookie.getValue() + "']";
 
     }
-    
+
 }

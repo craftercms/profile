@@ -16,6 +16,17 @@
  */
 package org.craftercms.security.authentication.impl;
 
+import java.io.File;
+import java.io.IOException;
+import java.security.Key;
+import java.security.SecureRandom;
+import java.util.Date;
+import javax.annotation.PostConstruct;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.spec.IvParameterSpec;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.craftercms.security.exception.CrafterSecurityException;
@@ -23,17 +34,6 @@ import org.craftercms.security.utils.crypto.KeyFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-
-import javax.annotation.PostConstruct;
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.spec.IvParameterSpec;
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
-import java.security.Key;
-import java.security.SecureRandom;
-import java.util.Date;
 
 /**
  * Extends {@link AuthenticationCookieFactory} to decrypt the cookie before creating the object.
@@ -44,11 +44,11 @@ public class CipheredAuthenticationCookieFactory extends AuthenticationCookieFac
 
     public static final SecureRandom secureRandom = new SecureRandom();
 
-    public static final String CIPHER_ALGORITHM =       "AES";
-    public static final String CIPHER_TRANSFORMATION =  "AES/CBC/PKCS5Padding";
+    public static final String CIPHER_ALGORITHM = "AES";
+    public static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";
 
-    public static final int ENCRYPTED_VALUE =   0;
-    public static final int IV =                1;
+    public static final int ENCRYPTED_VALUE = 0;
+    public static final int IV = 1;
 
     private static final Logger logger = LoggerFactory.getLogger(CipheredAuthenticationCookieFactory.class);
 
@@ -64,7 +64,8 @@ public class CipheredAuthenticationCookieFactory extends AuthenticationCookieFac
     }
 
     /**
-     * Tries to read the encryption key from the file. If the file doesn't exist or is empty, a new encryption key is randomly generated
+     * Tries to read the encryption key from the file. If the file doesn't exist or is empty,
+     * a new encryption key is randomly generated
      * and stored in the file, so that it can be used after reboots.
      */
     @PostConstruct
@@ -75,7 +76,8 @@ public class CipheredAuthenticationCookieFactory extends AuthenticationCookieFac
             try {
                 encryptionKey = keyFile.readKey();
             } catch (IOException e) {
-                throw new CrafterSecurityException("Error while trying to read encryption key from file " + encryptionKeyFile, e);
+                throw new CrafterSecurityException("Error while trying to read encryption key from file " +
+                    encryptionKeyFile, e);
             }
 
             if (logger.isDebugEnabled()) {
@@ -86,18 +88,21 @@ public class CipheredAuthenticationCookieFactory extends AuthenticationCookieFac
             try {
                 keyFile.writeKey(encryptionKey);
             } catch (IOException e) {
-                throw new CrafterSecurityException("Error while trying to write encryption key to file " + encryptionKeyFile, e);
+                throw new CrafterSecurityException("Error while trying to write encryption key to file " +
+                    encryptionKeyFile, e);
             }
 
             if (logger.isDebugEnabled()) {
-                logger.debug("No encryption key for authentication cookies found. A new random encryption key was generated and " +
-                        "stored in file " + encryptionKeyFile + " for future use");
+                logger.debug("No encryption key for authentication cookies found. A new random encryption key was " +
+                    "generated and " +
+                    "stored in file " + encryptionKeyFile + " for future use");
             }
         }
     }
 
     /**
-     * Extends {@link AuthenticationCookieFactory#createCookie(String, java.util.Date)} to create a ciphered cookie with the instance's
+     * Extends {@link AuthenticationCookieFactory#createCookie(String, java.util.Date)} to create a ciphered cookie
+     * with the instance's
      * encryption key.
      */
     @Override
@@ -106,7 +111,8 @@ public class CipheredAuthenticationCookieFactory extends AuthenticationCookieFac
     }
 
     /**
-     * Extends {@link AuthenticationCookieFactory#getCookieValueFromRequest(javax.servlet.http.HttpServletRequest)} to decrypt the cookie
+     * Extends {@link AuthenticationCookieFactory#getCookieValueFromRequest(javax.servlet.http.HttpServletRequest)}
+     * to decrypt the cookie
      * value before returning it.
      */
     @Override

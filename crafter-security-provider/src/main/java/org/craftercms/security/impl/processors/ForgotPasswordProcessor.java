@@ -7,19 +7,17 @@ import org.craftercms.security.api.AuthenticationService;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.RequestSecurityProcessor;
 import org.craftercms.security.api.RequestSecurityProcessorChain;
-import org.craftercms.security.api.UserProfile;
 import org.craftercms.security.exception.AuthenticationException;
-import org.craftercms.security.exception.AuthenticationSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 public class ForgotPasswordProcessor implements RequestSecurityProcessor {
-	
-	public static final Logger logger = LoggerFactory.getLogger(LoginProcessor.class);
 
-    public static final String DEFAULT_FORGOT_PASSWORD_URL =      "/crafter-security-forgot-password";
-    public static final String DEFAULT_FORGOT_PASSWORD_METHOD =   "POST";
+    public static final Logger logger = LoggerFactory.getLogger(LoginProcessor.class);
+
+    public static final String DEFAULT_FORGOT_PASSWORD_URL = "/crafter-security-forgot-password";
+    public static final String DEFAULT_FORGOT_PASSWORD_METHOD = "POST";
     public static final String DEFAULT_USERNAME_PARAM = "username";
     public static final String DEFAULT_TENANT_PARAM = "tenantName";
     public static final String DEFAULT_FORGOT_PASSOWRD_URL_PARAM = "changePasswordUrl";
@@ -29,58 +27,58 @@ public class ForgotPasswordProcessor implements RequestSecurityProcessor {
     protected String usernameParameter;
     protected String tenantNameParameter;
     protected String forgotPassUrlParameter;
-    
+
     protected AuthenticationService authenticationService;
-    
+
     public ForgotPasswordProcessor() {
-    	this.forgotPasswordUrl = DEFAULT_FORGOT_PASSWORD_URL;
-    	this.forgotPasswordMethod = DEFAULT_FORGOT_PASSWORD_METHOD;
-    	this.usernameParameter = DEFAULT_USERNAME_PARAM;
-    	this.tenantNameParameter = DEFAULT_TENANT_PARAM;
-    	this.forgotPassUrlParameter = DEFAULT_FORGOT_PASSOWRD_URL_PARAM;
+        this.forgotPasswordUrl = DEFAULT_FORGOT_PASSWORD_URL;
+        this.forgotPasswordMethod = DEFAULT_FORGOT_PASSWORD_METHOD;
+        this.usernameParameter = DEFAULT_USERNAME_PARAM;
+        this.tenantNameParameter = DEFAULT_TENANT_PARAM;
+        this.forgotPassUrlParameter = DEFAULT_FORGOT_PASSOWRD_URL_PARAM;
     }
 
-	public String getForgotPasswordUrl() {
-		return forgotPasswordUrl;
-	}
+    public String getForgotPasswordUrl() {
+        return forgotPasswordUrl;
+    }
 
-	public void setForgotPasswordUrl(String forgotPasswordUrl) {
-		this.forgotPasswordUrl = forgotPasswordUrl;
-	}
+    public void setForgotPasswordUrl(String forgotPasswordUrl) {
+        this.forgotPasswordUrl = forgotPasswordUrl;
+    }
 
-	public String getForgotPasswordMethod() {
-		return forgotPasswordMethod;
-	}
+    public String getForgotPasswordMethod() {
+        return forgotPasswordMethod;
+    }
 
-	public void setForgotPasswordMethod(String forgotMethod) {
-		this.forgotPasswordMethod = forgotMethod;
-	}
+    public void setForgotPasswordMethod(String forgotMethod) {
+        this.forgotPasswordMethod = forgotMethod;
+    }
 
-	public String getUsernameParameter() {
-		return usernameParameter;
-	}
+    public String getUsernameParameter() {
+        return usernameParameter;
+    }
 
-	public void setUsernameParameter(String usernameParameter) {
-		this.usernameParameter = usernameParameter;
-	}
+    public void setUsernameParameter(String usernameParameter) {
+        this.usernameParameter = usernameParameter;
+    }
 
-	public String getTenantParameter() {
-		return tenantNameParameter;
-	}
+    public String getTenantParameter() {
+        return tenantNameParameter;
+    }
 
-	public void setTenantParameter(String tenantParameter) {
-		this.tenantNameParameter = tenantParameter;
-	}
+    public void setTenantParameter(String tenantParameter) {
+        this.tenantNameParameter = tenantParameter;
+    }
 
-	public String getForgotPassUrlParameter() {
-		return forgotPassUrlParameter;
-	}
+    public String getForgotPassUrlParameter() {
+        return forgotPassUrlParameter;
+    }
 
-	public void setForgotPassUrlParameter(String forgotPassUrlParameter) {
-		this.forgotPassUrlParameter = forgotPassUrlParameter;
-	}
-	
-	public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
+    public void setForgotPassUrlParameter(String forgotPassUrlParameter) {
+        this.forgotPassUrlParameter = forgotPassUrlParameter;
+    }
+
+    public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         HttpServletRequest request = context.getRequest();
 
         if (isForgotPasswordRequest(request)) {
@@ -100,10 +98,10 @@ public class ForgotPasswordProcessor implements RequestSecurityProcessor {
                 username = "";
             }
             if (tenant == null) {
-            	tenant = "";
+                tenant = "";
             }
             if (changePassworUrl == null) {
-            	changePassworUrl = "";
+                changePassworUrl = "";
             }
 
             try {
@@ -112,45 +110,48 @@ public class ForgotPasswordProcessor implements RequestSecurityProcessor {
                 }
 
                 authenticationService.forgotPassword(changePassworUrl, username, tenant);
-                
+
             } catch (AuthenticationException e) {
                 //onLoginFailure(e, context);
-            	logger.error(e.getMessage());
+                logger.error(e.getMessage());
             }
         } else {
             processorChain.processRequest(context);
         }
     }
-	
-	/**
+
+    /**
      * Returns the value of the username parameter from the request.
      */
     protected String getUsername(HttpServletRequest request) {
         return request.getParameter(usernameParameter);
     }
+
     /**
      * Returns the value of the tenant parameter from the request.
      */
     protected String getTenant(HttpServletRequest request) {
-    	return request.getParameter(tenantNameParameter);
+        return request.getParameter(tenantNameParameter);
     }
+
     /**
      * Returns the value of the forgotPassUrlParameter parameter from the request.
      */
     protected String getChangePasswordUrl(HttpServletRequest request) {
-    	return request.getParameter(this.forgotPassUrlParameter);
+        return request.getParameter(this.forgotPassUrlParameter);
     }
-	
-	protected boolean isForgotPasswordRequest(HttpServletRequest request) {
-        return request.getRequestURI().equals(request.getContextPath() + forgotPasswordUrl) && request.getMethod().equals(forgotPasswordMethod);
+
+    protected boolean isForgotPasswordRequest(HttpServletRequest request) {
+        return request.getRequestURI().equals(request.getContextPath() + forgotPasswordUrl) && request.getMethod()
+            .equals(forgotPasswordMethod);
     }
-	
-	/**
+
+    /**
      * Sets the {@link AuthenticationService}, to perform the login against.
      */
     @Required
-	public void setAuthenticationService(AuthenticationService authenticationService) {
-		this.authenticationService = authenticationService;
-	}
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
 }

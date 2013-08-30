@@ -17,19 +17,15 @@
 package org.craftercms.security.impl;
 
 import org.craftercms.profile.api.ProfileClient;
-import org.craftercms.profile.impl.domain.Profile;
-import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.UserAuthenticationFailedException;
-import org.craftercms.security.api.UserProfile;
+import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.security.api.AuthenticationService;
+import org.craftercms.security.api.UserProfile;
 import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.AuthenticationSystemException;
 import org.craftercms.security.exception.UserAuthenticationException;
 import org.springframework.beans.factory.annotation.Required;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Implementation of {@link AuthenticationService}, using a Crafter Profile client.
@@ -38,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CrafterProfileAuthenticationService implements AuthenticationService {
 
-    protected ProfileClient profileClient; 
+    protected ProfileClient profileClient;
     protected String appUsername;
     protected String appPassword;
 
@@ -94,7 +90,7 @@ public class CrafterProfileAuthenticationService implements AuthenticationServic
     /**
      * {@inheritDoc}
      */
-    public void invalidateTicket(String ticket) throws AuthenticationException{
+    public void invalidateTicket(String ticket) throws AuthenticationException {
         profileClient.invalidateTicket(getAppToken(), ticket);
     }
 
@@ -112,22 +108,22 @@ public class CrafterProfileAuthenticationService implements AuthenticationServic
         }
     }
 
-	@Override
-	/**
+    @Override
+    /**
      * {@inheritDoc}
      */
-	public void forgotPassword(String changePasswordUrl, String username,
-			String tenantName) throws AuthenticationException {
-		profileClient.forgotPassword(getAppToken(), changePasswordUrl, tenantName, username);
-	}
-	
-	@Override
-	/**
+    public void forgotPassword(String changePasswordUrl, String username,
+                               String tenantName) throws AuthenticationException {
+        profileClient.forgotPassword(getAppToken(), changePasswordUrl, tenantName, username);
+    }
+
+    @Override
+    /**
      * {@inheritDoc}
      */
-	public void changePassword(String password, String token) throws AuthenticationException {
-		profileClient.changePassword(getAppToken(), token, password);
-		
-	}
+    public void changePassword(String password, String token) throws AuthenticationException {
+        profileClient.changePassword(getAppToken(), token, password);
+
+    }
 
 }

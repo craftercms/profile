@@ -17,6 +17,7 @@
 package org.craftercms.profile.repositories;
 
 import java.sql.Date;
+
 import org.craftercms.profile.domain.Ticket;
 import org.craftercms.profile.security.util.TicketUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,31 +29,31 @@ import org.springframework.stereotype.Component;
 @Component("ticketRepositoryImpl")
 public class TicketRepositoryImpl implements TicketRepositoryCustom {
 
-	@Autowired
-	private MongoTemplate mongoTemplate;
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
-	@Override
-	public Ticket getByTicket(String ticketStr) {
-		String series = TicketUtils.getTicketSeries(ticketStr);
-		Ticket ticket = null;
-		if (series != null) {
-			Query q = new Query(Criteria.where("_id").is(series));
-			q.fields().include("username");
-			q.fields().include("tenantName");
-			ticket = (Ticket)mongoTemplate.findOne(q, Ticket.class);
-			
-		}
-		return ticket;
-	}
-	
-	@Override
-	public void removeUserTickets(String username) {
-		mongoTemplate.remove(Query.query(Criteria.where("username").is(username)), Ticket.class);
-	}
+    @Override
+    public Ticket getByTicket(String ticketStr) {
+        String series = TicketUtils.getTicketSeries(ticketStr);
+        Ticket ticket = null;
+        if (series != null) {
+            Query q = new Query(Criteria.where("_id").is(series));
+            q.fields().include("username");
+            q.fields().include("tenantName");
+            ticket = (Ticket)mongoTemplate.findOne(q, Ticket.class);
 
-	@Override
-	public void removeTicketsOlderThan(long expirationSeconds) {
-		Date expireBefore = new Date(System.currentTimeMillis() - (expirationSeconds*1000));
-		mongoTemplate.remove(Query.query(Criteria.where("date").lt(expireBefore)), Ticket.class);
-	}
+        }
+        return ticket;
+    }
+
+    @Override
+    public void removeUserTickets(String username) {
+        mongoTemplate.remove(Query.query(Criteria.where("username").is(username)), Ticket.class);
+    }
+
+    @Override
+    public void removeTicketsOlderThan(long expirationSeconds) {
+        Date expireBefore = new Date(System.currentTimeMillis() - (expirationSeconds * 1000));
+        mongoTemplate.remove(Query.query(Criteria.where("date").lt(expireBefore)), Ticket.class);
+    }
 }

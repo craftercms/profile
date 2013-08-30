@@ -16,45 +16,40 @@
  */
 package org.craftercms.profile.management.services.impl;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
-import org.craftercms.profile.api.ProfileClient;
-import org.craftercms.profile.impl.domain.Role;
-import org.craftercms.profile.management.services.RoleDAOService;
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
+import org.craftercms.profile.impl.domain.Role;
+import org.craftercms.profile.management.services.RoleDAOService;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * @author David Escalante
  */
 @Service
-public class RoleDAOServiceImpl implements RoleDAOService{
+public class RoleDAOServiceImpl implements RoleDAOService {
 
     private static final Logger log = Logger.getLogger(RoleDAOServiceImpl.class);
 
     @Override
     public List<Role> getAllRoles() throws AppAuthenticationFailedException {
-    	if (!ProfileServiceManager.isAppTokenInit()) {
-			ProfileServiceManager.setAppToken();
-		}
+        if (!ProfileServiceManager.isAppTokenInit()) {
+            ProfileServiceManager.setAppToken();
+        }
         try {
-        	return ProfileServiceManager.getProfileClient().getAllRoles(ProfileServiceManager.getAppToken());
-	    } catch(AppAuthenticationException e) {
-			try {
-				
-				ProfileServiceManager.setAppToken();
-				
-			} catch (AppAuthenticationFailedException e1) {
-				log.error("could not get an AppToken", e);
-			}
-			return ProfileServiceManager.getProfileClient().getAllRoles(ProfileServiceManager.getAppToken());
-		}
+            return ProfileServiceManager.getProfileClient().getAllRoles(ProfileServiceManager.getAppToken());
+        } catch (AppAuthenticationException e) {
+            try {
+
+                ProfileServiceManager.setAppToken();
+
+            } catch (AppAuthenticationFailedException e1) {
+                log.error("could not get an AppToken", e);
+            }
+            return ProfileServiceManager.getProfileClient().getAllRoles(ProfileServiceManager.getAppToken());
+        }
     }
 
 }

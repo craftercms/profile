@@ -26,11 +26,11 @@ import org.codehaus.jackson.map.JsonDeserializer;
 
 public class ObjectIdDeSerializer extends JsonDeserializer<ObjectId> {
 
-	@Override
-	public ObjectId deserialize(JsonParser jsonParser, DeserializationContext context)
-			throws IOException, JsonProcessingException {
-		return new ObjectId(jsonParser.getText());
-	}
+    @Override
+    public ObjectId deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException,
+        JsonProcessingException {
+        return new ObjectId(jsonParser.getText());
+    }
 
-	
+
 }

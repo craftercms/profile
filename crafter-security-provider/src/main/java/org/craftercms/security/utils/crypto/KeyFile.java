@@ -16,11 +16,15 @@
  */
 package org.craftercms.security.utils.crypto;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.security.Key;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-
-import java.io.*;
-import java.security.Key;
 
 /**
  * Represents a file where a single encryption key can be write to/read from.
@@ -41,7 +45,7 @@ public class KeyFile {
     public Key readKey() throws IOException {
         ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
         try {
-            return (Key) in.readObject();
+            return (Key)in.readObject();
         } catch (ClassNotFoundException e) {
             throw new IOException("Class of a serialized object cannot be found", e);
         } finally {

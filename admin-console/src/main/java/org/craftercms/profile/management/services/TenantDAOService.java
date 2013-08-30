@@ -16,13 +16,13 @@
  */
 package org.craftercms.profile.management.services;
 
+import java.util.List;
+
+import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.impl.domain.Attribute;
 import org.craftercms.profile.impl.domain.Schema;
 import org.craftercms.profile.impl.domain.Tenant;
-import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.management.model.TenantFilterForm;
-
-import java.util.List;
 
 /**
  * @author David Escalante
@@ -32,6 +32,7 @@ public interface TenantDAOService {
 
     /**
      * Create a new Empty Tenant with all default values if needed
+     *
      * @return
      */
     public Tenant createEmptyTenant();
@@ -42,6 +43,7 @@ public interface TenantDAOService {
      * @param tenant
      * @return
      * @throws AppAuthenticationFailedException
+     *
      */
     public Tenant createNewTenant(Tenant tenant) throws AppAuthenticationFailedException;
 
@@ -51,57 +53,72 @@ public interface TenantDAOService {
      * @param tenantName
      * @return
      * @throws AppAuthenticationFailedException
+     *
      */
     public boolean exists(String tenantName) throws AppAuthenticationFailedException;
 
     /**
      * Get the number of Tenants
+     *
      * @return
      * @throws AppAuthenticationFailedException
+     *
      */
     public long getTenantCount() throws AppAuthenticationFailedException;
 
     /**
      * Get the current Tenant Page
+     *
      * @return
      * @throws AppAuthenticationFailedException
+     *
      */
     public List<Tenant> getTenantPage() throws AppAuthenticationFailedException;
 
     /**
-     *  Get the next Tenant Page
+     * Get the next Tenant Page
+     *
      * @return
      * @throws AppAuthenticationFailedException
+     *
      */
-    public  List<Tenant> getNextTenantPage() throws AppAuthenticationFailedException;
+    public List<Tenant> getNextTenantPage() throws AppAuthenticationFailedException;
 
     /**
-     *  Get the previous Tenant Page
+     * Get the previous Tenant Page
+     *
      * @return
      * @throws AppAuthenticationFailedException
+     *
      */
-    public  List<Tenant> getPrevTenantPage() throws AppAuthenticationFailedException;
+    public List<Tenant> getPrevTenantPage() throws AppAuthenticationFailedException;
 
     /**
      * Get a list of tenant with the given filter
+     *
      * @param tenantFilterForm
      * @return
      * @throws AppAuthenticationFailedException
+     *
      */
     public List<Tenant> getSearchTenants(TenantFilterForm tenantFilterForm) throws AppAuthenticationFailedException;
 
     /**
      * Get a list of all the tenants
+     *
      * @return
      * @throws AppAuthenticationFailedException
+     *
      */
     public List<Tenant> getAllTenants() throws AppAuthenticationFailedException;
 
     /**
      * Retrieve a Tenant that match the given name
+     *
      * @param tenantName
      * @return
      * @throws AppAuthenticationFailedException
+     *
      */
     public Tenant getTenantByName(String tenantName) throws AppAuthenticationFailedException;
 
@@ -111,25 +128,30 @@ public interface TenantDAOService {
      * @return
      * @throws AppAuthenticationFailedException
      */
-//    public Tenant getTenantById(String tenantName) throws AppAuthenticationFailedException;
+    //    public Tenant getTenantById(String tenantName) throws AppAuthenticationFailedException;
 
     /**
      * Get the Tenant that match the given Id for update
+     *
      * @param tenantName
      * @return
      * @throws AppAuthenticationFailedException
+     *
      */
     public Tenant getTenantForUpdate(String tenantName) throws AppAuthenticationFailedException;
 
     /**
      * Update the given Tenant
+     *
      * @param tenant
      * @throws AppAuthenticationFailedException
+     *
      */
     public Tenant updateTenant(Tenant tenant) throws AppAuthenticationFailedException;
 
     /**
      * Create a new Attribute Tenant with all default values if needed
+     *
      * @param schema
      * @return
      */
@@ -138,6 +160,7 @@ public interface TenantDAOService {
 
     /**
      * Update or insert the attribute in the given tenant
+     *
      * @param attribute
      * @param tenant
      */
@@ -145,10 +168,11 @@ public interface TenantDAOService {
 
     /**
      * Delete the attribute list from the given tenant
+     *
      * @param attributes
      * @param tenant
      */
     public void deleteSchemaAttributes(List<String> attributes, Tenant tenant) throws AppAuthenticationFailedException;
 
-	public void restartAppToken();
+    public void restartAppToken();
 }

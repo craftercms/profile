@@ -22,19 +22,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.craftercms.profile.impl.domain.*;
-
+import org.craftercms.profile.impl.domain.Profile;
+import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.management.util.TenantUtil;
 
-public class ProfileUserAccountForm implements Serializable{
+public class ProfileUserAccountForm implements Serializable {
 
     private String id;
 
     private String username;
-    
+
     private String email;
 
-	private String password;
+    private String password;
 
     private String confirmPassword;
 
@@ -44,94 +44,100 @@ public class ProfileUserAccountForm implements Serializable{
 
     private Map<String, Object> attributes;
 
-	private ArrayList<String> roles;
-	
-	private Map roleOption;
-	
-	public ProfileUserAccountForm() {}
-	
-	public ProfileUserAccountForm(Tenant tenant, List<String> roleList) {
+    private ArrayList<String> roles;
+
+    private Map roleOption;
+
+    public ProfileUserAccountForm() {
+    }
+
+    public ProfileUserAccountForm(Tenant tenant, List<String> roleList) {
         active = true;
         this.tenantName = tenant.getTenantName();
-		initRoleOption(roleList);
-		if (tenant.getSchema().getAttributes() != null) {
-			attributes = TenantUtil.getSchemaAttributesAsMap(tenant);
-		}else{
+        initRoleOption(roleList);
+        if (tenant.getSchema().getAttributes() != null) {
+            attributes = TenantUtil.getSchemaAttributesAsMap(tenant);
+        } else {
             attributes = new HashMap<String, Object>();
         }
-	}
-	
-	public ProfileUserAccountForm(Profile profile, Tenant tenant, boolean clean) {
-		if (!clean) {
+    }
+
+    public ProfileUserAccountForm(Profile profile, Tenant tenant, boolean clean) {
+        if (!clean) {
             this.id = profile.getId();
-			this.username = profile.getUserName();
-			this.password = profile.getPassword();
-			this.confirmPassword = password;
-			this.email = profile.getEmail();
+            this.username = profile.getUserName();
+            this.password = profile.getPassword();
+            this.confirmPassword = password;
+            this.email = profile.getEmail();
             this.active = profile.getActive();
-			this.roles = (ArrayList<String>) profile.getRoles();
+            this.roles = (ArrayList<String>)profile.getRoles();
             this.tenantName = profile.getTenantName();
             this.attributes = TenantUtil.getSchemaAttributesAsMap(tenant, profile);
-		}
-		initRoleOption(tenant.getRoles());
-		if (tenant.getSchema() != null && clean) {
-		    this.attributes = TenantUtil.getSchemaAttributesAsMap(tenant);
         }
-	}
-	
-	public ProfileUserAccountForm(Profile profile) {
-		if (profile==null) {
-			return;
-		}
-		this.password = profile.getPassword();
-		this.confirmPassword = password;
-		this.username = profile.getUserName();
-		this.id = profile.getId();
-		this.roles = (ArrayList<String>) profile.getRoles();
-		this.active = profile.getActive();
-		this.email = profile.getEmail();
-        this.tenantName = profile.getTenantName();
-	}
+        initRoleOption(tenant.getRoles());
+        if (tenant.getSchema() != null && clean) {
+            this.attributes = TenantUtil.getSchemaAttributesAsMap(tenant);
+        }
+    }
 
-    public void initTenantValues(Tenant tenant){
+    public ProfileUserAccountForm(Profile profile) {
+        if (profile == null) {
+            return;
+        }
+        this.password = profile.getPassword();
+        this.confirmPassword = password;
+        this.username = profile.getUserName();
+        this.id = profile.getId();
+        this.roles = (ArrayList<String>)profile.getRoles();
+        this.active = profile.getActive();
+        this.email = profile.getEmail();
+        this.tenantName = profile.getTenantName();
+    }
+
+    public void initTenantValues(Tenant tenant) {
         initRoleOption(tenant.getRoles());
         attributes = TenantUtil.getSchemaAttributesAsMap(tenant);
     }
-	
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
-	}
-	public String getConfirmPassword() {
-		return confirmPassword;
-	}
-	public void setConfirmPassword(String confirmPassword) {
-		this.confirmPassword = confirmPassword;
-	}
 
-	public String getTenantName() {
-		return tenantName;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public void setTenantName(String tenantName) {
-		this.tenantName = tenantName;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public String getUsername() {
+        return username;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+
+    public String getTenantName() {
+        return tenantName;
+    }
+
+    public void setTenantName(String tenantName) {
+        this.tenantName = tenantName;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public Map<String, Object> getAttributes() {
         return attributes;
@@ -154,9 +160,9 @@ public class ProfileUserAccountForm implements Serializable{
     }
 
     private void initRoleOption(List<String> roles) {
-        Map<String, String> data = new HashMap<String,String>();
-        for(String r: roles) {
-            data.put(r,r);
+        Map<String, String> data = new HashMap<String, String>();
+        for (String r : roles) {
+            data.put(r, r);
         }
 
         this.roleOption = data;
@@ -171,11 +177,11 @@ public class ProfileUserAccountForm implements Serializable{
         this.active = active;
     }
 
-	public String getEmail() {
-		return email;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

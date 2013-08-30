@@ -16,6 +16,10 @@
  */
 package org.craftercms.security.authentication.impl;
 
+import java.util.Date;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
@@ -25,12 +29,9 @@ import org.craftercms.security.authentication.AuthenticationToken;
 import org.craftercms.security.authentication.AuthenticationTokenCache;
 import org.springframework.beans.factory.annotation.Required;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.util.Date;
-
 /**
- * Default {@link AuthenticationTokenCache} implementation, using EhCache as the underlying cache, and a cookie to persist the
+ * Default {@link AuthenticationTokenCache} implementation, using EhCache as the underlying cache,
+ * and a cookie to persist the
  * basic authentication information across requests.
  *
  * @author Alfonso Vásquez
@@ -106,7 +107,8 @@ public class AuthenticationTokenCacheImpl implements AuthenticationTokenCache {
         if (cookie != null) {
             AuthenticationToken token = getToken(cookie.getTicket());
 
-            // If token is not null and profile isn't outdated, update the profile-outdated-after date and save the cookie.
+            // If token is not null and profile isn't outdated, update the profile-outdated-after date and save the
+            // cookie.
             if (token != null && cookie.getProfileOutdatedAfter().after(new Date())) {
                 cookie.setProfileOutdatedAfter(createProfileOutdatedAfterDate());
                 cookie.save(context, cookieMaxAge);
@@ -116,8 +118,9 @@ public class AuthenticationTokenCacheImpl implements AuthenticationTokenCache {
                     token.setProfileOutdated(true);
 
                     removeToken(token);
-                // If token is null, and we have a cookie, delete the cookie from the response in case it's not longer necessary, and
-                // return a token with just the ticket.
+                    // If token is null, and we have a cookie, delete the cookie from the response in case it's not
+                    // longer necessary, and
+                    // return a token with just the ticket.
                 } else {
                     token = new AuthenticationToken();
                     token.setTicket(cookie.getTicket());
@@ -168,7 +171,7 @@ public class AuthenticationTokenCacheImpl implements AuthenticationTokenCache {
     protected AuthenticationToken getToken(String ticket) {
         Element element = cache.get(ticket);
         if (element != null) {
-            return (AuthenticationToken) element.getObjectValue();
+            return (AuthenticationToken)element.getObjectValue();
         } else {
             return null;
         }

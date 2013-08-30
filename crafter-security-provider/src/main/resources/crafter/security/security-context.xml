@@ -27,7 +27,7 @@
                 <value>classpath*:crafter/security/extension/security.properties</value>
             </list>
         </property>
-        <property name="ignoreUnresolvablePlaceholders" value="true" />
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
     <!-- ////////////////////////////////// -->
@@ -46,7 +46,8 @@
     <!--									-->
     <!-- ////////////////////////////////// -->
 
-    <bean id="crafter.requestContextBindingFilter" class="org.craftercms.security.servlet.filters.RequestContextBindingFilter"/>
+    <bean id="crafter.requestContextBindingFilter"
+          class="org.craftercms.security.servlet.filters.RequestContextBindingFilter"/>
 
     <!-- Order of the processors is important, so if you need to override this bean try to maintain a similar order -->
     <bean id="crafter.securityFilter" class="org.craftercms.security.servlet.filters.RequestSecurityFilter">
@@ -78,7 +79,8 @@
     <bean id="crafter.saveAuthenticationCookieResponseWrappingProcessor"
           class="org.craftercms.security.impl.processors.SaveAuthenticationCookieResponseWrappingProcessor"/>
 
-    <bean id="crafter.tenantNameResolvingProcessor" class="org.craftercms.security.impl.processors.TenantNameResolvingProcessor">
+    <bean id="crafter.tenantNameResolvingProcessor"
+          class="org.craftercms.security.impl.processors.TenantNameResolvingProcessor">
         <property name="defaultTenantName" value="${crafter.security.tenant.default.name}"/>
     </bean>
 
@@ -100,9 +102,11 @@
         <property name="targetUrl" value="${crafter.security.logout.success.url}"/>
     </bean>
 
-    <bean id="crafter.saveRequestAwareProcessor" class="org.craftercms.security.impl.processors.SavedRequestAwareProcessor"/>
+    <bean id="crafter.saveRequestAwareProcessor"
+          class="org.craftercms.security.impl.processors.SavedRequestAwareProcessor"/>
 
-    <bean id="crafter.securityExceptionProcessor" class="org.craftercms.security.impl.processors.SecurityExceptionProcessor">
+    <bean id="crafter.securityExceptionProcessor"
+          class="org.craftercms.security.impl.processors.SecurityExceptionProcessor">
         <property name="authenticationRequiredHandler" ref="crafter.authenticationRequiredHandler"/>
         <property name="accessDeniedHandler" ref="crafter.accessDeniedHandler"/>
     </bean>
@@ -111,7 +115,7 @@
           class="org.craftercms.security.impl.processors.UrlAccessRestrictionCheckingProcessor">
         <property name="urlRestrictions" ref="crafter.urlRestrictions"/>
     </bean>
-    
+
     <bean id="crafter.changePasswordProcessor" class="org.craftercms.security.impl.processors.ChangePasswordProcessor">
         <property name="authenticationService" ref="crafter.authenticationService"/>
     </bean>
@@ -138,7 +142,8 @@
     <!--									-->
     <!-- ////////////////////////////////// -->
 
-    <bean id="crafter.authenticationTokenCache" class="org.craftercms.security.authentication.impl.AuthenticationTokenCacheImpl">
+    <bean id="crafter.authenticationTokenCache"
+          class="org.craftercms.security.authentication.impl.AuthenticationTokenCacheImpl">
         <property name="maxElementsInCache" value="${crafter.security.authentication.token.cache.maxElementsInMemory}"/>
         <property name="profileTimeToOutdated" value="${crafter.security.authentication.token.profile.timeToOutdated}"/>
         <property name="cookieMaxAge" value="${crafter.security.authentication.cookie.maxAge}"/>

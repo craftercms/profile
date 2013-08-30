@@ -19,27 +19,26 @@ package org.craftercms.profile.exceptions;
 /**
  * Thrown whenever the <code>ProfileClient</code> receives UNAUTHORIZED (401) error code from
  * the profile server response.
- * 
- * @author Alvaro Gonzalez
  *
+ * @author Alvaro Gonzalez
  */
 public class UnauthorizedException extends RestException {
-	private static final long serialVersionUID = 7809916614162804335L;
+    private static final long serialVersionUID = 7809916614162804335L;
 
-	public UnauthorizedException() {
-		super();
-	}
+    public UnauthorizedException() {
+        super();
+    }
 
-	public UnauthorizedException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public UnauthorizedException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public UnauthorizedException(String message) {
-		super(message);
-	}
+    public UnauthorizedException(String message) {
+        super(message);
+    }
 
-	public UnauthorizedException(Throwable cause) {
-		super(cause);
-	}
+    public UnauthorizedException(Throwable cause) {
+        super(cause);
+    }
 
 }

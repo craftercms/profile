@@ -10,76 +10,73 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 public class IntegrationTestingBase {
-	
-	protected static final String WEB_APP_URL = "/crafter-profile-admin-console";
 
-	private WebDriver mDriver = null;
-	private boolean mAutoQuitDriver = true;
+    protected static final String WEB_APP_URL = "/crafter-profile-admin-console";
 
-	protected static Properties sConfig;
-	protected static DesiredCapabilities sCaps;
+    private WebDriver mDriver = null;
+    private boolean mAutoQuitDriver = true;
 
-	protected static String baseUrl;
+    protected static Properties sConfig;
+    protected static DesiredCapabilities sCaps;
 
-	private static final String CONFIG_FILE = "test.properties";
+    protected static String baseUrl;
 
-	@BeforeClass
-	public static void configure() throws IOException {
-		// Read config file
-		sConfig = new Properties();
-		
-		sConfig.load(IntegrationTestingBase.class.getClassLoader().getResourceAsStream(
-				CONFIG_FILE));
+    private static final String CONFIG_FILE = "test.properties";
 
-		// Prepare capabilities
-		sCaps = new DesiredCapabilities();
-		sCaps.setJavascriptEnabled(true);
-		sCaps.setCapability("takesScreenshot", false);
+    @BeforeClass
+    public static void configure() throws IOException {
+        // Read config file
+        sConfig = new Properties();
 
-		baseUrl = sConfig.getProperty("craftercms.test.base.url");
-	}
+        sConfig.load(IntegrationTestingBase.class.getClassLoader().getResourceAsStream(CONFIG_FILE));
 
-	@Before
-	public void prepareDriver() throws Exception {
-		mDriver = new FirefoxDriver();
-	}
+        // Prepare capabilities
+        sCaps = new DesiredCapabilities();
+        sCaps.setJavascriptEnabled(true);
+        sCaps.setCapability("takesScreenshot", false);
 
-	protected WebDriver getDriver() {
-		return mDriver;
-	}
+        baseUrl = sConfig.getProperty("craftercms.test.base.url");
+    }
 
-	protected void disableAutoQuitDriver() {
-		mAutoQuitDriver = false;
-	}
+    @Before
+    public void prepareDriver() throws Exception {
+        mDriver = new FirefoxDriver();
+    }
 
-	protected void enableAutoQuitDriver() {
-		mAutoQuitDriver = true;
-	}
+    protected WebDriver getDriver() {
+        return mDriver;
+    }
 
-	protected boolean isAutoQuitDriverEnabled() {
-		return mAutoQuitDriver;
-	}
+    protected void disableAutoQuitDriver() {
+        mAutoQuitDriver = false;
+    }
 
-	@After
-	public void quitDriver() {
-		if (mAutoQuitDriver && mDriver != null) {
-			mDriver.quit();
-			mDriver = null;
-		}
-	}
-	
-	protected void loginAsAdmin(WebDriver driver) {
-		WebElement inputUsername = driver.findElement(By.id("username")); 
-		WebElement inputPass = driver.findElement(By.id("password")); 
-		WebElement loginButton = driver.findElement(By.id("login")); 
-		inputUsername.sendKeys("admin");
-		inputPass.sendKeys("admin");
-		loginButton.click();
-	}
+    protected void enableAutoQuitDriver() {
+        mAutoQuitDriver = true;
+    }
+
+    protected boolean isAutoQuitDriverEnabled() {
+        return mAutoQuitDriver;
+    }
+
+    @After
+    public void quitDriver() {
+        if (mAutoQuitDriver && mDriver != null) {
+            mDriver.quit();
+            mDriver = null;
+        }
+    }
+
+    protected void loginAsAdmin(WebDriver driver) {
+        WebElement inputUsername = driver.findElement(By.id("username"));
+        WebElement inputPass = driver.findElement(By.id("password"));
+        WebElement loginButton = driver.findElement(By.id("login"));
+        inputUsername.sendKeys("admin");
+        inputPass.sendKeys("admin");
+        loginButton.click();
+    }
 
 }

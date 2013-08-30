@@ -1,314 +1,314 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.craftercms</groupId>
-		<artifactId>crafter-profile-parent</artifactId>
-		<version>2.2.2-SNAPSHOT</version>
-	</parent>
-	<groupId>org.craftercms</groupId>
-	<artifactId>crafter-profile-admin-console</artifactId>
-	<version>2.2.2-SNAPSHOT</version>
-	<packaging>war</packaging>
-	<name>Admin Console</name>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.craftercms</groupId>
+        <artifactId>crafter-profile-parent</artifactId>
+        <version>2.2.2-SNAPSHOT</version>
+    </parent>
+    <groupId>org.craftercms</groupId>
+    <artifactId>crafter-profile-admin-console</artifactId>
+    <version>2.2.2-SNAPSHOT</version>
+    <packaging>war</packaging>
+    <name>Admin Console</name>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<spring.core.version>3.1.1.RELEASE</spring.core.version>
-		<spring.security.core.version>3.1.0.RELEASE</spring.security.core.version>
-		
-		<slf4j.version>1.6.1</slf4j.version>
-		<log4j.version>1.2.14</log4j.version>
+        <spring.core.version>3.1.1.RELEASE</spring.core.version>
+        <spring.security.core.version>3.1.0.RELEASE</spring.security.core.version>
 
-		<javax.servlet-api.version>2.5</javax.servlet-api.version>
-		<javax.jstl-taglibs.version>1.1.2</javax.jstl-taglibs.version>
+        <slf4j.version>1.6.1</slf4j.version>
+        <log4j.version>1.2.14</log4j.version>
 
-		<!-- Plugins -->
-		<maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
-		<clover.version>3.1.8</clover.version>
-	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>com.cenqua.clover</groupId>
-			<artifactId>clover</artifactId>
-			<version>${clover.version}</version>
-		</dependency>
-		<!-- Integration testing dependencies -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-server</artifactId>
-			<version>2.33.0</version>
-		</dependency>
-		<dependency>
-		<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-firefox-driver</artifactId>
-			<version>2.33.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.detro.ghostdriver</groupId>
-			<artifactId>phantomjsdriver</artifactId>
-			<version>1.0.3</version>
-		</dependency>
+        <javax.servlet-api.version>2.5</javax.servlet-api.version>
+        <javax.jstl-taglibs.version>1.1.2</javax.jstl-taglibs.version>
 
-		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-			<version>2.3.19</version>
-		</dependency>
-		
-		<!-- Crafter CMS dependencies -->
-		<dependency>
-			<groupId>org.craftercms</groupId>
-			<artifactId>crafter-profile-client</artifactId>
-			<version>2.2.2-SNAPSHOT</version>
-		</dependency>
+        <!-- Plugins -->
+        <maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
+        <clover.version>3.1.8</clover.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>com.cenqua.clover</groupId>
+            <artifactId>clover</artifactId>
+            <version>${clover.version}</version>
+        </dependency>
+        <!-- Integration testing dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-server</artifactId>
+            <version>2.33.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-firefox-driver</artifactId>
+            <version>2.33.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.detro.ghostdriver</groupId>
+            <artifactId>phantomjsdriver</artifactId>
+            <version>1.0.3</version>
+        </dependency>
 
-		<dependency>
-			<groupId>org.craftercms</groupId>
-			<artifactId>crafter-security-provider</artifactId>
-			<version>2.2.2-SNAPSHOT</version>
-		</dependency>
-		
-		<!-- Spring Core -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>${spring.core.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>${spring.core.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-			<version>${spring.core.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<!-- The JavaServer Pages Standard Tag Library (JSTL) encapsulates, as 
-			simple tags, core functionality common to many JSP applications. -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<version>${javax.jstl-taglibs.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>taglibs</groupId>
-			<artifactId>standard</artifactId>
-			<version>${javax.jstl-taglibs.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.19</version>
+        </dependency>
 
-		<!-- Logger -->
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>${log4j.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
+        <!-- Crafter CMS dependencies -->
+        <dependency>
+            <groupId>org.craftercms</groupId>
+            <artifactId>crafter-profile-client</artifactId>
+            <version>2.2.2-SNAPSHOT</version>
+        </dependency>
 
-		<!-- The Simple Logging Facade for Java or (SLF4J) serves as a simple facade 
-			or abstraction for various logging frameworks, e.g. java.util.logging, log4j 
-			and logback, allowing the end user to plug in the desired logging framework 
-			at deployment time. -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<version>${slf4j.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib</artifactId>
-			<version>2.2.2</version>
-		</dependency>
+        <dependency>
+            <groupId>org.craftercms</groupId>
+            <artifactId>crafter-security-provider</artifactId>
+            <version>2.2.2-SNAPSHOT</version>
+        </dependency>
 
-		<!-- Spring Security -->
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-core</artifactId>
-			<version>${spring.security.core.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-			<version>${spring.security.core.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-config</artifactId>
-			<version>${spring.security.core.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
+        <!-- Spring Core -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.core.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.core.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.core.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <!-- The JavaServer Pages Standard Tag Library (JSTL) encapsulates, as
+            simple tags, core functionality common to many JSP applications. -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>${javax.jstl-taglibs.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+            <version>${javax.jstl-taglibs.version}</version>
+        </dependency>
 
-		<!-- Javax Servlet. This needs to be included for runtime only! -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>${javax.servlet-api.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<!-- AspectJ -->
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjrt</artifactId>
-			<version>1.7.2</version>
-		</dependency>
+        <!-- Logger -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${log4j.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
 
-	</dependencies>
+        <!-- The Simple Logging Facade for Java or (SLF4J) serves as a simple facade
+            or abstraction for various logging frameworks, e.g. java.util.logging, log4j
+            and logback, allowing the end user to plug in the desired logging framework
+            at deployment time. -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>2.2.2</version>
+        </dependency>
 
-	<build>
-		<finalName>crafter-profile-admin-console</finalName>
-		<plugins>
-			<plugin>
-				<groupId>com.github.joelittlejohn.embedmongo</groupId>
-				<artifactId>embedmongo-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>start</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>start</goal>
-						</goals>
-						<configuration>
-							<port>26017</port>
-							<databaseDirectory>${basedir}/target</databaseDirectory> 
-							<randomPort>false</randomPort>  
-						</configuration>
-					</execution>
-					<execution>
-            			<id>stop</id>
-            			<goals>
-                			<goal>stop</goal>
-            			</goals>
-        			</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<configuration>
-					<webXml>${basedir}/src/test/resources/test-web.xml</webXml>
-					<webDefaultXml>${basedir}/src/test/resources/test-web.xml</webDefaultXml>
-					<overrideWebXml>${basedir}/src/test/resources/test-web.xml</overrideWebXml>
-					<connectors>
-		            	<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-		              		<port>8888</port>
-		            	</connector>
-		          	</connectors>
-		          	<webAppConfig>
-		            	<contextPath>/crafter-profile-admin-console</contextPath>
-		            	<extraClasspath>${basedir}/src/test/resources/</extraClasspath>
-		            </webAppConfig>
-		            <contextHandlers>
-						<contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-							<war>${basedir}/../server/target/crafter-profile.war</war>
-							<contextPath>/crafter-profile</contextPath>
-							<extraClasspath>${basedir}/src/test/resources/</extraClasspath>
-						</contextHandler>
-					</contextHandlers>
-					<scanIntervalSeconds>10</scanIntervalSeconds>
-					<stopKey>foo</stopKey>
-					<stopPort>9999</stopPort>
-				</configuration>
-				<executions>
-					<execution>
-						<id>start-jetty</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>start</goal>
-						</goals>
-						<configuration>
-							<scanIntervalSeconds>0</scanIntervalSeconds>
-							<daemon>true</daemon>
-						</configuration>
-					</execution>
-					<execution>
-						<id>stop-jetty</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>stop</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven.compiler.plugin.version}</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.2</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-						</manifest>
-						<manifestEntries>
-							<Implementation-Build>${buildNumber}</Implementation-Build>
-							<Build-On>${timestamp}</Build-On>
-						</manifestEntries>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.14.1</version>
-				<configuration>
-					<includes>
-						<include>**/unit/**/*.java</include>
-					</includes>
-					<excludes>
-						<exclude>**/integration/**/*.java</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			<plugin>
+        <!-- Spring Security -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>${spring.security.core.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>${spring.security.core.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring.security.core.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Javax Servlet. This needs to be included for runtime only! -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>${javax.servlet-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- AspectJ -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>1.7.2</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>crafter-profile-admin-console</finalName>
+        <plugins>
+            <plugin>
+                <groupId>com.github.joelittlejohn.embedmongo</groupId>
+                <artifactId>embedmongo-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <port>26017</port>
+                            <databaseDirectory>${basedir}/target</databaseDirectory>
+                            <randomPort>false</randomPort>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <configuration>
+                    <webXml>${basedir}/src/test/resources/test-web.xml</webXml>
+                    <webDefaultXml>${basedir}/src/test/resources/test-web.xml</webDefaultXml>
+                    <overrideWebXml>${basedir}/src/test/resources/test-web.xml</overrideWebXml>
+                    <connectors>
+                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                            <port>8888</port>
+                        </connector>
+                    </connectors>
+                    <webAppConfig>
+                        <contextPath>/crafter-profile-admin-console</contextPath>
+                        <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
+                    </webAppConfig>
+                    <contextHandlers>
+                        <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
+                            <war>${basedir}/../server/target/crafter-profile.war</war>
+                            <contextPath>/crafter-profile</contextPath>
+                            <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
+                        </contextHandler>
+                    </contextHandlers>
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <stopKey>foo</stopKey>
+                    <stopPort>9999</stopPort>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>start-jetty</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <scanIntervalSeconds>0</scanIntervalSeconds>
+                            <daemon>true</daemon>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-jetty</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Implementation-Build>${buildNumber}</Implementation-Build>
+                            <Build-On>${timestamp}</Build-On>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.14.1</version>
+                <configuration>
+                    <includes>
+                        <include>**/unit/**/*.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/integration/**/*.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                	<reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                     <testFailureIgnore>false</testFailureIgnore>
                     <includes>
                         <include>
@@ -328,68 +328,68 @@
                     </execution>
                 </executions>
             </plugin>
-		</plugins>
-		<testResources>
+        </plugins>
+        <testResources>
             <testResource>
                 <directory>src/test/resources</directory>
                 <filtering>true</filtering>
             </testResource>
         </testResources>
-	</build>
-		<profiles>
-		<profile>
-			<id>Sonar</id>
-			<properties>
-				<clover.version>3.1.8</clover.version>
-				<sonar.core.codeCoveragePlugin>clover</sonar.core.codeCoveragePlugin>
-				<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-				<sonar.clover.reportPath>${project.build.directory}/clover.xml</sonar.clover.reportPath>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.atlassian.maven.plugins</groupId>
-						<artifactId>maven-clover2-plugin</artifactId>
-						<version>${clover.version}</version>
-						<configuration>
-							<license>${clover.license}</license>
-							<reportDescriptor>clover-report.xml</reportDescriptor>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>release-sign-artifacts</id>
-			<activation>
-				<property>
-					<name>performRelease</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-deploy-plugin</artifactId>
-						<version>2.7</version>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.4</version>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+    </build>
+    <profiles>
+        <profile>
+            <id>Sonar</id>
+            <properties>
+                <clover.version>3.1.8</clover.version>
+                <sonar.core.codeCoveragePlugin>clover</sonar.core.codeCoveragePlugin>
+                <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+                <sonar.clover.reportPath>${project.build.directory}/clover.xml</sonar.clover.reportPath>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.atlassian.maven.plugins</groupId>
+                        <artifactId>maven-clover2-plugin</artifactId>
+                        <version>${clover.version}</version>
+                        <configuration>
+                            <license>${clover.license}</license>
+                            <reportDescriptor>clover-report.xml</reportDescriptor>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <version>2.7</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.4</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

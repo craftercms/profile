@@ -24,9 +24,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository("profileRepository")
-public interface ProfileRepository  extends MongoRepository<Profile, ObjectId>, ProfileRepositoryCustom {
-	
-	List<Profile> findAll();
-	List<Profile> findByRolesAndTenantName(String roles, String tenantName);
-	
+public interface ProfileRepository extends MongoRepository<Profile, ObjectId>, ProfileRepositoryCustom {
+
+    List<Profile> findAll();
+
+    List<Profile> findByRolesAndTenantName(String roles, String tenantName);
+
 }

@@ -19,26 +19,25 @@ package org.craftercms.profile.exceptions;
 /**
  * Thrown whenever the <code>ProfileClient</code> receives FORBIDDEN (403) error code from
  * the profile server response.
- * 
- * @author Alvaro Gonzalez
  *
+ * @author Alvaro Gonzalez
  */
 public class AppAuthenticationException extends RuntimeException {
-	
-	public AppAuthenticationException() {
-		super();
-	}
 
-	public AppAuthenticationException(String msg, Throwable thr) {
-		super(msg, thr);
-	}
+    public AppAuthenticationException() {
+        super();
+    }
 
-	public AppAuthenticationException(String msg) {
-		super(msg);
-	}
+    public AppAuthenticationException(String msg, Throwable thr) {
+        super(msg, thr);
+    }
 
-	public AppAuthenticationException(Throwable thr) {
-		super(thr);
-	}
+    public AppAuthenticationException(String msg) {
+        super(msg);
+    }
+
+    public AppAuthenticationException(Throwable thr) {
+        super(thr);
+    }
 
 }
