@@ -230,7 +230,7 @@
             <properties>
                 <clover.version>3.1.8</clover.version>
                 <sonar.core.codeCoveragePlugin>clover</sonar.core.codeCoveragePlugin>
-                <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+                <sonar.dynamicAnalysis>true</sonar.dynamicAnalysis>
                 <sonar.clover.reportPath>${project.build.directory}/clover.xml</sonar.clover.reportPath>
             </properties>
             <build>
