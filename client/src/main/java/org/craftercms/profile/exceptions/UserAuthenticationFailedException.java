@@ -17,21 +17,21 @@
 package org.craftercms.profile.exceptions;
 
 public class UserAuthenticationFailedException extends RestException {
-	private static final long serialVersionUID = 987920857142577144L;
+    private static final long serialVersionUID = 987920857142577144L;
 
-	public UserAuthenticationFailedException() {
-		super();
-	}
+    public UserAuthenticationFailedException() {
+        super();
+    }
 
-	public UserAuthenticationFailedException(String msg, Throwable thr) {
-		super(msg, thr);
-	}
+    public UserAuthenticationFailedException(String msg, Throwable thr) {
+        super(msg, thr);
+    }
 
-	public UserAuthenticationFailedException(String msg) {
-		super(msg);
-	}
+    public UserAuthenticationFailedException(String msg) {
+        super(msg);
+    }
 
-	public UserAuthenticationFailedException(Throwable thr) {
-		super(thr);
-	}
+    public UserAuthenticationFailedException(Throwable thr) {
+        super(thr);
+    }
 }

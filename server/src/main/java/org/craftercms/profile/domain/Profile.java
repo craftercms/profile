@@ -20,125 +20,134 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.constants.ProfileConstants;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Field;
-
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("profile")
 @XmlRootElement
-@CompoundIndexes({
-	@CompoundIndex(name = "username_tenantName_idx", def = "{'userName': 1, 'tenantName': 1}", unique=true)
-})
+@CompoundIndexes({@CompoundIndex(name = "username_tenantName_idx", def = "{'userName': 1, 'tenantName': 1}",
+    unique = true)})
 public class Profile implements Serializable {
-	private static final long serialVersionUID = 3370284215738389717L;
+    private static final long serialVersionUID = 3370284215738389717L;
 
-	@Field(ProfileConstants.FIELD_ID)
-	private ObjectId id;
+    @Field(ProfileConstants.FIELD_ID)
+    private ObjectId id;
 
-	@Field(ProfileConstants.USER_NAME)
-	private String userName;
-	
-	@Field(ProfileConstants.PASSWORD)
-	private String password;
+    @Field(ProfileConstants.USER_NAME)
+    private String userName;
 
-	@Field(ProfileConstants.ACTIVE)
-	private Boolean active;
+    @Field(ProfileConstants.PASSWORD)
+    private String password;
 
-	@Field(ProfileConstants.CREATED)
-	private Date created;
+    @Field(ProfileConstants.ACTIVE)
+    private Boolean active;
 
-	@Field(ProfileConstants.MODIFIED)
-	private Date modified;
-	
-	@Field(ProfileConstants.TENANT_NAME)
-	private String tenantName;
-	
-	@Field(ProfileConstants.ROLES)
-	private List<String> roles;
+    @Field(ProfileConstants.CREATED)
+    private Date created;
 
-	@Field(ProfileConstants.ATTRIBUTES)
-	private Map<String, Serializable> attributes;
+    @Field(ProfileConstants.MODIFIED)
+    private Date modified;
 
-	public ObjectId getId() {
-		return id;
-	}
+    @Field(ProfileConstants.TENANT_NAME)
+    private String tenantName;
 
-	public void setId(ObjectId id) {
-		this.id = id;
-	}
+    @Field(ProfileConstants.EMAIL)
+    private String email;
 
-	public String getUserName() {
-		return userName;
-	}
+    @Field(ProfileConstants.ROLES)
+    private List<String> roles;
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    @Field(ProfileConstants.ATTRIBUTES)
+    private Map<String, Serializable> attributes;
 
-	public String getPassword() {
-		return password;
-	}
+    public ObjectId getId() {
+        return id;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
 
-	public Boolean getActive() {
-		return active;
-	}
+    public String getUserName() {
+        return userName;
+    }
 
-	public void setActive(Boolean active) {
-		this.active = active;
-	}
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-	public Date getCreated() {
-		return created;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public void setCreated(Date created) {
-		this.created = created;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public Date getModified() {
-		return modified;
-	}
+    public Boolean getActive() {
+        return active;
+    }
 
-	public void setModified(Date modified) {
-		this.modified = modified;
-	}
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
 
-	public Map<String, Serializable> getAttributes() {
-		return attributes;
-	}
+    public Date getCreated() {
+        return created;
+    }
 
-	public void setAttributes(Map<String, Serializable> attributes) {
-		this.attributes = attributes;
-	}
-	
-	public String toString() {
-		return String.format("Profile [id='%s' userName='%s' password='%s' active='%b' created='%tc' modified='%tc']", id, userName, password, active, created, modified);
-	}
+    public void setCreated(Date created) {
+        this.created = created;
+    }
 
-	public String getTenantName() {
-		return tenantName;
-	}
-	
-	public List<String> getRoles() {
-		return roles;
-	}
+    public Date getModified() {
+        return modified;
+    }
 
-	public void setTenantName(String tenantName) {
-		this.tenantName = tenantName;
-	}
-	
-	public void setRoles(List<String> roles) {
-		this.roles = roles;
-	}
+    public void setModified(Date modified) {
+        this.modified = modified;
+    }
+
+    public Map<String, Serializable> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Map<String, Serializable> attributes) {
+        this.attributes = attributes;
+    }
+
+    public String toString() {
+        return String.format("Profile [id='%s' userName='%s' password='%s' active='%b' email='%s'created='%tc' " +
+            "modified='%tc']", id, userName, password, active, email, created, modified);
+    }
+
+    public String getTenantName() {
+        return tenantName;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setTenantName(String tenantName) {
+        this.tenantName = tenantName;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

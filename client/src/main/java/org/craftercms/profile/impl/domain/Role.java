@@ -18,26 +18,26 @@ package org.craftercms.profile.impl.domain;
 
 import java.io.Serializable;
 
-public class Role  implements Serializable {
-	
-	private String id;
+public class Role implements Serializable {
 
-	private String roleName;
-	
-	public String getId() {
-		return id;
-	}
+    private String id;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    private String roleName;
 
-	public String getRoleName() {
-		return roleName;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
 
 }

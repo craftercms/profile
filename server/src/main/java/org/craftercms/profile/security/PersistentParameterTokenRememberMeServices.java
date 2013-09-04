@@ -18,7 +18,6 @@ package org.craftercms.profile.security;
 
 import java.util.Arrays;
 import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -36,130 +35,135 @@ import org.springframework.security.web.authentication.rememberme.RememberMeAuth
 import org.springframework.util.StringUtils;
 
 public class PersistentParameterTokenRememberMeServices extends PersistentTokenBasedRememberMeServices {
-	private PersistentTokenRepository tokenRepository = new InMemoryTokenRepositoryImpl();
+    private PersistentTokenRepository tokenRepository = new InMemoryTokenRepositoryImpl();
 
-	public PersistentParameterTokenRememberMeServices(String key, UserDetailsService userDetailsService,
-			PersistentTokenRepository tokenRepository) {
-		super(key, userDetailsService, tokenRepository);
-		this.tokenRepository = tokenRepository;
-	}
+    public PersistentParameterTokenRememberMeServices(String key, UserDetailsService userDetailsService,
+                                                      PersistentTokenRepository tokenRepository) {
+        super(key, userDetailsService, tokenRepository);
+        this.tokenRepository = tokenRepository;
+    }
 
-	@Override
-	protected void cancelCookie(HttpServletRequest request, HttpServletResponse response) {
-		// Do nothing
-		logger.debug("cancelCookie");
+    @Override
+    protected void cancelCookie(HttpServletRequest request, HttpServletResponse response) {
+        // Do nothing
+        logger.debug("cancelCookie");
 
-		String tokenStr = extractRememberMeCookie(request);
+        String tokenStr = extractRememberMeCookie(request);
 
-		if (tokenStr != null) {
-			String[] cookieTokens = decodeCookie(tokenStr);
-			
-			if (cookieTokens.length >= 2) { 
-				final String presentedSeries = cookieTokens[0];
-				final String presentedToken = cookieTokens[1];
-				
-				PersistentRememberMeToken token = tokenRepository.getTokenForSeries(presentedSeries);
-				
-				if (token != null && presentedToken.equals(token.getTokenValue())) {
-					tokenRepository.removeUserTokens(token.getUsername());
-				}
-			}
-		}
+        if (tokenStr != null) {
+            String[] cookieTokens = decodeCookie(tokenStr);
 
-		request.removeAttribute(getCookieName());
-	}
+            if (cookieTokens.length >= 2) {
+                final String presentedSeries = cookieTokens[0];
+                final String presentedToken = cookieTokens[1];
 
-	@Override
-	protected String extractRememberMeCookie(HttpServletRequest request) {
-		logger.debug(String.format("extractRememberMeCookie: %s = %s", getCookieName(), request.getParameter(getCookieName())));
-		String token = request.getParameter(getCookieName());
-		return (token == null || token.length() == 0)?null:token;
-	}
+                PersistentRememberMeToken token = tokenRepository.getTokenForSeries(presentedSeries);
 
-	@Override
-	protected void setCookie(String[] tokens, int maxAge, HttpServletRequest request, HttpServletResponse response) {
+                if (token != null && presentedToken.equals(token.getTokenValue())) {
+                    tokenRepository.removeUserTokens(token.getUsername());
+                }
+            }
+        }
 
-		request.setAttribute(getCookieName(), encodeCookie(tokens));
+        request.removeAttribute(getCookieName());
+    }
 
-		logger.debug(String.format("setCookie('%s' maxAge='%d' encodedCookie='%s', request, response)",
-				StringUtils.arrayToCommaDelimitedString(tokens), maxAge, encodeCookie(tokens)));
-	}
+    @Override
+    protected String extractRememberMeCookie(HttpServletRequest request) {
+        logger.debug(String.format("extractRememberMeCookie: %s = %s", getCookieName(),
+            request.getParameter(getCookieName())));
+        String token = request.getParameter(getCookieName());
+        return (token == null || token.length() == 0)? null: token;
+    }
 
-	protected UserDetails processAutoLoginCookie(String[] cookieTokens, HttpServletRequest request, HttpServletResponse response) {
+    @Override
+    protected void setCookie(String[] tokens, int maxAge, HttpServletRequest request, HttpServletResponse response) {
 
-		if (cookieTokens.length != 2) {
-			throw new InvalidCookieException("Cookie token did not contain " + 2 + " tokens, but contained '" + Arrays.asList(cookieTokens)
-					+ "'");
-		}
+        request.setAttribute(getCookieName(), encodeCookie(tokens));
 
-		final String presentedSeries = cookieTokens[0];
-		final String presentedToken = cookieTokens[1];
+        logger.debug(String.format("setCookie('%s' maxAge='%d' encodedCookie='%s', request, response)",
+            StringUtils.arrayToCommaDelimitedString(tokens), maxAge, encodeCookie(tokens)));
+    }
 
-		PersistentTenantRememberMeToken token = (PersistentTenantRememberMeToken)tokenRepository.getTokenForSeries(presentedSeries);
+    protected UserDetails processAutoLoginCookie(String[] cookieTokens, HttpServletRequest request,
+                                                 HttpServletResponse response) {
 
-		if (token == null) {
-			// No series match, so we can't authenticate using this cookie
-			throw new RememberMeAuthenticationException("No persistent token found for series id: " + presentedSeries);
-		}
+        if (cookieTokens.length != 2) {
+            throw new InvalidCookieException("Cookie token did not contain " + 2 + " tokens, " +
+                "but contained '" + Arrays.asList(cookieTokens) + "'");
+        }
 
-		// We have a match for this user/series combination
-		if (!presentedToken.equals(token.getTokenValue())) {
-			// Token doesn't match series value. Delete all logins for this user
-			// and throw an exception to warn them.
-			tokenRepository.removeUserTokens(token.getUsername());
+        final String presentedSeries = cookieTokens[0];
+        final String presentedToken = cookieTokens[1];
 
-			throw new CookieTheftException(messages.getMessage("PersistentTokenBasedRememberMeServices.cookieStolen",
-					"Invalid remember-me token (Series/token) mismatch. Implies previous cookie theft attack."));
-		}
+        PersistentTenantRememberMeToken token = (PersistentTenantRememberMeToken)tokenRepository.getTokenForSeries
+            (presentedSeries);
 
-		if (token.getDate().getTime() + getTokenValiditySeconds() * 1000L < System.currentTimeMillis()) {
-			throw new RememberMeAuthenticationException("Remember-me login has expired");
-		}
+        if (token == null) {
+            // No series match, so we can't authenticate using this cookie
+            throw new RememberMeAuthenticationException("No persistent token found for series id: " + presentedSeries);
+        }
 
-		// Token also matches, so login is valid. Update the token value,
-		// keeping the *same* series number.
-		if (logger.isDebugEnabled()) {
-			logger.debug("Refreshing persistent login token for user '" + token.getUsername() + "', series '" + token.getSeries() + "'");
-		}
+        // We have a match for this user/series combination
+        if (!presentedToken.equals(token.getTokenValue())) {
+            // Token doesn't match series value. Delete all logins for this user
+            // and throw an exception to warn them.
+            tokenRepository.removeUserTokens(token.getUsername());
 
-		try {
-			tokenRepository.updateToken(token.getSeries(), token.getTokenValue(), new Date());
-			setCookie(new String[] { token.getSeries(), token.getTokenValue() }, getTokenValiditySeconds(), request, response);
-		} catch (DataAccessException e) {
-			logger.error("Failed to update token: ", e);
-			throw new RememberMeAuthenticationException("Autologin failed due to data access problem");
-		}
+            throw new CookieTheftException(messages.getMessage("PersistentTokenBasedRememberMeServices.cookieStolen",
+                "Invalid remember-me token (Series/token) mismatch. Implies previous cookie theft attack."));
+        }
 
-		return getUserDetailsService().loadUserByUsername(token.getTenantName()==null || token.getTenantName().equals("")?token.getUsername():token.getUsername() + "@" + token.getTenantName());
-	}
+        if (token.getDate().getTime() + getTokenValiditySeconds() * 1000L < System.currentTimeMillis()) {
+            throw new RememberMeAuthenticationException("Remember-me login has expired");
+        }
 
-	@Override
-	public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-		if (authentication != null) {
-			cancelCookie(request, response);
-		}
-	}
-	
-	
-	/**
+        // Token also matches, so login is valid. Update the token value,
+        // keeping the *same* series number.
+        if (logger.isDebugEnabled()) {
+            logger.debug("Refreshing persistent login token for user '" + token.getUsername() + "', " +
+                "series '" + token.getSeries() + "'");
+        }
+
+        try {
+            tokenRepository.updateToken(token.getSeries(), token.getTokenValue(), new Date());
+            setCookie(new String[] {token.getSeries(), token.getTokenValue()}, getTokenValiditySeconds(), request,
+                response);
+        } catch (DataAccessException e) {
+            logger.error("Failed to update token: ", e);
+            throw new RememberMeAuthenticationException("Autologin failed due to data access problem");
+        }
+
+        return getUserDetailsService().loadUserByUsername(token.getTenantName() == null || token.getTenantName()
+            .equals("")? token.getUsername(): token.getUsername() + "@" + token.getTenantName());
+    }
+
+    @Override
+    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        if (authentication != null) {
+            cancelCookie(request, response);
+        }
+    }
+
+
+    /**
      * Creates a new persistent login token with a new series number, stores the data in the
      * persistent token repository and adds the corresponding cookie to the response.
-     *
      */
-	@Override
-    protected void onLoginSuccess(HttpServletRequest request, HttpServletResponse response, Authentication successfulAuthentication) {
+    @Override
+    protected void onLoginSuccess(HttpServletRequest request, HttpServletResponse response,
+                                  Authentication successfulAuthentication) {
         String username = successfulAuthentication.getName();
         String tenantName = request.getParameter("tenantName");
         username = username.trim();
-        
+
         logger.debug("Creating new persistent login for user " + username);
 
-        PersistentTenantRememberMeToken persistentToken = new PersistentTenantRememberMeToken(username, generateSeriesData(),
-                generateTokenData(), new Date(), tenantName);
+        PersistentTenantRememberMeToken persistentToken = new PersistentTenantRememberMeToken(username, generateSeriesData(), generateTokenData(), new Date(), tenantName);
         try {
             tokenRepository.createNewToken(persistentToken);
-            
-            setCookie(new String[] { persistentToken.getSeries(), persistentToken.getTokenValue() }, getTokenValiditySeconds(), request, response);
+
+            setCookie(new String[] {persistentToken.getSeries(), persistentToken.getTokenValue()}, getTokenValiditySeconds(), request, response);
         } catch (DataAccessException e) {
             logger.error("Failed to save persistent token ", e);
         }

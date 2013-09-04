@@ -19,229 +19,232 @@ package org.craftercms.profile.services;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.exceptions.InvalidEmailException;
 
 
 public interface ProfileService {
 
-	/**
-	 * Create profile
-	 * 
-	 * @param appToken
-	 * @param origin
-	 * @param userName
-	 * @param password
-	 * @param email
-	 * @param prefix
-	 * @param firstName
-	 * @param lastName
-	 * @param role
-	 * @param suffix
-	 * @param attributes
-	 */
-	Profile createProfile(String userName, String password, Boolean active, String tenantName, Map<String, Serializable> attributes, List<String> roles,
-			HttpServletResponse response);
+    /**
+     * Create profile
+     *
+     * @param appToken
+     * @param origin
+     * @param userName
+     * @param password
+     * @param email
+     * @param prefix
+     * @param firstName
+     * @param lastName
+     * @param role
+     * @param suffix
+     * @param attributes
+     * @throws InvalidEmailException If the email is not following a correct format
+     */
+    Profile createProfile(String userName, String password, Boolean active, String tenantName, String email,
+                          Map<String, Serializable> attributes, List<String> roles,
+                          HttpServletResponse response) throws InvalidEmailException;
 
-	/**
-	 * Update profile
-	 * 
-	 * @param appToken
-	 * @param profileId
-	 * @param origin
-	 * @param userName
-	 * @param password
-	 * @param email
-	 * @param prefix
-	 * @param firstName
-	 * @param lastName
-	 * @param suffix
-	 * @param attributes
-	 */
-	Profile updateProfile(String profileId, String userName, String password, Boolean active, String tenantName, 
-			Map<String, Serializable> attributes, List<String> roles);
+    /**
+     * Update profile
+     *
+     * @param appToken
+     * @param profileId
+     * @param origin
+     * @param userName
+     * @param password
+     * @param email
+     * @param prefix
+     * @param firstName
+     * @param lastName
+     * @param suffix
+     * @param attributes
+     */
+    Profile updateProfile(String profileId, String userName, String password, Boolean active, String tenantName,
+                          String email, Map<String, Serializable> attributes, List<String> roles);
 
-	/**
-	 * Get Profile
-	 * 
-	 * @param ticket
-	 * @return
-	 */
-	Profile getProfileByTicket(String ticket);
+    /**
+     * Get Profile
+     *
+     * @param ticket
+     * @return
+     */
+    Profile getProfileByTicket(String ticket);
 
-	/**
-	 * Get Profile
-	 * 
-	 * @param ticket
-	 * @param attributes
-	 * @return
-	 */
-	Profile getProfileByTicket(String ticket, List<String> attributes);
+    /**
+     * Get Profile
+     *
+     * @param ticket
+     * @param attributes
+     * @return
+     */
+    Profile getProfileByTicket(String ticket, List<String> attributes);
 
-	/**
-	 * Get Profile
-	 * 
-	 * @param ticket
-	 * @return
-	 */
-	Profile getProfileByTicketWithAllAttributes(String ticket);
-	
-	/**
-	 * Get Profile
-	 * 
-	 * @param appToken
-	 * @param profileId
-	 * @return
-	 */
-	Profile getProfile(String profileId);
+    /**
+     * Get Profile
+     *
+     * @param ticket
+     * @return
+     */
+    Profile getProfileByTicketWithAllAttributes(String ticket);
 
-	/**
-	 * Get Profile with requested Attributes
-	 * 
-	 * @param profileId
-	 * @param attributes
-	 * @return
-	 */
-	Profile getProfile(String profileId, List<String> attributes);
+    /**
+     * Get Profile
+     *
+     * @param appToken
+     * @param profileId
+     * @return
+     */
+    Profile getProfile(String profileId);
 
-	/**
-	 * Get Profile with Attributes
-	 * 
-	 * @param appToken
-	 * @param profileId
-	 * @return
-	 */
-	Profile getProfileWithAllAttributes(String profileId);
+    /**
+     * Get Profile with requested Attributes
+     *
+     * @param profileId
+     * @param attributes
+     * @return
+     */
+    Profile getProfile(String profileId, List<String> attributes);
 
-	/**
-	 * Get Profiles in Range with Sort Order
-	 * 
-	 * @param start
-	 * @param end
-	 * @return
-	 */
-	List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder, List<String> attributesList, int start, int end);
+    /**
+     * Get Profile with Attributes
+     *
+     * @param appToken
+     * @param profileId
+     * @return
+     */
+    Profile getProfileWithAllAttributes(String profileId);
 
-	/**
-	 * Get Profiles
-	 * 
-	 * @param appToken
-	 * @param profileIdList
-	 * @return
-	 */
-	List<Profile> getProfiles(List<String> profileIdList);
+    /**
+     * Get Profiles in Range with Sort Order
+     *
+     * @param start
+     * @param end
+     * @return
+     */
+    List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder, List<String> attributesList,
+                                  int start, int end);
 
-	/**
-	 * Get Profiles with Attributes
-	 * 
-	 * @param appToken
-	 * @param profileIdList
-	 * @return
-	 */
-	List<Profile> getProfilesWithAttributes(List<String> profileIdList);
+    /**
+     * Get Profiles
+     *
+     * @param appToken
+     * @param profileIdList
+     * @return
+     */
+    List<Profile> getProfiles(List<String> profileIdList);
 
-	/**
-	 * Get Total Number of Profiles Count
-	 * 
-	 * @return
-	 */
-	long getProfilesCount(String tenantName);
+    /**
+     * Get Profiles with Attributes
+     *
+     * @param appToken
+     * @param profileIdList
+     * @return
+     */
+    List<Profile> getProfilesWithAttributes(List<String> profileIdList);
 
-	/**
-	 * Delete Profile
-	 * 
-	 * @param appToken
-	 * @param profileId
-	 */
-	void deleteProfile(String profileId);
+    /**
+     * Get Total Number of Profiles Count
+     *
+     * @return
+     */
+    long getProfilesCount(String tenantName);
 
-	/**
-	 * Delete all profiles
-	 */
-	void deleteProfiles();
+    /**
+     * Delete Profile
+     *
+     * @param appToken
+     * @param profileId
+     * @param active    Activates the profile
+     */
+    void activeProfile(String profileId, boolean active);
 
-	/**
-	 * Set attributes to Profile
-	 * 
-	 * @param appToken
-	 * @param profileId
-	 * @param key
-	 * @param value
-	 */
-	void setAttributes(String profileId, Map<String, Serializable> attributes);
+    /**
+     * Active all profiles
+     */
+    void activeProfiles(boolean active);
 
-	/**
-	 * 
-	 * Get Attributes requested
-	 * 
-	 * @param profileId
-	 * @param attributes
-	 * @return
-	 */
-	Map<String, Serializable> getAttributes(String profileId, List<String> attributes);
+    /**
+     * Set attributes to Profile
+     *
+     * @param appToken
+     * @param profileId
+     * @param key
+     * @param value
+     */
+    void setAttributes(String profileId, Map<String, Serializable> attributes);
 
-	/**
-	 * Get Attributes
-	 * 
-	 * @param appToken
-	 * @param profileId
-	 * @return
-	 */
-	Map<String, Serializable> getAllAttributes(String profileId);
+    /**
+     * Get Attributes requested
+     *
+     * @param profileId
+     * @param attributes
+     * @return
+     */
+    Map<String, Serializable> getAttributes(String profileId, List<String> attributes);
 
-	/**
-	 * Get Attribute
-	 * 
-	 * @param profileId
-	 * @param attributeKey
-	 * @return
-	 */
-	Map<String, Serializable> getAttribute(String profileId, String attributeKey);
+    /**
+     * Get Attributes
+     *
+     * @param appToken
+     * @param profileId
+     * @return
+     */
+    Map<String, Serializable> getAllAttributes(String profileId);
 
-	/**
-	 * Delete All Attributes
-	 * 
-	 * @param appToken
-	 * @param profileId
-	 */
-	void deleteAllAttributes(String profileId);
+    /**
+     * Get Attribute
+     *
+     * @param profileId
+     * @param attributeKey
+     * @return
+     */
+    Map<String, Serializable> getAttribute(String profileId, String attributeKey);
 
-	/**
-	 * Delete Attributes
-	 * 
-	 * @param attributesMap
-	 */
-	void deleteAttributes(String profileId, List<String> attributes);
+    /**
+     * Delete All Attributes
+     *
+     * @param appToken
+     * @param profileId
+     */
+    void deleteAllAttributes(String profileId);
 
-	/**
-	 * Get Profile
-	 * 
-	 * @param userName
-	 * @return
-	 */
-	Profile getProfileByUserName(String userName, String tenantName);
+    /**
+     * Delete Attributes
+     *
+     * @param attributesMap
+     */
+    void deleteAttributes(String profileId, List<String> attributes);
 
-	/**
-	 * Get Profile
-	 * 
-	 * @param userName
-	 * @param attributes
-	 * @return
-	 */
-	Profile getProfileByUserName(String userName, String tenantName, List<String> attributes);
+    /**
+     * Get Profile
+     *
+     * @param userName
+     * @return
+     */
+    Profile getProfileByUserName(String userName, String tenantName);
 
-	/**
-	 * Get Profile
-	 * 
-	 * @param userName
-	 * @return
-	 */
-	Profile getProfileByUserNameWithAllAttributes(String userName, String tenantName);
+    /**
+     * Get Profile
+     *
+     * @param userName
+     * @param attributes
+     * @return
+     */
+    Profile getProfileByUserName(String userName, String tenantName, List<String> attributes);
 
-	void deleteProfiles(String tenantName);
-	
-	List<Profile> getProfilesByRoleName(String roleName, String tenantName);
+    /**
+     * Get Profile
+     *
+     * @param userName
+     * @return
+     */
+    Profile getProfileByUserNameWithAllAttributes(String userName, String tenantName);
+
+    void deleteProfiles(String tenantName);
+
+    List<Profile> getProfilesByRoleName(String roleName, String tenantName);
 
 }

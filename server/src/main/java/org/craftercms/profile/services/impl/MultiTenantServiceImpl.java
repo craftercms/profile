@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
@@ -41,46 +40,45 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MultiTenantServiceImpl implements MultiTenantService {
-	
-	private final transient Logger log = LoggerFactory
-			.getLogger(MultiTenantServiceImpl.class);
-	
-	@Autowired
-	private TenantRepository tenantRepository;
-	
-	@Autowired 
-	private ProfileService profileService;
-	
-	@Autowired 
-	private RoleService roleService;
 
-	@Override
-	public Tenant createTenant(String tenantName, boolean createDefaults,
-                               List<String> roles, List<String> domains, HttpServletResponse response) {
+    private final transient Logger log = LoggerFactory.getLogger(MultiTenantServiceImpl.class);
+
+    @Autowired
+    private TenantRepository tenantRepository;
+
+    @Autowired
+    private ProfileService profileService;
+
+    @Autowired
+    private RoleService roleService;
+
+    @Override
+    public Tenant createTenant(String tenantName, boolean createDefaults, List<String> roles, List<String> domains,
+                               HttpServletResponse response) {
 
         Schema schema = new Schema();
         schema.setAttributes(new ArrayList<Attribute>());
 
-		Tenant tenant = new Tenant();
-		tenant.setTenantName(tenantName);
+        Tenant tenant = new Tenant();
+        tenant.setTenantName(tenantName);
         tenant.setSchema(schema);
         tenant.setRoles(roles);
         tenant.setDomains(domains);
 
-		Tenant current = null;
-		try {
-			current = tenantRepository.save(tenant);
-		} catch (DuplicateKeyException e) {
-			try {
-				if (response!=null) {
-					response.sendError(HttpServletResponse.SC_CONFLICT);
-				}
-			} catch(IOException e1) {
-				log.error("Can't set error status after a DuplicateKey exception was received.");
-			}
-		}		
-		return current;
-	}
+        Tenant current = null;
+        try {
+            current = tenantRepository.save(tenant);
+        } catch (DuplicateKeyException e) {
+            try {
+                if (response != null) {
+                    response.sendError(HttpServletResponse.SC_CONFLICT);
+                }
+            } catch (IOException e1) {
+                log.error("Can't set error status after a DuplicateKey exception was received.");
+            }
+        }
+        return current;
+    }
 
     @Override
     public Tenant updateTenant(String id, String tenantName, List<String> roles, List<String> domains) {
@@ -115,43 +113,43 @@ public class MultiTenantServiceImpl implements MultiTenantService {
     }
 
     @Override
-	public void deleteTenant(String tenantName) {
-		
-		//roleService.deleteAllRoles(tenantName); SYSTEM ROLES SHOULD NOT BE DELETED
-		
-		profileService.deleteProfiles(tenantName);
-		Tenant t = tenantRepository.getTenantByName(tenantName);
-		if (t!=null) {
-			tenantRepository.delete(t.getId());
-		}
-		
-	}
-	
-	@Override
-	public Tenant getTenantById(String tenantId) {
-		return tenantRepository.findTenantById(new ObjectId(tenantId));
-	}
+    public void deleteTenant(String tenantName) {
 
-	@Override
-	public Tenant getTenantByName(String tenantName) {
-		return tenantRepository.getTenantByName(tenantName);
-	}
-	
-	@Override
-	public Tenant getTenantByTicket(String ticket) {
-		Profile profile  = this.profileService.getProfileByTicket(ticket);
-		return getTenantByName(profile.getTenantName());
-		
-	}
+        //roleService.deleteAllRoles(tenantName); SYSTEM ROLES SHOULD NOT BE DELETED
+
+        profileService.deleteProfiles(tenantName);
+        Tenant t = tenantRepository.getTenantByName(tenantName);
+        if (t != null) {
+            tenantRepository.delete(t.getId());
+        }
+
+    }
+
+    @Override
+    public Tenant getTenantById(String tenantId) {
+        return tenantRepository.findTenantById(new ObjectId(tenantId));
+    }
+
+    @Override
+    public Tenant getTenantByName(String tenantName) {
+        return tenantRepository.getTenantByName(tenantName);
+    }
+
+    @Override
+    public Tenant getTenantByTicket(String ticket) {
+        Profile profile = this.profileService.getProfileByTicket(ticket);
+        return getTenantByName(profile.getTenantName());
+
+    }
 
     @Override
     public boolean exists(String tenantName) {
-    	Tenant t = getTenantByName(tenantName);
-    	if (t==null) {
-    		return false;
-    	}
-    	return true;
-        
+        Tenant t = getTenantByName(tenantName);
+        if (t == null) {
+            return false;
+        }
+        return true;
+
     }
 
     @Override
@@ -169,8 +167,8 @@ public class MultiTenantServiceImpl implements MultiTenantService {
         return tenantRepository.findAll();
     }
 
-	@Override
-	public List<Tenant> getTenantsByRoleName(String roleName) {
-		return tenantRepository.getTenants(new String[]{roleName});
-	}
+    @Override
+    public List<Tenant> getTenantsByRoleName(String roleName) {
+        return tenantRepository.getTenants(new String[] {roleName});
+    }
 }

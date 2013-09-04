@@ -16,24 +16,26 @@
  */
 package org.craftercms.security.servlet.filters;
 
-import org.craftercms.security.api.RequestContext;
-import org.springframework.web.filter.OncePerRequestFilter;
-
+import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
+import org.craftercms.security.api.RequestContext;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * Binds a new request context to the current thread before the chain is called, and then removes it after the chain is called.
+ * Binds a new request context to the current thread before the chain is called, and then removes it after the chain
+ * is called.
  *
  * @author Alfonso Vásquez
  */
 public class RequestContextBindingFilter extends OncePerRequestFilter {
 
     /**
-     * Binds a new {@link RequestContext} to the current thread, and after the the filter chain has finished executing, removes it
+     * Binds a new {@link RequestContext} to the current thread, and after the the filter chain has finished
+     * executing, removes it
      * from the current thread.
      *
      * @param request
@@ -43,8 +45,8 @@ public class RequestContextBindingFilter extends OncePerRequestFilter {
      * @throws IOException
      */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException,
-            IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                    FilterChain chain) throws ServletException, IOException {
         RequestContext context = createRequestContext(request, response);
 
         if (logger.isDebugEnabled()) {
@@ -57,7 +59,8 @@ public class RequestContextBindingFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
         } finally {
             if (logger.isDebugEnabled()) {
-                logger.debug("Removing request context for request '" + request.getRequestURI() + "' from current thread");
+                logger.debug("Removing request context for request '" + request.getRequestURI() + "' from current " +
+                    "thread");
             }
 
             RequestContext.clear();
@@ -65,7 +68,8 @@ public class RequestContextBindingFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Returns a new {@link RequestContext}, using the specified {@link HttpServletRequest} and {@link HttpServletResponse}.
+     * Returns a new {@link RequestContext}, using the specified {@link HttpServletRequest} and {@link
+     * HttpServletResponse}.
      */
     protected RequestContext createRequestContext(HttpServletRequest request, HttpServletResponse response) {
         RequestContext context = new RequestContext();

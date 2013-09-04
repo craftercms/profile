@@ -17,21 +17,21 @@
 package org.craftercms.profile.exceptions;
 
 public class NoSuchProfileException extends Exception {
-	private static final long serialVersionUID = -2413298940118402561L;
+    private static final long serialVersionUID = -2413298940118402561L;
 
-	public NoSuchProfileException() {
-		super();
-	}
+    public NoSuchProfileException() {
+        super();
+    }
 
-	public NoSuchProfileException(String msg, Throwable thr) {
-		super(msg, thr);
-	}
+    public NoSuchProfileException(String msg, Throwable thr) {
+        super(msg, thr);
+    }
 
-	public NoSuchProfileException(String msg) {
-		super(msg);
-	}
+    public NoSuchProfileException(String msg) {
+        super(msg);
+    }
 
-	public NoSuchProfileException(Throwable thr) {
-		super(thr);
-	}
+    public NoSuchProfileException(Throwable thr) {
+        super(thr);
+    }
 }

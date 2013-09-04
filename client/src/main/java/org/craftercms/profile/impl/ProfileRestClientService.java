@@ -19,9 +19,6 @@ package org.craftercms.profile.impl;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-//import org.apache.commons.configuration.ConfigurationException;
-//import org.apache.commons.configuration.XMLConfiguration;
-//import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHost;
@@ -39,168 +36,164 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 
+//import org.apache.commons.configuration.ConfigurationException;
+//import org.apache.commons.configuration.XMLConfiguration;
+//import org.apache.commons.lang3.StringUtils;
+
 /**
  * This service creates an HttpConnection and is able to service connection requests from multiple execution threads.
- * 
- * @author Alvaro Gonzalez
  *
+ * @author Alvaro Gonzalez
  */
 public class ProfileRestClientService {
-	private static final int CONNECTION_TIMEOUT = 10000;
-	private static final int SOCKET_TIMEOUT = 60000;
-	private static Log log = LogFactory.getLog(ProfileRestClientService.class);
+    private static final int CONNECTION_TIMEOUT = 10000;
+    private static final int SOCKET_TIMEOUT = 60000;
+    private static Log log = LogFactory.getLog(ProfileRestClientService.class);
 
-	private static ProfileRestClientService profileRestClientService = new ProfileRestClientService();
-	
-	private int connectionTimeout = CONNECTION_TIMEOUT;
-	private int socketTimeout = SOCKET_TIMEOUT;
-	private int sslPort = 443;
-	private int port = 8080;
-	private int maxPerRoute = 2;
-	private int maxTotal = 20;
-	private String host = "localhost";
-	private int defaultMaxPerRoute = 2;
+    private static ProfileRestClientService profileRestClientService = new ProfileRestClientService();
 
-	private ProfileRestClientService() {
-	}
+    private int connectionTimeout = CONNECTION_TIMEOUT;
+    private int socketTimeout = SOCKET_TIMEOUT;
+    private int sslPort = 443;
+    private int port = 8080;
+    private int maxPerRoute = 2;
+    private int maxTotal = 20;
+    private String host = "localhost";
+    private int defaultMaxPerRoute = 2;
 
-	public static ProfileRestClientService getInstance() {
-		return profileRestClientService;
-	}
+    private ProfileRestClientService() {
+    }
 
-	public DefaultHttpClient getHttpClient() {
-		return getHttpClient(connectionTimeout,socketTimeout);
-	}
+    public static ProfileRestClientService getInstance() {
+        return profileRestClientService;
+    }
 
-	private DefaultHttpClient getHttpClient(int connectionTimeOut,
-			int sockeTimeOut) {
-		try {
+    public DefaultHttpClient getHttpClient() {
+        return getHttpClient(connectionTimeout, socketTimeout);
+    }
 
-			HttpParams httpParams = new BasicHttpParams();
+    private DefaultHttpClient getHttpClient(int connectionTimeOut, int sockeTimeOut) {
+        try {
 
-			setParams(httpParams, connectionTimeOut, sockeTimeOut);
+            HttpParams httpParams = new BasicHttpParams();
 
-			SSLSocketFactory sf = new SSLSocketFactory(new TrustStrategy() {
-				public boolean isTrusted(X509Certificate[] chain,
-						String authType) throws CertificateException {
-					return true;
-				}
-			}, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+            setParams(httpParams, connectionTimeOut, sockeTimeOut);
 
-			SchemeRegistry registry = new SchemeRegistry();
-			registry.register(new Scheme("http", port, PlainSocketFactory
-					.getSocketFactory()));
-			registry.register(new Scheme("https", sslPort, sf));
+            SSLSocketFactory sf = new SSLSocketFactory(new TrustStrategy() {
+                public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                    return true;
+                }
+            }, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
-			PoolingClientConnectionManager ccm = new PoolingClientConnectionManager(
-					registry);
-			HttpHost localhost = new HttpHost(host, port);
-			ccm.setMaxPerRoute(new HttpRoute(localhost), maxPerRoute);
-			ccm.setMaxTotal(maxTotal);
-			ccm.setDefaultMaxPerRoute(defaultMaxPerRoute);
-			return new DefaultHttpClient(ccm, httpParams);
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-			return new DefaultHttpClient();
-		}
-	}
+            SchemeRegistry registry = new SchemeRegistry();
+            registry.register(new Scheme("http", port, PlainSocketFactory.getSocketFactory()));
+            registry.register(new Scheme("https", sslPort, sf));
 
-	/**
-	 * @param httpParams
-	 * @param connectionTimeOut
-	 * @param sockeTimeOut
-	 */
-	private void setParams(HttpParams httpParams, int connectionTimeOut,
-			int sockeTimeOut) {
+            PoolingClientConnectionManager ccm = new PoolingClientConnectionManager(registry);
+            HttpHost localhost = new HttpHost(host, port);
+            ccm.setMaxPerRoute(new HttpRoute(localhost), maxPerRoute);
+            ccm.setMaxTotal(maxTotal);
+            ccm.setDefaultMaxPerRoute(defaultMaxPerRoute);
+            return new DefaultHttpClient(ccm, httpParams);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return new DefaultHttpClient();
+        }
+    }
 
-		setHttpProtocolParams(httpParams);
-		setHttpConnectionParams(httpParams, connectionTimeOut, sockeTimeOut);
+    /**
+     * @param httpParams
+     * @param connectionTimeOut
+     * @param sockeTimeOut
+     */
+    private void setParams(HttpParams httpParams, int connectionTimeOut, int sockeTimeOut) {
 
-		httpParams.setBooleanParameter("http.protocol.expect-continue", false);
-	}
+        setHttpProtocolParams(httpParams);
+        setHttpConnectionParams(httpParams, connectionTimeOut, sockeTimeOut);
 
-	/**
-	 * @param httpParams
-	 */
-	private void setHttpProtocolParams(HttpParams httpParams) {
-		HttpProtocolParams.setVersion(httpParams, HttpVersion.HTTP_1_1);
-		HttpProtocolParams.setContentCharset(httpParams, "utf-8");
-	}
+        httpParams.setBooleanParameter("http.protocol.expect-continue", false);
+    }
 
-	/**
-	 * @param httpParams
-	 * @param connectionTimeOut
-	 * @param sockeTimeOut
-	 */
-	private void setHttpConnectionParams(HttpParams httpParams,
-			int connectionTimeOut, int sockeTimeOut) {
-		HttpConnectionParams
-				.setConnectionTimeout(httpParams, connectionTimeOut);
-		HttpConnectionParams.setSoTimeout(httpParams, sockeTimeOut);
-	}
+    /**
+     * @param httpParams
+     */
+    private void setHttpProtocolParams(HttpParams httpParams) {
+        HttpProtocolParams.setVersion(httpParams, HttpVersion.HTTP_1_1);
+        HttpProtocolParams.setContentCharset(httpParams, "utf-8");
+    }
 
-	public int getConnectionTimeout() {
-		return connectionTimeout;
-	}
+    /**
+     * @param httpParams
+     * @param connectionTimeOut
+     * @param sockeTimeOut
+     */
+    private void setHttpConnectionParams(HttpParams httpParams, int connectionTimeOut, int sockeTimeOut) {
+        HttpConnectionParams.setConnectionTimeout(httpParams, connectionTimeOut);
+        HttpConnectionParams.setSoTimeout(httpParams, sockeTimeOut);
+    }
 
-	public void setConnectionTimeout(int connectionTimeout) {
-		this.connectionTimeout = connectionTimeout;
-	}
+    public int getConnectionTimeout() {
+        return connectionTimeout;
+    }
 
-	public int getSocketTimeout() {
-		return socketTimeout;
-	}
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+    }
 
-	public void setSocketTimeout(int socketTimeout) {
-		this.socketTimeout = socketTimeout;
-	}
+    public int getSocketTimeout() {
+        return socketTimeout;
+    }
 
-	public int getSslPort() {
-		return sslPort;
-	}
+    public void setSocketTimeout(int socketTimeout) {
+        this.socketTimeout = socketTimeout;
+    }
 
-	public void setSslPort(int sslPort) {
-		this.sslPort = sslPort;
-	}
+    public int getSslPort() {
+        return sslPort;
+    }
 
-	public int getPort() {
-		return port;
-	}
+    public void setSslPort(int sslPort) {
+        this.sslPort = sslPort;
+    }
 
-	public void setPort(int port) {
-		this.port = port;
-	}
+    public int getPort() {
+        return port;
+    }
 
-	public int getMaxPerRoute() {
-		return maxPerRoute;
-	}
+    public void setPort(int port) {
+        this.port = port;
+    }
 
-	public void setMaxPerRoute(int maxPerRoute) {
-		this.maxPerRoute = maxPerRoute;
-	}
+    public int getMaxPerRoute() {
+        return maxPerRoute;
+    }
 
-	public int getMaxTotal() {
-		return maxTotal;
-	}
+    public void setMaxPerRoute(int maxPerRoute) {
+        this.maxPerRoute = maxPerRoute;
+    }
 
-	public void setMaxTotal(int maxTotal) {
-		this.maxTotal = maxTotal;
-	}
+    public int getMaxTotal() {
+        return maxTotal;
+    }
 
-	public String getHost() {
-		return host;
-	}
+    public void setMaxTotal(int maxTotal) {
+        this.maxTotal = maxTotal;
+    }
 
-	public void setHost(String host) {
-		this.host = host;
-	}
+    public String getHost() {
+        return host;
+    }
 
-	public int getDefaultMaxPerRoute() {
-		return defaultMaxPerRoute;
-	}
+    public void setHost(String host) {
+        this.host = host;
+    }
 
-	public void setDefaultMaxPerRoute(int defaultMaxPerRoute) {
-		this.defaultMaxPerRoute = defaultMaxPerRoute;
-	}
+    public int getDefaultMaxPerRoute() {
+        return defaultMaxPerRoute;
+    }
+
+    public void setDefaultMaxPerRoute(int defaultMaxPerRoute) {
+        this.defaultMaxPerRoute = defaultMaxPerRoute;
+    }
 
 }

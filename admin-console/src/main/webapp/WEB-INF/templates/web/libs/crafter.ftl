@@ -25,7 +25,7 @@
 <#--Prints a variable value, only if it's not null or blank-->
 <#macro $ var="">
     <#if var?? && var != "">
-        ${var}
+    ${var}
     </#if>
 </#macro>
 
@@ -33,13 +33,13 @@
 <#--Formats a date, only if it's not null-->
 <#macro date var format="MM dd, yyyy">
     <#if var??>
-        ${var?string(format)}
+    ${var?string(format)}
     </#if>
 </#macro>
 
 
 <#macro formInput path id="" attributes="" fieldType="text" default="">
-    <#-- Start of Modified spring.bind -->
+<#-- Start of Modified spring.bind -->
     <#if htmlEscape??>
         <#assign status = springMacroRequestContext.getBindStatus(path, htmlEscape) in spring>
     <#else>
@@ -50,12 +50,12 @@
     <#else>
         <#assign stringStatusValue = spring.status.value!default in spring>
     </#if>
-    <#-- End of Modified spring.bind -->
+<#-- End of Modified spring.bind -->
     <#if id == "">
         <#assign id=spring.status.expression>
     </#if>
-    <input type="${fieldType}" id="${id}" name="${spring.status.expression}"
-           value="<#if fieldType!="password">${spring.stringStatusValue}</#if>" ${attributes}<@spring.closeTag/>
+<input type="${fieldType}" id="${id}" name="${spring.status.expression}"
+       value="<#if fieldType!="password">${spring.stringStatusValue}</#if>" ${attributes}<@spring.closeTag/>
 </#macro>
 
 <#macro formTextarea path id="" attributes="">
@@ -63,7 +63,7 @@
     <#if id == "">
         <#assign id=spring.status.expression>
     </#if>
-    <textarea id="${id}" name="${spring.status.expression}" ${attributes}>${spring.stringStatusValue}</textarea>
+<textarea id="${id}" name="${spring.status.expression}" ${attributes}>${spring.stringStatusValue}</textarea>
 </#macro>
 
 <#macro formSingleSelect path options valueProp="" textProp="" id="" attributes="">
@@ -71,19 +71,19 @@
     <#if id == "">
         <#assign id=spring.status.expression>
     </#if>
-    <select id="${id}" name="${spring.status.expression}" ${attributes}>
-        <#if options?is_hash>
-            <#list options?keys as value>
+<select id="${id}" name="${spring.status.expression}" ${attributes}>
+    <#if options?is_hash>
+        <#list options?keys as value>
             <option value="${value?html}"<@spring.checkSelected value/>>${options[value]?html}</option>
-            </#list>
-        <#else>
-            <#list options as option>
+        </#list>
+    <#else>
+        <#list options as option>
             <#assign value = getOptionValue(option, valueProp)>
             <#assign text = getOptionText(option, textProp)>
             <option value="${value?html}"<@spring.checkSelected value/>>${text?html}</option>
-            </#list>
-        </#if>
-    </select>
+        </#list>
+    </#if>
+</select>
 </#macro>
 
 <#macro formMultiSelect path options valueProp="" textProp="" id="" attributes="">
@@ -91,31 +91,32 @@
     <#if id == "">
         <#assign id=spring.status.expression>
     </#if>
-    <select multiple="multiple" id="${id}" name="${spring.status.expression}" ${attributes}>
-        <#if options?is_hash>
-            <#list options?keys as value>
+<select multiple="multiple" id="${id}" name="${spring.status.expression}" ${attributes}>
+    <#if options?is_hash>
+        <#list options?keys as value>
             <#assign isSelected = spring.contains(spring.status.value![""], value)>
             <option value="${value?html}"<#if isSelected> selected="selected"</#if>>${options[value]?html}</option>
-            </#list>
-        <#else>
-            <#list options as option>
+        </#list>
+    <#else>
+        <#list options as option>
             <#assign value = getOptionValue(option, valueProp)>
             <#assign text = getOptionText(option, textProp)>
             <#assign isSelected = spring.contains(spring.status.value![""], value)>
             <option value="${value?html}"<#if isSelected> selected="selected"</#if>>${text?html}</option>
-            </#list>
-        </#if>
-    </select>
+        </#list>
+    </#if>
+</select>
 </#macro>
 
 <#macro formCheckbox path id="" attributes="">
-	<@spring.bind path />
+    <@spring.bind path />
     <#if id == "">
         <#assign id=spring.status.expression>
     </#if>
     <#assign isSelected = spring.status.value?? && spring.status.value?string=="true">
-	<input type="hidden" name="_${spring.status.expression}" value="on"/>
-	<input type="checkbox" id="${id}" name="${spring.status.expression}"<#if isSelected> checked="checked"</#if> ${attributes}/>
+<input type="hidden" name="_${spring.status.expression}" value="on"/>
+<input type="checkbox" id="${id}" name="${spring.status.expression}"<#if isSelected>
+       checked="checked"</#if> ${attributes}/>
 </#macro>
 
 <#macro showErrors classOrStyle="" errorClassOrStyle="" lastErrorClassOrStyle=errorClassOrStyle>

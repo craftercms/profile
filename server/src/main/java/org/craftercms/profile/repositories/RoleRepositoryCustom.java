@@ -19,6 +19,6 @@ package org.craftercms.profile.repositories;
 import org.craftercms.profile.domain.Role;
 
 public interface RoleRepositoryCustom {
-	public Role getRoleByName(String roleName);
-	
+    public Role getRoleByName(String roleName);
+
 }

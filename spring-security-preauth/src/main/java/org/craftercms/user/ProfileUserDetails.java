@@ -19,13 +19,13 @@ package org.craftercms.user;
 import java.util.List;
 
 import org.craftercms.profile.impl.domain.Profile;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 
 public class ProfileUserDetails extends User {
-	
-	public ProfileUserDetails(Profile profile, List<GrantedAuthority> authorities) {
-		super(profile.getUserName(),profile.getPassword(), authorities);
-	}
+
+    public ProfileUserDetails(Profile profile, List<GrantedAuthority> authorities) {
+        super(profile.getUserName(), profile.getPassword(), authorities);
+    }
 
 }

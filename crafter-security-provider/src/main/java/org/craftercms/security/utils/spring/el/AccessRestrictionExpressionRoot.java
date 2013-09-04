@@ -16,12 +16,13 @@
  */
 package org.craftercms.security.utils.spring.el;
 
-import org.craftercms.security.api.UserProfile;
-
 import java.util.List;
 
+import org.craftercms.security.api.UserProfile;
+
 /**
- * Instances of this class are used as the root object for Spring EL {@link org.springframework.expression.Expression}s that are
+ * Instances of this class are used as the root object for Spring EL {@link org.springframework.expression
+ * .Expression}s that are
  * used to evaluate access restrictions.
  *
  * @author Alfonso Vásquez

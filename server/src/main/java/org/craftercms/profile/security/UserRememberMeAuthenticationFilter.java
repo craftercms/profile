@@ -17,7 +17,6 @@
 package org.craftercms.profile.security;
 
 import java.io.IOException;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -34,17 +33,18 @@ import org.springframework.security.web.authentication.rememberme.RememberMeAuth
 
 public class UserRememberMeAuthenticationFilter extends RememberMeAuthenticationFilter {
 
-	private AuthenticationManager authenticationManager;
-	
-	public UserRememberMeAuthenticationFilter(AuthenticationManager authenticationManager, RememberMeServices rememberMeServices) {
-		super(authenticationManager, rememberMeServices);
-		this.authenticationManager = authenticationManager;
-	}
+    private AuthenticationManager authenticationManager;
 
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
-            throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) req;
-        HttpServletResponse response = (HttpServletResponse) res;
+    public UserRememberMeAuthenticationFilter(AuthenticationManager authenticationManager,
+                                              RememberMeServices rememberMeServices) {
+        super(authenticationManager, rememberMeServices);
+        this.authenticationManager = authenticationManager;
+    }
+
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException,
+        ServletException {
+        HttpServletRequest request = (HttpServletRequest)req;
+        HttpServletResponse response = (HttpServletResponse)res;
 
         Authentication rememberMeAuth = getRememberMeServices().autoLogin(request, response);
 
@@ -54,15 +54,15 @@ public class UserRememberMeAuthenticationFilter extends RememberMeAuthentication
                 rememberMeAuth = authenticationManager.authenticate(rememberMeAuth);
 
                 if (SecurityContextHolder.getContext().getAuthentication() != null) {
-	                onSuccessfulAuthentication(request, response, rememberMeAuth);
+                    onSuccessfulAuthentication(request, response, rememberMeAuth);
                 }
 
 
             } catch (AuthenticationException authenticationException) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("SecurityContextHolder not populated with remember-me token, as "
-                            + "AuthenticationManager rejected Authentication returned by RememberMeServices: '"
-                            + rememberMeAuth + "'; invalidating remember-me token", authenticationException);
+                    logger.debug("SecurityContextHolder not populated with remember-me token, " +
+                        "as " + "AuthenticationManager rejected Authentication returned by RememberMeServices: '" +
+                        rememberMeAuth + "'; invalidating remember-me token", authenticationException);
                 }
 
                 getRememberMeServices().loginFail(request, response);
@@ -74,5 +74,5 @@ public class UserRememberMeAuthenticationFilter extends RememberMeAuthentication
         chain.doFilter(request, response);
     }
 
-	
+
 }

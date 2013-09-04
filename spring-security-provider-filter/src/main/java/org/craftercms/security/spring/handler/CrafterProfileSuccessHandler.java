@@ -17,7 +17,6 @@
 package org.craftercms.security.spring.handler;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,79 +28,79 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 /**
- * 
  * @author Sandra O'Keeffe
  */
 public class CrafterProfileSuccessHandler implements AuthenticationSuccessHandler {
-    
-	private static final Logger log = Logger.getLogger(CrafterProfileSuccessHandler.class);
-	
-	private AuthenticationSuccessHandler target;
-	private String changePasswordUrl;
-	
-	/* (non-Javadoc)
-	 * @see org.springframework.security.web.authentication.AuthenticationSuccessHandler#onAuthenticationSuccess(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.springframework.security.core.Authentication)
-	 */
-	public void onAuthenticationSuccess(HttpServletRequest request,
-        HttpServletResponse response, Authentication auth) {
-    	try {
-    		 
-	    	if (((UserProfile)request.getSession().getAttribute(SpringSecurityConstants.USER_PROFILE_SESSION_ID)).isTemporaryPassword()) {
-	    		response.sendRedirect(changePasswordUrl);
-	        } else {
-	            target.onAuthenticationSuccess(request, response, auth);
-	        }
-    	} catch (IOException e) {
-			log.error("Error executing authentication success handler. "  + e);
-			try {
-				response.sendError(500);
-			} catch (IOException e1) {
-				log.error("Error sending error 500. "  + e);
-			} 
-		} catch (ServletException e) {
-			log.error("Error executing authentication success handler. "  + e);
-			try {
-				response.sendError(500);
-			} catch (IOException e1) {
-				log.error("Error sending error 500. "  + e);
-			} 
-		}
+
+    private static final Logger log = Logger.getLogger(CrafterProfileSuccessHandler.class);
+
+    private AuthenticationSuccessHandler target;
+    private String changePasswordUrl;
+
+    /* (non-Javadoc)
+     * @see org.springframework.security.web.authentication.AuthenticationSuccessHandler#onAuthenticationSuccess
+     * (javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
+     * org.springframework.security.core.Authentication)
+     */
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
+        try {
+
+            if (((UserProfile)request.getSession().getAttribute(SpringSecurityConstants.USER_PROFILE_SESSION_ID))
+                .isTemporaryPassword()) {
+                response.sendRedirect(changePasswordUrl);
+            } else {
+                target.onAuthenticationSuccess(request, response, auth);
+            }
+        } catch (IOException e) {
+            log.error("Error executing authentication success handler. " + e);
+            try {
+                response.sendError(500);
+            } catch (IOException e1) {
+                log.error("Error sending error 500. " + e);
+            }
+        } catch (ServletException e) {
+            log.error("Error executing authentication success handler. " + e);
+            try {
+                response.sendError(500);
+            } catch (IOException e1) {
+                log.error("Error sending error 500. " + e);
+            }
+        }
     }
-    	
+
 
     /**
      * @param request
      * @param response
      * @param auth
      */
-    public void proceed(HttpServletRequest request, 
-        HttpServletResponse response, Authentication auth) {
+    public void proceed(HttpServletRequest request, HttpServletResponse response, Authentication auth) {
         try {
-			target.onAuthenticationSuccess(request, response, auth);
-		}  catch (IOException e) {
-			log.error("Error executing authentication success handler. "  + e);
-			try {
-				response.sendError(500);
-			} catch (IOException e1) {
-				log.error("Error sending error 500. "  + e);
-			} 
-		} catch (ServletException e) {
-			log.error("Error executing authentication success handler. "  + e);
-			try {
-				response.sendError(500);
-			} catch (IOException e1) {
-				log.error("Error sending error 500. "  + e);
-			} 
-		}
+            target.onAuthenticationSuccess(request, response, auth);
+        } catch (IOException e) {
+            log.error("Error executing authentication success handler. " + e);
+            try {
+                response.sendError(500);
+            } catch (IOException e1) {
+                log.error("Error sending error 500. " + e);
+            }
+        } catch (ServletException e) {
+            log.error("Error executing authentication success handler. " + e);
+            try {
+                response.sendError(500);
+            } catch (IOException e1) {
+                log.error("Error sending error 500. " + e);
+            }
+        }
     }
-    
-    public void setChangePasswordUrl(String changePasswordUrl) {
-		this.changePasswordUrl = changePasswordUrl;
-	}
-    public void setTarget(AuthenticationSuccessHandler target) {
-		this.target = target;
-	}
 
+    public void setChangePasswordUrl(String changePasswordUrl) {
+        this.changePasswordUrl = changePasswordUrl;
+    }
+
+    public void setTarget(AuthenticationSuccessHandler target) {
+        this.target = target;
+    }
 
 
 }

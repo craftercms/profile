@@ -18,16 +18,13 @@ package org.craftercms.profile.services.impl;
 
 import java.io.IOException;
 import java.util.List;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.profile.domain.Role;
 import org.craftercms.profile.domain.Tenant;
 import org.craftercms.profile.repositories.RoleRepository;
 import org.craftercms.profile.repositories.TenantRepository;
-import org.craftercms.profile.services.ProfileService;
 import org.craftercms.profile.services.RoleService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,71 +33,69 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RoleServiceImpl implements RoleService {
-	
-	private final transient Logger log = LoggerFactory
-			.getLogger(RoleServiceImpl.class);
-	
-	@Autowired
-	private TenantRepository tenantRepository;
-	
-	@Autowired
-	private RoleRepository roleRepository;
-	
-	@Autowired
-	private ProfileService profileService;
 
-	@Override
-	public Role createRole(String roleName, HttpServletResponse response) {
-		Role role = new Role();
-		role.setRoleName(roleName);
-		try {
-			return roleRepository.save(role);
-		} catch (DuplicateKeyException e) {
-			try {
-				if (response!=null) {
-					response.sendError(HttpServletResponse.SC_CONFLICT);
-				}
-			} catch(IOException e1) {
-				log.error("Can't set error status after a DuplicateKey exception was received.");
-			}
-		}
-		return null;
-	}
+    private final transient Logger log = LoggerFactory.getLogger(RoleServiceImpl.class);
 
-	@Override
-	public void deleteRole(String roleName, HttpServletResponse response) {
-		List<Tenant> list = tenantRepository.getTenants(new String[]{roleName});
-		if (list!=null & list.size() > 0) {
-			try {
-				response.sendError(HttpServletResponse.SC_CONFLICT);
-			} catch(IOException e) {
-				log.error(" Can't delete the role but the precondition faile was not sent to the client: " + e.getMessage());
-			}
-		} else {
-		
-			Role role = getRole(roleName);
-			if (role != null) {
-				roleRepository.delete(role);
-			}
-		}
-	}
-	
-	@Override
-	public void deleteAllRoles() {
-		List<Role> roles = getAllRoles();
-		for (Role r: roles) {
-			roleRepository.delete(r);
-		}
-	}
+    @Autowired
+    private TenantRepository tenantRepository;
 
-	@Override
-	public List<Role> getAllRoles() {
-		
-		return roleRepository.findAll();
-	}
+    @Autowired
+    private RoleRepository roleRepository;
 
+    @Override
+    public Role createRole(String roleName, HttpServletResponse response) {
+        Role role = new Role();
+        role.setRoleName(roleName);
+        try {
+            return roleRepository.save(role);
+        } catch (DuplicateKeyException e) {
+            try {
+                if (response != null) {
+                    response.sendError(HttpServletResponse.SC_CONFLICT);
+                }
+            } catch (IOException e1) {
+                log.error("Can't set error status after a DuplicateKey exception was received.");
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteRole(String roleName, HttpServletResponse response) {
+        List<Tenant> list = tenantRepository.getTenants(new String[] {roleName});
+        if (list != null & list.size() > 0) {
+            try {
+                response.sendError(HttpServletResponse.SC_CONFLICT);
+            } catch (IOException e) {
+                log.error(" Can't delete the role but the precondition faile was not sent to the client: " + e
+                    .getMessage());
+            }
+        } else {
+
+            Role role = getRole(roleName);
+            if (role != null) {
+                roleRepository.delete(role);
+            }
+        }
+    }
+
+    @Override
+    public void deleteAllRoles() {
+        List<Role> roles = getAllRoles();
+        for (Role r : roles) {
+            roleRepository.delete(r);
+        }
+    }
+
+    @Override
+    public List<Role> getAllRoles() {
+
+        return roleRepository.findAll();
+    }
+
+    @Override
     public Role getRole(String roleName) {
-		return roleRepository.findByRoleName(roleName);
-	}
+        return roleRepository.findByRoleName(roleName);
+    }
 
 }

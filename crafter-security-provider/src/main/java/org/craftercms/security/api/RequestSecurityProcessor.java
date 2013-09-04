@@ -26,10 +26,9 @@ public interface RequestSecurityProcessor {
     /**
      * Processes a request, enforcing security when required.
      *
-     * @param context
-     *      the context which holds the current request and other security info pertinent to the request
-     * @param processorChain
-     *      the {@link RequestSecurityProcessorChain}, used to call the next processor
+     * @param context        the context which holds the current request and other security info pertinent to the
+     *                       request
+     * @param processorChain the {@link RequestSecurityProcessorChain}, used to call the next processor
      */
     void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception;
 

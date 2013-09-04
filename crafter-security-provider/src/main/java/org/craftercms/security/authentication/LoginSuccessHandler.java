@@ -16,11 +16,11 @@
  */
 package org.craftercms.security.authentication;
 
-import org.craftercms.security.api.UserProfile;
-import org.craftercms.security.api.RequestContext;
-import org.craftercms.security.exception.CrafterSecurityException;
-
 import java.io.IOException;
+
+import org.craftercms.security.api.RequestContext;
+import org.craftercms.security.api.UserProfile;
+import org.craftercms.security.exception.CrafterSecurityException;
 
 /**
  * Handles the request after a successful authentication.
@@ -32,13 +32,11 @@ public interface LoginSuccessHandler {
     /**
      * Handles the request after a successful authentication.
      *
-     * @param ticket
-     *          the authentication ticket, product of the recent login
-     * @param profile
-     *          the user profile
-     * @param context
-     *          the request context
+     * @param ticket  the authentication ticket, product of the recent login
+     * @param profile the user profile
+     * @param context the request context
      */
-    void onLoginSuccess(String ticket, UserProfile profile, RequestContext context) throws CrafterSecurityException, IOException;
+    void onLoginSuccess(String ticket, UserProfile profile, RequestContext context) throws CrafterSecurityException,
+        IOException;
 
 }

@@ -16,8 +16,14 @@
  */
 package org.craftercms.security.impl.processors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
-import org.craftercms.security.api.*;
+import org.craftercms.security.api.AuthenticationService;
+import org.craftercms.security.api.RequestContext;
+import org.craftercms.security.api.RequestSecurityProcessor;
+import org.craftercms.security.api.RequestSecurityProcessorChain;
+import org.craftercms.security.api.UserProfile;
 import org.craftercms.security.authentication.LoginFailureHandler;
 import org.craftercms.security.authentication.LoginSuccessHandler;
 import org.craftercms.security.exception.AuthenticationException;
@@ -25,8 +31,6 @@ import org.craftercms.security.exception.AuthenticationSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Processes login requests.
@@ -37,8 +41,8 @@ public class LoginProcessor implements RequestSecurityProcessor {
 
     public static final Logger logger = LoggerFactory.getLogger(LoginProcessor.class);
 
-    public static final String DEFAULT_LOGIN_URL =      "/crafter-security-login";
-    public static final String DEFAULT_LOGIN_METHOD =   "POST";
+    public static final String DEFAULT_LOGIN_URL = "/crafter-security-login";
+    public static final String DEFAULT_LOGIN_METHOD = "POST";
     public static final String DEFAULT_USERNAME_PARAM = "username";
     public static final String DEFAULT_PASSWORD_PARAM = "password";
 
@@ -114,14 +118,16 @@ public class LoginProcessor implements RequestSecurityProcessor {
     }
 
     /**
-     * Checks if the request URL matches the {@code loginUrl} and the HTTP method matches the {@code loginMethod}. If it does, it
-     * proceeds to login the user using the username/password specified in the parameters. If the login is successful, the
-     * {@link LoginSuccessHandler} is used to handle the request, if not, the {@link LoginFailureHandler} is used instead.
+     * Checks if the request URL matches the {@code loginUrl} and the HTTP method matches the {@code loginMethod}. If
+     * it does, it
+     * proceeds to login the user using the username/password specified in the parameters. If the login is
+     * successful, the
+     * {@link LoginSuccessHandler} is used to handle the request, if not, the {@link LoginFailureHandler} is used
+     * instead.
      *
-     * @param context
-     *          the context which holds the current request and other security info pertinent to the request
-     * @param processorChain
-     *          the processor chain, used to call the next processor
+     * @param context        the context which holds the current request and other security info pertinent to the
+     *                       request
+     * @param processorChain the processor chain, used to call the next processor
      * @throws Exception
      */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
@@ -157,8 +163,9 @@ public class LoginProcessor implements RequestSecurityProcessor {
                 if (profile != null) {
                     onLoginSuccess(ticket, profile, context);
                 } else {
-                    throw new AuthenticationSystemException("Authentication service returned a null profile for recently created " +
-                            "ticket '" + ticket + "' for user '" + username + "'");
+                    throw new AuthenticationSystemException("Authentication service returned a null profile for " +
+                        "recently created " +
+                        "ticket '" + ticket + "' for user '" + username + "'");
                 }
             } catch (AuthenticationException e) {
                 onLoginFailure(e, context);
@@ -172,7 +179,8 @@ public class LoginProcessor implements RequestSecurityProcessor {
      * Returns true if the request URL matches the {@code loginUrl} and the HTTP method matches the {@code loginMethod}.
      */
     protected boolean isLoginRequest(HttpServletRequest request) {
-        return request.getRequestURI().equals(request.getContextPath() + loginUrl) && request.getMethod().equals(loginMethod);
+        return request.getRequestURI().equals(request.getContextPath() + loginUrl) && request.getMethod().equals
+            (loginMethod);
     }
 
     /**

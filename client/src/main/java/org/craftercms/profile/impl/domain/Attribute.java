@@ -23,7 +23,7 @@ import java.io.Serializable;
  * @author David Escalante
  */
 
-public class Attribute  implements Serializable {
+public class Attribute implements Serializable {
 
     public Attribute() {
     }

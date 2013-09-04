@@ -25,106 +25,106 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-@Scope(value="session",proxyMode= ScopedProxyMode.TARGET_CLASS)
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ProfileAccountPaging implements Serializable {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
-	private static final int PAGE_SIZE = 10;
-	
-	private int start;
-	private int end;
-	private String sortBy;
-	private String sortOrder;
-	
-	private int pageSize;
-	
-	private long total;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public int getStart() {
-		return start;
-	}
+    private static final int PAGE_SIZE = 10;
 
-	public void setStart(int start) {
-		this.start = start;
-	}
+    private int start;
+    private int end;
+    private String sortBy;
+    private String sortOrder;
 
-	public int getEnd() {
-		return end;
-	}
+    private int pageSize;
 
-	public void setEnd(int end) {
-		this.end = end;
-	}
+    private long total;
 
-	public int getPageSize() {
-		return pageSize;
-	}
+    public int getStart() {
+        return start;
+    }
 
-	@Value("${crafter.profile.page.size}")
-	public void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
-		this.start = 0;
-		this.end = pageSize -1; 
-	}
-	
-	public void next() {
-		if ((end + pageSize) <= (total -1)) {
-			end += pageSize;
-			start += pageSize;
-		} else if (end < (total -1)){
-			end = (int)total -1;
-			start += pageSize;
-		}
-	}
-	
-	public void previous() {
-		if (end == (total -1)) {
-			end = start -1 ;
-			start -= pageSize;
-			
-		} else if ((start - pageSize) > 0) {
-			end -= pageSize;
-			start -= pageSize;
-		} else if (start > 0) {
-			start = 0;
-			end = pageSize - 1;
-		}
-	}
+    public void setStart(int start) {
+        this.start = start;
+    }
 
-	public long getTotal() {
-		return total;
-	}
+    public int getEnd() {
+        return end;
+    }
 
-	public void setTotal(long total) {
-		this.total = total;
-		this.start = 0;
-		if ((this.total < pageSize)) {
-			this.end = (int)total;
-		} else {
-			this.end = pageSize -1; 
-		}
-	}
-	
-	@Value("${crafter.profile.sort.by}")
-	public void setSortBy(String sortBy) {
-		this.sortBy = sortBy;
-	}
+    public void setEnd(int end) {
+        this.end = end;
+    }
 
-	@Value("${crafter.profile.sort.order}")
-	public void setSortOrder(String order) {
-		this.sortOrder = order;
-	}
+    public int getPageSize() {
+        return pageSize;
+    }
 
-	public String getSortBy() {
-		return sortBy;
-	}
+    @Value("${crafter.profile.page.size}")
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+        this.start = 0;
+        this.end = pageSize - 1;
+    }
 
-	public String getSortOrder() {
-		return sortOrder;
-	}
+    public void next() {
+        if ((end + pageSize) <= (total - 1)) {
+            end += pageSize;
+            start += pageSize;
+        } else if (end < (total - 1)) {
+            end = (int)total - 1;
+            start += pageSize;
+        }
+    }
+
+    public void previous() {
+        if (end == (total - 1)) {
+            end = start - 1;
+            start -= pageSize;
+
+        } else if ((start - pageSize) > 0) {
+            end -= pageSize;
+            start -= pageSize;
+        } else if (start > 0) {
+            start = 0;
+            end = pageSize - 1;
+        }
+    }
+
+    public long getTotal() {
+        return total;
+    }
+
+    public void setTotal(long total) {
+        this.total = total;
+        this.start = 0;
+        if ((this.total < pageSize)) {
+            this.end = (int)total;
+        } else {
+            this.end = pageSize - 1;
+        }
+    }
+
+    @Value("${crafter.profile.sort.by}")
+    public void setSortBy(String sortBy) {
+        this.sortBy = sortBy;
+    }
+
+    @Value("${crafter.profile.sort.order}")
+    public void setSortOrder(String order) {
+        this.sortOrder = order;
+    }
+
+    public String getSortBy() {
+        return sortBy;
+    }
+
+    public String getSortOrder() {
+        return sortOrder;
+    }
 
 }

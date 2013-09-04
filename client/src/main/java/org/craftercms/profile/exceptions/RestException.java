@@ -17,21 +17,21 @@
 package org.craftercms.profile.exceptions;
 
 public class RestException extends Exception {
-	private static final long serialVersionUID = -8388477689825326323L;
+    private static final long serialVersionUID = -8388477689825326323L;
 
-	public RestException() {
-		super();
-	}
+    public RestException() {
+        super();
+    }
 
-	public RestException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public RestException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public RestException(String message) {
-		super(message);
-	}
+    public RestException(String message) {
+        super(message);
+    }
 
-	public RestException(Throwable cause) {
-		super(cause);
-	}
+    public RestException(Throwable cause) {
+        super(cause);
+    }
 }

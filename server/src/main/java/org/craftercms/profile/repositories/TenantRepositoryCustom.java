@@ -16,16 +16,20 @@
  */
 package org.craftercms.profile.repositories;
 
+import java.util.List;
+
 import org.craftercms.profile.domain.Attribute;
 import org.craftercms.profile.domain.Tenant;
-
-import java.util.List;
 
 public interface TenantRepositoryCustom {
 
     List<Tenant> getTenantRange(String sortBy, String sortOrder, int start, int end);
-	Tenant getTenantByName(String tenantName);
+
+    Tenant getTenantByName(String tenantName);
+
     void setAttribute(String tenantName, Attribute attribute);
+
     void deleteAttribute(String tenantName, String attributeName);
-	List<Tenant> getTenants(String[] roles);
+
+    List<Tenant> getTenants(String[] roles);
 }

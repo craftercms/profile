@@ -25,115 +25,127 @@ import org.craftercms.profile.impl.domain.Profile;
 
 /**
  * Base Crafter Profile user profile object
- * 
+ *
  * @author Sandra O'Keeffe
  */
 public class UserProfile implements Serializable {
-	
-	public static final String ROLE = "role";
 
-	private static final long serialVersionUID = 1L;
+    public static final String ROLE = "role";
 
-	private String username;
-	private String password;
-	private String id;
-	private Date createdDate;
-	private Date modifiedDate;
-	private boolean active;
-	private boolean temporaryPassword;
-	private List<String> roles;
-	private String ticket;
-	
-	private String tenantName;
-	
-	
-	/**
-	 * Building the base profile properties 
-	 * 
-	 * @param profile
-	 */
-	public UserProfile(Profile profile) {
-		this.username = profile.getUserName();
-		this.password = profile.getPassword();
-		this.id = profile.getId();
-		this.createdDate = profile.getCreated();
-		this.modifiedDate = profile.getModified();
-		this.active = profile.getActive();
-		this.roles = new ArrayList<String>();
+    private static final long serialVersionUID = 1L;
 
-	}
-	
-	public UserProfile() {
-		this.active = true;
-		this.roles = new ArrayList<String>();
-	}
-	
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
-	}
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public Date getCreatedDate() {
-		return createdDate;
-	}
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
-	public Date getModifiedDate() {
-		return modifiedDate;
-	}
-	public void setModifiedDate(Date modifiedDate) {
-		this.modifiedDate = modifiedDate;
-	}
-	public boolean isActive() {
-		return active;
-	}
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-	public boolean isTemporaryPassword() {
-		return temporaryPassword;
-	}
+    private String username;
+    private String password;
+    private String id;
+    private Date createdDate;
+    private Date modifiedDate;
+    private boolean active;
+    private boolean temporaryPassword;
+    private List<String> roles;
+    private String ticket;
 
-	public void setTemporaryPassword(boolean temporaryPassword) {
-		this.temporaryPassword = temporaryPassword;
-	}
+    private String tenantName;
 
-	public List<String> getRoles() {
-		return roles;
-	}
 
-	public void setRole(String role) {
-		roles.add(role);
-	}
+    /**
+     * Building the base profile properties
+     *
+     * @param profile
+     */
+    public UserProfile(Profile profile) {
+        this.username = profile.getUserName();
+        this.password = profile.getPassword();
+        this.id = profile.getId();
+        this.createdDate = profile.getCreated();
+        this.modifiedDate = profile.getModified();
+        this.active = profile.getActive();
+        this.roles = new ArrayList<String>();
 
-	public String getTicket() {
-		return ticket;
-	}
+    }
 
-	public void setTicket(String ticket) {
-		this.ticket = ticket;
-	}
+    public UserProfile() {
+        this.active = true;
+        this.roles = new ArrayList<String>();
+    }
 
-	public String getTenantName() {
-		return tenantName;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public void setTenantName(String tenantName) {
-		this.tenantName = tenantName;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean isTemporaryPassword() {
+        return temporaryPassword;
+    }
+
+    public void setTemporaryPassword(boolean temporaryPassword) {
+        this.temporaryPassword = temporaryPassword;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRole(String role) {
+        roles.add(role);
+    }
+
+    public String getTicket() {
+        return ticket;
+    }
+
+    public void setTicket(String ticket) {
+        this.ticket = ticket;
+    }
+
+    public String getTenantName() {
+        return tenantName;
+    }
+
+    public void setTenantName(String tenantName) {
+        this.tenantName = tenantName;
+    }
 
 }

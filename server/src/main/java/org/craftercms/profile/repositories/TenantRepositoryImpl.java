@@ -16,8 +16,11 @@
  */
 package org.craftercms.profile.repositories;
 
-import org.craftercms.profile.constants.ProfileConstants;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
+import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.domain.Attribute;
 import org.craftercms.profile.domain.Tenant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,56 +30,53 @@ import org.springframework.data.mongodb.core.query.Order;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 public class TenantRepositoryImpl implements TenantRepositoryCustom {
 
-	@Autowired
-	private MongoTemplate mongoTemplate;
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Override
     public List<Tenant> getTenantRange(String sortBy, String sortOrder, int start, int end) {
         Query query = new Query();
 
         if (sortBy != null) {
-        	String sortingBy = sortBy;
-            if ( ! Arrays.asList(ProfileConstants.TENANT_ORDER_BY_FIELDS).contains(sortBy) ) {
-            	sortingBy = ProfileConstants.TENANT_NAME;
+            String sortingBy = sortBy;
+            if (!Arrays.asList(ProfileConstants.TENANT_ORDER_BY_FIELDS).contains(sortBy)) {
+                sortingBy = ProfileConstants.TENANT_NAME;
             }
 
             if (sortOrder != null) {
-                query.sort().on(sortingBy, sortOrder.equalsIgnoreCase(ProfileConstants.SORT_ORDER_DESC) ? Order.DESCENDING : Order.ASCENDING);
+                query.sort().on(sortingBy, sortOrder.equalsIgnoreCase(ProfileConstants.SORT_ORDER_DESC)? Order
+                    .DESCENDING: Order.ASCENDING);
             } else {
                 query.sort().on(sortingBy, Order.ASCENDING);
             }
         }
 
         query.skip(start);
-        query.limit(end > start ? (end - start + 1) : 0);
+        query.limit(end > start? (end - start + 1): 0);
 
         return mongoTemplate.find(query, Tenant.class);
     }
-    
+
     @Override
     public List<Tenant> getTenants(String[] roles) {
         Query query = new Query();
 
-        
-		if (roles!= null && roles.length > 0) {
-			 query.addCriteria(Criteria.where("roles").in(roles));
-		}
+
+        if (roles != null && roles.length > 0) {
+            query.addCriteria(Criteria.where("roles").in(roles));
+        }
 
         return mongoTemplate.find(query, Tenant.class);
     }
 
     @Override
-	public Tenant getTenantByName(String tenantName) {
-		Query query = new Query();
-		query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
-		return mongoTemplate.findOne(query, Tenant.class);
-	}
+    public Tenant getTenantByName(String tenantName) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
+        return mongoTemplate.findOne(query, Tenant.class);
+    }
 
     @Override
     public void setAttribute(String tenantName, Attribute attribute) {
@@ -84,12 +84,12 @@ public class TenantRepositoryImpl implements TenantRepositoryCustom {
         query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
         Update update = new Update();
         Tenant t = getTenantByName(tenantName);
-        if(t!= null){
+        if (t != null) {
             Iterator<Attribute> i = t.getSchema().getAttributes().iterator();
             boolean added = false;
             int pos = 0;
-            while (i.hasNext()){
-                if(i.next().getName().equals(attribute.getName())){
+            while (i.hasNext()) {
+                if (i.next().getName().equals(attribute.getName())) {
                     i.remove();
                     t.getSchema().getAttributes().add(pos, attribute);
                     added = true;
@@ -97,7 +97,7 @@ public class TenantRepositoryImpl implements TenantRepositoryCustom {
                 }
                 pos++;
             }
-            if(!added){
+            if (!added) {
                 t.getSchema().getAttributes().add(attribute);
             }
         }
@@ -112,10 +112,10 @@ public class TenantRepositoryImpl implements TenantRepositoryCustom {
         query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
         Update update = new Update();
         Tenant t = getTenantByName(tenantName);
-        if(t!= null){
+        if (t != null) {
             Iterator<Attribute> i = t.getSchema().getAttributes().iterator();
-            while (i.hasNext()){
-                if(i.next().getName().equals(attributeName)){
+            while (i.hasNext()) {
+                if (i.next().getName().equals(attributeName)) {
                     i.remove();
                     break;
                 }

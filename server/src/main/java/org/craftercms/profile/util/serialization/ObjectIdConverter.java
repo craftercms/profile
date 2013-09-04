@@ -16,23 +16,22 @@
  */
 package org.craftercms.profile.util.serialization;
 
-import org.bson.types.ObjectId;
-
 import com.thoughtworks.xstream.converters.ConverterMatcher;
 import com.thoughtworks.xstream.converters.SingleValueConverter;
+import org.bson.types.ObjectId;
 
 public class ObjectIdConverter implements ConverterMatcher, SingleValueConverter {
 
-	@SuppressWarnings("rawtypes")
-	public boolean canConvert(Class clazz) {
-		return clazz.equals(ObjectId.class);
-	}
+    @SuppressWarnings("rawtypes")
+    public boolean canConvert(Class clazz) {
+        return clazz.equals(ObjectId.class);
+    }
 
-	public Object fromString(String str) {
-		return new ObjectId(str);
-	}
-	
-	public String toString(Object obj) {
-		return ((ObjectId)obj).toString();
-	}
+    public Object fromString(String str) {
+        return new ObjectId(str);
+    }
+
+    public String toString(Object obj) {
+        return ((ObjectId)obj).toString();
+    }
 }

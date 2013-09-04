@@ -16,13 +16,13 @@
  */
 package org.craftercms.security.api;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.craftercms.profile.impl.domain.Profile;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.craftercms.profile.impl.domain.Profile;
 
 /**
  * Extends {@link Profile} to hold extra utility information and some methods useful for authorization.
@@ -38,15 +38,10 @@ public class UserProfile extends Profile {
      * Copy constructor
      */
     public UserProfile(Profile profile) {
-        super(profile.getId(),
-                profile.getUserName(),
-                profile.getPassword(),
-                profile.getActive(),
-                profile.getCreated(),
-                profile.getModified(),
-                profile.getAttributes(),
-                profile.getRoles(),
-                profile.getTenantName());
+        super(profile.getId(), profile.getUserName(), profile.getPassword(), profile.getActive(),
+            profile.getCreated(), profile.getModified(), profile.getAttributes(), profile.getRoles(),
+            profile.getTenantName(), profile.getEmail());
+
     }
 
     /**

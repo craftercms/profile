@@ -16,15 +16,15 @@
  */
 package org.craftercms.profile.management.util;
 
-import org.craftercms.profile.impl.domain.Attribute;
-import org.craftercms.profile.impl.domain.Profile;
-import org.craftercms.profile.impl.domain.Tenant;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.craftercms.profile.impl.domain.Attribute;
+import org.craftercms.profile.impl.domain.Profile;
+import org.craftercms.profile.impl.domain.Tenant;
 
 /**
  * @author David Escalante
@@ -32,9 +32,9 @@ import java.util.Map;
 
 public class TenantUtil {
 
-    public static Map<String, String> getTenantsMap(List<Tenant> tenantList){
+    public static Map<String, String> getTenantsMap(List<Tenant> tenantList) {
         Map<String, String> tenantsMap = new HashMap<String, String>();
-        for(Tenant tenant: tenantList){
+        for (Tenant tenant : tenantList) {
             tenantsMap.put(tenant.getTenantName(), tenant.getTenantName());
         }
 
@@ -56,27 +56,26 @@ public class TenantUtil {
     }
 
     public static Map<String, Object> getSchemaAttributesAsMap(Tenant tenant) {
-        Map attributesMap = new HashMap<String,Serializable>();
+        Map attributesMap = new HashMap<String, Serializable>();
         Attribute current;
         Iterator<Attribute> it = tenant.getSchema().getAttributes().iterator();
         while (it.hasNext()) {
             current = it.next();
-            attributesMap.put(current.getName().trim(),"");
+            attributesMap.put(current.getName().trim(), "");
         }
         return attributesMap;
     }
 
     public static Map<String, Object> getSchemaAttributesAsMap(Tenant tenant, Profile profile) {
-        Map attributesMap = new HashMap<String,Serializable>();
+        Map attributesMap = new HashMap<String, Serializable>();
         Attribute current;
         Iterator<Attribute> it = tenant.getSchema().getAttributes().iterator();
         while (it.hasNext()) {
             current = it.next();
-            if(profile.getAttributes() != null && profile.getAttributes().containsKey(current.getName()))
-            {
+            if (profile.getAttributes() != null && profile.getAttributes().containsKey(current.getName())) {
                 attributesMap.put(current.getName().trim(), profile.getAttributes().get(current.getName()));
-            }else{
-                attributesMap.put(current.getName().trim(),"");
+            } else {
+                attributesMap.put(current.getName().trim(), "");
             }
         }
         return attributesMap;

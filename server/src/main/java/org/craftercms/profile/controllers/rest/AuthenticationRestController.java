@@ -30,39 +30,39 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/2/auth")
 public class AuthenticationRestController {
 
-	/**
-	 * Get APP Token
-	 * 
-	 * @return String app_token
-	 * @throws AuthenticationException
-	 */
-	@RequestMapping(value = "/app_token", method = RequestMethod.GET)
-	@ModelAttribute
-	public String authenticateApplication(HttpServletRequest request) throws AuthenticationException {
-		String appToken = (String) request.getAttribute("appToken");
+    /**
+     * Get APP Token
+     *
+     * @return String app_token
+     * @throws AuthenticationException
+     */
+    @RequestMapping(value = "/app_token", method = RequestMethod.GET)
+    @ModelAttribute
+    public String authenticateApplication(HttpServletRequest request) throws AuthenticationException {
+        String appToken = (String)request.getAttribute("appToken");
 
-		return appToken;
-	}
+        return appToken;
+    }
 
-	@RequestMapping(value = "/ticket", method = RequestMethod.GET)
-	@ModelAttribute
-	public String authenticateProfile(HttpServletRequest request, @RequestParam(value = "username") String userName,
-			@RequestParam String password) throws AuthenticationException {
-		String ticket = (String) request.getAttribute("ticket");
+    @RequestMapping(value = "/ticket", method = RequestMethod.GET)
+    @ModelAttribute
+    public String authenticateProfile(HttpServletRequest request, @RequestParam(value = "username") String userName,
+                                      @RequestParam String password) throws AuthenticationException {
+        String ticket = (String)request.getAttribute("ticket");
 
-		return ticket;
-	}
+        return ticket;
+    }
 
-	@RequestMapping(value = "/ticket/validate", method = RequestMethod.GET)
-	@ModelAttribute
-	public boolean validateProfileTicket(HttpServletRequest request, @RequestParam String ticket) {
-		return request.getAttribute("ticket")!=null;
-	}
+    @RequestMapping(value = "/ticket/validate", method = RequestMethod.GET)
+    @ModelAttribute
+    public boolean validateProfileTicket(HttpServletRequest request, @RequestParam String ticket) {
+        return request.getAttribute("ticket") != null;
+    }
 
-	@RequestMapping(value = "/ticket/invalidate", method = RequestMethod.POST)
-	@ModelAttribute
-	public void invalidateProfileTicket(HttpServletRequest request, @RequestParam String ticket) {
-		return ;
-	}
+    @RequestMapping(value = "/ticket/invalidate", method = RequestMethod.POST)
+    @ModelAttribute
+    public void invalidateProfileTicket(HttpServletRequest request, @RequestParam String ticket) {
+        return;
+    }
 
 }

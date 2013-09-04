@@ -16,10 +16,10 @@
  */
 package org.craftercms.security.api;
 
-import org.craftercms.security.authentication.AuthenticationToken;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.craftercms.security.authentication.AuthenticationToken;
 
 /**
  * Houses security information for a single request.

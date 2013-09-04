@@ -16,13 +16,13 @@
  */
 package org.craftercms.security.authentication.impl;
 
-import org.apache.commons.codec.binary.Base64;
-import org.craftercms.security.exception.CrafterSecurityException;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
 import java.security.Key;
 import java.util.Date;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+
+import org.apache.commons.codec.binary.Base64;
+import org.craftercms.security.exception.CrafterSecurityException;
 
 /**
  * Extends {@link AuthenticationCookie} to encrypt the cookie before saving (using AES algorithm).
@@ -77,9 +77,9 @@ public class CipheredAuthenticationCookie extends AuthenticationCookie {
     @Override
     public String toString() {
         return "CipheredAuthenticationCookie[" +
-                "ticket='" + ticket + '\'' +
-                ", profileOutdatedAfter=" + profileOutdatedAfter +
-                ']';
+            "ticket='" + ticket + '\'' +
+            ", profileOutdatedAfter=" + profileOutdatedAfter +
+            ']';
     }
 
 }

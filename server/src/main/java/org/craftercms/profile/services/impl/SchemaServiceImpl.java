@@ -30,25 +30,25 @@ public class SchemaServiceImpl implements SchemaService {
     @Autowired
     private TenantRepository tenantRepository;
 
-	@Override
-	public void setAttribute(String tenantName, Attribute attribute) {
+    @Override
+    public void setAttribute(String tenantName, Attribute attribute) {
         tenantRepository.setAttribute(tenantName, attribute);
-		
-	}
-	
-	@Override
-	public Schema geSchemaByTenantName(String tenantName) {
+
+    }
+
+    @Override
+    public Schema geSchemaByTenantName(String tenantName) {
         Tenant tenant = tenantRepository.getTenantByName(tenantName);
         Schema schema = null;
         if (tenant != null) {
-        	return tenant.getSchema();
+            return tenant.getSchema();
         }
         return schema;
-	}
+    }
 
     @Override
-	public void deleteAttribute(String tenantName, String attributeName) {
+    public void deleteAttribute(String tenantName, String attributeName) {
         tenantRepository.deleteAttribute(tenantName, attributeName);
-	}
-	
+    }
+
 }

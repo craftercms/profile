@@ -1,59 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:p="http://www.springframework.org/schema/p" xmlns:mvc="http://www.springframework.org/schema/mvc"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
 http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 http://www.springframework.org/schema/context
 http://www.springframework.org/schema/context/spring-context-3.1.xsd
 http://www.springframework.org/schema/mvc
 http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
 
-	<!-- Activates various annotations to be detected in bean classes -->
-	<context:annotation-config />
+    <!-- Activates various annotations to be detected in bean classes -->
+    <context:annotation-config/>
 
-	<mvc:annotation-driven />
+    <mvc:annotation-driven/>
 
-	<mvc:resources mapping="/resources/**" location="/resources/" />
+    <mvc:resources mapping="/resources/**" location="/resources/"/>
 
-	<bean name="profileSettings"
-		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="ignoreUnresolvablePlaceholders" value="true"/>
-		<property name="locations">
+    <bean name="profileSettings"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="locations">
             <list>
                 <value>classpath:crafter/profile/admin-console/profile.properties</value>
                 <value>classpath*:crafter/profile/admin-console/extension/profile.properties</value>
             </list>
-		</property>
-	</bean>
-	
-	<bean id="profileRestClient" class="org.craftercms.profile.impl.ProfileRestClientImpl">
-		<property name="port" value="${crafter.security.profile.server.url.port}"/>
-		<property name="host" value="${profile.host}"/>
-		<property name="scheme" value="${profile.scheme}"/>
-		<property name="profileAppPath" value="${profile.profileAppPath}"/>
-	</bean>	
-	
+        </property>
+    </bean>
+
+    <bean id="profileRestClient" class="org.craftercms.profile.impl.ProfileRestClientImpl">
+        <property name="port" value="${crafter.security.profile.server.url.port}"/>
+        <property name="host" value="${profile.host}"/>
+        <property name="scheme" value="${profile.scheme}"/>
+        <property name="profileAppPath" value="${profile.profileAppPath}"/>
+    </bean>
+
     <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="staticMethod" value="org.craftercms.profile.management.services.impl.ProfileServiceManager.initStaticValues"/>
+        <property name="staticMethod"
+                  value="org.craftercms.profile.management.services.impl.ProfileServiceManager.initStaticValues"/>
         <property name="arguments">
             <list>
                 <ref bean="profileRestClient"/>
                 <value>${crafter.profile.app.username}</value>
                 <value>${crafter.profile.app.password}</value>
             </list>
-       </property>
+        </property>
     </bean>
-    
-    <bean id="messageSource"
-		class="org.springframework.context.support.ResourceBundleMessageSource">
-		<property name="basenames">
-			<list>
-				<value>message</value>
-			</list>
-		</property>
-	</bean>
 
+    <bean id="messageSource"
+          class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>message</value>
+            </list>
+        </property>
+    </bean>
 
 
 </beans>

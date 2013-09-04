@@ -24,17 +24,17 @@ import org.springframework.web.context.WebApplicationContext;
 
 public class ApplicationContextListener implements ApplicationListener<ContextRefreshedEvent> {
 
-	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		WebApplicationContext webAppContext = ContextLoader.getCurrentWebApplicationContext();
-		AutowireCapableBeanFactory autoWireCapableBeanFactory = webAppContext.getAutowireCapableBeanFactory();
-		
-		String beanNameArr[] = webAppContext.getBeanDefinitionNames();
-		
-		for (String beanName:beanNameArr) {
-			Object bean = webAppContext.getBean(beanName);
-			autoWireCapableBeanFactory.autowireBean(bean);	
-		}
-	}
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        WebApplicationContext webAppContext = ContextLoader.getCurrentWebApplicationContext();
+        AutowireCapableBeanFactory autoWireCapableBeanFactory = webAppContext.getAutowireCapableBeanFactory();
+
+        String beanNameArr[] = webAppContext.getBeanDefinitionNames();
+
+        for (String beanName : beanNameArr) {
+            Object bean = webAppContext.getBean(beanName);
+            autoWireCapableBeanFactory.autowireBean(bean);
+        }
+    }
 
 }

@@ -23,108 +23,109 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.craftercms.profile.impl.domain.Attribute;
 import org.craftercms.profile.impl.domain.Profile;
-import org.craftercms.profile.management.model.SchemaForm;
 import org.craftercms.profile.management.model.ProfileUserAccountForm;
+import org.craftercms.profile.management.model.SchemaForm;
 
 public class ProfileUserAccountUtil {
-	
-	private static final Logger log = Logger.getLogger(ProfileUserAccountUtil.class);
-	
-	public static List<String> getAttributes(SchemaForm schema) {
-		List<String> a = new ArrayList<String>();
-		Iterator<Attribute> it = schema.getAttributes().iterator();
-		while (it.hasNext()) {
-	    	a.add(it.next().getName());
-	    }
-		return a;
-	}
-	
-	public static List<ProfileUserAccountForm> mapForForm(List<Profile> profiles) {
-		List<ProfileUserAccountForm> result = new ArrayList<ProfileUserAccountForm>();
-		for(Profile p:profiles) {
-			result.add(new ProfileUserAccountForm(p));
-		}
-		
-		return result;
-	}
-	
-	/**
-	 * Build the map with the user data to update
-	 * 
-	 * @param profile
-	 * @return
-	 */
-	public static Map<String, Serializable> getUpdateUserData(ProfileUserAccountForm profile) {
-		
-		Map<String, Serializable> userData = new HashMap<String, Serializable>();
-		setProfileUserAccountFormToMap(userData, profile);
-		
-		return userData;
-	}
-	
-	public static List<String> getItemList(HttpServletRequest request) {
-		List<String> items = new ArrayList<String>();
-		try {
-		    BufferedReader reader = request.getReader();
-		    String line;
-		    int idx;
-		    String[] splitData;
-		    while ((line = reader.readLine()) != null) {
-		    	line = removeAmpersonChar(line);
-		    	idx = line.indexOf("item=");
-		    	splitData = idx >= 0 ? line.substring(idx).split("item="):null;
-		    	if (splitData == null) {
-		    		continue;
-		    	}
-		    	for(String s: splitData) {
-		    		if (s!=null && !s.equals("")) {
-		    			items.add(s.replace('+', ' '));
-		    		}
-		    	}
-		    }
-		    	
-		  } catch (Exception e) { 
-			  e.printStackTrace(); 
-		  }
-		return items;
-	}
-	
-	private static void setProfileUserAccountFormToMap(Map<String, Serializable> userData, ProfileUserAccountForm profile) {
-		userData.put(ProfileUserAccountConstants.USERNAME_PROPERTY, profile.getUsername());
-		userData.put(ProfileUserAccountConstants.PASSWORD_PROPERTY, profile.getPassword());
-		userData.put(ProfileUserAccountConstants.ACTIVE_PROPERTY, String.valueOf(profile.isActive()));
-		userData.put(ProfileUserAccountConstants.PROFILE_ID_PROPERTY, profile.getId());
-		userData.put(ProfileUserAccountConstants.ROLES, profile.getRoles());
-		userData.put(ProfileUserAccountConstants.TENANT_NAME, profile.getTenantName());
-        for(String key : profile.getAttributes().keySet()){
+
+    private static final Logger log = Logger.getLogger(ProfileUserAccountUtil.class);
+
+    public static List<String> getAttributes(SchemaForm schema) {
+        List<String> a = new ArrayList<String>();
+        Iterator<Attribute> it = schema.getAttributes().iterator();
+        while (it.hasNext()) {
+            a.add(it.next().getName());
+        }
+        return a;
+    }
+
+    public static List<ProfileUserAccountForm> mapForForm(List<Profile> profiles) {
+        List<ProfileUserAccountForm> result = new ArrayList<ProfileUserAccountForm>();
+        for (Profile p : profiles) {
+            result.add(new ProfileUserAccountForm(p));
+        }
+
+        return result;
+    }
+
+    /**
+     * Build the map with the user data to update
+     *
+     * @param profile
+     * @return
+     */
+    public static Map<String, Serializable> getUpdateUserData(ProfileUserAccountForm profile) {
+
+        Map<String, Serializable> userData = new HashMap<String, Serializable>();
+        setProfileUserAccountFormToMap(userData, profile);
+
+        return userData;
+    }
+
+    public static List<String> getItemList(HttpServletRequest request) {
+        List<String> items = new ArrayList<String>();
+        try {
+            BufferedReader reader = request.getReader();
+            String line;
+            int idx;
+            String[] splitData;
+            while ((line = reader.readLine()) != null) {
+                line = removeAmpersonChar(line);
+                idx = line.indexOf("item=");
+                splitData = idx >= 0? line.substring(idx).split("item="): null;
+                if (splitData == null) {
+                    continue;
+                }
+                for (String s : splitData) {
+                    if (s != null && !s.equals("")) {
+                        items.add(s.replace('+', ' '));
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return items;
+    }
+
+    private static void setProfileUserAccountFormToMap(Map<String, Serializable> userData,
+                                                       ProfileUserAccountForm profile) {
+        userData.put(ProfileUserAccountConstants.USERNAME_PROPERTY, profile.getUsername());
+        userData.put(ProfileUserAccountConstants.PASSWORD_PROPERTY, profile.getPassword());
+        userData.put(ProfileUserAccountConstants.EMAIL, profile.getEmail());
+        userData.put(ProfileUserAccountConstants.ACTIVE_PROPERTY, String.valueOf(profile.isActive()));
+        userData.put(ProfileUserAccountConstants.PROFILE_ID_PROPERTY, profile.getId());
+        userData.put(ProfileUserAccountConstants.ROLES, profile.getRoles());
+        userData.put(ProfileUserAccountConstants.TENANT_NAME, profile.getTenantName());
+        for (String key : profile.getAttributes().keySet()) {
             userData.put(key, (Serializable)profile.getAttributes().get(key));
         }
-	}
-	
-	public static Map<String, String> getRolesAdmin() {
-        Map<String, String> data = new HashMap<String,String>();
-        
+    }
+
+    public static Map<String, String> getRolesAdmin() {
+        Map<String, String> data = new HashMap<String, String>();
+
         data.put(ProfileUserAccountConstants.ADMIN_ROLE, ProfileUserAccountConstants.ADMIN_ROLE);
         data.put(ProfileUserAccountConstants.DEFAULT_ROLE, ProfileUserAccountConstants.DEFAULT_ROLE);
         return data;
     }
-	
-	public static Map<String, String> getAttributesSupportedTypes() {
-		Map<String, String> types = new HashMap<String, String>();
-		types.put("Text","Text");
-		return types;
-			    
-	}
-	
-	private static String removeAmpersonChar(String data) {
-		data = data.replace("&", "");
-		return data;
-	}
+
+    public static Map<String, String> getAttributesSupportedTypes() {
+        Map<String, String> types = new HashMap<String, String>();
+        types.put("Text", "Text");
+        return types;
+
+    }
+
+    private static String removeAmpersonChar(String data) {
+        data = data.replace("&", "");
+        return data;
+    }
 
 }

@@ -22,7 +22,6 @@ import java.util.List;
 import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.services.ProfileService;
 import org.craftercms.profile.services.ProfileUserDetailsService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -33,32 +32,30 @@ import org.springframework.stereotype.Service;
 @Service("profileUserDetailsService")
 public class ProfileUserDetailsServiceImpl implements ProfileUserDetailsService {
 
-	@Autowired
-	private ProfileService profileService;
+    @Autowired
+    private ProfileService profileService;
 
-	private List<SimpleGrantedAuthority> defaultGrantedAuthorities = new ArrayList<SimpleGrantedAuthority>();
-
-	
-	
-	public ProfileUserDetailsServiceImpl() {
-		super();
-		defaultGrantedAuthorities.add(new SimpleGrantedAuthority("USER"));
-	}
+    private List<SimpleGrantedAuthority> defaultGrantedAuthorities = new ArrayList<SimpleGrantedAuthority>();
 
 
+    public ProfileUserDetailsServiceImpl() {
+        super();
+        defaultGrantedAuthorities.add(new SimpleGrantedAuthority("USER"));
+    }
 
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		String tenantName = null;
-		String newUsername = username;
-		if (username.lastIndexOf('@')>0) {
 
-			int idx = username.lastIndexOf('@');
-			newUsername = username.substring(0,idx);
-			tenantName = username.substring(idx + 1);
-		}
-		
-		Profile profile = profileService.getProfileByUserName(newUsername, tenantName, null);
-		return new User(profile.getUserName(), profile.getPassword(), profile.getActive(), true, true, true, defaultGrantedAuthorities);
-	}
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        String tenantName = null;
+        String newUsername = username;
+        if (username.lastIndexOf('@') > 0) {
+
+            int idx = username.lastIndexOf('@');
+            newUsername = username.substring(0, idx);
+            tenantName = username.substring(idx + 1);
+        }
+
+        Profile profile = profileService.getProfileByUserName(newUsername, tenantName, null);
+        return new User(profile.getUserName(), profile.getPassword(), profile.getActive(), true, true, true, defaultGrantedAuthorities);
+    }
 }

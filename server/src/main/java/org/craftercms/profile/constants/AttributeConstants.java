@@ -27,9 +27,8 @@ public final class AttributeConstants {
     public static final String CONSTRAINT = "constraint";
     public static final String REQUIRED = "required";
 
-    public static final String[] attributeFields = {NAME, LABEL, ORDER,
-            TYPE, CONSTRAINT, REQUIRED};
-    
+    public static final String[] attributeFields = {NAME, LABEL, ORDER, TYPE, CONSTRAINT, REQUIRED};
+
     private AttributeConstants() {
     }
 }

@@ -16,16 +16,16 @@
  */
 package org.craftercms.security.authentication.impl;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.exception.InvalidCookieException;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Date;
 
 /**
  * Factory for {@link AuthenticationCookie}s.
@@ -34,16 +34,14 @@ import java.util.Date;
  */
 public class AuthenticationCookieFactory {
 
-    public static final int TICKET =                    0;
-    public static final int PROFILE_OUTDATED_AFTER =    1;
+    public static final int TICKET = 0;
+    public static final int PROFILE_OUTDATED_AFTER = 1;
 
     /**
      * Creates a new cookie for the specified ticket and profile outdated after date.
      *
-     * @param ticket
-     *          the ticket
-     * @param profileOutdateAfter
-     *          date when the profile is considered outdated and should be refreshed
+     * @param ticket              the ticket
+     * @param profileOutdateAfter date when the profile is considered outdated and should be refreshed
      * @return the newly created profile.
      */
     public AuthenticationCookie getCookie(String ticket, Date profileOutdateAfter) {
@@ -53,11 +51,9 @@ public class AuthenticationCookieFactory {
     /**
      * Returns the authentication cookie for the context's request.
      *
-     * @param context
-     *          the context that holds the request.
+     * @param context the context that holds the request.
      * @return the authentication cookie for the context's request, or null if not found.
-     * @throws InvalidCookieException
-     *          if the authentication cookie found in the request is in an invalid format
+     * @throws InvalidCookieException if the authentication cookie found in the request is in an invalid format
      */
     public AuthenticationCookie getCookie(RequestContext context) throws InvalidCookieException {
         String cookieValue = getCookieValueFromRequest(context.getRequest());
@@ -95,8 +91,9 @@ public class AuthenticationCookieFactory {
      */
     protected void checkCookieDataLength(String[] cookieData) throws InvalidCookieException {
         if (cookieData.length != 2) {
-            throw new InvalidCookieException("Profile cookie: cookie should be composed of TICKET" + AuthenticationCookie.COOKIE_SEP +
-                    "PROFILE_OUTDATED_AFTER");
+            throw new InvalidCookieException("Profile cookie: cookie should be composed of TICKET" +
+                AuthenticationCookie.COOKIE_SEP +
+                "PROFILE_OUTDATED_AFTER");
         }
     }
 

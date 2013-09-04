@@ -21,14 +21,15 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
 import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.domain.Ticket;
+import org.craftercms.profile.exceptions.InvalidEmailException;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TicketRepository;
+import org.craftercms.profile.services.EmailValidatorService;
 import org.craftercms.profile.services.ProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,215 +41,239 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ProfileServiceImpl implements ProfileService {
-	
-	private final transient Logger log = LoggerFactory
-			.getLogger(ProfileServiceImpl.class);
 
-	@Autowired
-	private ProfileRepository profileRepository;
+    private final transient Logger log = LoggerFactory.getLogger(ProfileServiceImpl.class);
 
-	@Autowired
-	private TicketRepository ticketRepository;
-	@Override
-	public Profile createProfile(String userName, String password, Boolean active, String tenantName, Map<String, Serializable> attributes, List<String> roles,
-			HttpServletResponse response) {
-	    PasswordEncoder encoder = new Md5PasswordEncoder();
-	    String hashedPassword = encoder.encodePassword(password, null);
+    @Autowired
+    private ProfileRepository profileRepository;
 
-		Profile profile = new Profile();
-		profile.setUserName(userName);
-		profile.setPassword(hashedPassword);
-		profile.setActive(active);
-		profile.setTenantName(tenantName);
-		profile.setCreated(new Date());
-		profile.setModified(new Date());
-		profile.setAttributes(attributes);
-		profile.setRoles(roles);
-		try {
-			return profileRepository.save(profile);
-		} catch (DuplicateKeyException e) {
-			try {
-				if (response!=null) {
-					response.sendError(HttpServletResponse.SC_CONFLICT);
-				}
-			} catch(IOException e1) {
-				log.error("Can't set error status after a DuplicateKey exception was received.");
-			}
-		}
-		return null;
-	}
+    @Autowired
+    private TicketRepository ticketRepository;
+    @Autowired
+    private EmailValidatorService emailValidatorService;
 
-	@Override
-	public List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder, List<String> attributesList, int start, int end) {
-		return profileRepository.getProfileRange(tenantName, sortBy, sortOrder, attributesList, start, end);
-	}
+    @Override
+    public Profile createProfile(String userName, String password, Boolean active, String tenantName, String email,
+                                 Map<String, Serializable> attributes, List<String> roles,
+                                 HttpServletResponse response) throws InvalidEmailException {
+        if (!emailValidatorService.validateEmail(email)) {
+            throw new InvalidEmailException("Invalid email account format");
+        }
+        PasswordEncoder encoder = new Md5PasswordEncoder();
+        String hashedPassword = encoder.encodePassword(password, null);
+        Profile profile = new Profile();
+        profile.setUserName(userName);
+        profile.setPassword(hashedPassword);
+        profile.setActive(active);
+        profile.setTenantName(tenantName);
+        profile.setCreated(new Date());
+        profile.setModified(new Date());
+        profile.setAttributes(attributes);
+        profile.setEmail(email);
+        profile.setRoles(roles);
+        try {
+            return profileRepository.save(profile);
+        } catch (DuplicateKeyException e) {
+            try {
+                if (response != null) {
+                    response.sendError(HttpServletResponse.SC_CONFLICT);
+                }
+            } catch (IOException e1) {
+                log.error("Can't set error status after a DuplicateKey exception was received.");
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public long getProfilesCount(String tenantName) {
-		return profileRepository.getProfilesCount(tenantName);
-	}
+    @Override
+    public List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder,
+                                         List<String> attributesList, int start, int end) {
+        return profileRepository.getProfileRange(tenantName, sortBy, sortOrder, attributesList, start, end);
+    }
 
-	@Override
-	public Profile updateProfile(String profileId, String userName, String password, Boolean active, String tenantName, 
-				Map<String, Serializable> attributes, List<String> roles) {
-		Profile profile = profileRepository.findOne(new ObjectId(profileId));
+    @Override
+    public long getProfilesCount(String tenantName) {
+        return profileRepository.getProfilesCount(tenantName);
+    }
 
-		if (profile == null) {
-			return profile;
-		}
-		if (userName != null && !userName.trim().isEmpty()) {
-			profile.setUserName(userName);
-		}
 
-		if (password != null && !password.trim().isEmpty()) {
-		    PasswordEncoder encoder = new Md5PasswordEncoder();
-	    	String hashedPassword = encoder.encodePassword(password, null);
-			profile.setPassword(hashedPassword);
-		}
+    @Override
+    public Profile updateProfile(String profileId, String userName, String password, Boolean active,
+                                 String tenantName, String email, Map<String, Serializable> attributes,
+                                 List<String> roles) {
+        Profile profile = profileRepository.findOne(new ObjectId(profileId));
 
-		if (active != null) {
-			profile.setActive(active);
-		}
-		
-		if (tenantName != null && !tenantName.trim().isEmpty()) { 
-			profile.setTenantName(tenantName);
-		}
-		
-		if (roles != null) {
-			profile.setRoles(roles);
-		}
-		
-		Map<String, Serializable> currentAttributes = profile.getAttributes();
-		if (currentAttributes != null) {
-			currentAttributes.putAll(attributes);
-		} else {
-			currentAttributes = attributes;
-		}
+        if (profile == null) {
+            return profile;
+        }
+        if (userName != null && !userName.trim().isEmpty()) {
+            profile.setUserName(userName);
+        }
 
-		profile.setAttributes(currentAttributes);
-		profile.setModified(new Date());
-		profile = profileRepository.save(profile);
-		return profile;
-	}
+        if (password != null && !password.trim().isEmpty()) {
+            PasswordEncoder encoder = new Md5PasswordEncoder();
+            String hashedPassword = encoder.encodePassword(password, null);
+            profile.setPassword(hashedPassword);
+        }
 
-	@Override
-	public Profile getProfileByTicket(String ticketStr) {
-		Ticket ticket = ticketRepository.getByTicket(ticketStr);
-		if (ticket==null) {
-			return null;
-		}
-		return getProfileByUserName(ticket.getUsername(), ticket.getTenantName(), null);
-	}
+        if (active != null) {
+            profile.setActive(active);
+        }
 
-	@Override
-	public Profile getProfileByTicket(String ticketStr, List<String> attributes) {
-		Ticket ticket = ticketRepository.getByTicket(ticketStr);
-		if (ticket==null) {
-			return null;
-		}
-		return getProfileByUserName(ticket.getUsername(), ticket.getTenantName(), attributes);
-	}
+        if (tenantName != null && !tenantName.trim().isEmpty()) {
+            profile.setTenantName(tenantName);
+        }
 
-	@Override
-	public Profile getProfileByTicketWithAllAttributes(String ticketString) {
-		Ticket ticket = ticketRepository.getByTicket(ticketString);
-		if (ticket==null) {
-			return null;
-		}
-		return getProfileByUserNameWithAllAttributes(ticket.getUsername(), ticket.getTenantName());
-	}
+        if (roles != null) {
+            profile.setRoles(roles);
+        }
 
-	@Override
-	public Profile getProfile(String profileId) {
-		return profileRepository.getProfile(profileId);
-	}
+        if (email != null) {
+            profile.setEmail(email);
+        }
+        Map<String, Serializable> currentAttributes = profile.getAttributes();
+        if (currentAttributes != null && attributes != null) {
+            currentAttributes.putAll(attributes);
+        } else {
+            currentAttributes = attributes;
+        }
 
-	@Override
-	public Profile getProfile(String profileId, List<String> attributes) {
-		return profileRepository.getProfile(profileId, attributes);
-	}
+        profile.setAttributes(currentAttributes);
+        profile.setModified(new Date());
+        profile = profileRepository.save(profile);
+        return profile;
+    }
 
-	@Override
-	public Profile getProfileWithAllAttributes(String profileId) {
-		return profileRepository.findOne(new ObjectId(profileId));
-	}
+    @Override
+    public Profile getProfileByTicket(String ticketStr) {
+        Ticket ticket = ticketRepository.getByTicket(ticketStr);
+        if (ticket == null) {
+            return null;
+        }
+        return getProfileByUserName(ticket.getUsername(), ticket.getTenantName(), null);
+    }
 
-	@Override
-	public Profile getProfileByUserName(String userName, String tenantName) {
-		return profileRepository.getProfileByUserName(userName, tenantName);
-	}
+    @Override
+    public Profile getProfileByTicket(String ticketStr, List<String> attributes) {
+        Ticket ticket = ticketRepository.getByTicket(ticketStr);
+        if (ticket == null) {
+            return null;
+        }
+        return getProfileByUserName(ticket.getUsername(), ticket.getTenantName(), attributes);
+    }
 
-	@Override
-	public Profile getProfileByUserName(String userName, String tenantName, List<String> attributes) {
-		return profileRepository.getProfileByUserName(userName, tenantName, attributes);
-	}
+    @Override
+    public Profile getProfileByTicketWithAllAttributes(String ticketString) {
+        Ticket ticket = ticketRepository.getByTicket(ticketString);
+        if (ticket == null) {
+            return null;
+        }
+        return getProfileByUserNameWithAllAttributes(ticket.getUsername(), ticket.getTenantName());
+    }
 
-	@Override
-	public Profile getProfileByUserNameWithAllAttributes(String userName, String tenantName) {
-		return profileRepository.getProfileByUserNameWithAllAttributes(userName, tenantName);
-	}
+    @Override
+    public Profile getProfile(String profileId) {
+        return profileRepository.getProfile(profileId);
+    }
 
-	@Override
-	public List<Profile> getProfiles(List<String> profileIdList) {
-		return profileRepository.getProfiles(profileIdList);
-	}
+    @Override
+    public Profile getProfile(String profileId, List<String> attributes) {
+        return profileRepository.getProfile(profileId, attributes);
+    }
 
-	@Override
-	public List<Profile> getProfilesWithAttributes(List<String> profileIdList) {
-		return profileRepository.getProfilesWithAttributes(profileIdList);
-	}
+    @Override
+    public Profile getProfileWithAllAttributes(String profileId) {
+        return profileRepository.findOne(new ObjectId(profileId));
+    }
 
-	@Override
-	public void deleteProfile(String profileId) {
-		profileRepository.delete(new ObjectId(profileId));
-	}
-	
-	@Override
-	public void deleteProfiles() {
-		profileRepository.deleteAll();
-	}
-	
-	@Override
-	public void deleteProfiles(String tenantName) {
-		profileRepository.delete(getProfilesByTenant(tenantName));
-	}
-	
-	public List<Profile> getProfilesByRoleName(String roleName, String tenantName) {
-		return profileRepository.findByRolesAndTenantName(roleName, tenantName);
-	}
-	
-	private List<Profile> getProfilesByTenant(String tenantName) {
-		return profileRepository.getProfilesByTenantName(tenantName);
-	}
+    @Override
+    public Profile getProfileByUserName(String userName, String tenantName) {
+        return profileRepository.getProfileByUserName(userName, tenantName);
+    }
 
-	@Override
-	public void setAttributes(String profileId, Map<String, Serializable> attributes) {
-		profileRepository.setAttributes(profileId, attributes);
-	}
+    @Override
+    public Profile getProfileByUserName(String userName, String tenantName, List<String> attributes) {
+        return profileRepository.getProfileByUserName(userName, tenantName, attributes);
+    }
 
-	@Override
-	public Map<String, Serializable> getAllAttributes(String profileId) {
-		return profileRepository.getAllAttributes(profileId);
-	}
+    @Override
+    public Profile getProfileByUserNameWithAllAttributes(String userName, String tenantName) {
+        return profileRepository.getProfileByUserNameWithAllAttributes(userName, tenantName);
+    }
 
-	@Override
-	public Map<String, Serializable> getAttributes(String profileId, List<String> attributes) {
-		return profileRepository.getAttributes(profileId, attributes);
-	}
+    @Override
+    public List<Profile> getProfiles(List<String> profileIdList) {
+        return profileRepository.getProfiles(profileIdList);
+    }
 
-	@Override
-	public Map<String, Serializable> getAttribute(String profileId, String attributeKey) {
-		return profileRepository.getAttribute(profileId, attributeKey);
-	}
+    @Override
+    public List<Profile> getProfilesWithAttributes(List<String> profileIdList) {
+        return profileRepository.getProfilesWithAttributes(profileIdList);
+    }
 
-	@Override
-	public void deleteAllAttributes(String profileId) {
-		profileRepository.deleteAllAttributes(profileId);
-	}
+    @Override
+    public void activeProfile(String profileId, boolean active) {
+        Profile p = profileRepository.findOne(new ObjectId(profileId));
+        if (p != null) {
+            activeProfile(p, active);
+        }
 
-	@Override
-	public void deleteAttributes(String profileId, List<String> attributes) {
-		profileRepository.deleteAttributes(profileId, attributes);
-	}
-	
+    }
+
+    @Override
+    public void activeProfiles(boolean active) {
+        List<Profile> l = profileRepository.findAll();
+        for (Profile p : l) {
+            activeProfile(p, active);
+        }
+    }
+
+    private void activeProfile(Profile p, boolean active) {
+        p.setActive(active);
+        profileRepository.save(p);
+    }
+
+    @Override
+    public void deleteProfiles(String tenantName) {
+        profileRepository.delete(getProfilesByTenant(tenantName));
+    }
+
+    public List<Profile> getProfilesByRoleName(String roleName, String tenantName) {
+        return profileRepository.findByRolesAndTenantName(roleName, tenantName);
+    }
+
+    private List<Profile> getProfilesByTenant(String tenantName) {
+        return profileRepository.getProfilesByTenantName(tenantName);
+    }
+
+    @Override
+    public void setAttributes(String profileId, Map<String, Serializable> attributes) {
+        profileRepository.setAttributes(profileId, attributes);
+    }
+
+    @Override
+    public Map<String, Serializable> getAllAttributes(String profileId) {
+        return profileRepository.getAllAttributes(profileId);
+    }
+
+    @Override
+    public Map<String, Serializable> getAttributes(String profileId, List<String> attributes) {
+        return profileRepository.getAttributes(profileId, attributes);
+    }
+
+    @Override
+    public Map<String, Serializable> getAttribute(String profileId, String attributeKey) {
+        return profileRepository.getAttribute(profileId, attributeKey);
+    }
+
+    @Override
+    public void deleteAllAttributes(String profileId) {
+        profileRepository.deleteAllAttributes(profileId);
+    }
+
+    @Override
+    public void deleteAttributes(String profileId, List<String> attributes) {
+        profileRepository.deleteAttributes(profileId, attributes);
+    }
+
 }

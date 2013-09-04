@@ -16,12 +16,12 @@
  */
 package org.craftercms.security.authentication.impl;
 
-import org.apache.commons.lang.StringUtils;
-import org.craftercms.security.api.RequestContext;
-
-import javax.servlet.http.Cookie;
 import java.text.DateFormat;
 import java.util.Date;
+import javax.servlet.http.Cookie;
+
+import org.apache.commons.lang.StringUtils;
+import org.craftercms.security.api.RequestContext;
 
 /**
  * Cookie that persists authentication information across requests.
@@ -39,10 +39,8 @@ public class AuthenticationCookie {
     /**
      * Default constructor.
      *
-     * @param ticket
-     *          the Crafter Profile ticket
-     * @param profileOutdatedAfter
-     *          date when the profile is considered outdated and should be refreshed
+     * @param ticket               the Crafter Profile ticket
+     * @param profileOutdatedAfter date when the profile is considered outdated and should be refreshed
      */
     public AuthenticationCookie(String ticket, Date profileOutdatedAfter) {
         this.ticket = ticket;
@@ -73,16 +71,14 @@ public class AuthenticationCookie {
     /**
      * Saves the cookie in the context's response.
      *
-     * @param context
-     *          the context that holds the response to where the cookie is written.
-     * @param cookieMaxAge
-     *          the max age of the cookie.
+     * @param context      the context that holds the response to where the cookie is written.
+     * @param cookieMaxAge the max age of the cookie.
      */
     public void save(RequestContext context, int cookieMaxAge) {
         String contextPath = context.getRequest().getContextPath();
 
         Cookie cookie = new Cookie(COOKIE, toCookieValue());
-        cookie.setPath(StringUtils.isNotEmpty(contextPath)? contextPath : "/");
+        cookie.setPath(StringUtils.isNotEmpty(contextPath)? contextPath: "/");
         cookie.setMaxAge(cookieMaxAge);
 
         context.getResponse().addCookie(cookie);
@@ -91,14 +87,14 @@ public class AuthenticationCookie {
     /**
      * Deletes the cookies from the context's response.
      *
-     * @param context
-     *          the context that holds the response to where an empty cookie is written (so the cookie is removed from the browser).
+     * @param context the context that holds the response to where an empty cookie is written (so the cookie is
+     *                removed from the browser).
      */
     public void delete(RequestContext context) {
         String contextPath = context.getRequest().getContextPath();
 
         Cookie cookie = new Cookie(COOKIE, null);
-        cookie.setPath(StringUtils.isNotEmpty(contextPath)? contextPath : "/");
+        cookie.setPath(StringUtils.isNotEmpty(contextPath)? contextPath: "/");
         cookie.setMaxAge(0);
 
         context.getResponse().addCookie(cookie);
@@ -115,9 +111,9 @@ public class AuthenticationCookie {
     @Override
     public String toString() {
         return "AuthenticationCookie[" +
-                "ticket='" + ticket + '\'' +
-                ", profileOutdatedAfter=" + profileOutdatedAfter +
-                ']';
+            "ticket='" + ticket + '\'' +
+            ", profileOutdatedAfter=" + profileOutdatedAfter +
+            ']';
     }
 
 }
