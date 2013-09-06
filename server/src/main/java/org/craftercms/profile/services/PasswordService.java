@@ -2,6 +2,7 @@ package org.craftercms.profile.services;
 
 import java.text.ParseException;
 
+import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.ExpiryDateException;
 import org.craftercms.profile.exceptions.MailException;
@@ -14,12 +15,13 @@ public interface PasswordService {
      * @param password Clear text new password value
      * @param token    Security token sent to the email account of the profile account. This token contain username,
      *                 tenantName and Date that was generated
+     * @return the profile instance that the password was reset
      * @throws CipherException        If an error occurred during the decryption process.
      * @throws NoSuchProfileException If the profile was not found in the database
      * @throws ParseException         If an error occurred when the date of the token is parsed
      * @throws ExpiryDateException    If the token has already expired
      */
-    void changePassword(String password, String token) throws CipherException, NoSuchProfileException,
+    Profile resetPassword(String password, String token) throws CipherException, NoSuchProfileException,
         ParseException, ExpiryDateException;
 
     /**
@@ -29,11 +31,12 @@ public interface PasswordService {
      *                          password
      * @param username          that forgot the password.
      * @param tenantName        current tenant name
+     * @return the profile instance that the password was forgotten
      * @throws CipherException        If an error ocurred during the encryption process.
      * @throws MailException          If an error ocurred during the emailing process
      * @throws NoSuchProfileException If there is not a username registered with the value sent as argument.
      */
-    void forgotPassword(String changePasswordUrl, String username, String tenantName) throws CipherException,
+    Profile forgotPassword(String changePasswordUrl, String username, String tenantName) throws CipherException,
         MailException, NoSuchProfileException;
 
 }

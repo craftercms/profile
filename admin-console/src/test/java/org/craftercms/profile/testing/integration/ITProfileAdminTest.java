@@ -31,8 +31,8 @@ public class ITProfileAdminTest extends IntegrationTestingBase {
             selectItem(driver, "input[id='newtestuser']");
             WebElement deleteLink = driver.findElement(By.id("Delete"));
             deleteLink.click();
-            assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console Profile " +
-                "List"));
+            assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console Profile "
+                + "List"));
         } catch (NoSuchElementException e) {
         }
         createNewProfile(driver, "newtestuser");

@@ -35,8 +35,8 @@ public class ITAttributesAdminTest extends IntegrationTestingBase {
                 break;
             }
         }
-        assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - Attribute " +
-            "List"));
+        assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - Attribute "
+            + "List"));
         deleteAttribute("a[id='phone']", driver);
         WebElement newAttributeLink = driver.findElement(By.id("New"));
         newAttributeLink.click();
@@ -50,54 +50,58 @@ public class ITAttributesAdminTest extends IntegrationTestingBase {
         constraint.sendKeys("constraint");
         WebElement create = driver.findElement(By.id("CreateProp"));
         create.click();
+        assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - Attribute "
+            + "List"));
+    }
+
+    @Test
+    public void testUpdateAttributes() {
+        WebDriver driver = getDriver();
+        driver.get(baseUrl + WEB_APP_URL + "/login");
+        loginAsAdmin(driver);
+        WebElement tenantsLink = driver.findElement(By.id("GetTenants"));
+        tenantsLink.click();
+        assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console Tenant List"));
+        WebElement linkUpdateTenant = driver.findElement(By.cssSelector("a[id='craftercms']"));
+        linkUpdateTenant.click();
+        assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - Update " +
+            "Tenant"));
+        WebElement attributesLink = driver.findElement(By.id("ManageAttributes"));
+        attributesLink.click();
+        // Switch to edit window
+        Set<String> handles = driver.getWindowHandles();
+        for (String h : handles) {
+            driver.switchTo().window(h);
+            if (driver.getCurrentUrl().contains("getprops")) {
+                break;
+            }
+        }
+        assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - Attribute " +
+            "List"));
+        WebElement newAttributeLink = driver.findElement(By.id("New"));
+        newAttributeLink.click();
+        assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - New " +
+            "Attribute"));
+        WebElement name = driver.findElement(By.id("name"));
+        name.sendKeys("updateattribute1");
+        WebElement label = driver.findElement(By.id("label"));
+        label.sendKeys("updateattribute1");
+
+        WebElement create = driver.findElement(By.id("CreateProp"));
+        create.click();
+        assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - Attribute " +
+            "List"));
+        WebElement linkUpdateAttr = driver.findElement(By.cssSelector("a[id='updateattribute1']"));
+        linkUpdateAttr.click();
+        assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - Update " +
+            "Attribute"));
+        label = driver.findElement(By.id("label"));
+        label.sendKeys("updateattribute2");
+        create = driver.findElement(By.id("UpdateProp"));
+        create.click();
         assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - Attribute " +
             "List"));
     }
-
-	/*@Test
-	public void testUpdateAttributes() {
-		WebDriver driver = getDriver();
-		driver.get(baseUrl + WEB_APP_URL +"/login");
-		loginAsAdmin(driver);
-		WebElement tenantsLink = driver.findElement(By.id("GetTenants"));
-		tenantsLink.click();
-		assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Admin Console Tenant List"));
-		WebElement linkUpdateTenant = driver.findElement(By.cssSelector("a[id='craftercms']"));
-		linkUpdateTenant.click();
-		assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Admin Console - Update Tenant"));
-		WebElement attributesLink = driver.findElement(By.id("ManageAttributes"));
-		attributesLink.click();
-		// Switch to edit window
-        Set<String> handles = driver.getWindowHandles();
-        for (String h : handles) {
-          driver.switchTo().window( h );
-          if (driver.getCurrentUrl().contains("getprops")) {
-        	  break;
-          }
-        }
-        assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Admin Console - Attribute
-        List"));
-		WebElement newAttributeLink = driver.findElement(By.id("New"));
-		newAttributeLink.click();
-		assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Admin Console - New Attribute"));
-		WebElement name = driver.findElement(By.id("name"));
-		name.sendKeys("updateattribute1");
-		WebElement label = driver.findElement(By.id("label"));
-		label.sendKeys("updateattribute1");
-		
-		WebElement create = driver.findElement(By.id("CreateProp"));
-		create.click();
-		assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Admin Console - Attribute List"));
-		WebElement linkUpdateAttr = driver.findElement(By.cssSelector("a[id='updateattribute1']"));
-		linkUpdateAttr.click();
-		assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Admin Console - Update
-		Attribute"));
-		label = driver.findElement(By.id("label"));
-		label.sendKeys("updateattribute2");
-		create = driver.findElement(By.id("UpdateProp"));
-		create.click();
-		assertEquals("Title error, Wrong page" ,true, driver.getTitle().contains("Crafter Admin Console - Attribute List"));
-	}*/
 
     @Test
     public void testDeleteAttributes() {
@@ -117,14 +121,12 @@ public class ITAttributesAdminTest extends IntegrationTestingBase {
         Set<String> handles = driver.getWindowHandles();
         for (String h : handles) {
             driver.switchTo().window(h);
-            System.out.println("**testDeleteAttributes " + driver.getCurrentUrl());
             if (driver.getCurrentUrl().contains("getprops")) {
-                System.out.println(" testDeleteAttributes " + driver.getTitle());
                 break;
             }
         }
-        assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - Attribute " +
-            "List"));
+        assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - Attribute "
+            + "List"));
         WebElement newAttributeLink = driver.findElement(By.id("New"));
         newAttributeLink.click();
         assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - New " +
@@ -135,14 +137,13 @@ public class ITAttributesAdminTest extends IntegrationTestingBase {
         label.sendKeys("testDeleteAttributes");
         WebElement create = driver.findElement(By.id("CreateProp"));
         create.click();
-        assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - Attribute " +
-            "List"));
+        assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - Attribute "
+            + "List"));
         deleteAttribute("a[id='testDeleteAttributes']", driver);
     }
 
     private void deleteAttribute(String selector, WebDriver driver) {
         try {
-            System.out.println(" deleteAttribute 1111 ");
             WebElement deleteLink = driver.findElement(By.cssSelector("a[id='Delete']"));
             WebElement linkDeleteAttr = driver.findElement(By.cssSelector(selector));
             linkDeleteAttr.click();

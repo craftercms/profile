@@ -26,7 +26,7 @@
         <h1 class="mainTitle">Manage Tenants</h1>
     </div>
 
-    <form id="form-list" onsubmit="return onsubmitform();" accept-charset="UTF-8">
+    <form id="form-list" name="tenant-list" onsubmit="return onsubmitform();" accept-charset="UTF-8" class="tenantlist">
         <div class="top">
             <div class="pad">
                 <nav>

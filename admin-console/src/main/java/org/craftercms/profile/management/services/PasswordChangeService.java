@@ -25,4 +25,11 @@ public interface PasswordChangeService {
      */
     void forgotPassword(String tenantName, String username) throws AppAuthenticationFailedException;
 
+    /**
+     * Gets current changePasswordUrl. This link will request the change password form
+     *
+     * @return url to the change password form
+     */
+    String getCrafterProfileChangePasswordUrl();
+
 }

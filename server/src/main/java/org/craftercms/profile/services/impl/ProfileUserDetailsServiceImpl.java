@@ -56,6 +56,7 @@ public class ProfileUserDetailsServiceImpl implements ProfileUserDetailsService 
         }
 
         Profile profile = profileService.getProfileByUserName(newUsername, tenantName, null);
-        return new User(profile.getUserName(), profile.getPassword(), profile.getActive(), true, true, true, defaultGrantedAuthorities);
+        return new User(profile.getUserName(), profile.getPassword(), profile.getActive(), true, true, true,
+            defaultGrantedAuthorities);
     }
 }

@@ -41,12 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
@@ -380,11 +375,11 @@ public class AccountController {
             }
             value = attributes.get(a.getName());
             if (value == null) {
-                bindingResult.rejectValue("attributes[" + a.getName() + "]", "user.validation.attribute.error.empty" +
-                    ".or.whitespace", null, "user.validation.attribute.error.empty.or.whitespace");
+                bindingResult.rejectValue("attributes[" + a.getName() + "]", "user.validation.attribute.error.empty"
+                    + ".or.whitespace", null, "user.validation.attribute.error.empty.or.whitespace");
             } else if ((a.getType() == null || a.getType().equalsIgnoreCase("text")) && value.equals("")) {
-                bindingResult.rejectValue("attributes[" + a.getName() + "]", "user.validation.attribute.error.empty" +
-                    ".or.whitespace", null, "user.validation.attribute.error.empty.or.whitespace");
+                bindingResult.rejectValue("attributes[" + a.getName() + "]", "user.validation.attribute.error.empty"
+                    + ".or.whitespace", null, "user.validation.attribute.error.empty.or.whitespace");
             }
         }
 

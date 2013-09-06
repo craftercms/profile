@@ -18,9 +18,18 @@
 
         <h2>Forgot Password</h1>
     </div>
+    <form class="login-form" action="crafter-security-forgot-password" method="post" accept-charset="UTF-8"
+          id="forgotPasswordForm">
 
-    <form class="login-form" action="forgeting-password" method="post" accept-charset="UTF-8" id="forgeting-password">
         <div class="box pad mt40 style-inputs">
+        <#if RequestParameters.error??>
+            <p class="general-error">
+                <#if Session.profileForgotException??>
+					
+					${Session.profileForgotException.message!""}
+				</#if>
+            </p>
+        </#if>
             <p>
                 <label for="usernameLabel">Username:</label>
             <@crafter.formInput "forgotPassword.username", "username", "style=width:270 class='test'", "text"/>
@@ -28,7 +37,8 @@
                 <br/>
                 <span class="hintField">Enter your username, and a reset link will be emailed to you.</span>
             </p>
-
+        <@crafter.formInput "forgotPassword.tenantName", "tenantName", "style=width:270", "hidden"/>
+        <@crafter.formInput "forgotPassword.changePasswordUrl", "changePasswordUrl", "style=width:270", "hidden"/>
             <p>
                 <label for=""></label>
                 <button class="btn btn-info" type="submit" id="forgeting-password" name="forgeting-password">Send Reset
@@ -36,6 +46,13 @@
                 </button>
             </p>
         <@crafter.formInput "forgotPassword.tenantName", "tenantName", "style=width:270", "hidden"/>
+        <#if RequestParameters.success??>
+            <p class="logout-success">
+                An email was sent to ${Session.profileForgotPassword.email!""}
+                <br/>
+                Please follow the instructions included in that email.
+            </p>
+        </#if>
 
         </div>
     </form>

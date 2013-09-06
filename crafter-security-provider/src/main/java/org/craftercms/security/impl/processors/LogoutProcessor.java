@@ -19,11 +19,7 @@ package org.craftercms.security.impl.processors;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.craftercms.security.api.AuthenticationService;
-import org.craftercms.security.api.RequestContext;
-import org.craftercms.security.api.RequestSecurityProcessor;
-import org.craftercms.security.api.RequestSecurityProcessorChain;
-import org.craftercms.security.api.UserProfile;
+import org.craftercms.security.api.*;
 import org.craftercms.security.authentication.AuthenticationToken;
 import org.craftercms.security.authentication.AuthenticationTokenCache;
 import org.slf4j.Logger;

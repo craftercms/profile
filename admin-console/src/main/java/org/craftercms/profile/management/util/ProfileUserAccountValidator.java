@@ -32,7 +32,7 @@ public class ProfileUserAccountValidator implements Validator {
     public void validate(Object target, Errors errors) {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "user.validation.error.empty.or.whitespace");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "user.validation.error.empty.or.whitespace");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword", "user.validation.error.empty.or" +
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword", "user.validation.error.empty.or" + "" +
             ".whitespace");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "user.validation.error.empty.or.whitespace");
     }

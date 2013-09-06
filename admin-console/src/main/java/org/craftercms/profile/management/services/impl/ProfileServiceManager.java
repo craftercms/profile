@@ -52,9 +52,11 @@ public class ProfileServiceManager {
     }
 
 
-    public static void initStaticValues(ProfileClient profileClient, String username, String password) {
+    public static void initStaticValues(ProfileClient profileClient, String username, String password,
+                                        String tenantName) {
         ProfileServiceManager.username = username;
         ProfileServiceManager.password = password;
+        ProfileServiceManager.crafterProfileAppTenantName = tenantName;
         ProfileServiceManager.profileRestClient = profileClient;
     }
 

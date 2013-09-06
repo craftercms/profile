@@ -63,6 +63,7 @@
                     <beans:property name="extractValueFromSingleKeyModel" value="true"/>
                 </beans:bean>
                 <beans:bean class="org.springframework.web.servlet.view.xml.MarshallingView">
+                    <beans:property name="contentType" value="application/xml;charset=UTF-8"/>
                     <beans:property name="marshaller">
                         <beans:bean class="org.springframework.oxm.xstream.XStreamMarshaller">
                             <beans:property name="autodetectAnnotations" value="true"/>

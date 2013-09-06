@@ -1,5 +1,8 @@
 package org.craftercms.profile.services.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -15,7 +18,7 @@ import org.craftercms.profile.exceptions.ExpiryDateException;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.security.util.crypto.ProfileCipher;
-import org.craftercms.profile.security.util.crypto.impl.SimpleDesCipher;
+import org.craftercms.profile.security.util.crypto.impl.CipherPasswordChangeToken;
 import org.craftercms.profile.services.MailService;
 import org.craftercms.profile.services.PasswordService;
 import org.craftercms.profile.services.ProfileService;
@@ -27,14 +30,13 @@ import org.springframework.util.StringUtils;
 //import org.apache.log4j.Logger;
 
 /**
- * Implements the funcionality for password management.
+ * Implements the functionality for password management.
  *
  * @author Alvaro Gonzalez
  */
 @Service
 public class PasswordServiceImpl implements PasswordService {
 
-    //private static final Logger log = Logger.getLogger(PasswordServiceImpl.class);
     protected final Log log = LogFactory.getLog(getClass());
 
     private String profileCipherKey;
@@ -53,14 +55,17 @@ public class PasswordServiceImpl implements PasswordService {
 
     private int expiryMinutes = 60;
 
+    @Autowired
+    private CipherPasswordChangeToken cipherPasswordChangeToken;
+
     /*
      * (non-Javadoc)
      * @see org.craftercms.profile.services.PasswordService#forgotPassword(java.lang.String, java.lang.String,
      * java.lang.String)
      */
     @Override
-    public void forgotPassword(String changePasswordUrl, String username, String tenantName) throws CipherException,
-        MailException, NoSuchProfileException {
+    public Profile forgotPassword(String changePasswordUrl, String username,
+                                  String tenantName) throws CipherException, MailException, NoSuchProfileException {
         if (log.isDebugEnabled()) {
             log.debug("Starting forget process");
         }
@@ -69,8 +74,19 @@ public class PasswordServiceImpl implements PasswordService {
             log.warn("Profile " + username + " doesn't exist for tenant " + tenantName);
             throw new NoSuchProfileException("Profile " + username + " doesn't exist for tenant " + tenantName);
         }
-        ProfileCipher profileCipher = new SimpleDesCipher(profileCipherKey);
-        String encryptedToken = profileCipher.encrypt(getRawValue(tenantName, username).getBytes());
+        if (profile.getEmail() == null || profile.getEmail().equals("")) {
+            log.warn("Profile " + username + " doesn't have an email to complete the reset password process.");
+            throw new MailException("Profile " + username + " doesn't have an email to complete the reset password " +
+                "process.");
+        }
+        //ProfileCipher profileCipher = new SimpleDesCipher(profileCipherKey);
+        String encryptedToken = cipherPasswordChangeToken.encrypt(getRawValue(tenantName, username));
+
+        try {
+            encryptedToken = URLEncoder.encode(encryptedToken, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new CipherException("Unsupported Ending error");
+        }
         if (log.isDebugEnabled()) {
             log.debug("Token generated and encrypted");
         }
@@ -88,6 +104,7 @@ public class PasswordServiceImpl implements PasswordService {
         if (log.isDebugEnabled()) {
             log.debug("Email sent to change the password");
         }
+        return profile;
     }
 
     private String getRawValue(String tenantName, String username) {
@@ -112,14 +129,20 @@ public class PasswordServiceImpl implements PasswordService {
      * @see org.craftercms.profile.services.PasswordService#changePassword(java.lang.String, java.lang.String)
      */
     @Override
-    public void changePassword(String password, String token) throws CipherException, NoSuchProfileException,
+    public Profile resetPassword(String password, String token) throws CipherException, NoSuchProfileException,
         ParseException, ExpiryDateException {
+        try {
+            token = URLDecoder.decode(token, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new CipherException("Unsupported decode error");
+        }
+        //token = decodeToken(token);
         if (log.isDebugEnabled()) {
             log.debug("Change password process started");
         }
-        ProfileCipher profileCipher = new SimpleDesCipher(profileCipherKey);
+        //ProfileCipher profileCipher = new SimpleDesCipher(profileCipherKey);
         // tenant | username | date
-        String tokens = profileCipher.decrypt(token);
+        String tokens = cipherPasswordChangeToken.decrypt(token);
 
         String[] data = splitTokens(tokens);
         if (data != null && data.length > 2 && profileService.getProfileByUserName(data[1], data[0]) == null) {
@@ -133,11 +156,20 @@ public class PasswordServiceImpl implements PasswordService {
             throw new ExpiryDateException("Token date is expired " + data[2]);
         }
         Profile profile = profileService.getProfileByUserNameWithAllAttributes(data[1], data[0]);
-        profileService.updateProfile(profile.getId().toString(), profile.getUserName(), password,
+        profile = profileService.updateProfile(profile.getId().toString(), profile.getUserName(), password,
             profile.getActive(), profile.getTenantName(), profile.getEmail(), profile.getAttributes(),
             profile.getRoles());
         if (log.isDebugEnabled()) {
             log.debug("Password changed successfuly");
+        }
+        return profile;
+    }
+
+    private String decodeToken(String token) throws CipherException {
+        try {
+            return URLDecoder.decode(token, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new CipherException("Token " + token + " has unsupported encoding");
         }
     }
 

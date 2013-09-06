@@ -66,7 +66,8 @@ public class ProfileRestClientTest {
             //			roles.add("SOCIAL_USER");
             //
             //
-            //			List<String> roles1 = c.getRoles(appToken, "51d3380103641b01aa71cc03", "craftercms", new String[]{"social_based_group","social_high_level_group"});
+            //			List<String> roles1 = c.getRoles(appToken, "51d3380103641b01aa71cc03", "craftercms",
+            // new String[]{"social_based_group","social_high_level_group"});
             //			if(roles1!=null) {
             //				for(String s:roles1) {
             //					System.out.println("Role " +s);

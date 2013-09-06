@@ -192,8 +192,7 @@ public class ProfileRestController {
                                                       @PathVariable String username,
                                                       @RequestParam(ProfileConstants.TENANT_NAME) String tenantName,
                                                       @RequestParam(required = false,
-                                                          value = ProfileConstants.ATTRIBUTES) List<String>
-                                                          attributes) throws NoSuchProfileException {
+        value = ProfileConstants.ATTRIBUTES) List<String> attributes) throws NoSuchProfileException {
 
         Profile profile = profileService.getProfileByUserName(username, tenantName, attributes);
 
@@ -449,7 +448,9 @@ public class ProfileRestController {
      */
     @RequestMapping(value = "{profileId}/delete_attributes", method = RequestMethod.POST)
     @ModelAttribute
-    public void deleteAttributes(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken, @PathVariable String profileId, @RequestParam(required = false, value = ProfileConstants.ATTRIBUTES) List<String> attributes, HttpServletResponse response) {
+    public void deleteAttributes(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String
+        appToken, @PathVariable String profileId, @RequestParam(required = false,
+        value = ProfileConstants.ATTRIBUTES) List<String> attributes, HttpServletResponse response) {
         profileService.deleteAttributes(profileId, attributes);
     }
 
@@ -463,7 +464,8 @@ public class ProfileRestController {
      */
     @RequestMapping(value = "{profileId}/delete_all_attributes", method = RequestMethod.POST)
     @ModelAttribute
-    public void deleteAttributes(@RequestParam(ProfileConstants.APP_TOKEN) String appToken, @PathVariable String profileId, HttpServletResponse response) {
+    public void deleteAttributes(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+                                 @PathVariable String profileId, HttpServletResponse response) {
         profileService.deleteAllAttributes(profileId);
     }
 

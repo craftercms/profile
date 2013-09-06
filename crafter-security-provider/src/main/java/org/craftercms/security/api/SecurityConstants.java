@@ -30,5 +30,9 @@ public abstract class SecurityConstants {
     public static final String AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE = "authenticationSystemException";
     public static final String USER_AUTHENTICATION_EXCEPTION_ATTRIBUTE = "userAuthenticationException";
     public static final String ACCESS_DENIED_EXCEPTION_ATTRIBUTE = "accessDeniedException";
+    public static final String FORGOT_PASSWORD_EXCEPTION = "profileForgotException";
+    public static final String RESET_PASSWORD_EXCEPTION = "profileResetException";
+    public static final String PROFILE_FORGOT_PASSWORD = "profileForgotPassword";
+    public static final String PROFILE_RESET_PASSWORD = "profileResetPassword";
 
 }

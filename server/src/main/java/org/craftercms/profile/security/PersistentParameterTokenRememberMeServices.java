@@ -159,7 +159,8 @@ public class PersistentParameterTokenRememberMeServices extends PersistentTokenB
 
         logger.debug("Creating new persistent login for user " + username);
 
-        PersistentTenantRememberMeToken persistentToken = new PersistentTenantRememberMeToken(username, generateSeriesData(), generateTokenData(), new Date(), tenantName);
+        PersistentTenantRememberMeToken persistentToken = new PersistentTenantRememberMeToken(username,
+            generateSeriesData(), generateTokenData(), new Date(), tenantName);
         try {
             tokenRepository.createNewToken(persistentToken);
 

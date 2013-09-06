@@ -166,7 +166,8 @@ public class ProfileAccountService {
         boolean isDisplayable = true;
         if (profile.getUserName() == null // Profile should have username but this is a validation only
             || (profile.getUserName().equals(currentUser.getUserName()) // Profile is user log-in
-            && profile.getTenantName().equals(currentUser.getTenantName())) || isSuperAdmin(profile.getRoles())) { // SUPERADMIN
+            && profile.getTenantName().equals(currentUser.getTenantName())) || isSuperAdmin(profile.getRoles())) { //
+            // SUPERADMIN
             isDisplayable = false;
         }
         return isDisplayable;

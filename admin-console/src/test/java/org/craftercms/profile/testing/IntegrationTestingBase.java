@@ -1,6 +1,7 @@
 package org.craftercms.profile.testing;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 import org.junit.After;
@@ -11,6 +12,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class IntegrationTestingBase {
 
@@ -43,7 +46,11 @@ public class IntegrationTestingBase {
 
     @Before
     public void prepareDriver() throws Exception {
-        mDriver = new FirefoxDriver();
+        sCaps = new DesiredCapabilities();
+        sCaps.setJavascriptEnabled(true);
+        //sCaps.setCapability("version","21.0");
+        //sCaps.setVersion("21.0");
+        mDriver = new FirefoxDriver(sCaps);
     }
 
     protected WebDriver getDriver() {
@@ -77,6 +84,20 @@ public class IntegrationTestingBase {
         inputUsername.sendKeys("admin");
         inputPass.sendKeys("admin");
         loginButton.click();
+    }
+
+    protected void waitForElement(WebDriver driver, long milliseconds, String classname) {
+        (new WebDriverWait(driver, milliseconds)).until(ExpectedConditions.presenceOfElementLocated(By.className
+            (classname)));
+        List<WebElement> testel = driver.findElements(By.className(classname));
+        while (testel == null || testel.size() == 0) {
+            try {
+                (new WebDriverWait(driver, milliseconds)).until(ExpectedConditions.presenceOfElementLocated(By
+                    .className(classname)));
+            } catch (Exception e) {
+            }
+            testel = driver.findElements(By.className(classname));
+        }
     }
 
 }
