@@ -18,21 +18,22 @@ package org.craftercms.profile.management.services;
 
 import java.util.List;
 
-import org.craftercms.profile.impl.domain.Role;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
+import org.craftercms.profile.impl.domain.Role;
 
 
 /**
  * @author David Escalante
-
  */
 public interface RoleDAOService {
 
     /**
      * Get the list of all Roles
+     *
      * @return
      * @throws AppAuthenticationFailedException
+     *
      */
-    public List<Role>  getAllRoles() throws AppAuthenticationFailedException;
+    public List<Role> getAllRoles() throws AppAuthenticationFailedException;
 
 }

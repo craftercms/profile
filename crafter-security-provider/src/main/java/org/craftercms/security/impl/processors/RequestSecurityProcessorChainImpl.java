@@ -16,11 +16,11 @@
  */
 package org.craftercms.security.impl.processors;
 
+import java.util.Iterator;
+
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.RequestSecurityProcessor;
 import org.craftercms.security.api.RequestSecurityProcessorChain;
-
-import java.util.Iterator;
 
 /**
  * Default implementation of a handler chain, using an iterator.
@@ -34,8 +34,7 @@ public class RequestSecurityProcessorChainImpl implements RequestSecurityProcess
     /**
      * Default constructor
      *
-     * @param processorIterator
-     *          iterator of {@link RequestSecurityProcessor}s.
+     * @param processorIterator iterator of {@link RequestSecurityProcessor}s.
      */
     public RequestSecurityProcessorChainImpl(Iterator<RequestSecurityProcessor> processorIterator) {
         this.processorIterator = processorIterator;
@@ -44,14 +43,13 @@ public class RequestSecurityProcessorChainImpl implements RequestSecurityProcess
     /**
      * Calls the next {@link RequestSecurityProcessor} of the iterator.
      *
-     * @param context
-     *          the request context
+     * @param context the request context
      * @throws Exception
      */
     public void processRequest(RequestContext context) throws Exception {
-       if (processorIterator.hasNext()) {
-           processorIterator.next().processRequest(context, this);
-       }
+        if (processorIterator.hasNext()) {
+            processorIterator.next().processRequest(context, this);
+        }
     }
 
 }

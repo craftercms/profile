@@ -1,37 +1,36 @@
 package org.craftercms.profile.management.model;
 
 public class PasswordChange {
-	
-	private String token;
-	
-	private String newpass;
-	
-	private String confirmPass;
 
-	public String getToken() {
-		return token;
-	}
+    private String token;
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+    private String newpass;
 
-	public String getNewpass() {
-		return newpass;
-	}
+    private String confirmPass;
 
-	public void setNewpass(String newpass) {
-		this.newpass = newpass;
-	}
+    public String getToken() {
+        return token;
+    }
 
-	public String getConfirmPass() {
-		return confirmPass;
-	}
+    public void setToken(String token) {
+        this.token = token;
+    }
 
-	public void setConfirmPass(String confirmPass) {
-		this.confirmPass = confirmPass;
-	}
-	
-	
+    public String getNewpass() {
+        return newpass;
+    }
+
+    public void setNewpass(String newpass) {
+        this.newpass = newpass;
+    }
+
+    public String getConfirmPass() {
+        return confirmPass;
+    }
+
+    public void setConfirmPass(String confirmPass) {
+        this.confirmPass = confirmPass;
+    }
+
 
 }

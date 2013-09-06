@@ -36,58 +36,52 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/2/schema/")
 public class SchemaRestController {
 
-	@Autowired
-	private SchemaService schemaService;
-
-	/**
-	 * Get a schema based on a tenant id
-	 * 
-	 * @param appToken The application token
-	 * @param tenantName
-	 * @param response
-	 */
-	@RequestMapping(value = "get_schema/{tenantName}", method = RequestMethod.GET)
-	@ModelAttribute
-	public Schema getSchemaByTenantName(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-                                      @PathVariable String tenantName,
-                                      HttpServletResponse response) {
-		return schemaService.geSchemaByTenantName(tenantName);
-	}
+    @Autowired
+    private SchemaService schemaService;
 
     /**
-	 * Set attributes to profile
-	 * 
-	 * @param appToken The application token
-	 * @param tenantName
-	 * @param attribute
-	 * @param response
-	 */
-	@RequestMapping(value = "set_attribute", method = RequestMethod.POST)
-	@ModelAttribute
-	public void setAttributes(HttpServletRequest request,
-			@RequestParam(ProfileConstants.APP_TOKEN) String appToken, 
-			@RequestParam String tenantName,
-            Attribute attribute,
-			HttpServletResponse response) {
-		schemaService.setAttribute(tenantName, attribute);
-	}
-	
-	/**
-	 * Delete Attributes
-	 * 
-	 * @param appToken The application token
-	 * @param tenantName tenant name used to delete attributes of a schema
-	 * @param name role name
-	 * @param response instance
-	 */
-	@RequestMapping(value = "delete_attribute", method = RequestMethod.POST)
-	@ModelAttribute
-	public void deleteAttribute(HttpServletRequest request,
-                                @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-                                @RequestParam String tenantName,
-                                @RequestParam(required = false, value = AttributeConstants.NAME) String name,
-                                HttpServletResponse response) {
-		schemaService.deleteAttribute(tenantName, name);
-	}
+     * Get a schema based on a tenant id
+     *
+     * @param appToken   The application token
+     * @param tenantName
+     * @param response
+     */
+    @RequestMapping(value = "get_schema/{tenantName}", method = RequestMethod.GET)
+    @ModelAttribute
+    public Schema getSchemaByTenantName(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String
+        appToken, @PathVariable String tenantName, HttpServletResponse response) {
+        return schemaService.geSchemaByTenantName(tenantName);
+    }
+
+    /**
+     * Set attributes to profile
+     *
+     * @param appToken   The application token
+     * @param tenantName
+     * @param attribute
+     * @param response
+     */
+    @RequestMapping(value = "set_attribute", method = RequestMethod.POST)
+    @ModelAttribute
+    public void setAttributes(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+                              @RequestParam String tenantName, Attribute attribute, HttpServletResponse response) {
+        schemaService.setAttribute(tenantName, attribute);
+    }
+
+    /**
+     * Delete Attributes
+     *
+     * @param appToken   The application token
+     * @param tenantName tenant name used to delete attributes of a schema
+     * @param name       role name
+     * @param response   instance
+     */
+    @RequestMapping(value = "delete_attribute", method = RequestMethod.POST)
+    @ModelAttribute
+    public void deleteAttribute(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String
+        appToken, @RequestParam String tenantName, @RequestParam(required = false,
+        value = AttributeConstants.NAME) String name, HttpServletResponse response) {
+        schemaService.deleteAttribute(tenantName, name);
+    }
 
 }

@@ -19,12 +19,11 @@ package org.craftercms.profile.repositories;
 import java.util.List;
 
 import org.bson.types.ObjectId;
-
 import org.craftercms.profile.domain.Tenant;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface TenantRepository extends MongoRepository<Tenant, ObjectId>,
-		TenantRepositoryCustom {
-	List<Tenant> findAll();
-	Tenant findTenantById(ObjectId id);
+public interface TenantRepository extends MongoRepository<Tenant, ObjectId>, TenantRepositoryCustom {
+    List<Tenant> findAll();
+
+    Tenant findTenantById(ObjectId id);
 }

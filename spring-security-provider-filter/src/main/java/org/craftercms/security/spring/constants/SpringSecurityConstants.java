@@ -17,16 +17,15 @@
 package org.craftercms.security.spring.constants;
 
 /**
- * 
  * @author Sandra O'Keeffe
  */
 public interface SpringSecurityConstants {
 
-	final String FALSE = "false";
-	final String TRUE = "true";
-	
-	final String USER_PROFILE_SESSION_ID = "user-profile";
-	
-	// user profile attribute
-	final String TEMPORARY_PASSWORD = "temporary-password";
+    final String FALSE = "false";
+    final String TRUE = "true";
+
+    final String USER_PROFILE_SESSION_ID = "user-profile";
+
+    // user profile attribute
+    final String TEMPORARY_PASSWORD = "temporary-password";
 }

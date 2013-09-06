@@ -21,23 +21,24 @@ import org.craftercms.profile.impl.domain.Schema;
 public class SchemaModel extends Schema {
 
     private String id;
-    
+
     private String tenantName;
-	
-	public SchemaModel(){}
-	
-	public SchemaModel(Schema schema, String tenantName) {
-		super();
-		this.setAttributes(schema.getAttributes());
-		//this.id = tenantId;
-		this.tenantName = tenantName;
-	}
 
-	public String getTenantName() {
-		return tenantName;
-	}
+    public SchemaModel() {
+    }
 
-	public void setTenantName(String tenantName) {
-		this.tenantName = tenantName;
-	}
+    public SchemaModel(Schema schema, String tenantName) {
+        super();
+        this.setAttributes(schema.getAttributes());
+        //this.id = tenantId;
+        this.tenantName = tenantName;
+    }
+
+    public String getTenantName() {
+        return tenantName;
+    }
+
+    public void setTenantName(String tenantName) {
+        this.tenantName = tenantName;
+    }
 }

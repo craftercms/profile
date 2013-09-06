@@ -16,11 +16,11 @@
  */
 package org.craftercms.security.authorization;
 
+import java.io.IOException;
+
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.exception.AccessDeniedException;
 import org.craftercms.security.exception.CrafterSecurityException;
-
-import java.io.IOException;
 
 /**
  * Handles the request after access to a resource is denied for a user.
@@ -32,10 +32,8 @@ public interface AccessDeniedHandler {
     /**
      * Handles the request after access to a resource is denied for a user.
      *
-     * @param e
-     *          the exception with the reason of the access deny
-     * @param context
-     *          the request context
+     * @param e       the exception with the reason of the access deny
+     * @param context the request context
      */
     void onAccessDenied(AccessDeniedException e, RequestContext context) throws CrafterSecurityException, IOException;
 

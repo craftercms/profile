@@ -16,6 +16,9 @@
  */
 package org.craftercms.security.impl.processors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.RequestSecurityProcessor;
 import org.craftercms.security.api.RequestSecurityProcessorChain;
@@ -24,12 +27,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 /**
- * Uses {@link RequestCache} to reconstitute a previously saved request (if there's one). This processor is used primarily when a user
- * is redirected to the login page because authentication is required, and the the user is redirected back to the previous page.
+ * Uses {@link RequestCache} to reconstitute a previously saved request (if there's one). This processor is used
+ * primarily when a user
+ * is redirected to the login page because authentication is required, and the the user is redirected back to the
+ * previous page.
  *
  * @author Alfonso Vásquez
  */
@@ -54,14 +56,15 @@ public class SavedRequestAwareProcessor implements RequestSecurityProcessor {
     }
 
     /**
-     * Checks if there's a request in the request cache (which means that a previous request was cached). If there's one, the request
-     * cache creates a new request by merging the saved request with the current request. The new request is used through the rest of
+     * Checks if there's a request in the request cache (which means that a previous request was cached). If there's
+     * one, the request
+     * cache creates a new request by merging the saved request with the current request. The new request is used
+     * through the rest of
      * the processor chain.
      *
-     * @param context
-     *      the context which holds the current request and other security info pertinent to the request
-     * @param processorChain
-     *          the processor chain, used to call the next processor
+     * @param context        the context which holds the current request and other security info pertinent to the
+     *                       request
+     * @param processorChain the processor chain, used to call the next processor
      * @throws Exception
      */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {

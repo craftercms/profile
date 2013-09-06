@@ -27,24 +27,24 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.SerializerProvider;
 import org.codehaus.jackson.map.ser.std.SerializerBase;
 
-public class ObjectIdSerializer extends SerializerBase<ObjectId>  {
+public class ObjectIdSerializer extends SerializerBase<ObjectId> {
 
-	protected ObjectIdSerializer(Class<ObjectId> t) {
-		super(t);
-	}
-	
-	public ObjectIdSerializer() {
-		this(ObjectId.class);
-	}
+    protected ObjectIdSerializer(Class<ObjectId> t) {
+        super(t);
+    }
 
-	@Override
-	public void serialize(ObjectId obj, JsonGenerator jGen,	SerializerProvider sp) 
-			throws IOException,	JsonProcessingException {
-		jGen.writeString(obj.toString());
-	}
+    public ObjectIdSerializer() {
+        this(ObjectId.class);
+    }
 
-	@Override
-	public JsonNode getSchema(SerializerProvider sp, Type type)	throws JsonMappingException {
-		return createSchemaNode("string");
-	}
+    @Override
+    public void serialize(ObjectId obj, JsonGenerator jGen, SerializerProvider sp) throws IOException,
+        JsonProcessingException {
+        jGen.writeString(obj.toString());
+    }
+
+    @Override
+    public JsonNode getSchema(SerializerProvider sp, Type type) throws JsonMappingException {
+        return createSchemaNode("string");
+    }
 }

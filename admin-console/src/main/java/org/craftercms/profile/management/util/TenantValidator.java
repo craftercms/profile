@@ -26,7 +26,7 @@ import org.springframework.validation.Validator;
  * @author David Escalante
  */
 @Component
-public class TenantValidator implements Validator{
+public class TenantValidator implements Validator {
     @Override
     public boolean supports(Class<?> aClass) {
         return Tenant.class.equals(aClass);
@@ -34,6 +34,7 @@ public class TenantValidator implements Validator{
 
     @Override
     public void validate(Object target, Errors errors) {
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "tenantName", "tenant.name.validation.error.empty.or.whitespace");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "tenantName", "tenant.name.validation.error.empty.or" + "" +
+            ".whitespace");
     }
 }

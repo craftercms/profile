@@ -16,6 +16,9 @@
  */
 package org.craftercms.security.authentication.impl;
 
+import java.io.IOException;
+import javax.servlet.http.HttpSession;
+
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
 import org.craftercms.security.api.UserProfile;
@@ -30,17 +33,14 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-
 /**
  * Default implementation of {@link LoginSuccessHandler}:
- *
+ * <p/>
  * <ol>
- *     <li>Deletes any authentication exception saved in the session.</li>
- *     <li>Stores the authentication token in the request context.</li>
- *     <li>Caches the authentication token.</li>
- *     <li>Uses the Spring {@link RequestCache} to obtain the previous request before login and redirect to it.</li>
+ * <li>Deletes any authentication exception saved in the session.</li>
+ * <li>Stores the authentication token in the request context.</li>
+ * <li>Caches the authentication token.</li>
+ * <li>Uses the Spring {@link RequestCache} to obtain the previous request before login and redirect to it.</li>
  * </ol>
  *
  * @author Alfonso Vásquez
@@ -82,22 +82,20 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
 
     /**
      * <ol>
-     *     <li>Deletes any authentication exception saved in the session.</li>
-     *     <li>Stores the authentication token created from the specified ticket and profile in the cache.</li>
-     *     <li>Caches the authentication token.</li>
-     *     <li>Uses the Spring {@link RequestCache} to obtain the previous request before login and redirect to it.</li>
+     * <li>Deletes any authentication exception saved in the session.</li>
+     * <li>Stores the authentication token created from the specified ticket and profile in the cache.</li>
+     * <li>Caches the authentication token.</li>
+     * <li>Uses the Spring {@link RequestCache} to obtain the previous request before login and redirect to it.</li>
      * </ol>
      *
-     * @param ticket
-     *          the authentication ticket, product of the recent login
-     * @param profile
-     *          the user profile
-     * @param context
-     *          the request context
+     * @param ticket  the authentication ticket, product of the recent login
+     * @param profile the user profile
+     * @param context the request context
      * @throws CrafterSecurityException
      * @throws IOException
      */
-    public void onLoginSuccess(String ticket, UserProfile profile, RequestContext context) throws CrafterSecurityException, IOException {
+    public void onLoginSuccess(String ticket, UserProfile profile, RequestContext context) throws
+        CrafterSecurityException, IOException {
         AuthenticationToken token = new AuthenticationToken();
         token.setTicket(ticket);
         token.setProfile(profile);
@@ -134,7 +132,8 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
     }
 
     /**
-     * Redirects to the previous request URL, if found in the request cache. If not found, redirects to the default target URL.
+     * Redirects to the previous request URL, if found in the request cache. If not found,
+     * redirects to the default target URL.
      */
     protected void redirectToSavedUrl(RequestContext context) throws IOException {
         SavedRequest savedRequest = requestCache.getRequest(context.getRequest(), context.getResponse());

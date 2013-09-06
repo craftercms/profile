@@ -20,7 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tenant  implements Serializable {
+public class Tenant implements Serializable {
 
     public Tenant() {
         this.schema = new Schema();
@@ -30,7 +30,7 @@ public class Tenant  implements Serializable {
 
     private String id;
 
-	private String tenantName;
+    private String tenantName;
 
     private Schema schema;
 
@@ -38,21 +38,21 @@ public class Tenant  implements Serializable {
 
     private List<String> domains;
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public String getTenantName() {
-		return tenantName;
-	}
+    public String getTenantName() {
+        return tenantName;
+    }
 
-	public void setTenantName(String tenantName) {
-		this.tenantName = tenantName;
-	}
+    public void setTenantName(String tenantName) {
+        this.tenantName = tenantName;
+    }
 
     public Schema getSchema() {
         return schema;
@@ -69,6 +69,7 @@ public class Tenant  implements Serializable {
     public void setDomains(List<String> domains) {
         this.domains = domains;
     }
+
     public List<String> getRoles() {
         return roles;
     }

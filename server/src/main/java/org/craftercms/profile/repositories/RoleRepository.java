@@ -18,14 +18,14 @@ package org.craftercms.profile.repositories;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.craftercms.profile.domain.Role;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import org.bson.types.ObjectId;
-
 @Repository("roleRepository")
 public interface RoleRepository extends MongoRepository<Role, ObjectId>, RoleRepositoryCustom {
-	List<Role> findAll();
-	Role findByRoleName(String roleName);
+    List<Role> findAll();
+
+    Role findByRoleName(String roleName);
 }

@@ -27,7 +27,7 @@
                 <value>classpath*:crafter/security/extension/security.properties</value>
             </list>
         </property>
-        <property name="ignoreUnresolvablePlaceholders" value="true" />
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
     <!-- ////////////////////////////////// -->
@@ -46,7 +46,8 @@
     <!--									-->
     <!-- ////////////////////////////////// -->
 
-    <bean id="crafter.requestContextBindingFilter" class="org.craftercms.security.servlet.filters.RequestContextBindingFilter"/>
+    <bean id="crafter.requestContextBindingFilter"
+          class="org.craftercms.security.servlet.filters.RequestContextBindingFilter"/>
 
     <!-- Order of the processors is important, so if you need to override this bean try to maintain a similar order -->
     <bean id="crafter.securityFilter" class="org.craftercms.security.servlet.filters.RequestSecurityFilter">
@@ -58,11 +59,11 @@
                 <ref bean="crafter.authTokenResolvingProcessor"/>
                 <ref bean="crafter.loginProcessor"/>
                 <ref bean="crafter.logoutProcessor"/>
+                <ref bean="crafter.forgotPasswordProcessor"/>
+                <ref bean="crafter.resetPasswordProcessor"/>
                 <ref bean="crafter.saveRequestAwareProcessor"/>
                 <ref bean="crafter.securityExceptionProcessor"/>
                 <ref bean="crafter.urlAccessRestrictionCheckingProcessor"/>
-                <ref bean="crafter.forgotPasswordProcessor"/>
-                <ref bean="crafter.changePasswordProcessor"/>
             </list>
         </property>
         <property name="urlsToInclude" value="${crafter.security.urlsToInclude}"/>
@@ -78,7 +79,8 @@
     <bean id="crafter.saveAuthenticationCookieResponseWrappingProcessor"
           class="org.craftercms.security.impl.processors.SaveAuthenticationCookieResponseWrappingProcessor"/>
 
-    <bean id="crafter.tenantNameResolvingProcessor" class="org.craftercms.security.impl.processors.TenantNameResolvingProcessor">
+    <bean id="crafter.tenantNameResolvingProcessor"
+          class="org.craftercms.security.impl.processors.TenantNameResolvingProcessor">
         <property name="defaultTenantName" value="${crafter.security.tenant.default.name}"/>
     </bean>
 
@@ -100,9 +102,11 @@
         <property name="targetUrl" value="${crafter.security.logout.success.url}"/>
     </bean>
 
-    <bean id="crafter.saveRequestAwareProcessor" class="org.craftercms.security.impl.processors.SavedRequestAwareProcessor"/>
+    <bean id="crafter.saveRequestAwareProcessor"
+          class="org.craftercms.security.impl.processors.SavedRequestAwareProcessor"/>
 
-    <bean id="crafter.securityExceptionProcessor" class="org.craftercms.security.impl.processors.SecurityExceptionProcessor">
+    <bean id="crafter.securityExceptionProcessor"
+          class="org.craftercms.security.impl.processors.SecurityExceptionProcessor">
         <property name="authenticationRequiredHandler" ref="crafter.authenticationRequiredHandler"/>
         <property name="accessDeniedHandler" ref="crafter.accessDeniedHandler"/>
     </bean>
@@ -111,12 +115,16 @@
           class="org.craftercms.security.impl.processors.UrlAccessRestrictionCheckingProcessor">
         <property name="urlRestrictions" ref="crafter.urlRestrictions"/>
     </bean>
-    
-    <bean id="crafter.changePasswordProcessor" class="org.craftercms.security.impl.processors.ChangePasswordProcessor">
+
+    <bean id="crafter.resetPasswordProcessor" class="org.craftercms.security.impl.processors.ResetPasswordProcessor">
         <property name="authenticationService" ref="crafter.authenticationService"/>
+        <property name="resetPasswordSuccessHandler" ref="crafter.resetSuccessHandler"/>
+        <property name="resetPasswordFailureHandler" ref="crafter.resetFailureHandler"/>
     </bean>
     <bean id="crafter.forgotPasswordProcessor" class="org.craftercms.security.impl.processors.ForgotPasswordProcessor">
         <property name="authenticationService" ref="crafter.authenticationService"/>
+        <property name="forgotPasswordSuccessHandler" ref="crafter.forgotSuccessHandler"/>
+        <property name="forgotPasswordFailureHandler" ref="crafter.forgotFailureHandler"/>
     </bean>
 
     <!-- ////////////////////////////////// -->
@@ -138,7 +146,8 @@
     <!--									-->
     <!-- ////////////////////////////////// -->
 
-    <bean id="crafter.authenticationTokenCache" class="org.craftercms.security.authentication.impl.AuthenticationTokenCacheImpl">
+    <bean id="crafter.authenticationTokenCache"
+          class="org.craftercms.security.authentication.impl.AuthenticationTokenCacheImpl">
         <property name="maxElementsInCache" value="${crafter.security.authentication.token.cache.maxElementsInMemory}"/>
         <property name="profileTimeToOutdated" value="${crafter.security.authentication.token.profile.timeToOutdated}"/>
         <property name="cookieMaxAge" value="${crafter.security.authentication.cookie.maxAge}"/>
@@ -163,6 +172,26 @@
 
     <bean id="crafter.loginFailureHandler" class="org.craftercms.security.authentication.impl.LoginFailureHandlerImpl">
         <property name="targetUrl" value="${crafter.security.login.failure.url}"/>
+    </bean>
+    <bean id="crafter.forgotSuccessHandler"
+          class="org.craftercms.security.authentication.impl.ForgotPasswordSuccessHandlerImpl">
+        <!-- <property name="authenticationTokenCache" ref="crafter.authenticationTokenCache"/> -->
+        <property name="defaultTargetUrl" value="${crafter.security.forgot.success.url}"/>
+    </bean>
+
+    <bean id="crafter.forgotFailureHandler"
+          class="org.craftercms.security.authentication.impl.ForgotPasswordFailureHandlerImpl">
+        <property name="targetUrl" value="${crafter.security.forgot.failure.url}"/>
+    </bean>
+
+    <bean id="crafter.resetSuccessHandler"
+          class="org.craftercms.security.authentication.impl.ResetPasswordSuccessHandlerImpl">
+        <property name="defaultTargetUrl" value="${crafter.security.reset.success.url}"/>
+    </bean>
+
+    <bean id="crafter.resetFailureHandler"
+          class="org.craftercms.security.authentication.impl.ResetPasswordFailureHandlerImpl">
+        <property name="targetUrl" value="${crafter.security.reset.failure.url}"/>
     </bean>
 
     <bean id="crafter.authenticationRequiredHandler"

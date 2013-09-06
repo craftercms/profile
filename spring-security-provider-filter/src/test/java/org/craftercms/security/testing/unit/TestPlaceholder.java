@@ -4,7 +4,7 @@ import org.junit.Test;
 
 public class TestPlaceholder {
     @Test
-    public void Ok(){
+    public void Ok() {
 
     }
 }

@@ -45,10 +45,9 @@ public class TenantNameResolvingProcessor implements RequestSecurityProcessor {
     /**
      * Sets the default tenant name in the context.
      *
-     * @param context
-     *      the context which holds the current request and other security info pertinent to the request
-     * @param processorChain
-     *          the processor chain, used to call the next processor
+     * @param context        the context which holds the current request and other security info pertinent to the
+     *                       request
+     * @param processorChain the processor chain, used to call the next processor
      * @throws Exception
      */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {

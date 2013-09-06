@@ -17,55 +17,51 @@
 package org.craftercms.profile.domain;
 
 import java.io.Serializable;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.constants.ProfileConstants;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Field;
-
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("role")
 @XmlRootElement
 //@CompoundIndexes({
 //	@CompoundIndex(name = "rolename_tenantname_idx", def = "{'roleName': 1, 'tenantName': 1}", unique=true)
 //})
-public class Role implements Serializable{
-	@Field(ProfileConstants.FIELD_ID)
-	private ObjectId id;
-	
-//	@Field(ProfileConstants.TENANT_NAME)
-//	private String tenantName;
+public class Role implements Serializable {
+    @Field(ProfileConstants.FIELD_ID)
+    private ObjectId id;
 
-	@Indexed(unique = true)
-	@Field(ProfileConstants.ROLE_NAME)
-	private String roleName;
+    //	@Field(ProfileConstants.TENANT_NAME)
+    //	private String tenantName;
 
-	public ObjectId getId() {
-		return id;
-	}
+    @Indexed(unique = true)
+    @Field(ProfileConstants.ROLE_NAME)
+    private String roleName;
 
-	public void setId(ObjectId id) {
-		this.id = id;
-	}
+    public ObjectId getId() {
+        return id;
+    }
 
-	public String getRoleName() {
-		return roleName;
-	}
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
 
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
-	}
+    public String getRoleName() {
+        return roleName;
+    }
 
-//	public String getTenantName() {
-//		return tenantName;
-//	}
-//
-//	public void setTenantName(String tenantName) {
-//		this.tenantName = tenantName;
-//	}
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    //	public String getTenantName() {
+    //		return tenantName;
+    //	}
+    //
+    //	public void setTenantName(String tenantName) {
+    //		this.tenantName = tenantName;
+    //	}
 }

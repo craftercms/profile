@@ -47,15 +47,17 @@ public class AuthenticationTokenResolvingProcessor implements RequestSecurityPro
     }
 
     /**
-     * Sets the authentication token for the current request. It first tries to retrieve the token from the cache, and if a ticket was
-     * found in the request but no profile, or if the token's profile iss outdated, it tries to retrieve the profile from the authentication
-     * service. If not even the authentication service has the profile, or if no ticket was found in the request, an anonymous profile is
+     * Sets the authentication token for the current request. It first tries to retrieve the token from the cache,
+     * and if a ticket was
+     * found in the request but no profile, or if the token's profile iss outdated,
+     * it tries to retrieve the profile from the authentication
+     * service. If not even the authentication service has the profile, or if no ticket was found in the request,
+     * an anonymous profile is
      * set.
      *
-     * @param context
-     *          the context which holds the current request and other security info pertinent to the request
-     * @param processorChain
-     *          the processor chain, used to call the next processor
+     * @param context        the context which holds the current request and other security info pertinent to the
+     *                       request
+     * @param processorChain the processor chain, used to call the next processor
      * @throws Exception
      */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
@@ -64,7 +66,8 @@ public class AuthenticationTokenResolvingProcessor implements RequestSecurityPro
             AuthenticationToken token;
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Retrieving authentication token for request '" + context.getRequestUri() + "' from cache");
+                logger.debug("Retrieving authentication token for request '" + context.getRequestUri() + "' from " +
+                    "cache");
             }
 
             // Get the token from cache.
@@ -75,12 +78,15 @@ public class AuthenticationTokenResolvingProcessor implements RequestSecurityPro
                         logger.debug("No authentication token cached for request '" + context.getRequestUri() + "'");
                     }
                     if (token.isProfileOutdated()) {
-                        logger.debug("Profile for user '" + token.getProfile().getUserName() + "' is outdated and needs to be refreshed");
+                        logger.debug("Profile for user '" + token.getProfile().getUserName() + "' is outdated and " +
+                            "needs to be refreshed");
                     }
-                    logger.debug("Retrieving profile for ticket '" + token.getTicket() + "' from authentication service");
+                    logger.debug("Retrieving profile for ticket '" + token.getTicket() + "' from authentication " +
+                        "service");
                 }
 
-                // If token doesn't have a profile or the profile is outdated, retrieve the profile from the authentication service.
+                // If token doesn't have a profile or the profile is outdated,
+                // retrieve the profile from the authentication service.
                 UserProfile profile = authenticationService.getProfile(token.getTicket());
                 if (profile != null) {
                     token.setProfile(profile);
@@ -96,11 +102,13 @@ public class AuthenticationTokenResolvingProcessor implements RequestSecurityPro
                         logger.debug("No profile found for ticket '" + token.getTicket() + "'");
                     }
 
-                    // Authentication token was cached, profile was outdated and authentication service couldn't retrieve a profile
+                    // Authentication token was cached, profile was outdated and authentication service couldn't
+                    // retrieve a profile
                     // for the ticket, which means the authentication as a whole expired, so remove token from cache.
                     if (token.isProfileOutdated()) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Authentication expired: removing authentication token " + token + " from cache");
+                            logger.debug("Authentication expired: removing authentication token " + token + " from " +
+                                "cache");
                         }
 
                         authenticationTokenCache.removeToken(context, token);

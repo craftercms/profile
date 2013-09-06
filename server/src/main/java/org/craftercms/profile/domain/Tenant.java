@@ -16,27 +16,25 @@
  */
 package org.craftercms.profile.domain;
 
+import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.constants.ProfileConstants;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
-import java.util.List;
-
 @XStreamAlias("tenant")
 @XmlRootElement
 public class Tenant {
-	
-	@Field(ProfileConstants.FIELD_ID)
-	private ObjectId id;
 
-	@Field(ProfileConstants.TENANT_NAME)
-	@Indexed(unique = true)
-	private String tenantName;
+    @Field(ProfileConstants.FIELD_ID)
+    private ObjectId id;
+
+    @Field(ProfileConstants.TENANT_NAME)
+    @Indexed(unique = true)
+    private String tenantName;
 
     @Field(ProfileConstants.DOMAINS)
     private List<String> domains;
@@ -47,21 +45,21 @@ public class Tenant {
     @Field(ProfileConstants.SCHEMA)
     private Schema schema;
 
-	public ObjectId getId() {
-		return id;
-	}
+    public ObjectId getId() {
+        return id;
+    }
 
-	public void setId(ObjectId id) {
-		this.id = id;
-	}
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
 
-	public String getTenantName() {
-		return tenantName;
-	}
+    public String getTenantName() {
+        return tenantName;
+    }
 
-	public void setTenantName(String tenantName) {
-		this.tenantName = tenantName;
-	}
+    public void setTenantName(String tenantName) {
+        this.tenantName = tenantName;
+    }
 
     public Schema getSchema() {
         return schema;
@@ -86,7 +84,6 @@ public class Tenant {
     public void setRoles(List<String> roles) {
         this.roles = roles;
     }
-
 
 
 }

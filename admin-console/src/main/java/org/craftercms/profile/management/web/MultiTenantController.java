@@ -17,7 +17,6 @@
 package org.craftercms.profile.management.web;
 
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,11 +27,9 @@ import org.craftercms.profile.management.model.TenantFilterForm;
 import org.craftercms.profile.management.services.RoleDAOService;
 import org.craftercms.profile.management.services.TenantDAOService;
 import org.craftercms.profile.management.util.TenantPaging;
-import org.craftercms.profile.management.util.TenantUtil;
 import org.craftercms.profile.management.util.TenantValidator;
 import org.craftercms.security.api.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -59,7 +56,7 @@ public class MultiTenantController {
         TenantFilterForm filter = new TenantFilterForm();
         mav.setViewName("tenantlist");
         mav.addObject("tenantList", tenantList);
-        mav.addObject("filter",filter);
+        mav.addObject("filter", filter);
         RequestContext context = RequestContext.getCurrent();
         mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
@@ -70,7 +67,7 @@ public class MultiTenantController {
         ModelAndView mav = new ModelAndView();
         TenantFilterForm filter = new TenantFilterForm();
         List<Tenant> tenantList = tenantDAOService.getNextTenantPage();
-        mav.addObject("filter",filter);
+        mav.addObject("filter", filter);
         mav.setViewName("tenantlist");
         mav.addObject("tenantList", tenantList);
         RequestContext context = RequestContext.getCurrent();
@@ -83,7 +80,7 @@ public class MultiTenantController {
         ModelAndView mav = new ModelAndView();
         TenantFilterForm filter = new TenantFilterForm();
         List<Tenant> tenantList = tenantDAOService.getPrevTenantPage();
-        mav.addObject("filter",filter);
+        mav.addObject("filter", filter);
         mav.setViewName("tenantlist");
         mav.addObject("tenantList", tenantList);
         RequestContext context = RequestContext.getCurrent();
@@ -98,7 +95,7 @@ public class MultiTenantController {
 
         mav.setViewName("tenantlist");
         mav.addObject("tenantList", tenantList);
-        mav.addObject("filter",filter);
+        mav.addObject("filter", filter);
 
         RequestContext context = RequestContext.getCurrent();
         mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
@@ -114,24 +111,25 @@ public class MultiTenantController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("newtenant");
         mav.addObject("tenant", tenant);
-        mav.addObject("roleOption",roleOption);
-        mav.addObject("tenantList",tenantList);
+        mav.addObject("roleOption", roleOption);
+        mav.addObject("tenantList", tenantList);
         RequestContext context = RequestContext.getCurrent();
         mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
 
     @RequestMapping(value = "/newtenant", method = RequestMethod.POST)
-    public String newTenant(@ModelAttribute("tenant") Tenant tenant,
-                             BindingResult bindingResult, Model model) throws Exception {
-    	validateNewTenant(tenant, bindingResult);
+    public String newTenant(@ModelAttribute("tenant") Tenant tenant, BindingResult bindingResult,
+                            Model model) throws Exception {
+        validateNewTenant(tenant, bindingResult);
         if (!bindingResult.hasErrors()) {
-        	try {
-	            tenantDAOService.createNewTenant(tenant);
-	            return "redirect:/gettenants";
-        	} catch(ConflictRequestException e) {
-        		bindingResult.rejectValue("tenantName", "tenant.name.validation.tenant.already.exist", null, "tenant.name.validation.tenant.already.exist");
-        		List<Role> roleOption = roleDAOService.getAllRoles();
+            try {
+                tenantDAOService.createNewTenant(tenant);
+                return "redirect:/gettenants";
+            } catch (ConflictRequestException e) {
+                bindingResult.rejectValue("tenantName", "tenant.name.validation.tenant.already.exist", null,
+                    "tenant.name.validation.tenant.already.exist");
+                List<Role> roleOption = roleDAOService.getAllRoles();
                 List<Tenant> tenantList = tenantDAOService.getAllTenants();
 
                 model.addAttribute("tenant", tenant);
@@ -141,7 +139,7 @@ public class MultiTenantController {
                 model.addAttribute("currentuser", context.getAuthenticationToken().getProfile());
                 return "newtenant";
 
-        	}
+            }
         } else {
             List<Role> roleOption = roleDAOService.getAllRoles();
             List<Tenant> tenantList = tenantDAOService.getAllTenants();
@@ -156,7 +154,7 @@ public class MultiTenantController {
     }
 
     @RequestMapping(value = "/tenant", method = RequestMethod.GET)
-    public ModelAndView findAccount(@RequestParam(required=false) String tenantName) throws Exception {
+    public ModelAndView findAccount(@RequestParam(required = false) String tenantName) throws Exception {
         Tenant tenant = tenantDAOService.getTenantForUpdate(tenantName);
         List<Role> roleOption = roleDAOService.getAllRoles();
         List<Tenant> tenantList = tenantDAOService.getAllTenants();
@@ -164,16 +162,16 @@ public class MultiTenantController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("updatetenant");
         mav.addObject("tenant", tenant);
-        mav.addObject("roleOption",roleOption);
-        mav.addObject("tenantList",tenantList);
+        mav.addObject("roleOption", roleOption);
+        mav.addObject("tenantList", tenantList);
         RequestContext context = RequestContext.getCurrent();
         mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
 
     @RequestMapping(value = "/updatetenant", method = RequestMethod.POST)
-    public String updateAccount(@ModelAttribute("tenant") Tenant tenant,
-                                BindingResult bindingResult, Model model) throws Exception {
+    public String updateAccount(@ModelAttribute("tenant") Tenant tenant, BindingResult bindingResult,
+                                Model model) throws Exception {
         validateUpdateTenant(tenant, bindingResult);
         if (!bindingResult.hasErrors()) {
             Tenant result = tenantDAOService.updateTenant(tenant);
@@ -191,23 +189,26 @@ public class MultiTenantController {
         }
     }
 
-    private void validateNewTenant(Tenant t, BindingResult result){
+    private void validateNewTenant(Tenant t, BindingResult result) {
         Pattern pattern = Pattern.compile("^((http(s?):\\/\\/)?(((www\\.)?+" +
-                "[a-zA-Z0-9\\.\\-\\_]+(\\.[a-zA-Z]{2,3})+)|(\\b(?:(?:25[0-5]|2[0-4][0-9]|" +
-                "[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b))" +
-                "(\\/[a-zA-Z0-9\\_\\-\\s\\.\\/\\?\\%\\#\\&\\=]*)?)|localhost$");
+            "[a-zA-Z0-9\\.\\-\\_]+(\\.[a-zA-Z]{2,3})+)|(\\b(?:(?:25[0-5]|2[0-4][0-9]|" +
+            "[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b))" +
+            "(\\/[a-zA-Z0-9\\_\\-\\s\\.\\/\\?\\%\\#\\&\\=]*)?)|localhost$");
         tenantValidator.validate(t, result);
 
-        if(t.getRoles().isEmpty()){
-            result.rejectValue("roles", "tenant.roles.validation.error.empty", null, "tenant.roles.validation.error.empty");
+        if (t.getRoles().isEmpty()) {
+            result.rejectValue("roles", "tenant.roles.validation.error.empty", null,
+                "tenant.roles.validation.error.empty");
         }
-        if(t.getDomains().isEmpty()){
-            result.rejectValue("domains", "tenant.domains.validation.error.empty", null, "tenant.domains.validation.error.empty");
-        }else{
-            for(String domain : t.getDomains()){
+        if (t.getDomains().isEmpty()) {
+            result.rejectValue("domains", "tenant.domains.validation.error.empty", null,
+                "tenant.domains.validation.error.empty");
+        } else {
+            for (String domain : t.getDomains()) {
                 Matcher m = pattern.matcher(domain);
-                if(!m.find()){
-                    result.rejectValue("domains", "tenant.domains.validation.error.invalid.format", null, "tenant.domains.validation.error.invalid.format");
+                if (!m.find()) {
+                    result.rejectValue("domains", "tenant.domains.validation.error.invalid.format", null,
+                        "tenant.domains.validation.error.invalid.format");
                     break;
                 }
             }
@@ -215,28 +216,32 @@ public class MultiTenantController {
         pattern = Pattern.compile("[,\\s]|@.*@");
         Matcher m = pattern.matcher(t.getTenantName());
         if (m.find()) {
-            result.rejectValue("tenantName", "tenant.name.validation.error.empty.or.whitespace", null, "tenant.name.validation.error.empty.or.whitespace");
+            result.rejectValue("tenantName", "tenant.name.validation.error.empty.or.whitespace", null,
+                "tenant.name.validation.error.empty.or.whitespace");
         }
 
     }
 
-    private void validateUpdateTenant(Tenant t, BindingResult result){
+    private void validateUpdateTenant(Tenant t, BindingResult result) {
         Pattern pattern = Pattern.compile("^((http(s?):\\/\\/)?(((www\\.)?+" +
-                "[a-zA-Z0-9\\.\\-\\_]+(\\.[a-zA-Z]{2,3})+)|(\\b(?:(?:25[0-5]|2[0-4][0-9]|" +
-                "[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b))" +
-                "(\\/[a-zA-Z0-9\\_\\-\\s\\.\\/\\?\\%\\#\\&\\=]*)?)|localhost$");
+            "[a-zA-Z0-9\\.\\-\\_]+(\\.[a-zA-Z]{2,3})+)|(\\b(?:(?:25[0-5]|2[0-4][0-9]|" +
+            "[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b))" +
+            "(\\/[a-zA-Z0-9\\_\\-\\s\\.\\/\\?\\%\\#\\&\\=]*)?)|localhost$");
         tenantValidator.validate(t, result);
 
-        if(t.getRoles().isEmpty()){
-            result.rejectValue("roles", "tenant.roles.validation.error.empty", null, "tenant.roles.validation.error.empty");
+        if (t.getRoles().isEmpty()) {
+            result.rejectValue("roles", "tenant.roles.validation.error.empty", null,
+                "tenant.roles.validation.error.empty");
         }
-        if(t.getDomains().isEmpty()){
-            result.rejectValue("domains", "tenant.domains.validation.error.empty", null, "tenant.domains.validation.error.empty");
-        }else{
-            for(String domain : t.getDomains()){
+        if (t.getDomains().isEmpty()) {
+            result.rejectValue("domains", "tenant.domains.validation.error.empty", null,
+                "tenant.domains.validation.error.empty");
+        } else {
+            for (String domain : t.getDomains()) {
                 Matcher m = pattern.matcher(domain);
-                if(!m.find()){
-                    result.rejectValue("domains", "tenant.domains.validation.error.invalid.format", null, "tenant.domains.validation.error.invalid.format");
+                if (!m.find()) {
+                    result.rejectValue("domains", "tenant.domains.validation.error.invalid.format", null,
+                        "tenant.domains.validation.error.invalid.format");
                     break;
                 }
             }
@@ -244,7 +249,8 @@ public class MultiTenantController {
         pattern = Pattern.compile("[,\\s]|@.*@");
         Matcher m = pattern.matcher(t.getTenantName());
         if (m.find()) {
-            result.rejectValue("tenantName", "tenant.name.validation.error.empty.or.whitespace", null, "tenant.name.validation.error.empty.or.whitespace");
+            result.rejectValue("tenantName", "tenant.name.validation.error.empty.or.whitespace", null,
+                "tenant.name.validation.error.empty.or.whitespace");
         }
 
     }

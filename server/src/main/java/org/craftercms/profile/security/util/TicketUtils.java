@@ -19,38 +19,39 @@ package org.craftercms.profile.security.util;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.util.StringUtils;
 
-public  final class TicketUtils {
-	private static final String DELIMITER = ":";
-	
-	private TicketUtils() {
-	}
+public final class TicketUtils {
+    private static final String DELIMITER = ":";
 
-	public static String getTicketSeries(String ticket) {
-		return decodeTicket(ticket)[0];
-	}
+    private TicketUtils() {
+    }
 
-	public static String[] decodeTicket(String ticket) {
-		String[] tokens = new String[]{null,null};
-		String decodeTicket = ticket;
-		for (int j = 0; j < decodeTicket.length() % 4; j++) {
-			decodeTicket = decodeTicket + "=";
-		}
+    public static String getTicketSeries(String ticket) {
+        return decodeTicket(ticket)[0];
+    }
 
-		if (Base64.isBase64(decodeTicket.getBytes())) {
+    public static String[] decodeTicket(String ticket) {
+        String[] tokens = new String[] {null, null};
+        String decodeTicket = ticket;
+        for (int j = 0; j < decodeTicket.length() % 4; j++) {
+            decodeTicket = decodeTicket + "=";
+        }
 
-			String cookieAsPlainText = new String(Base64.decode(decodeTicket.getBytes()));
+        if (Base64.isBase64(decodeTicket.getBytes())) {
 
-			tokens = StringUtils.delimitedListToStringArray(cookieAsPlainText, DELIMITER);
+            String cookieAsPlainText = new String(Base64.decode(decodeTicket.getBytes()));
 
-			if ((tokens[0].equalsIgnoreCase("http") || tokens[0].equalsIgnoreCase("https")) && tokens[1].startsWith("//")) {
-				// Assume we've accidentally split a URL (OpenID identifier)
-				String[] newTokens = new String[tokens.length - 1];
-				newTokens[0] = tokens[0] + ":" + tokens[1];
-				System.arraycopy(tokens, 2, newTokens, 1, newTokens.length - 1);
-				tokens = newTokens;
-			}
-		}
+            tokens = StringUtils.delimitedListToStringArray(cookieAsPlainText, DELIMITER);
 
-		return tokens;
-	}
+            if ((tokens[0].equalsIgnoreCase("http") || tokens[0].equalsIgnoreCase("https")) && tokens[1].startsWith
+                ("//")) {
+                // Assume we've accidentally split a URL (OpenID identifier)
+                String[] newTokens = new String[tokens.length - 1];
+                newTokens[0] = tokens[0] + ":" + tokens[1];
+                System.arraycopy(tokens, 2, newTokens, 1, newTokens.length - 1);
+                tokens = newTokens;
+            }
+        }
+
+        return tokens;
+    }
 }

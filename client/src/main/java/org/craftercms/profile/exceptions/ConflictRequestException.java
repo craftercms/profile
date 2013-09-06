@@ -20,26 +20,25 @@ package org.craftercms.profile.exceptions;
  * Thrown whenever the <code>ProfileClient</code> receives CONFLICT (409) error code from
  * the profile server response. Profile server is adding the reponse whenever a duplicatekey exception
  * is produced in the MONGODB database
- * 
- * @author Alvaro Gonzalez
  *
+ * @author Alvaro Gonzalez
  */
 public class ConflictRequestException extends RuntimeException {
-	
-	public ConflictRequestException() {
-		super();
-	}
 
-	public ConflictRequestException(String msg, Throwable thr) {
-		super(msg, thr);
-	}
+    public ConflictRequestException() {
+        super();
+    }
 
-	public ConflictRequestException(String msg) {
-		super(msg);
-	}
+    public ConflictRequestException(String msg, Throwable thr) {
+        super(msg, thr);
+    }
 
-	public ConflictRequestException(Throwable thr) {
-		super(thr);
-	}
+    public ConflictRequestException(String msg) {
+        super(msg);
+    }
+
+    public ConflictRequestException(Throwable thr) {
+        super(thr);
+    }
 
 }

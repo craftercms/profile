@@ -16,11 +16,12 @@
  */
 package org.craftercms.profile.controllers.rest;
 
+import java.util.Arrays;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.profile.constants.ProfileConstants;
-
 import org.craftercms.profile.domain.Tenant;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.services.MultiTenantService;
@@ -32,89 +33,82 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.*;
-
 @Controller
 @RequestMapping("/api/2/tenant/")
 public class MultiTenantRestController {
-	
-	@Autowired
-	private MultiTenantService multiTenantService;
-	
-	@RequestMapping(value = "create", method = RequestMethod.POST)
-	@ModelAttribute
-	public Tenant createTenant(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-			@RequestParam String tenantName, 
-			@RequestParam(required = false) String createDefaultRoles,
-            @RequestParam(value=ProfileConstants.ROLES) String[] rolesArray,
-            @RequestParam(value=ProfileConstants.DOMAINS) String[] domainsArray,
-			HttpServletResponse response) {
 
-        return multiTenantService.createTenant(tenantName, createDefaultRoles==null?false:Boolean.valueOf(createDefaultRoles).booleanValue(),
-                (rolesArray != null ? Arrays.asList(rolesArray) : null),
-                (domainsArray != null ? Arrays.asList(domainsArray) : null), response);
-	}
+    @Autowired
+    private MultiTenantService multiTenantService;
+
+    @RequestMapping(value = "create", method = RequestMethod.POST)
+    @ModelAttribute
+    public Tenant createTenant(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+                               @RequestParam String tenantName, @RequestParam(required = false) String
+        createDefaultRoles, @RequestParam(value = ProfileConstants.ROLES) String[] rolesArray,
+                               @RequestParam(value = ProfileConstants.DOMAINS) String[] domainsArray,
+                               HttpServletResponse response) {
+
+        return multiTenantService.createTenant(tenantName, createDefaultRoles == null? false: Boolean.valueOf
+            (createDefaultRoles).booleanValue(), (rolesArray != null? Arrays.asList(rolesArray): null),
+            (domainsArray != null? Arrays.asList(domainsArray): null), response);
+    }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ModelAttribute
     public Tenant updateTenant(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-                                 @RequestParam(ProfileConstants.FIELD_ID) String id,
-                                 @RequestParam(required = false, value = ProfileConstants.TENANT_NAME) String tenantName,
-                                 @RequestParam(value=ProfileConstants.ROLES) String[] rolesArray,
-                                 @RequestParam(value=ProfileConstants.DOMAINS) String[] domainsArray,
-                                 HttpServletResponse response) {
-        return multiTenantService.updateTenant(id, tenantName,
-                (rolesArray != null ? Arrays.asList(rolesArray) : null),
-                (domainsArray != null ? Arrays.asList(domainsArray) : null));
+                               @RequestParam(ProfileConstants.FIELD_ID) String id, @RequestParam(required = false,
+        value = ProfileConstants.TENANT_NAME) String tenantName, @RequestParam(value = ProfileConstants.ROLES)
+    String[] rolesArray, @RequestParam(value = ProfileConstants.DOMAINS) String[] domainsArray,
+                               HttpServletResponse response) {
+        return multiTenantService.updateTenant(id, tenantName, (rolesArray != null? Arrays.asList(rolesArray): null),
+            (domainsArray != null? Arrays.asList(domainsArray): null));
     }
 
 
-	@RequestMapping(value = "delete/{tenantName}", method = RequestMethod.GET)
-	@ModelAttribute
-	public void deleteTenant(@RequestParam(ProfileConstants.APP_TOKEN) String appToken, @PathVariable String tenantName,
-			HttpServletResponse response) {
-		multiTenantService.deleteTenant(tenantName);
-	}
-	
-	@RequestMapping(value = "get/{tenantName}", method = RequestMethod.GET)
-	@ModelAttribute
-	public Tenant getTenantByName(@RequestParam(ProfileConstants.APP_TOKEN) String appToken, @PathVariable String tenantName,
-			HttpServletResponse response) {
-		return multiTenantService.getTenantByName(tenantName);
-	}
+    @RequestMapping(value = "delete/{tenantName}", method = RequestMethod.GET)
+    @ModelAttribute
+    public void deleteTenant(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+                             @PathVariable String tenantName, HttpServletResponse response) {
+        multiTenantService.deleteTenant(tenantName);
+    }
 
-	@RequestMapping(value = "{tenantId}/get_id", method = RequestMethod.GET)
-	@ModelAttribute
-	public Tenant getTenantByTenantId(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-			@PathVariable String tenantId,
-			HttpServletResponse response) {
-		return multiTenantService.getTenantById(tenantId);
-	}
-	
-	@RequestMapping(value = "get/by_role_name", method = RequestMethod.GET)
-	@ModelAttribute
-	public List<Tenant> getTenantByRoleName(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-			@RequestParam String roleName,
-			HttpServletResponse response) {
-		return multiTenantService.getTenantsByRoleName(roleName);
-	}
-	
-	@RequestMapping(value = "ticket/{ticket}", method = RequestMethod.GET)
-	@ModelAttribute
-	public Tenant getTenantByTicket(@RequestParam(ProfileConstants.APP_TOKEN) String appToken, @PathVariable String ticket) 
-											throws NoSuchProfileException {
+    @RequestMapping(value = "get/{tenantName}", method = RequestMethod.GET)
+    @ModelAttribute
+    public Tenant getTenantByName(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+                                  @PathVariable String tenantName, HttpServletResponse response) {
+        return multiTenantService.getTenantByName(tenantName);
+    }
 
-		Tenant tenant = multiTenantService.getTenantByTicket(ticket);
-		if (tenant == null) {
-			throw new NoSuchProfileException(String.format("Could not find a Tenant for ticket='%s'.", ticket));
-		}
-		return tenant;
-	}
+    @RequestMapping(value = "{tenantId}/get_id", method = RequestMethod.GET)
+    @ModelAttribute
+    public Tenant getTenantByTenantId(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+                                      @PathVariable String tenantId, HttpServletResponse response) {
+        return multiTenantService.getTenantById(tenantId);
+    }
+
+    @RequestMapping(value = "get/by_role_name", method = RequestMethod.GET)
+    @ModelAttribute
+    public List<Tenant> getTenantByRoleName(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+                                            @RequestParam String roleName, HttpServletResponse response) {
+        return multiTenantService.getTenantsByRoleName(roleName);
+    }
+
+    @RequestMapping(value = "ticket/{ticket}", method = RequestMethod.GET)
+    @ModelAttribute
+    public Tenant getTenantByTicket(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+                                    @PathVariable String ticket) throws NoSuchProfileException {
+
+        Tenant tenant = multiTenantService.getTenantByTicket(ticket);
+        if (tenant == null) {
+            throw new NoSuchProfileException(String.format("Could not find a Tenant for ticket='%s'.", ticket));
+        }
+        return tenant;
+    }
 
     @RequestMapping(value = "count", method = RequestMethod.GET)
     @ModelAttribute
     public long getTenantCount(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-                                 HttpServletResponse response) {
+                               HttpServletResponse response) {
         return multiTenantService.getTenantsCount();
     }
 
@@ -128,17 +122,14 @@ public class MultiTenantRestController {
     @RequestMapping(value = "range", method = RequestMethod.GET)
     @ModelAttribute
     public List<Tenant> getTenantRange(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-           @RequestParam(required = false, value = ProfileConstants.SORT_BY) String sortBy,
-           @RequestParam(required = false, value = ProfileConstants.SORT_ORDER) String sortOrder,
-           @RequestParam(ProfileConstants.START) int start,
-           @RequestParam(ProfileConstants.END) int end){
+                                       @RequestParam(required = false, value = ProfileConstants.SORT_BY) String
+                                           sortBy, @RequestParam(required = false, value = ProfileConstants.SORT_ORDER) String sortOrder, @RequestParam(ProfileConstants.START) int start, @RequestParam(ProfileConstants.END) int end) {
         return multiTenantService.getTenantRange(sortBy, sortOrder, start, end);
     }
 
     @RequestMapping(value = "get_all_tenants", method = RequestMethod.GET)
     @ModelAttribute
-    public List<Tenant> getAllTenants(@RequestParam(ProfileConstants.APP_TOKEN) String appToken)
-            throws NoSuchProfileException {
+    public List<Tenant> getAllTenants(@RequestParam(ProfileConstants.APP_TOKEN) String appToken) throws NoSuchProfileException {
 
         return multiTenantService.getAllTenants();
     }

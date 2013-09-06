@@ -19,15 +19,15 @@ package org.craftercms.profile.management.model;
 import java.io.Serializable;
 
 public class FilterForm implements Serializable {
-	
-	private String userName;
 
-	public String getUserName() {
-		return userName;
-	}
+    private String userName;
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
 }

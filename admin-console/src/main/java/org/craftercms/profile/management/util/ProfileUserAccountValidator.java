@@ -24,16 +24,17 @@ import org.springframework.validation.Validator;
 
 @Component
 public class ProfileUserAccountValidator implements Validator {
-	
-	 public boolean supports(Class<?> clazz) {
-		 return ProfileUserAccountForm.class.equals(clazz);
-	 }
 
-	public void validate(Object target, Errors errors) {
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "user.validation.error.empty.or.whitespace");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "user.validation.error.empty.or.whitespace");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword", "user.validation.error.empty.or.whitespace");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "user.validation.error.empty.or.whitespace");
-	}
+    public boolean supports(Class<?> clazz) {
+        return ProfileUserAccountForm.class.equals(clazz);
+    }
+
+    public void validate(Object target, Errors errors) {
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "user.validation.error.empty.or.whitespace");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "user.validation.error.empty.or.whitespace");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword", "user.validation.error.empty.or" + "" +
+            ".whitespace");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "user.validation.error.empty.or.whitespace");
+    }
 
 }

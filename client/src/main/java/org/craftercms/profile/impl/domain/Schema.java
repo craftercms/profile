@@ -22,24 +22,23 @@ import java.util.List;
 
 /**
  * Schema bean
- * 
- * @author Alvaro Gonzalez
  *
+ * @author Alvaro Gonzalez
  */
 public class Schema implements Serializable {
-	
-	private List<Attribute> attributes;
-	
-	public Schema() {
+
+    private List<Attribute> attributes;
+
+    public Schema() {
         attributes = new ArrayList<Attribute>();
-	}
+    }
 
-	public List<Attribute> getAttributes() {
-		return attributes;
-	}
+    public List<Attribute> getAttributes() {
+        return attributes;
+    }
 
-	public void setAttributes(List<Attribute> attributes) {
-		this.attributes = attributes;
-	}
+    public void setAttributes(List<Attribute> attributes) {
+        this.attributes = attributes;
+    }
 
 }

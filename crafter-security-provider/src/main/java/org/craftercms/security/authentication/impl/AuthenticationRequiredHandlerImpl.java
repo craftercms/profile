@@ -16,6 +16,8 @@
  */
 package org.craftercms.security.authentication.impl;
 
+import java.io.IOException;
+
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.authentication.AuthenticationRequiredHandler;
 import org.craftercms.security.exception.AuthenticationException;
@@ -26,14 +28,12 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 
-import java.io.IOException;
-
 /**
  * Default implementation of {@link AuthenticationRequiredHandler}:
- *
+ * <p/>
  * <ol>
- *     <li>Saves the current request so it can be reused after successful login.</li>
- *     <li>Redirects to the login form URL.</li>
+ * <li>Saves the current request so it can be reused after successful login.</li>
+ * <li>Redirects to the login form URL.</li>
  * </ol>
  *
  * @author Alfonso Vásquez
@@ -70,14 +70,13 @@ public class AuthenticationRequiredHandlerImpl implements AuthenticationRequired
     /**
      * Saves the current request in the request cache and then redirects to the login form page.
      *
-     * @param e
-     *          the exception with the reason for requiring authentication
-     * @param context
-     *          the request security context
+     * @param e       the exception with the reason for requiring authentication
+     * @param context the request security context
      * @throws CrafterSecurityException
      * @throws IOException
      */
-    public void onAuthenticationRequired(AuthenticationException e, RequestContext context) throws CrafterSecurityException, IOException {
+    public void onAuthenticationRequired(AuthenticationException e, RequestContext context) throws
+        CrafterSecurityException, IOException {
         saveRequest(context);
         redirectToLoginForm(context);
     }

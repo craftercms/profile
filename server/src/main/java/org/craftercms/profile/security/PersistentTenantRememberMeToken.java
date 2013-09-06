@@ -21,22 +21,22 @@ import java.util.Date;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 
 public class PersistentTenantRememberMeToken extends PersistentRememberMeToken {
-	
-	private String tenantName;
-	
-	public PersistentTenantRememberMeToken(String username, String series, String tokenValue, Date date, String tenantName) {
-		super(username, series, tokenValue, date);
-	    this.tenantName = tenantName;    
-	}
 
-	public String getTenantName() {
-		return tenantName;
-	}
+    private String tenantName;
 
-	public void setTenantName(String tenantName) {
-		this.tenantName = tenantName;
-	}
-	
-	
+    public PersistentTenantRememberMeToken(String username, String series, String tokenValue, Date date,
+                                           String tenantName) {
+        super(username, series, tokenValue, date);
+        this.tenantName = tenantName;
+    }
+
+    public String getTenantName() {
+        return tenantName;
+    }
+
+    public void setTenantName(String tenantName) {
+        this.tenantName = tenantName;
+    }
+
 
 }

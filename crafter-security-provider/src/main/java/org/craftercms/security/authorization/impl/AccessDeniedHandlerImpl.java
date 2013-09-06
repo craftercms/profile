@@ -16,6 +16,12 @@
  */
 package org.craftercms.security.authorization.impl;
 
+import java.io.IOException;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
@@ -25,14 +31,9 @@ import org.craftercms.security.exception.CrafterSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
 /**
- * Default implementation of {@link AccessDeniedHandler}: forwards to the error page URL, so that the original URL is preserved in
+ * Default implementation of {@link AccessDeniedHandler}: forwards to the error page URL,
+ * so that the original URL is preserved in
  * the browser. If not error URL is specified, a 403 FORBIDDEN error is sent.
  *
  * @author Alfonso Vásquez
@@ -51,17 +52,17 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     }
 
     /**
-     * Saves the access denied in the request, so it can be used after the request is forwarded. It then forwards to the error page,
+     * Saves the access denied in the request, so it can be used after the request is forwarded. It then forwards to
+     * the error page,
      * but if not error page was specified, a 403 error is sent.
      *
-     * @param e
-     *          the exception with the reason of the access deny
-     * @param context
-     *          the request context
+     * @param e       the exception with the reason of the access deny
+     * @param context the request context
      * @throws CrafterSecurityException
      * @throws IOException
      */
-    public void onAccessDenied(AccessDeniedException e, RequestContext context) throws CrafterSecurityException, IOException {
+    public void onAccessDenied(AccessDeniedException e, RequestContext context) throws CrafterSecurityException,
+        IOException {
         saveException(e, context);
 
         if (StringUtils.isNotEmpty(errorPageUrl)) {

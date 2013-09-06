@@ -25,12 +25,11 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author David Escalante
-
  */
 
 @Component
-@Scope(value="session",proxyMode= ScopedProxyMode.TARGET_CLASS)
-public class TenantPaging implements Serializable  {
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
+public class TenantPaging implements Serializable {
     /**
      *
      */
@@ -71,22 +70,22 @@ public class TenantPaging implements Serializable  {
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
         this.start = 0;
-        this.end = pageSize -1;
+        this.end = pageSize - 1;
     }
 
     public void next() {
-        if ((end + pageSize) <= (total -1)) {
+        if ((end + pageSize) <= (total - 1)) {
             end += pageSize;
             start += pageSize;
-        } else if (end < (total -1)) {
-            end = (int)total -1;
+        } else if (end < (total - 1)) {
+            end = (int)total - 1;
             start += pageSize;
         }
     }
 
     public void previous() {
-        if (end == (total -1)) {
-            end = start -1 ;
+        if (end == (total - 1)) {
+            end = start - 1;
             start -= pageSize;
 
         } else if ((start - pageSize) > 0) {

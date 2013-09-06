@@ -16,6 +16,16 @@
  */
 package org.craftercms.security.servlet.filters;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.RequestSecurityProcessor;
@@ -26,18 +36,9 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Filter for running security. Uses a list of {@link RequestSecurityProcessor}. The last processor should basically call
+ * Filter for running security. Uses a list of {@link RequestSecurityProcessor}. The last processor should basically
+ * call
  * the filter chain.
  *
  * @author Alfonso Vásquez
@@ -79,15 +80,18 @@ public class RequestSecurityFilter extends GenericFilterBean {
     }
 
     /**
-     * Sets the regular expressions used to match the URLs of requests that should NOT be processed by the security chain.
+     * Sets the regular expressions used to match the URLs of requests that should NOT be processed by the security
+     * chain.
      */
     public void setUrlsToExclude(String[] urlsToExclude) {
         this.urlsToExclude = urlsToExclude;
     }
 
     /**
-     * If {@code securityEnabled}, passes the request through the chain of {@link RequestSecurityProcessor}s, depending if the request URL
-     * matches or not the {@code urlsToInclude} or the {@code urlsToExclude}. The last processor of the chain calls the actual filter
+     * If {@code securityEnabled}, passes the request through the chain of {@link RequestSecurityProcessor}s,
+     * depending if the request URL
+     * matches or not the {@code urlsToInclude} or the {@code urlsToExclude}. The last processor of the chain calls
+     * the actual filter
      * chain.
      *
      * @param request
@@ -96,11 +100,12 @@ public class RequestSecurityFilter extends GenericFilterBean {
      * @throws IOException
      * @throws ServletException
      */
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+        ServletException {
+        HttpServletRequest httpRequest = (HttpServletRequest)request;
 
         if (securityEnabled && (includeRequest(httpRequest) || !excludeRequest(httpRequest))) {
-            doFilterInternal((HttpServletRequest) request, (HttpServletResponse) response, chain);
+            doFilterInternal((HttpServletRequest)request, (HttpServletResponse)response, chain);
         } else {
             chain.doFilter(request, response);
         }
@@ -115,17 +120,19 @@ public class RequestSecurityFilter extends GenericFilterBean {
      * @throws IOException
      * @throws ServletException
      */
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                    FilterChain chain) throws IOException, ServletException {
         RequestContext context = RequestContext.getCurrent();
         if (context == null) {
             context = createRequestContext(request, response);
         }
 
-        List<RequestSecurityProcessor> finalSecurityProcessors = new ArrayList<RequestSecurityProcessor>(securityProcessors);
+        List<RequestSecurityProcessor> finalSecurityProcessors = new ArrayList<RequestSecurityProcessor>
+            (securityProcessors);
         finalSecurityProcessors.add(getLastProcessorInChain(chain));
 
-        RequestSecurityProcessorChain processorChain = new RequestSecurityProcessorChainImpl(finalSecurityProcessors.iterator());
+        RequestSecurityProcessorChain processorChain = new RequestSecurityProcessorChainImpl(finalSecurityProcessors
+            .iterator());
         try {
             processorChain.processRequest(context);
         } catch (IOException e) {
@@ -170,7 +177,8 @@ public class RequestSecurityFilter extends GenericFilterBean {
     }
 
     /**
-     * Returns a new {@link RequestContext}, using the specified {@link HttpServletRequest} and {@link HttpServletResponse}.
+     * Returns a new {@link RequestContext}, using the specified {@link HttpServletRequest} and {@link
+     * HttpServletResponse}.
      */
     protected RequestContext createRequestContext(HttpServletRequest request, HttpServletResponse response) {
         RequestContext context = new RequestContext();
@@ -186,7 +194,8 @@ public class RequestSecurityFilter extends GenericFilterBean {
     protected RequestSecurityProcessor getLastProcessorInChain(final FilterChain chain) {
         return new RequestSecurityProcessor() {
 
-            public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
+            public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws
+                Exception {
                 chain.doFilter(context.getRequest(), context.getResponse());
             }
 

@@ -28,8 +28,7 @@ public interface AuthenticationService {
     /**
      * Returns the profile associated to the ticket, or null if the user is not authenticated or the ticket has expired.
      *
-     * @throws AuthenticationException
-     *          if a system error occurs
+     * @throws AuthenticationException if a system error occurs
      */
     UserProfile getProfile(String ticket) throws AuthenticationException;
 
@@ -37,39 +36,32 @@ public interface AuthenticationService {
      * Performs an authentication attempt.
      *
      * @return an authentication ticket
-     *
-     * @throws AuthenticationException
-     *          if authentication fails because of a system error or because of bad credentials
+     * @throws AuthenticationException if authentication fails because of a system error or because of bad credentials
      */
     String authenticate(String tenantName, String username, String password) throws AuthenticationException;
 
     /**
      * Invalidates the specified ticket, used basically for logout.
      *
-     * @throws AuthenticationException
-     *          if a system error occurs
+     * @throws AuthenticationException if a system error occurs
      */
     void invalidateTicket(String ticket) throws AuthenticationException;
+
     /**
      * Forgot password service request to start the change password process
-     * 
+     *
      * @param changePasswordUrl valid url to the form will be used to capture the new password
-     * 
-     * @param username id to the profile that will be changed its password
-     * 
-     * @param tenantName of the username
+     * @param username          id to the profile that will be changed its password
+     * @param tenantName        of the username
      */
-    void forgotPassword(String changePasswordUrl, String username, String tenantName) throws AuthenticationException;
+    UserProfile forgotPassword(String changePasswordUrl, String username, String tenantName) throws Exception;
 
     /**
      * Change profile password service request
-     * 
-     * 
+     *
      * @param password new password will be set for the profile
-     * 
-     * @param a token sent by email the user email account
+     * @param a        token sent by email the user email account
      */
-	void changePassword(String password, String token)
-			throws AuthenticationException;
+    UserProfile resetPassword(String password, String token) throws Exception;
 
 }

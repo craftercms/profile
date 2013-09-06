@@ -19,26 +19,25 @@ package org.craftercms.profile.exceptions;
 /**
  * Thrown whenever the <code>ProfileClient</code> receives BADREQUEST (400) error code from
  * the profile server response.
- * 
- * @author Alvaro Gonzalez
  *
+ * @author Alvaro Gonzalez
  */
 public class BadRequestException extends RestException {
-	private static final long serialVersionUID = 1680382641026998022L;
+    private static final long serialVersionUID = 1680382641026998022L;
 
-	public BadRequestException() {
-		super();
-	}
+    public BadRequestException() {
+        super();
+    }
 
-	public BadRequestException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public BadRequestException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public BadRequestException(String message) {
-		super(message);
-	}
+    public BadRequestException(String message) {
+        super(message);
+    }
 
-	public BadRequestException(Throwable cause) {
-		super(cause);
-	}
+    public BadRequestException(Throwable cause) {
+        super(cause);
+    }
 }

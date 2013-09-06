@@ -24,61 +24,64 @@ import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.impl.domain.Profile;
 
 /**
- * 
  * @author Sandra O'Keeffe
  */
 public interface ProfileDAOService {
 
-	/**
-	 * Creates a user
-	 * 
-	 * @param data
-	 * @return
-	 * @throws AppAuthenticationFailedException
-	 */
-	Profile createUser(Map<String, Serializable> data) throws AppAuthenticationFailedException;
-	
-	/**
-	 * Deletes a user
-	 * 
-	 * @param profileId
-	 * @param active indicates if the user is actived
-	 */
-	void activeUser(String profileId, boolean active) throws AppAuthenticationFailedException;
-	
-	/**
-	 * Updates a user
-	 * 
-	 * @param data
-	 * @return
-	 * @throws AppAuthenticationFailedException
-	 */
-	Profile updateUser(Map<String, Serializable> data) throws AppAuthenticationFailedException;
-	
-	/**
-	 * Gets a user by username
-	 * 
-	 * @param username
-	 * @return
-	 * @throws AppAuthenticationFailedException
-	 */
-	Profile getUser(String username, String tenantName) throws AppAuthenticationFailedException;
-	
-	/**
-	 * Gets users index and ordered by modified date
-	 * 
-	 * @param start
-	 * @param end
-	 * @return
-	 * @throws AppAuthenticationFailedException
-	 */
-	List<Profile> getUsersByModifiedDate(int start, int end, String tenantName) throws AppAuthenticationFailedException;
-	
-	
-	/**
-	 * Set the app token
-	 * 
-	 * @throws AppAuthenticationFailedException
-	 */
-//	void setAppToken() throws AppAuthenticationFailedException;
+    /**
+     * Creates a user
+     *
+     * @param data
+     * @return
+     * @throws AppAuthenticationFailedException
+     *
+     */
+    Profile createUser(Map<String, Serializable> data) throws AppAuthenticationFailedException;
+
+    /**
+     * Deletes a user
+     *
+     * @param profileId
+     * @param active    indicates if the user is actived
+     */
+    void activeUser(String profileId, boolean active) throws AppAuthenticationFailedException;
+
+    /**
+     * Updates a user
+     *
+     * @param data
+     * @return
+     * @throws AppAuthenticationFailedException
+     *
+     */
+    Profile updateUser(Map<String, Serializable> data) throws AppAuthenticationFailedException;
+
+    /**
+     * Gets a user by username
+     *
+     * @param username
+     * @return
+     * @throws AppAuthenticationFailedException
+     *
+     */
+    Profile getUser(String username, String tenantName) throws AppAuthenticationFailedException;
+
+    /**
+     * Gets users index and ordered by modified date
+     *
+     * @param start
+     * @param end
+     * @return
+     * @throws AppAuthenticationFailedException
+     *
+     */
+    List<Profile> getUsersByModifiedDate(int start, int end, String tenantName) throws AppAuthenticationFailedException;
+
+
+    /**
+     * Set the app token
+     *
+     * @throws AppAuthenticationFailedException
+     */
+    //	void setAppToken() throws AppAuthenticationFailedException;
 }

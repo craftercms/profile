@@ -24,13 +24,13 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 public class RoleRepositoryImpl implements RoleRepositoryCustom {
-	@Autowired
-	private MongoTemplate mongoTemplate;
-	
-	public Role getRoleByName(String roleName) {
-		Query query = new Query();
-		query.addCriteria(Criteria.where(ProfileConstants.ROLE_NAME).is(roleName));
-		return mongoTemplate.findOne(query, Role.class);
-	}
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    public Role getRoleByName(String roleName) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(ProfileConstants.ROLE_NAME).is(roleName));
+        return mongoTemplate.findOne(query, Role.class);
+    }
 
 }

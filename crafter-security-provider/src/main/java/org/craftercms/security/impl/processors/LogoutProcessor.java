@@ -16,15 +16,15 @@
  */
 package org.craftercms.security.impl.processors;
 
+import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+
 import org.craftercms.security.api.*;
 import org.craftercms.security.authentication.AuthenticationToken;
 import org.craftercms.security.authentication.AuthenticationTokenCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 /**
  * Processes logout requests.
@@ -35,8 +35,8 @@ public class LogoutProcessor implements RequestSecurityProcessor {
 
     public static final Logger logger = LoggerFactory.getLogger(LogoutProcessor.class);
 
-    public static final String DEFAULT_LOGOUT_URL =     "/crafter-security-logout";
-    public static final String DEFAULT_LOGOUT_METHOD =  "GET";
+    public static final String DEFAULT_LOGOUT_URL = "/crafter-security-logout";
+    public static final String DEFAULT_LOGOUT_METHOD = "GET";
 
     protected String logoutUrl;
     protected String logoutMethod;
@@ -92,14 +92,15 @@ public class LogoutProcessor implements RequestSecurityProcessor {
     }
 
     /**
-     * Checks if the request URL matches the {@code logoutUrl} and the HTTP method matches the {@code logoutMethod}. If it does, it
-     * proceeds to logout the user, by removing the user's token from the {@link AuthenticationToken} and invalidating the user ticket
+     * Checks if the request URL matches the {@code logoutUrl} and the HTTP method matches the {@code logoutMethod}.
+     * If it does, it
+     * proceeds to logout the user, by removing the user's token from the {@link AuthenticationToken} and
+     * invalidating the user ticket
      * from the {@link AuthenticationService}. After this, the user is redirected to the {@code targetUrl}.
      *
-     * @param context
-     *          the context which holds the current request and other security info pertinent to the request
-     * @param processorChain
-     *          the processor chain, used to call the next processor
+     * @param context        the context which holds the current request and other security info pertinent to the
+     *                       request
+     * @param processorChain the processor chain, used to call the next processor
      * @throws Exception
      */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
@@ -112,7 +113,8 @@ public class LogoutProcessor implements RequestSecurityProcessor {
                 throw new IllegalArgumentException("Request context doesn't contain an authentication token");
             }
             if (context.getAuthenticationToken().getProfile() == null) {
-                throw new IllegalArgumentException("Authentication token of request context doesn't contain a user profile");
+                throw new IllegalArgumentException("Authentication token of request context doesn't contain a user " +
+                    "profile");
             }
 
             if (context.getAuthenticationToken().getProfile().isAuthenticated()) {
@@ -121,7 +123,8 @@ public class LogoutProcessor implements RequestSecurityProcessor {
 
                 if (logger.isDebugEnabled()) {
                     logger.debug("Removing profile from cache for user " + profile.getUserName());
-                    logger.debug("Invalidating authentication ticket '" + token.getTicket() + "' for user '" + profile.getUserName() + "'");
+                    logger.debug("Invalidating authentication ticket '" + token.getTicket() + "' for user '" +
+                        profile.getUserName() + "'");
                 }
 
                 authenticationTokenCache.removeToken(context, token);
@@ -131,16 +134,18 @@ public class LogoutProcessor implements RequestSecurityProcessor {
             }
 
             redirectToTargetUrl(context);
-        }  else {
+        } else {
             processorChain.processRequest(context);
         }
     }
 
     /**
-     * Returns true if the request URL matches the {@code logoutUrl} and the HTTP method matches the {@code logoutMethod}.
+     * Returns true if the request URL matches the {@code logoutUrl} and the HTTP method matches the {@code
+     * logoutMethod}.
      */
     protected boolean isLogoutRequest(HttpServletRequest request) {
-        return request.getRequestURI().equals(request.getContextPath() + logoutUrl) && request.getMethod().equals(logoutMethod);
+        return request.getRequestURI().equals(request.getContextPath() + logoutUrl) && request.getMethod().equals
+            (logoutMethod);
     }
 
     /**

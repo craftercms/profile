@@ -17,7 +17,6 @@
 package org.craftercms.profile.security;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,12 +28,12 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
-			throws IOException, ServletException {
-		//DO NOTHING
-		logger.debug("onAuthenticationSuccess called");
-	}
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication) throws IOException, ServletException {
+        //DO NOTHING
+        logger.debug("onAuthenticationSuccess called");
+    }
 
-	private Log logger = LogFactory.getLog(getClass());
+    private Log logger = LogFactory.getLog(getClass());
 }
