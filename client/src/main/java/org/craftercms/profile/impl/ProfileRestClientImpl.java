@@ -1278,8 +1278,6 @@ public class ProfileRestClientImpl implements ProfileClient {
      * @see org.craftercms.profile.api.ProfileClient#getAppToken(java.lang.String, java.lang.String)
      */
     public String getAppToken(String appUsername, String appPassword) throws AppAuthenticationFailedException {
-        log.warn(" +++++++++ general data " + port + " " + host + " " + profileAppPath);
-        //System.out.println(" +++++++++ general data " + port + " " + host + " " + profileAppPath);
         if (log.isDebugEnabled()) {
             log.debug("Getting a appToken for the app username : " + appUsername);
         }
