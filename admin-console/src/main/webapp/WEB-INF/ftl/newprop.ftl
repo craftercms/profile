@@ -21,7 +21,7 @@
         </ul>
         <h1 class="mainTitle">Manage Attributes</h1>
     </div>
-    <form id="form-item" onsubmit="return onsubmitform();">
+    <form id="form-item" onsubmit="return onsubmitform();" class="newattribute">
         <div class="box pad mt40 style-inputs">
             <p>
             <@spring.bind "prop.name"/>
