@@ -175,17 +175,4 @@ public class ProfileAccountService {
         return isDisplayable;
     }
 
-//    private boolean isSuperAdmin(List<String> roles) {
-//        if (roles == null) {
-//            return false;
-//        }
-//        boolean isSuperAdmin = false;
-//        for (String currentRole : roles) {
-//            if (currentRole.equalsIgnoreCase(ProfileUserAccountConstants.SUPERADMIN)) {
-//                return true;
-//            }
-//        }
-//        return isSuperAdmin;
-//    }
-
 }
