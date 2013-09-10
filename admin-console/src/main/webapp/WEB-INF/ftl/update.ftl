@@ -57,8 +57,12 @@
 
             <p>
                 <label id="acountActive" for="active">Active?:</label>
-            <@crafter.formCheckbox "account.active", "active"/>
-                <span class="hintField">Is this account active?</span>
+            <#if account.protectedFromDisabled>  
+            	<input type="checkbox" checked="checked" disabled="disabled"/>
+            <#else>  
+            	<@crafter.formCheckbox "account.active", "active"/>
+            </#if>
+            <span class="hintField">Is this account active?</span>
             <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
 

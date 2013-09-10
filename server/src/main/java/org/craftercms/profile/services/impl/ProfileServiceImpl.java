@@ -18,6 +18,7 @@ package org.craftercms.profile.services.impl;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import org.craftercms.profile.services.ProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
@@ -51,6 +53,8 @@ public class ProfileServiceImpl implements ProfileService {
     private TicketRepository ticketRepository;
     @Autowired
     private EmailValidatorService emailValidatorService;
+    
+    private List<String> protectedDisableUsers;
 
     @Override
     public Profile createProfile(String userName, String password, Boolean active, String tenantName, String email,
@@ -64,7 +68,11 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = new Profile();
         profile.setUserName(userName);
         profile.setPassword(hashedPassword);
-        profile.setActive(active);
+        if (!isProtectedToKeepActive(userName)) {
+        	profile.setActive(active);
+        } else {
+        	profile.setActive(true);
+        }
         profile.setTenantName(tenantName);
         profile.setCreated(new Date());
         profile.setModified(new Date());
@@ -116,7 +124,7 @@ public class ProfileServiceImpl implements ProfileService {
             profile.setPassword(hashedPassword);
         }
 
-        if (active != null) {
+        if (active != null && !isProtectedToKeepActive(userName)) {
             profile.setActive(active);
         }
 
@@ -274,6 +282,37 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public void deleteAttributes(String profileId, List<String> attributes) {
         profileRepository.deleteAttributes(profileId, attributes);
+    }
+    
+    @Value("#{ssrSettings['protected-disabled-users']}")
+    public void setProtectedDisableUsers(String users) {
+        this.protectedDisableUsers = convertLineToList(users);
+
+    }
+    
+    private List<String> convertLineToList(String list) {
+        List<String> values = new ArrayList<String>();
+        if (list == null || list.length() == 0) {
+            return values;
+        }
+        String[] arrayRoles = list.split(",");
+        for (String role : arrayRoles) {
+            values.add(role.trim());
+        }
+        return values;
+    }
+    
+    private boolean isProtectedToKeepActive(String username) {
+    	boolean protectedUsername = false;
+    	if (this.protectedDisableUsers == null || this.protectedDisableUsers.size() == 0) {
+    		return protectedUsername;
+    	}
+    	for(String u: protectedDisableUsers) {
+    		if (u.equals(username)) {
+    			protectedUsername = true;
+    		}
+    	}
+    	return protectedUsername;
     }
 
 }
