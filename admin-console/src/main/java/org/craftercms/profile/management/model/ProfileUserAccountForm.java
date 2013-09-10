@@ -46,6 +46,8 @@ public class ProfileUserAccountForm implements Serializable {
     private ArrayList<String> roles;
 
     private Map roleOption;
+    
+    private boolean protectedFromDisabled;
 
     public ProfileUserAccountForm() {
     }
@@ -183,4 +185,12 @@ public class ProfileUserAccountForm implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
+
+	public boolean isProtectedFromDisabled() {
+		return protectedFromDisabled;
+	}
+
+	public void setProtectedFromDisabled(boolean isProtected) {
+		this.protectedFromDisabled = isProtected;
+	}
 }

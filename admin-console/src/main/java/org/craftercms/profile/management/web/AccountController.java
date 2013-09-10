@@ -255,6 +255,7 @@ public class AccountController {
     public ModelAndView findAccount(@RequestParam(required = false) String username,
                                     @RequestParam(required = false) String tenantName) throws Exception {
         ProfileUserAccountForm a = profileAccountService.getUserForUpdate(username, tenantName);
+        a.setProtectedFromDisabled(ProfileServiceManager.isProtectedToKeepActive(username));
         Tenant tenant = tenantDAOService.getTenantByName(a.getTenantName());
         ModelAndView mav = new ModelAndView();
         mav.setViewName("update");
@@ -265,27 +266,6 @@ public class AccountController {
         mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
-
-    //    @RequestMapping(value = "/activate", method = RequestMethod.POST)
-    //    @ModelAttribute
-    //    public ModelAndView activateAccount(@RequestParam("item") ArrayList<String> item,
-    //                                      @RequestParam String selectedTenantName, boolean active,
-    //            HttpServletResponse response) throws Exception {
-    //        profileAccountService.activeUsers(item, active);
-    //        ModelAndView mav = new ModelAndView();
-    //
-    //        List<Tenant> tenantList = tenantDAOService.getAllTenants();
-    //        Map<String, String> tenantNames = TenantUtil.getTenantsMap(tenantList);
-    //        List<ProfileUserAccountForm> list = profileAccountService.getProfileUsers(selectedTenantName);
-    //        mav.setViewName("accountlist");
-    //        mav.addObject("userList", list);
-    //        mav.addObject("filter", new FilterForm());
-    //        mav.addObject("tenantNames", tenantNames);
-    //        mav.addObject("selectedTenantName",selectedTenantName);
-    //        RequestContext context = RequestContext.getCurrent();
-    //        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
-    //        return mav;
-    //    }
 
     @ExceptionHandler(org.craftercms.security.exception.AuthenticationRequiredException.class)
     public String loginRequiredException() {

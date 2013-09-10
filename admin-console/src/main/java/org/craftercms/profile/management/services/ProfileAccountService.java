@@ -155,6 +155,7 @@ public class ProfileAccountService {
         UserProfile currentUser = context.getAuthenticationToken().getProfile();
         List<Profile> newList = new ArrayList<Profile>();
         for (Profile profile : profiles) {
+        	
             if (isDisplayableUser(profile, currentUser)) {
                 newList.add(profile);
             }
@@ -164,26 +165,27 @@ public class ProfileAccountService {
 
     private boolean isDisplayableUser(Profile profile, UserProfile currentUser) {
         boolean isDisplayable = true;
-        if (profile.getUserName() == null // Profile should have username but this is a validation only
-            || (profile.getUserName().equals(currentUser.getUserName()) // Profile is user log-in
-            && profile.getTenantName().equals(currentUser.getTenantName())) || isSuperAdmin(profile.getRoles())) { //
-            // SUPERADMIN
+        if (profile.getUserName() == null 
+        		// Profile should have username but this is a validation only
+        		// Profile is user log-in
+            || (profile.getUserName().equals(currentUser.getUserName()) 
+            && profile.getTenantName().equals(currentUser.getTenantName()))) { //
             isDisplayable = false;
         }
         return isDisplayable;
     }
 
-    private boolean isSuperAdmin(List<String> roles) {
-        if (roles == null) {
-            return false;
-        }
-        boolean isSuperAdmin = false;
-        for (String currentRole : roles) {
-            if (currentRole.equalsIgnoreCase(ProfileUserAccountConstants.SUPERADMIN)) {
-                return true;
-            }
-        }
-        return isSuperAdmin;
-    }
+//    private boolean isSuperAdmin(List<String> roles) {
+//        if (roles == null) {
+//            return false;
+//        }
+//        boolean isSuperAdmin = false;
+//        for (String currentRole : roles) {
+//            if (currentRole.equalsIgnoreCase(ProfileUserAccountConstants.SUPERADMIN)) {
+//                return true;
+//            }
+//        }
+//        return isSuperAdmin;
+//    }
 
 }
