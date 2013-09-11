@@ -29,7 +29,9 @@
         </property>
     </bean>
 
-    <mongo:mongo host="${mongo.host}" port="26017" write-concern="SAFE">
+    <!-- to configure a replica set, use this as the first line of the configuration instead -->
+    <!-- <mongo:mongo write-concern="REPLICA_SAFE" replica-set="${mongo.replica.set}">  -->
+    <mongo:mongo host="${mongo.host}" port="26017" write-concern="SAFE">     -->
         <mongo:options connections-per-host="${mongo.connectionsPerHost}"
                        threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
                        connect-timeout="${mongo.connectTimeout}" max-wait-time="${mongo.maxWaitTime}"
@@ -49,6 +51,8 @@
                         mongo-template-ref="mongoTemplate"/>
 
 
+    <!-- these settings are not used by this application including the bean
+         is to workaround runtime issues faced from including crafter-profile as a dependency -->
     <bean id="ssrSettings" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="locations">
             <list>
