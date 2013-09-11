@@ -45,7 +45,7 @@
         <constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>
     </bean>
 
-    <mongo:repositories base-package="org.craftercms.profile.repositories" create-query-indexes="true"
+    <mongo:repositories base-package="org.craftercms.profile.repositories" create-query-indexes="false"
                         mongo-template-ref="mongoTemplate"/>
 
 

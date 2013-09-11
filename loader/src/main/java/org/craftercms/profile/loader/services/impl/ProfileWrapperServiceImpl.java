@@ -34,7 +34,7 @@ public class ProfileWrapperServiceImpl implements ProfileWrapperService {
     private List<String> tenantDomains;
 
     // this will generate approx. 20% inactive profiles
-    private String[] activeArray = {"true", "true", "true", "true", "true", "true", "true", "true", "false", "false"};
+    private boolean[] activeArray = {true, true, true, true, true, true, true, true, false, false};
 
     private ProfileService profileService;
     private MultiTenantService multiTenantService;
@@ -50,11 +50,10 @@ public class ProfileWrapperServiceImpl implements ProfileWrapperService {
 
         String username = RandomStringUtils.randomAlphabetic(randomFromInterval(8, 12));
         String password = RandomStringUtils.randomAscii(randomFromInterval(8, 20));
-        Boolean active =  Boolean.getBoolean(activeArray[randomFromInterval(1, 10)-1]);
 
         Profile createdProfile = null;
         try {
-            createdProfile =  profileService.createProfile(username, password, active, tenant, testEmail, null, null, null);
+            createdProfile =  profileService.createProfile(username, password, activeArray[randomFromInterval(1, 10)-1], tenant, testEmail, null, null, null);
         } catch (InvalidEmailException e) {
             // Don't really care about this, continue to try create profiles
             System.out.println(e);

@@ -31,8 +31,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @XStreamAlias("profile")
 @XmlRootElement
-@CompoundIndexes({@CompoundIndex(name = "username_tenantName_idx", def = "{'userName': 1, 'tenantName': 1}",
-    unique = true)})
+@CompoundIndexes({
+        @CompoundIndex(name = "tenantName_userName_idx", def = "{'tenantName': 1, 'userName': 1}", unique = true),
+        @CompoundIndex(name = "tenantName_idx", def = "{'tenantName': 1}" )
+})
 public class Profile implements Serializable {
     private static final long serialVersionUID = 3370284215738389717L;
 

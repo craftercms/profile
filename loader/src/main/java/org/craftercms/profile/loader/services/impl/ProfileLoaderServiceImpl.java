@@ -50,7 +50,7 @@ public class ProfileLoaderServiceImpl implements ProfileLoaderService {
                 profileWrapperService.createProfile(tenants[randomFromInterval(1, tenants.length)-1]);
                 profilesCreated++;
 
-                if (profilesCreated%100 == 0) {
+                if (profilesCreated%100000 == 0) {
                     System.out.println(profilesCreated + " profiles created...");
                 }
 
