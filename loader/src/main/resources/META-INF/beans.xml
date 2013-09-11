@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+           http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd">
+
+	<context:component-scan base-package="org.craftercms.profile" />
+
+	<!-- ////////////////////////////////// -->
+    <!--								 	-->
+    <!--			 Mongo				-->
+    <!--									-->
+    <!-- ////////////////////////////////// -->
+
+    <bean id="profile.loader.properties"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <!-- <property name="ignoreResourceNotFound" value="true"/> -->
+        <property name="locations">
+            <list>
+                <value>classpath*:profile-loader.properties</value>
+                <value>classpath*:profile-loader-mongo.properties</value>
+                <value>classpath*:extension/profile-loader-mongo.properties</value>
+                <value>classpath*:log4j.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <mongo:mongo host="${mongo.host}" port="26017" write-concern="SAFE">
+        <mongo:options connections-per-host="${mongo.connectionsPerHost}"
+                       threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
+                       connect-timeout="${mongo.connectTimeout}" max-wait-time="${mongo.maxWaitTime}"
+                       auto-connect-retry="${mongo.autoConnectRetry}"
+                       socket-keep-alive="${mongo.socketKeepAlive}"
+                       slave-ok="${mongo.slaveOk}" write-number="1"
+                       write-timeout="0" write-fsync="true"/>
+    </mongo:mongo>
+
+    <mongo:db-factory dbname="${mongo.db}" mongo-ref="mongo"/>
+
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>
+    </bean>
+
+    <mongo:repositories base-package="org.craftercms.profile.repositories" create-query-indexes="true"
+                        mongo-template-ref="mongoTemplate"/>
+
+
+    <bean id="ssrSettings" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>classpath:crafter/profile/system.properties</value>
+                <value>classpath:crafter/profile/extension/system.properties</value>
+                <value>classpath:crafter/profile/profile-bootstrap.properties</value>
+                <value>classpath:crafter/profile/extension/profile-bootstrap.properties</value>
+            </list>
+        </property>
+        <property name="ignoreResourceNotFound" value="true"/>
+    </bean>
+
+</beans>
