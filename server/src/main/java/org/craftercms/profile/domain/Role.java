@@ -27,9 +27,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @XStreamAlias("role")
 @XmlRootElement
-//@CompoundIndexes({
-//	@CompoundIndex(name = "rolename_tenantname_idx", def = "{'roleName': 1, 'tenantName': 1}", unique=true)
-//})
 public class Role implements Serializable {
     @Field(ProfileConstants.FIELD_ID)
     private ObjectId id;
