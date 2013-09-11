@@ -42,10 +42,9 @@ public class MailServiceImpl implements MailService {
 
     private String mailFrom;
 
-
-    /* (non-Javadoc)
-     * @see com.mastercard.prehire.service.api.MailService#sendMailTLS(java.lang.String, java.lang.String,
-     * java.lang.String, java.util.Map, java.lang.String, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * @see org.craftercms.profile.services.MailService#sendMailTLS(java.lang.String, java.lang.String, java.lang.String, java.util.Map, java.lang.String, java.lang.String)
      */
     public void sendMailTLS(String subject, String text, String template, Map<String, Object> templateArgs,
                             String toAddress, String fromAddress) throws MailException {
