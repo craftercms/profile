@@ -22,12 +22,7 @@ import java.util.Map;
 
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.UserAuthenticationFailedException;
-import org.craftercms.profile.impl.domain.Attribute;
-import org.craftercms.profile.impl.domain.GroupRole;
-import org.craftercms.profile.impl.domain.Profile;
-import org.craftercms.profile.impl.domain.Role;
-import org.craftercms.profile.impl.domain.Schema;
-import org.craftercms.profile.impl.domain.Tenant;
+import org.craftercms.profile.impl.domain.*;
 
 /**
  * Crafter Profile Client exposes an API that can be used to communicate with Crafter Profile Server
@@ -610,15 +605,17 @@ public interface ProfileClient {
      * @param changePasswordUrl valid url to the form will be used to capture the new password
      * @param username          id to the profile that will be changed its password
      * @param tenantName        of the username
+     * @return a profile instance that the password was forgotten.
      */
-    public void forgotPassword(String appToken, String changePasswordUrl, String tenantName, String username);
+    public Profile forgotPassword(String appToken, String changePasswordUrl, String tenantName, String username);
 
     /**
-     * Change profile password service request
+     * Reset profile password service request
      *
      * @param password new password will be set for the profile
      * @param a        token sent by email the user email account
+     * @return a profile instance that the password was reset.
      */
-    public void changePassword(String appToken, String token, String newPassword);
+    public Profile resetPassword(String appToken, String token, String newPassword);
 
 }

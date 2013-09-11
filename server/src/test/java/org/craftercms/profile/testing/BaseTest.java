@@ -20,6 +20,7 @@ public class BaseTest {
     private static String appPassword;
     private static String appUsername;
     protected static String tenantName;
+    protected static String passwordChangeKeyFile;
 
 
     @BeforeClass
@@ -45,6 +46,10 @@ public class BaseTest {
         }
         if (sConfig.getProperty("craftercms.test.profile.profileAppPath") != null) {
             profileRestClientImpl.setProfileAppPath(sConfig.getProperty("craftercms.test.profile.profileAppPath"));
+        }
+
+        if (sConfig.getProperty("craftercms.test.profile.profileAppPath") != null) {
+            passwordChangeKeyFile = sConfig.getProperty("craftercms.test.password.key.file");
         }
 
 

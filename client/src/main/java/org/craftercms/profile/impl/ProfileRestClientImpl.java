@@ -56,6 +56,7 @@ import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.BadRequestException;
 import org.craftercms.profile.exceptions.ConflictRequestException;
+import org.craftercms.profile.exceptions.PasswordException;
 import org.craftercms.profile.exceptions.ResourceNotFoundException;
 import org.craftercms.profile.exceptions.RestException;
 import org.craftercms.profile.exceptions.UnauthorizedException;
@@ -116,7 +117,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 
     @Override
     /*
-	 * (non-Javadoc)
+     * (non-Javadoc)
 	 * 
 	 * @see
 	 * org.craftercms.profile.httpclient.ProfileRestClient#getProfileCount(java
@@ -2602,7 +2603,8 @@ public class ProfileRestClientImpl implements ProfileClient {
         }
 
         try {
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/group/create.json", URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/group/create.json",
+                URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
             HttpPost httppost = new HttpPost(uri);
             HttpResponse response = clientService.getHttpClient().execute(httppost);
             entity = response.getEntity();
@@ -2633,7 +2635,8 @@ public class ProfileRestClientImpl implements ProfileClient {
 
     /*
      * (non-Javadoc)
-     * @see org.craftercms.profile.api.ProfileClient#updateGroupRoleMapping(java.lang.String, java.lang.String, java.lang.String, java.util.List)
+     * @see org.craftercms.profile.api.ProfileClient#updateGroupRoleMapping(java.lang.String, java.lang.String,
+     * java.lang.String, java.util.List)
      */
     @Override
     public GroupRole updateGroupRoleMapping(String appToken, String tenantName, String groupId, List<String> role) {
@@ -2647,7 +2650,8 @@ public class ProfileRestClientImpl implements ProfileClient {
             qparams.add(new BasicNameValuePair(GroupConstants.ROLES, s));
         }
         try {
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/group/update.json", URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/group/update.json",
+                URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
             HttpPost httppost = new HttpPost(uri);
             HttpResponse response = clientService.getHttpClient().execute(httppost);
             entity = response.getEntity();
@@ -2687,7 +2691,8 @@ public class ProfileRestClientImpl implements ProfileClient {
         qparams.add(new BasicNameValuePair(GroupConstants.ID, groupId));
 
         try {
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/group/delete.json", URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/group/delete.json",
+                URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
             HttpPost httppost = new HttpPost(uri);
             HttpResponse response = clientService.getHttpClient().execute(httppost);
             entity = response.getEntity();
@@ -2724,7 +2729,8 @@ public class ProfileRestClientImpl implements ProfileClient {
             qparams.add(new BasicNameValuePair(GroupConstants.GROUPS, s));
         }
         try {
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/group/get.json", URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/group/get.json",
+                URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
             HttpGet httpget = new HttpGet(uri);
             HttpResponse response = clientService.getHttpClient().execute(httpget);
             entity = response.getEntity();
@@ -2759,7 +2765,8 @@ public class ProfileRestClientImpl implements ProfileClient {
         qparams.add(new BasicNameValuePair(GroupConstants.PROFILE_ID, profileId));
         qparams.add(new BasicNameValuePair(GroupConstants.TENANT_NAME, tenantName));
         try {
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/group/get_all.json", URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/group/get_all.json",
+                URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
             HttpGet httpget = new HttpGet(uri);
             HttpResponse response = clientService.getHttpClient().execute(httpget);
             entity = response.getEntity();
@@ -2800,7 +2807,8 @@ public class ProfileRestClientImpl implements ProfileClient {
         qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
         qparams.add(new BasicNameValuePair(GroupConstants.TENANT_NAME, tenantName));
         try {
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/group/get_all_tenant.json", URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/group/get_all_tenant.json",
+                URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
             HttpGet httpget = new HttpGet(uri);
             HttpResponse response = clientService.getHttpClient().execute(httpget);
             entity = response.getEntity();
@@ -2838,7 +2846,8 @@ public class ProfileRestClientImpl implements ProfileClient {
         qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
         qparams.add(new BasicNameValuePair(GroupConstants.ID, groupId));
         try {
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/group/get_item.json", URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/group/get_item.json",
+                URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
             HttpGet httpget = new HttpGet(uri);
             HttpResponse response = clientService.getHttpClient().execute(httpget);
             entity = response.getEntity();
@@ -2870,22 +2879,23 @@ public class ProfileRestClientImpl implements ProfileClient {
      * CHANGING PASSWORD **
      */
 
-    public void changePassword(String appToken, String token, String newPassword) {
+    public Profile resetPassword(String appToken, String token, String newPassword) {
         HttpEntity entity = null;
-        GroupRole groupRole = null;
+        Profile profile = new Profile();
         List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
         qparams.add(new BasicNameValuePair(PasswordChangeConstants.TOKEN, token));
         qparams.add(new BasicNameValuePair(PasswordChangeConstants.NEW_PASSWORD, newPassword));
 
         try {
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/password/change-password.json", URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/password/reset-password.json",
+                URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
             HttpPost httppost = new HttpPost(uri);
             HttpResponse response = clientService.getHttpClient().execute(httppost);
 
             entity = response.getEntity();
             if (response.getStatusLine().getStatusCode() == 200) {
-                //Log result
+                profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
             } else {
                 handleErrorStatus(response.getStatusLine(), entity);
             }
@@ -2897,6 +2907,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             log.error(e.getMessage(), e);
         } catch (RestException e) {
             log.error(e.getMessage(), e);
+            throw new PasswordException(formatPasswordErrorMessage(e.getMessage()), e);
         } finally {
             try {
                 EntityUtils.consume(entity);
@@ -2904,25 +2915,28 @@ public class ProfileRestClientImpl implements ProfileClient {
                 log.error("Could not consume entity", e);
             }
         }
-        //		return groupRole;
+        return profile;
     }
 
-    public void forgotPassword(String appToken, String changePasswordUrl, String tenantName, String username) {
+    public Profile forgotPassword(String appToken, String changePasswordUrl, String tenantName,
+                                  String username) throws PasswordException {
         HttpEntity entity = null;
-        GroupRole groupRole = null;
+        Profile profile = null;
+
         List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
         qparams.add(new BasicNameValuePair(PasswordChangeConstants.CHANGE_PASSWORD_URL, changePasswordUrl));
         qparams.add(new BasicNameValuePair(ProfileConstants.TENANT_NAME, tenantName));
         qparams.add(new BasicNameValuePair(PasswordChangeConstants.USERNAME, username));
         try {
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/password/forgot-password.json", URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/password/forgot-password.json",
+                URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
             HttpPost httppost = new HttpPost(uri);
             HttpResponse response = clientService.getHttpClient().execute(httppost);
 
             entity = response.getEntity();
             if (response.getStatusLine().getStatusCode() == 200) {
-                //Log result
+                profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
             } else {
                 handleErrorStatus(response.getStatusLine(), entity);
             }
@@ -2934,6 +2948,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             log.error(e.getMessage(), e);
         } catch (RestException e) {
             log.error(e.getMessage(), e);
+            throw new PasswordException(formatPasswordErrorMessage(e.getMessage()), e);
         } finally {
             try {
                 EntityUtils.consume(entity);
@@ -2941,7 +2956,15 @@ public class ProfileRestClientImpl implements ProfileClient {
                 log.error("Could not consume entity", e);
             }
         }
-        //		return groupRole;
+        return profile;
+    }
+
+    private String formatPasswordErrorMessage(String message) {
+        String result = message;
+        if (result != null && result.indexOf(":") > 0) {
+            result = result.substring(result.indexOf(":") + 1);
+        }
+        return result;
     }
 
     /*** END CHANGING PASSWORD services ***/

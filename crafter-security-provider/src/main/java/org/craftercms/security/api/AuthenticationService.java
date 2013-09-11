@@ -54,7 +54,7 @@ public interface AuthenticationService {
      * @param username          id to the profile that will be changed its password
      * @param tenantName        of the username
      */
-    void forgotPassword(String changePasswordUrl, String username, String tenantName) throws AuthenticationException;
+    UserProfile forgotPassword(String changePasswordUrl, String username, String tenantName) throws Exception;
 
     /**
      * Change profile password service request
@@ -62,6 +62,6 @@ public interface AuthenticationService {
      * @param password new password will be set for the profile
      * @param a        token sent by email the user email account
      */
-    void changePassword(String password, String token) throws AuthenticationException;
+    UserProfile resetPassword(String password, String token) throws Exception;
 
 }

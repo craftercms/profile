@@ -15,10 +15,10 @@
     <util:map id="crafter.urlRestrictions">
         <beans:entry key="/resources/**" value="permitAll()"/>
         <beans:entry key="/api/2/cache/clear_all" value="permitAll()"/>
-        <beans:entry key="/changepassword**" value="permitAll()"/>
-        <beans:entry key="/changing-password**" value="permitAll()"/>
+        <!-- beans:entry key="/changepassword**" value="permitAll()"/-->
+        <beans:entry key="/reset-password**" value="permitAll()"/>
         <beans:entry key="/forgot-password**" value="permitAll()"/>
-        <beans:entry key="/forgeting-password**" value="permitAll()"/>
+        <beans:entry key="/forgot-success**" value="permitAll()"/>
         <beans:entry key="/login**" value="permitAll()"/>
         <beans:entry key="/**" value="hasAnyRole({'SOCIAL_ADMIN','SUPERADMIN'})"/>
     </util:map>

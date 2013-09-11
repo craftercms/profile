@@ -1,5 +1,7 @@
 package org.craftercms.profile.management.web;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.profile.management.model.ForgotPassword;
@@ -7,6 +9,7 @@ import org.craftercms.profile.management.model.PasswordChange;
 import org.craftercms.profile.management.services.PasswordChangeService;
 import org.craftercms.profile.management.services.impl.ProfileDAOServiceImpl;
 import org.craftercms.profile.management.services.impl.ProfileServiceManager;
+import org.craftercms.security.api.UserProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,7 +34,6 @@ public class ChangePasswordController {
     @Autowired
     private ProfileDAOServiceImpl profileDAOServiceImpl;
 
-
     /**
      * Request the forgot password form
      *
@@ -43,18 +45,19 @@ public class ChangePasswordController {
 
         ForgotPassword forgotPassword = new ForgotPassword();
         forgotPassword.setTenantName(ProfileServiceManager.getCrafterProfileAppTenantName());
-
-        mav.setViewName("forgotpassword");
+        forgotPassword.setChangePasswordUrl(passwordChangeService.getCrafterProfileChangePasswordUrl());
+        mav.setViewName("forgot-password");
         mav.addObject("forgotPassword", forgotPassword);
 
         return mav;
     }
 
     /**
-     * Post to manage the forget password request. Validates that the username entered is valid.
+     * Post to manage the forget password request. Validates that the username
+     * entered is valid.
      *
-     * @param forgotPassword <code>ForgotPassword</code> instance that contains the admin-console tenant name and the
-     *                       username entered
+     * @param forgotPassword <code>ForgotPassword</code> instance that contains the
+     *                       admin-console tenant name and the username entered
      * @param bindingResult  Binding result for <code>ForgotPassword</code> instance
      * @param model          <code>Model</code> instance
      * @return redirect to a status message page
@@ -83,28 +86,52 @@ public class ChangePasswordController {
     }
 
     /**
+     * Post to manage the forget password request. Validates that the username
+     * entered is valid.
+     *
+     * @param forgotPassword <code>ForgotPassword</code> instance that contains the
+     *                       admin-console tenant name and the username entered
+     * @param bindingResult  Binding result for <code>ForgotPassword</code> instance
+     * @param model          <code>Model</code> instance
+     * @return redirect to a status message page
+     * @throws AppAuthenticationFailedException
+     *          If an appToken exception occurred
+     */
+    @RequestMapping(value = "/forgot-success", method = RequestMethod.GET)
+    public ModelAndView forgotPassword(Model model, HttpServletRequest request) throws
+        AppAuthenticationFailedException {
+        ModelAndView mav = new ModelAndView();
+        UserProfile profile = (UserProfile)request.getSession().getAttribute("profileForgotPassword");
+
+        mav.setViewName("forgot-success");
+        mav.addObject("profile", profile);
+        return mav;
+    }
+
+    /**
      * Initial Change password request.
      *
-     * @param token. Security token sent by email
+     * @param token . Security token sent by email
      * @return <code>ModelAndView</code> instance with the changepassword form
      */
-    @RequestMapping(value = "/changepassword", method = RequestMethod.GET)
+    @RequestMapping(value = "/reset-password", method = RequestMethod.GET)
     public ModelAndView changePassword(@RequestParam(required = false) String token) {
         ModelAndView mav = new ModelAndView();
 
         PasswordChange passwordChange = new PasswordChange();
         passwordChange.setToken(token);
-        mav.setViewName("changepassword");
+        mav.setViewName("reset-password");
         mav.addObject("passwordChange", passwordChange);
 
         return mav;
     }
 
     /**
-     * Post to manage the change password process.Validates that both new password and confirm password are the same
-     * and are not blanket
+     * Post to manage the change password process.Validates that both new
+     * password and confirm password are the same and are not blanket
      *
-     * @param <code>PasswordChange</code> instance that contains the new password and the confirm password values
+     * @param <code>PasswordChange</code> instance that contains the new
+     *                                    password and the confirm password values
      * @param bindingResult               Binding result for <code>PasswordChange</code> instance
      * @param model                       <code>Model</code> instance
      * @return redirect to login page
@@ -165,9 +192,11 @@ public class ChangePasswordController {
                 "user.validation.error.empty.or.whitespace");
         }
         if (!bindingResult.hasErrors()) {
-            Profile p = this.profileDAOServiceImpl.getUser(forgotPassword.getUsername(), forgotPassword.getTenantName());
+            Profile p = this.profileDAOServiceImpl.getUser(forgotPassword.getUsername(),
+                forgotPassword.getTenantName());
             if (p == null) {
-                bindingResult.rejectValue("username", "forgot.validation.fields.errors.user.no.exist", null, "forgot.validation.fields.errors.user.no.exist");
+                bindingResult.rejectValue("username", "forgot.validation.fields.errors.user.no.exist", null,
+                    "forgot.validation.fields.errors.user.no.exist");
             } else if (p.getEmail() == null || p.getEmail().isEmpty()) {
                 bindingResult.rejectValue("username", "forgot.validation.fields.errors.email.no.exist", null, "forgot.validation.fields.errors.user.no.exist");
             }

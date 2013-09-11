@@ -2,42 +2,49 @@ package org.craftercms.security.impl.processors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.craftercms.profile.exceptions.PasswordException;
 import org.craftercms.security.api.AuthenticationService;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.RequestSecurityProcessor;
 import org.craftercms.security.api.RequestSecurityProcessorChain;
-import org.craftercms.security.exception.AuthenticationException;
+import org.craftercms.security.api.UserProfile;
+import org.craftercms.security.authentication.ResetPasswordFailureHandler;
+import org.craftercms.security.authentication.ResetPasswordSuccessHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
- * Manag
+ * Request reset the password of one profile. Manage errors in case that the new password and confirm password doesn't match or are blank
  *
  * @author Alvaro Gonzalez
  */
-public class ChangePasswordProcessor implements RequestSecurityProcessor {
+public class ResetPasswordProcessor implements RequestSecurityProcessor {
 
-    public static final Logger logger = LoggerFactory.getLogger(LoginProcessor.class);
+    public static final Logger logger = LoggerFactory.getLogger(ResetPasswordProcessor.class);
 
-    public static final String DEFAULT_FORGOT_PASSWORD_URL = "/crafter-security-change-password";
+    public static final String DEFAULT_FORGOT_PASSWORD_URL = "/crafter-security-reset-password";
     public static final String DEFAULT_FORGOT_PASSWORD_METHOD = "POST";
     public static final String DEFAULT_PASSWORD_PARAM = "newPassword";
+    public static final String DEFAULT_CONFIRM_PASSWORD_PARAM = "confirmPassword";
     public static final String DEFAULT_TOKEN_PARAM = "token";
 
     protected String changePasswordUrl;
     protected String changePasswordMethod;
     protected String newPasswordParameter;
+    protected String confirmPasswordParameter;
     protected String tokenParameter;
     protected String forgotPassUrlParameter;
 
     protected AuthenticationService authenticationService;
+    protected ResetPasswordSuccessHandler resetPasswordSuccessHandler;
+    protected ResetPasswordFailureHandler resetPasswordFailureHandler;
 
-    public ChangePasswordProcessor() {
+    public ResetPasswordProcessor() {
         this.changePasswordUrl = DEFAULT_FORGOT_PASSWORD_URL;
         this.changePasswordMethod = DEFAULT_FORGOT_PASSWORD_METHOD;
         this.newPasswordParameter = DEFAULT_PASSWORD_PARAM;
+        this.confirmPasswordParameter = DEFAULT_CONFIRM_PASSWORD_PARAM;
         this.tokenParameter = DEFAULT_TOKEN_PARAM;
     }
 
@@ -65,6 +72,18 @@ public class ChangePasswordProcessor implements RequestSecurityProcessor {
         this.newPasswordParameter = newPasswordParameter;
     }
 
+    public String getConfirmPasswordParameter() {
+        return confirmPasswordParameter;
+    }
+
+    public void setConfirmPasswordParameter(String confirmPasswordParameter) {
+        this.confirmPasswordParameter = confirmPasswordParameter;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.craftercms.security.api.RequestSecurityProcessor#processRequest(org.craftercms.security.api.RequestContext, org.craftercms.security.api.RequestSecurityProcessorChain)
+     */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         HttpServletRequest request = context.getRequest();
 
@@ -73,11 +92,9 @@ public class ChangePasswordProcessor implements RequestSecurityProcessor {
                 logger.debug("Processing login request");
             }
 
-            if (StringUtils.isEmpty(context.getTenantName())) {
-                throw new IllegalArgumentException("Request context doesn't contain a tenant name");
-            }
 
             String password = getPassword(request);
+            String confirmPassword = getCofirmPassword(request);
             String token = getToken(request);
 
             if (password == null) {
@@ -87,15 +104,23 @@ public class ChangePasswordProcessor implements RequestSecurityProcessor {
                 token = "";
             }
             try {
+                if (password == null || confirmPassword == null || password.equals("") || confirmPassword.equals("")) {
+                    throw new PasswordException("Password and Confirm password are required values");
+                }
+                if (!password.equals(confirmPassword)) {
+                    throw new PasswordException("Password and Confirm password must match");
+                }
                 if (logger.isDebugEnabled()) {
-                    logger.debug("ChangePassword request for token " + token);
+                    logger.debug("ResetPassword request for token " + token);
                 }
 
-                authenticationService.changePassword(password, token);
+                UserProfile profile = authenticationService.resetPassword(password, token);
 
-            } catch (AuthenticationException e) {
-                //onLoginFailure(e, context);
+                resetPasswordSuccessHandler.onResetPasswordSuccess(profile, context);
+
+            } catch (Exception e) {
                 logger.error(e.getMessage());
+                resetPasswordFailureHandler.onResetPasswordFailure(e, context, token);
             }
         } else {
             processorChain.processRequest(context);
@@ -107,6 +132,13 @@ public class ChangePasswordProcessor implements RequestSecurityProcessor {
      */
     protected String getPassword(HttpServletRequest request) {
         return request.getParameter(newPasswordParameter);
+    }
+
+    /**
+     * Returns the value of the password parameter from the request.
+     */
+    protected String getCofirmPassword(HttpServletRequest request) {
+        return request.getParameter(confirmPasswordParameter);
     }
 
     /**
@@ -128,6 +160,22 @@ public class ChangePasswordProcessor implements RequestSecurityProcessor {
     @Required
     public void setAuthenticationService(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
+    }
+
+    public ResetPasswordSuccessHandler getResetPasswordSuccessHandler() {
+        return resetPasswordSuccessHandler;
+    }
+
+    public void setResetPasswordSuccessHandler(ResetPasswordSuccessHandler resetPasswordSuccessHandler) {
+        this.resetPasswordSuccessHandler = resetPasswordSuccessHandler;
+    }
+
+    public ResetPasswordFailureHandler getResetPasswordFailureHandler() {
+        return resetPasswordFailureHandler;
+    }
+
+    public void setResetPasswordFailureHandler(ResetPasswordFailureHandler resetPasswordFailureHandler) {
+        this.resetPasswordFailureHandler = resetPasswordFailureHandler;
     }
 
 }

@@ -29,8 +29,6 @@ public class AESCipher implements ProfileCipher {
     public AESCipher(String token, Date expirationDate, byte[] encryptionKey) {
         this.token = token;
         this.expirationDate = expirationDate;
-
-
         this.encryptionKey = encryptionKey;
     }
 

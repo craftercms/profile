@@ -96,11 +96,11 @@ input[type=text]:focus, input[type=password]:focus, input.text:focus, input.titl
 } */
 
 #header h2 {
-    color: white;
-    background-color: #3275A8;
-    height: 50px;
-    padding: 5px 0 0 5px;
-    font-size: 20px;
+    background-color: #ED6740;
+    color: #FFFFFF;
+    height: 30px;
+    padding: 5px 20px 0 5px;
+    width: 930px;
 }
 
 ul.error-msg {
@@ -268,6 +268,11 @@ legend {
 }
 
 .login-error {
+    color: #F00;
+    text-align: center;
+}
+
+.general-error {
     color: #F00;
     text-align: center;
 }

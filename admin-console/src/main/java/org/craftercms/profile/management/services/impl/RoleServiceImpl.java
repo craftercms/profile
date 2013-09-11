@@ -85,11 +85,7 @@ public class RoleServiceImpl implements RoleService {
                 errorDeletingMsg = errorDeletingMsg + " " + roleName;
             }
         }
-        if (!errorDeletingMsg.isEmpty()) {
-            System.out.println("***** errors " + errorDeletingMsg);
-            //bindingResult.reject("group.name.validation.error.used.bytenant", new String[]{errorDeletingMsg},
-            // "Some roles were not deleted because are used by Tenants");
-        }
+
     }
 
     @Override

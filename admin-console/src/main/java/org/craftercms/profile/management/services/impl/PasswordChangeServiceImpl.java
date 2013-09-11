@@ -55,7 +55,7 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
             ProfileServiceManager.setAppToken();
         }
         try {
-            ProfileServiceManager.getProfileClient().changePassword(ProfileServiceManager.getAppToken(), token,
+            ProfileServiceManager.getProfileClient().resetPassword(ProfileServiceManager.getAppToken(), token,
                 newPassword);
         } catch (AppAuthenticationException e) {
             try {
@@ -63,7 +63,7 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
             } catch (AppAuthenticationFailedException e1) {
                 log.error("could not get an AppToken", e);
             }
-            ProfileServiceManager.getProfileClient().changePassword(ProfileServiceManager.getAppToken(), token,
+            ProfileServiceManager.getProfileClient().resetPassword(ProfileServiceManager.getAppToken(), token,
                 newPassword);
         }
 
@@ -74,9 +74,14 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
      *
      * @param url valid url to the form that will capture the new password
      */
-    @Value("${crafter.profile.app.change.password.url}")
-    public void setCrafterProfileAppTenantName(String url) {
+    @Value("${crafter.profile.app.reset.password.url}")
+    public void setCrafterProfileChangePasswordUrl(String url) {
         this.changePasswordUrl = url;
+    }
+
+    @Override
+    public String getCrafterProfileChangePasswordUrl() {
+        return this.changePasswordUrl;
     }
 
 }

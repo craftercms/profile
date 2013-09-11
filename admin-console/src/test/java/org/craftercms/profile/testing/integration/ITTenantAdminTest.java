@@ -19,6 +19,8 @@ public class ITTenantAdminTest extends IntegrationTestingBase {
         loginAsAdmin(driver);
         WebElement newLink = driver.findElement(By.id("GetTenants"));
         newLink.click();
+        waitForElement(driver, 30, "tenantlist");
+
         assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console Tenant List"));
         createNewTenant(driver, "newTenantName", "localhost");
         assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console Tenant List"));

@@ -4,6 +4,7 @@ import java.text.ParseException;
 import javax.naming.AuthenticationException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.ExpiryDateException;
 import org.craftercms.profile.exceptions.MailException;
@@ -36,6 +37,7 @@ public class PasswordRestController {
      *                          password
      * @param username          that forgot the password.
      * @param tenantName        current tenant name
+     * @return the profile instance that the password was forgotten
      * @throws AuthenticationException If an authentication error ocurred
      * @throws CipherException         If an error ocurred during the encryption process.
      * @throws MailException           If an error ocurred during the emailing process
@@ -43,10 +45,10 @@ public class PasswordRestController {
      */
     @RequestMapping(value = "/forgot-password", method = RequestMethod.POST)
     @ModelAttribute
-    public void forgotPassword(HttpServletRequest request, @RequestParam(required = true) String changePasswordUrl,
-                               String username, String tenantName) throws AuthenticationException, CipherException,
+    public Profile forgotPassword(HttpServletRequest request, @RequestParam(required = true) String
+        changePasswordUrl, String username, String tenantName) throws AuthenticationException, CipherException,
         MailException, NoSuchProfileException {
-        passwordService.forgotPassword(changePasswordUrl, username, tenantName);
+        return passwordService.forgotPassword(changePasswordUrl, username, tenantName);
     }
 
     /**
@@ -56,18 +58,19 @@ public class PasswordRestController {
      * @param token    Security token sent to the email account of the profile account. This token contain username,
      *                 tenantName and Date that was generated
      * @param password Clear text new password value
+     * @return the profile instance that the password was reset
      * @throws AuthenticationException If authentication error occurred
      * @throws CipherException         If an error occurred during the decryption process.
      * @throws NoSuchProfileException  If the profile was not found in the database
      * @throws ParseException          If an error occurred when the date of the token is parsed
      * @throws ExpiryDateException     If the token has already expired
      */
-    @RequestMapping(value = "/change-password", method = RequestMethod.POST)
+    @RequestMapping(value = "/reset-password", method = RequestMethod.POST)
     @ModelAttribute
-    public void changePassword(HttpServletRequest request, String token,
-                               String newPassword) throws AuthenticationException, CipherException, MailException,
+    public Profile changePassword(HttpServletRequest request, String token,
+                                  String newPassword) throws AuthenticationException, CipherException, MailException,
         NoSuchProfileException, ParseException, ExpiryDateException {
-        passwordService.changePassword(newPassword, token);
+        return passwordService.resetPassword(newPassword, token);
     }
 
 }

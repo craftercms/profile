@@ -43,6 +43,8 @@ http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
                 <ref bean="profileRestClient"/>
                 <value>${crafter.profile.app.username}</value>
                 <value>${crafter.profile.app.password}</value>
+                <value>${crafter.profile.app.tenant.name}</value>
+                <value>${protected-disabled-users}</value>
             </list>
         </property>
     </bean>

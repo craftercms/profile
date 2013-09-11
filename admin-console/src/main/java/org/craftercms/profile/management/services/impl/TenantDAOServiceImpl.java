@@ -326,12 +326,14 @@ public class TenantDAOServiceImpl implements TenantDAOService {
         }
     }
 
-    private List<Tenant> getTenants(String sortBy, String sortOrder, int start, int end) throws AppAuthenticationFailedException {
+    private List<Tenant> getTenants(String sortBy, String sortOrder, int start,
+                                    int end) throws AppAuthenticationFailedException {
         if (!ProfileServiceManager.isAppTokenInit()) {
             ProfileServiceManager.setAppToken();
         }
         try {
-            return ProfileServiceManager.getProfileClient().getTenantRange(ProfileServiceManager.getAppToken(), sortBy, sortOrder, start, end);
+            return ProfileServiceManager.getProfileClient().getTenantRange(ProfileServiceManager.getAppToken(),
+                sortBy, sortOrder, start, end);
         } catch (AppAuthenticationException e) {
             try {
 

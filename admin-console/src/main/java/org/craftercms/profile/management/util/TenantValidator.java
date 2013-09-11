@@ -34,7 +34,7 @@ public class TenantValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "tenantName", "tenant.name.validation.error.empty.or" +
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "tenantName", "tenant.name.validation.error.empty.or" + "" +
             ".whitespace");
     }
 }

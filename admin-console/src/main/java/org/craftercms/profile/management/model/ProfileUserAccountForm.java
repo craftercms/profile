@@ -22,8 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.craftercms.profile.impl.domain.Profile;
-import org.craftercms.profile.impl.domain.Tenant;
+import org.craftercms.profile.impl.domain.*;
 import org.craftercms.profile.management.util.TenantUtil;
 
 public class ProfileUserAccountForm implements Serializable {
@@ -47,6 +46,8 @@ public class ProfileUserAccountForm implements Serializable {
     private ArrayList<String> roles;
 
     private Map roleOption;
+    
+    private boolean protectedFromDisabled;
 
     public ProfileUserAccountForm() {
     }
@@ -184,4 +185,12 @@ public class ProfileUserAccountForm implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
+
+	public boolean isProtectedFromDisabled() {
+		return protectedFromDisabled;
+	}
+
+	public void setProtectedFromDisabled(boolean isProtected) {
+		this.protectedFromDisabled = isProtected;
+	}
 }

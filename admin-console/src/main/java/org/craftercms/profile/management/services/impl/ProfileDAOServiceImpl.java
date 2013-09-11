@@ -25,10 +25,7 @@ import org.apache.log4j.Logger;
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.RestException;
-import org.craftercms.profile.impl.domain.Attribute;
-import org.craftercms.profile.impl.domain.Profile;
-import org.craftercms.profile.impl.domain.Role;
-import org.craftercms.profile.impl.domain.Tenant;
+import org.craftercms.profile.impl.domain.*;
 import org.craftercms.profile.management.model.SchemaModel;
 import org.craftercms.profile.management.services.ProfileDAOService;
 import org.craftercms.profile.management.util.ProfileUserAccountConstants;
@@ -43,22 +40,6 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
     public ProfileDAOServiceImpl() {
 
     }
-
-    //	public void deleteUser(String profileId) throws AppAuthenticationFailedException {
-    //		if (!ProfileServiceManager.isAppTokenInit()) {
-    //			ProfileServiceManager.setAppToken();
-    //		}
-    //		try {
-    //			ProfileServiceManager.getProfileClient().deleteProfile(ProfileServiceManager.getAppToken(), profileId);
-    //		} catch(AppAuthenticationException e) {
-    //			try {
-    //				ProfileServiceManager.setAppToken();
-    //			} catch (AppAuthenticationFailedException e1) {
-    //				log.error("could not get an AppToken", e);
-    //			}
-    //			ProfileServiceManager.getProfileClient().deleteProfile(ProfileServiceManager.getAppToken(), profileId);
-    //		}
-    //	}
 
     public void activeUser(String profileId, boolean active) throws AppAuthenticationFailedException {
         if (!ProfileServiceManager.isAppTokenInit()) {
@@ -77,15 +58,6 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
                 active);
         }
     }
-
-    //	public void deleteUsers(List<String> users) throws AppAuthenticationFailedException {
-    //		if (!ProfileServiceManager.isAppTokenInit()) {
-    //			ProfileServiceManager.setAppToken();
-    //		}
-    //		for (String currentUser:users) {
-    //			deleteUser(currentUser);
-    //		}
-    //	}
 
     public void activeUsers(List<String> users, boolean active) throws AppAuthenticationFailedException {
         if (!ProfileServiceManager.isAppTokenInit()) {
@@ -315,14 +287,16 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
             ProfileServiceManager.setAppToken();
         }
         try {
-            return ProfileServiceManager.getProfileClient().getProfileWithAllAttributes(ProfileServiceManager.getAppToken(), profileId);
+            return ProfileServiceManager.getProfileClient().getProfileWithAllAttributes(ProfileServiceManager
+                .getAppToken(), profileId);
         } catch (AppAuthenticationException e) {
             try {
                 ProfileServiceManager.setAppToken();
             } catch (AppAuthenticationFailedException e1) {
                 log.error("could not get an AppToken", e);
             }
-            return ProfileServiceManager.getProfileClient().getProfileWithAllAttributes(ProfileServiceManager.getAppToken(), profileId);
+            return ProfileServiceManager.getProfileClient().getProfileWithAllAttributes(ProfileServiceManager
+                .getAppToken(), profileId);
         }
     }
 
@@ -331,18 +305,21 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
             ProfileServiceManager.setAppToken();
         }
         try {
-            ProfileServiceManager.getProfileClient().deleteAttributesForProfile(ProfileServiceManager.getAppToken(), profileId, attributes);
+            ProfileServiceManager.getProfileClient().deleteAttributesForProfile(ProfileServiceManager.getAppToken(),
+                profileId, attributes);
         } catch (AppAuthenticationException e) {
             try {
                 ProfileServiceManager.setAppToken();
             } catch (AppAuthenticationFailedException e1) {
                 log.error("could not get an AppToken", e);
             }
-            ProfileServiceManager.getProfileClient().deleteAttributesForProfile(ProfileServiceManager.getAppToken(), profileId, attributes);
+            ProfileServiceManager.getProfileClient().deleteAttributesForProfile(ProfileServiceManager.getAppToken(),
+                profileId, attributes);
         }
     }
 
-    public void deleteSchemaAttributes(String schemaId, List<String> attributes) throws AppAuthenticationFailedException {
+    public void deleteSchemaAttributes(String schemaId, List<String> attributes) throws
+        AppAuthenticationFailedException {
         if (!ProfileServiceManager.isAppTokenInit()) {
             ProfileServiceManager.setAppToken();
         }

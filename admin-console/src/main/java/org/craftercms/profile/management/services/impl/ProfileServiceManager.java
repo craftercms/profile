@@ -1,5 +1,8 @@
 package org.craftercms.profile.management.services.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.craftercms.profile.api.ProfileClient;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
@@ -18,6 +21,8 @@ public class ProfileServiceManager {
     private static final Logger log = Logger.getLogger(ProfileServiceManager.class);
 
     private static ProfileClient profileRestClient;
+    
+    private static List<String> protectedActiveUsers;
 
     private ProfileServiceManager() {
 
@@ -52,10 +57,13 @@ public class ProfileServiceManager {
     }
 
 
-    public static void initStaticValues(ProfileClient profileClient, String username, String password) {
+    public static void initStaticValues(ProfileClient profileClient, String username, String password,
+                                        String tenantName, String protectedActiveUsers) {
         ProfileServiceManager.username = username;
         ProfileServiceManager.password = password;
+        ProfileServiceManager.crafterProfileAppTenantName = tenantName;
         ProfileServiceManager.profileRestClient = profileClient;
+        ProfileServiceManager.protectedActiveUsers = convertLineToList(protectedActiveUsers);
     }
 
     @Value("${crafter.profile.app.tenant.name}")
@@ -65,6 +73,32 @@ public class ProfileServiceManager {
 
     public static String getCrafterProfileAppTenantName() {
         return ProfileServiceManager.crafterProfileAppTenantName;
+    }
+    
+    private static List<String> convertLineToList(String list) {
+        List<String> values = new ArrayList<String>();
+        if (list == null || list.length() == 0) {
+            return values;
+        }
+        String[] arrayRoles = list.split(",");
+        for (String role : arrayRoles) {
+            values.add(role.trim());
+        }
+        return values;
+    }
+    
+    public static boolean isProtectedToKeepActive(String username) {
+    	boolean protectedUsername = false;
+    	if (protectedActiveUsers == null || protectedActiveUsers.size() == 0) {
+    		return protectedUsername;
+    	}
+    	for(String u: protectedActiveUsers) {
+    		if (u.equals(username)) {
+    			protectedUsername = true;
+    			break;
+    		}
+    	}
+    	return protectedUsername;
     }
 
 }

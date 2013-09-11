@@ -41,12 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
@@ -260,6 +255,7 @@ public class AccountController {
     public ModelAndView findAccount(@RequestParam(required = false) String username,
                                     @RequestParam(required = false) String tenantName) throws Exception {
         ProfileUserAccountForm a = profileAccountService.getUserForUpdate(username, tenantName);
+        a.setProtectedFromDisabled(ProfileServiceManager.isProtectedToKeepActive(username));
         Tenant tenant = tenantDAOService.getTenantByName(a.getTenantName());
         ModelAndView mav = new ModelAndView();
         mav.setViewName("update");
@@ -270,27 +266,6 @@ public class AccountController {
         mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
-
-    //    @RequestMapping(value = "/activate", method = RequestMethod.POST)
-    //    @ModelAttribute
-    //    public ModelAndView activateAccount(@RequestParam("item") ArrayList<String> item,
-    //                                      @RequestParam String selectedTenantName, boolean active,
-    //            HttpServletResponse response) throws Exception {
-    //        profileAccountService.activeUsers(item, active);
-    //        ModelAndView mav = new ModelAndView();
-    //
-    //        List<Tenant> tenantList = tenantDAOService.getAllTenants();
-    //        Map<String, String> tenantNames = TenantUtil.getTenantsMap(tenantList);
-    //        List<ProfileUserAccountForm> list = profileAccountService.getProfileUsers(selectedTenantName);
-    //        mav.setViewName("accountlist");
-    //        mav.addObject("userList", list);
-    //        mav.addObject("filter", new FilterForm());
-    //        mav.addObject("tenantNames", tenantNames);
-    //        mav.addObject("selectedTenantName",selectedTenantName);
-    //        RequestContext context = RequestContext.getCurrent();
-    //        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
-    //        return mav;
-    //    }
 
     @ExceptionHandler(org.craftercms.security.exception.AuthenticationRequiredException.class)
     public String loginRequiredException() {
@@ -380,11 +355,11 @@ public class AccountController {
             }
             value = attributes.get(a.getName());
             if (value == null) {
-                bindingResult.rejectValue("attributes[" + a.getName() + "]", "user.validation.attribute.error.empty" +
-                    ".or.whitespace", null, "user.validation.attribute.error.empty.or.whitespace");
+                bindingResult.rejectValue("attributes[" + a.getName() + "]", "user.validation.attribute.error.empty"
+                    + ".or.whitespace", null, "user.validation.attribute.error.empty.or.whitespace");
             } else if ((a.getType() == null || a.getType().equalsIgnoreCase("text")) && value.equals("")) {
-                bindingResult.rejectValue("attributes[" + a.getName() + "]", "user.validation.attribute.error.empty" +
-                    ".or.whitespace", null, "user.validation.attribute.error.empty.or.whitespace");
+                bindingResult.rejectValue("attributes[" + a.getName() + "]", "user.validation.attribute.error.empty"
+                    + ".or.whitespace", null, "user.validation.attribute.error.empty.or.whitespace");
             }
         }
 

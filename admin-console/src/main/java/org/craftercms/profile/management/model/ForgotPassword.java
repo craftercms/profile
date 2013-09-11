@@ -6,6 +6,8 @@ public class ForgotPassword {
 
     private String tenantName;
 
+    private String changePasswordUrl;
+
     public String getUsername() {
         return username;
     }
@@ -20,6 +22,14 @@ public class ForgotPassword {
 
     public void setTenantName(String tenantName) {
         this.tenantName = tenantName;
+    }
+
+    public String getChangePasswordUrl() {
+        return changePasswordUrl;
+    }
+
+    public void setChangePasswordUrl(String changePasswordUrl) {
+        this.changePasswordUrl = changePasswordUrl;
     }
 
 }

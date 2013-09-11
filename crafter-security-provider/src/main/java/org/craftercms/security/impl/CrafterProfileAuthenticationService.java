@@ -25,6 +25,8 @@ import org.craftercms.security.api.UserProfile;
 import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.AuthenticationSystemException;
 import org.craftercms.security.exception.UserAuthenticationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
@@ -37,6 +39,8 @@ public class CrafterProfileAuthenticationService implements AuthenticationServic
     protected ProfileClient profileClient;
     protected String appUsername;
     protected String appPassword;
+
+    public static final Logger logger = LoggerFactory.getLogger(CrafterProfileAuthenticationService.class);
 
     /**
      * Sets the profile client.
@@ -102,6 +106,8 @@ public class CrafterProfileAuthenticationService implements AuthenticationServic
      */
     protected String getAppToken() throws AuthenticationException {
         try {
+            logger.warn(" +++++++++ SECURITY getAppToken " + this.appUsername + " " + this.appPassword);
+
             return profileClient.getAppToken(appUsername, appPassword);
         } catch (AppAuthenticationFailedException e) {
             throw new AuthenticationSystemException("App authentication for '" + appUsername + "' failed", e);
@@ -112,17 +118,27 @@ public class CrafterProfileAuthenticationService implements AuthenticationServic
     /**
      * {@inheritDoc}
      */
-    public void forgotPassword(String changePasswordUrl, String username,
-                               String tenantName) throws AuthenticationException {
-        profileClient.forgotPassword(getAppToken(), changePasswordUrl, tenantName, username);
+    public UserProfile forgotPassword(String changePasswordUrl, String username,
+                                      String tenantName) throws AuthenticationException {
+        Profile profile = profileClient.forgotPassword(getAppToken(), changePasswordUrl, tenantName, username);
+        if (profile != null) {
+            return new UserProfile(profile);
+        } else {
+            return null;
+        }
     }
 
     @Override
     /**
      * {@inheritDoc}
      */
-    public void changePassword(String password, String token) throws AuthenticationException {
-        profileClient.changePassword(getAppToken(), token, password);
+    public UserProfile resetPassword(String password, String token) throws AuthenticationException {
+        Profile profile = profileClient.resetPassword(getAppToken(), token, password);
+        if (profile != null) {
+            return new UserProfile(profile);
+        } else {
+            return null;
+        }
 
     }
 
