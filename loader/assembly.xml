@@ -1,0 +1,45 @@
+<!--
+Assembly descriptor for the full distribution.
+-->
+<assembly>
+    <id>Crafter Profiles Loader</id>
+    <formats>
+        <format>zip</format>
+        <format>tar.gz</format>
+    </formats>
+    <fileSets>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <includes>
+		        <include>*.properties</include>
+	      	</includes>		    
+            <outputDirectory>conf</outputDirectory>
+        </fileSet>
+        
+        <fileSet>
+            <directory>target</directory>
+            <includes>
+		        <include>*.jar</include>
+	      	</includes>		    
+            <outputDirectory>.</outputDirectory>
+        </fileSet>
+
+        <fileSet>
+            <directory>target/lib</directory>
+            <includes>
+                <include>*</include>
+            </includes>
+            <outputDirectory>lib</outputDirectory>
+        </fileSet>
+
+        <fileSet>
+            <directory>.</directory>
+            <includes>
+                <include>run.sh</include>
+            </includes>
+            <outputDirectory>.</outputDirectory>
+        </fileSet>
+
+    </fileSets>
+    
+</assembly>
