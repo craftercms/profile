@@ -43,11 +43,4 @@
     <bean id="profileStartupService" class="org.craftercms.profile.services.impl.ProfileStartupServiceImpl">
     </bean>
 
-    <bean id="cipherPasswordChangeToken"
-          class="org.craftercms.profile.security.util.crypto.impl.CipherPasswordChangeToken">
-        <constructor-arg name="encryptionKeyFile" value="${crafter.profile.password.change.token.encryptionKey.file}"/>
-
-        <!-- property name="encryptionKeyFile" value="${crafter.profile.password.change.token.encryptionKey.file}"/-->
-    </bean>
-
 </beans>

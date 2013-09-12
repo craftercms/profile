@@ -18,7 +18,7 @@ import org.craftercms.profile.exceptions.ExpiryDateException;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.security.util.crypto.ProfileCipher;
-import org.craftercms.profile.security.util.crypto.impl.CipherPasswordChangeToken;
+import org.craftercms.profile.security.util.crypto.CipherPasswordChangeToken;
 import org.craftercms.profile.services.MailService;
 import org.craftercms.profile.services.PasswordService;
 import org.craftercms.profile.services.ProfileService;
