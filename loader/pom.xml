@@ -59,6 +59,14 @@
             <name>Codehaus maven2 repository</name>
             <url>http://repository.codehaus.org</url>
         </repository>
+
+        <!-- ************** THIS IS FOR THE CRAFTER PROFILE JAR DEPENDENCY ************** -->
+        <repository>
+            <id>my-local-repo</id>
+            <url>file://${basedir}/lib</url>
+        </repository>
+        <!-- ************** THIS IS FOR THE CRAFTER PROFILE JAR DEPENDENCY ************** -->
+
     </repositories>
 
     <dependencies>

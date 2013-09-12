@@ -15,24 +15,26 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.security.util.KeyFile;
+import org.craftercms.profile.security.util.crypto.CipherPasswordChangeToken;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
-public class CipherPasswordChangeToken {
+@Service
+public class CipherPasswordChangeTokenImpl implements CipherPasswordChangeToken {
 
     private static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";
     private static final char SEP = '|';
     private Key encryptionKey;
     private static final SecureRandom secureRandom = new SecureRandom();
     protected final Log logger = LogFactory.getLog(getClass());
+
     protected File encryptionKeyFile;
     public static final String CIPHER_ALGORITHM = "AES";
     public static final int ENCRYPTED_VALUE = 0;
     public static final int IV = 1;
 
-    public CipherPasswordChangeToken(String encryptionKeyFile) {
-        this.encryptionKeyFile = new File(encryptionKeyFile);
-    }
 
-
+    @Override
     public String encrypt(String rawValue) throws CipherException {
         try {
             byte[] iv = generateIv();
@@ -49,11 +51,13 @@ public class CipherPasswordChangeToken {
         }
     }
 
+    @Override
     public String decrypt(String encryptedValue) throws CipherException {
         String[] encryptedValueAndIv = StringUtils.split(encryptedValue, SEP);
 
         return decrypt(encryptedValueAndIv[ENCRYPTED_VALUE], Base64.decodeBase64(encryptedValueAndIv[IV]));
     }
+
 
     private String decrypt(String encryptedValue, byte[] iv) throws CipherException {
         try {
@@ -83,6 +87,7 @@ public class CipherPasswordChangeToken {
      * Sets the file to the token encryption key.
      */
     /*@Required*/
+    @Override
     public void setEncryptionKeyFile(File encryptionKeyFile) {
         this.encryptionKeyFile = encryptionKeyFile;
     }
@@ -144,5 +149,11 @@ public class CipherPasswordChangeToken {
     protected KeyFile getEncryptionKeyFile() {
         return new KeyFile(encryptionKeyFile);
     }
+
+    @Value("${crafter.profile.password.change.token.encryptionKey.file}")
+    public void setEncryptionKeyFile(String encryptionKeyFile) {
+        this.encryptionKeyFile = new File(encryptionKeyFile);
+    }
+
 
 }

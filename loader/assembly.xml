@@ -13,7 +13,7 @@ Assembly descriptor for the full distribution.
             <includes>
 		        <include>*.properties</include>
 	      	</includes>		    
-            <outputDirectory>conf</outputDirectory>
+            <outputDirectory>conf/extension</outputDirectory>
         </fileSet>
         
         <fileSet>
