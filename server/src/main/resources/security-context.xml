@@ -29,6 +29,7 @@
     <authentication-manager id="appAuthenticationManager">
         <authentication-provider>
             <user-service id="appUserDetailService" properties="classpath:crafter/profile/extension/apps.properties"/>
+            <password-encoder ref="passwordEncoder"/>
         </authentication-provider>
         <!-- <authentication-provider user-service-ref="appUserDetailService" /> -->
         <authentication-provider ref="appRememberMeAuthenticationProvider"/>
@@ -39,7 +40,10 @@
 
     <beans:bean id="ssoDaoAuthenticationProvider" class="org.craftercms.profile.security.SSODaoAuthenticationProvider">
         <beans:property name="userDetailsService" ref="userUserDetailsService"/>
+        <beans:property name="passwordEncoder" ref="passwordEncoder"></beans:property>
     </beans:bean>
+    
+    <beans:bean id="passwordEncoder" class="org.craftercms.profile.security.util.crypto.BCryptPasswordEncoder"/>
 
     <beans:bean id="appAuthenticationSuccessHandler"
                 class="org.craftercms.profile.security.RestAuthenticationSuccessHandler"/>

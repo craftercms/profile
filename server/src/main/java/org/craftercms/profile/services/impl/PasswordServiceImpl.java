@@ -17,7 +17,6 @@ import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.ExpiryDateException;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
-import org.craftercms.profile.security.util.crypto.ProfileCipher;
 import org.craftercms.profile.security.util.crypto.CipherPasswordChangeToken;
 import org.craftercms.profile.services.MailService;
 import org.craftercms.profile.services.PasswordService;
@@ -79,7 +78,6 @@ public class PasswordServiceImpl implements PasswordService {
             throw new MailException("Profile " + username + " doesn't have an email to complete the reset password " +
                 "process.");
         }
-        //ProfileCipher profileCipher = new SimpleDesCipher(profileCipherKey);
         String encryptedToken = cipherPasswordChangeToken.encrypt(getRawValue(tenantName, username));
 
         try {
@@ -108,15 +106,15 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
     private String getRawValue(String tenantName, String username) {
-        return tenantName + ProfileCipher.DELIMITER + username + ProfileCipher.DELIMITER + DateFormat
+        return tenantName + CipherPasswordChangeToken.SEP + username + CipherPasswordChangeToken.SEP + DateFormat
             .getDateTimeInstance().format(new Date());
     }
 
     private String[] splitTokens(String tokens) {
         String[] data = new String[3];
-        String[] result = StringUtils.split(tokens, ProfileCipher.DELIMITER);
+        String[] result = StringUtils.split(tokens, CipherPasswordChangeToken.SEP);
         data[0] = result[0];
-        result = StringUtils.split(result[1], ProfileCipher.DELIMITER);
+        result = StringUtils.split(result[1], CipherPasswordChangeToken.SEP);
         data[1] = result[0];
         if (result.length > 1) {
             data[2] = result[1];
@@ -136,11 +134,9 @@ public class PasswordServiceImpl implements PasswordService {
         } catch (UnsupportedEncodingException e) {
             throw new CipherException("Unsupported decode error");
         }
-        //token = decodeToken(token);
         if (log.isDebugEnabled()) {
             log.debug("Change password process started");
         }
-        //ProfileCipher profileCipher = new SimpleDesCipher(profileCipherKey);
         // tenant | username | date
         String tokens = cipherPasswordChangeToken.decrypt(token);
 

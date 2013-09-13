@@ -67,8 +67,6 @@ import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.profile.impl.domain.Role;
 import org.craftercms.profile.impl.domain.Schema;
 import org.craftercms.profile.impl.domain.Tenant;
-import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
 
 /**
  * This is the Profile REST Client API implementation.
@@ -1286,12 +1284,9 @@ public class ProfileRestClientImpl implements ProfileClient {
         HttpEntity entity = null;
 
         try {
-            PasswordEncoder encoder = new Md5PasswordEncoder();
-            String hashedPassword = encoder.encodePassword(appPassword, null);
-
             List<NameValuePair> qparams = new ArrayList<NameValuePair>();
             qparams.add(new BasicNameValuePair("username", appUsername));
-            qparams.add(new BasicNameValuePair(ProfileConstants.PASSWORD, hashedPassword));
+            qparams.add(new BasicNameValuePair(ProfileConstants.PASSWORD, appPassword));
 
             URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/auth/app_token.json",
                 URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
@@ -1345,13 +1340,10 @@ public class ProfileRestClientImpl implements ProfileClient {
         HttpEntity entity = null;
 
         try {
-            PasswordEncoder encoder = new Md5PasswordEncoder();
-            String hashedPassword = encoder.encodePassword(password, null);
-
             List<NameValuePair> qparams = new ArrayList<NameValuePair>();
             qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
             qparams.add(new BasicNameValuePair("username", username));
-            qparams.add(new BasicNameValuePair(ProfileConstants.PASSWORD, hashedPassword));
+            qparams.add(new BasicNameValuePair(ProfileConstants.PASSWORD, password));
             qparams.add(new BasicNameValuePair(ProfileConstants.TENANT_NAME, tenantName));
 
             URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/auth/ticket.json",
@@ -1403,13 +1395,10 @@ public class ProfileRestClientImpl implements ProfileClient {
         HttpEntity entity = null;
 
         try {
-            PasswordEncoder encoder = new Md5PasswordEncoder();
-            String hashedPassword = encoder.encodePassword(password, null);
-
             List<NameValuePair> qparams = new ArrayList<NameValuePair>();
             qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
             qparams.add(new BasicNameValuePair("username", username));
-            qparams.add(new BasicNameValuePair(ProfileConstants.PASSWORD, hashedPassword));
+            qparams.add(new BasicNameValuePair(ProfileConstants.PASSWORD, password));
             qparams.add(new BasicNameValuePair(ProfileConstants.TENANT_NAME, tenantName));
             qparams.add(new BasicNameValuePair(ProfileConstants.SSO, String.valueOf(sso)));
 

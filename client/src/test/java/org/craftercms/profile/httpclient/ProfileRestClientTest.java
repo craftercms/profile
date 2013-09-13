@@ -32,24 +32,25 @@ public class ProfileRestClientTest {
         try {
 
             String appToken = c.getAppToken("crafterengine", "crafterengine");
-            Map<String, Serializable> params = new HashMap<String, Serializable>();
-            ArrayList<String> roles = new ArrayList<String>();
-            roles.add("SOCIAL_ADMIN");
-            params.put("appToken", appToken);
-            params.put("tenantName", "craftercms");
-            params.put("userName", "adminactiveuser4");
-            params.put("password", "admin3");
-            params.put("email", "admindeleteuser@profile.com");
-            params.put("active", "true");
-
-            params.put("roles", roles);
-
-            Profile admindeleteuser = c.createProfile(appToken, params);
-
-            c.activeProfile(appToken, admindeleteuser.getId().toString(), false);
-
-            Profile inactive = c.getProfileByUsername(appToken, "adminactiveuser4", "craftercms");
-            System.out.println(inactive.getActive());
+            String ticket = c.getTicket(appToken, "admin", "admin", "craftercms");
+//            Map<String, Serializable> params = new HashMap<String, Serializable>();
+//            ArrayList<String> roles = new ArrayList<String>();
+//            roles.add("SOCIAL_ADMIN");
+//            params.put("appToken", appToken);
+//            params.put("tenantName", "craftercms");
+//            params.put("userName", "adminactiveuser4");
+//            params.put("password", "admin3");
+//            params.put("email", "admindeleteuser@profile.com");
+//            params.put("active", "true");
+//
+//            params.put("roles", roles);
+//
+//            Profile admindeleteuser = c.createProfile(appToken, params);
+//
+//            c.activeProfile(appToken, admindeleteuser.getId().toString(), false);
+//
+//            Profile inactive = c.getProfileByUsername(appToken, "adminactiveuser4", "craftercms");
+            System.out.println(ticket);
             //assertTrue(inactive.getActive()==false);
 
 
