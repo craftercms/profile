@@ -366,6 +366,11 @@
             <artifactId>bcprov-jdk16</artifactId>
             <version>${org.bouncycastle.crypto.version}</version>
         </dependency>
+        <dependency>
+        	<groupId>org.mindrot</groupId>
+        	<artifactId>jbcrypt</artifactId>
+        	<version>0.3m</version>
+      	</dependency>
 
 
     </dependencies>

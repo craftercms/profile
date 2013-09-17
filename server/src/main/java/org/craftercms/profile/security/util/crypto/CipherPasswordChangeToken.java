@@ -12,6 +12,8 @@ import java.io.File;
  * To change this template use File | Settings | File Templates.
  */
 public interface CipherPasswordChangeToken {
+	
+	static final String SEP = "|";
 
     String encrypt(String rawValue) throws CipherException;
 

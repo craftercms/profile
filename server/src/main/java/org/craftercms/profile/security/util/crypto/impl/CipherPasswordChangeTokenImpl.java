@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 public class CipherPasswordChangeTokenImpl implements CipherPasswordChangeToken {
 
     private static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";
-    private static final char SEP = '|';
+    
     private Key encryptionKey;
     private static final SecureRandom secureRandom = new SecureRandom();
     protected final Log logger = LogFactory.getLog(getClass());

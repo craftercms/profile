@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.bson.types.ObjectId;
@@ -34,6 +35,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @CompoundIndexes({
         @CompoundIndex(name = "tenantName_userName_idx", def = "{'tenantName': 1, 'userName': 1}", unique = true)
 })
+@JsonIgnoreProperties({ "password" })
 public class Profile implements Serializable {
     private static final long serialVersionUID = 3370284215738389717L;
 
@@ -124,8 +126,8 @@ public class Profile implements Serializable {
     }
 
     public String toString() {
-        return String.format("Profile [id='%s' userName='%s' password='%s' active='%b' email='%s'created='%tc' " +
-            "modified='%tc']", id, userName, password, active, email, created, modified);
+        return String.format("Profile [id='%s' userName='%s' active='%b' email='%s'created='%tc' " +
+            "modified='%tc']", id, userName, active, email, created, modified);
     }
 
     public String getTenantName() {
