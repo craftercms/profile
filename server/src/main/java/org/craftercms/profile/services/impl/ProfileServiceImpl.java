@@ -32,13 +32,12 @@ import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.craftercms.profile.services.EmailValidatorService;
 import org.craftercms.profile.services.ProfileService;
+import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -63,8 +62,7 @@ public class ProfileServiceImpl implements ProfileService {
         if (!emailValidatorService.validateEmail(email)) {
             throw new InvalidEmailException("Invalid email account format");
         }
-        PasswordEncoder encoder = new Md5PasswordEncoder();
-        String hashedPassword = encoder.encodePassword(password, null);
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         Profile profile = new Profile();
         profile.setUserName(userName);
         profile.setPassword(hashedPassword);
@@ -119,8 +117,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         if (password != null && !password.trim().isEmpty()) {
-            PasswordEncoder encoder = new Md5PasswordEncoder();
-            String hashedPassword = encoder.encodePassword(password, null);
+        	String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             profile.setPassword(hashedPassword);
         }
 
