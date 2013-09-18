@@ -354,7 +354,7 @@ public class ProfileRestController {
     @ModelAttribute
     public void activeProfiles(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
                                @RequestParam(ProfileConstants.ACTIVE) Boolean active, HttpServletResponse response) {
-        profileService.activeProfiles(active);
+        profileService.activateProfiles(active);
     }
 
     /**
@@ -370,7 +370,7 @@ public class ProfileRestController {
     public void activeProfile(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
                               @PathVariable String profileId, @RequestParam(ProfileConstants.ACTIVE) Boolean active,
                               HttpServletResponse response) {
-        profileService.activeProfile(profileId, active);
+        profileService.activateProfile(profileId, active);
     }
 
     /**

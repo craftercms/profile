@@ -75,7 +75,7 @@ public class ITAttributesAdminTest extends IntegrationTestingBase {
         assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - Attribute List"));
         WebElement newAttributeLink = driver.findElement(By.id("New"));
         newAttributeLink.click();
-        waitForElement(driver, 30, "newattribute");
+        waitForElement(driver, 500, "newattribute");
         assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - New Attribute"));
         WebElement name = driver.findElement(By.id("name"));
         name.sendKeys("updateattribute1");
@@ -102,7 +102,7 @@ public class ITAttributesAdminTest extends IntegrationTestingBase {
         loginAsAdmin(driver);
         WebElement tenantsLink = driver.findElement(By.id("GetTenants"));
         tenantsLink.click();
-        waitForElement(driver, 30, "tenantlist");
+        waitForElement(driver, 100, "tenantlist");
         assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console Tenant List"));
         WebElement linkUpdateTenant = driver.findElement(By.cssSelector("a[id='craftercms']"));
         linkUpdateTenant.click();
@@ -120,7 +120,7 @@ public class ITAttributesAdminTest extends IntegrationTestingBase {
         assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - Attribute List"));
         WebElement newAttributeLink = driver.findElement(By.id("New"));
         newAttributeLink.click();
-        waitForElement(driver, 30, "newattribute");
+        waitForElement(driver, 100, "newattribute");
         assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - New Attribute"));
         WebElement name = driver.findElement(By.id("name"));
         name.sendKeys("testDeleteAttributes");

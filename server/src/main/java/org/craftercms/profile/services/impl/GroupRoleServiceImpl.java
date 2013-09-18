@@ -17,6 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author Alvaro Gonzalez
+ *
+ */
 @Component
 public class GroupRoleServiceImpl implements GroupRoleService {
 
@@ -28,6 +32,9 @@ public class GroupRoleServiceImpl implements GroupRoleService {
     @Autowired
     private ProfileRepository profileRepository;
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.GroupRoleService#createGroupMapping(java.lang.String, java.lang.String, java.util.List, javax.servlet.http.HttpServletResponse)
+     */
     @Override
     public GroupRole createGroupMapping(String groupName, String tenant, List<String> roles,
                                         HttpServletResponse response) {
@@ -50,6 +57,9 @@ public class GroupRoleServiceImpl implements GroupRoleService {
 
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.GroupRoleService#updateGroupMapping(org.bson.types.ObjectId, java.lang.String, java.util.List)
+     */
     @Override
     public GroupRole updateGroupMapping(ObjectId groupId, String tenantName, List<String> roles) {
         GroupRole updateGroupMapping = groupRepository.findOne(groupId);
@@ -59,11 +69,17 @@ public class GroupRoleServiceImpl implements GroupRoleService {
         return updateGroupMapping;
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.GroupRoleService#deleteGroupMapping(java.lang.String)
+     */
     @Override
     public void deleteGroupMapping(String groupId) {
         groupRepository.delete(new ObjectId(groupId));
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.GroupRoleService#getGroupRoleMapping(java.lang.String, java.lang.String, java.lang.String[])
+     */
     @Override
     public List<String> getGroupRoleMapping(String profileId, String tenantName, String[] groups) {
 
@@ -73,6 +89,9 @@ public class GroupRoleServiceImpl implements GroupRoleService {
         return loadRolesFromGroups(profile.getRoles(), groupRoles);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.GroupRoleService#getGroupRoleMapping(java.lang.String, java.lang.String)
+     */
     @Override
     public List<String> getGroupRoleMapping(String profileId, String tenantName) {
 
@@ -103,11 +122,17 @@ public class GroupRoleServiceImpl implements GroupRoleService {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.GroupRoleService#getGroupRoleMapping(java.lang.String)
+     */
     @Override
     public List<GroupRole> getGroupRoleMapping(String tenantName) {
         return groupRepository.findByTenantName(tenantName);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.GroupRoleService#getGroupItem(java.lang.String)
+     */
     @Override
     public GroupRole getGroupItem(String groupId) {
         return groupRepository.findOne(new ObjectId(groupId));

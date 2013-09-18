@@ -44,6 +44,9 @@ public class ProfileUserDetailsServiceImpl implements ProfileUserDetailsService 
     }
 
 
+    /* (non-Javadoc)
+     * @see org.springframework.security.core.userdetails.UserDetailsService#loadUserByUsername(java.lang.String)
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String tenantName = null;
@@ -57,8 +60,8 @@ public class ProfileUserDetailsServiceImpl implements ProfileUserDetailsService 
 
         Profile profile = profileService.getProfileByUserName(newUsername, tenantName, null);
         
-     // Mapping  org.springframework.security.core.userdetails.User.enable TO 
-     //												org.craftercms.profile.domain.Profile.active
+        // Mapping  org.springframework.security.core.userdetails.User.enable TO 
+        //												org.craftercms.profile.domain.Profile.active
         return new User(profile.getUserName(), profile.getPassword(), profile.getActive(), true, true, true,
             defaultGrantedAuthorities);  
     }

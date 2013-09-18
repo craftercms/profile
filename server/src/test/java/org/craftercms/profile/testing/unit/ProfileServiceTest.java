@@ -201,7 +201,7 @@ public class ProfileServiceTest {
 
     @Test
     public void testActiveProfile() {
-        profileService.activeProfile(VALID_ID, true);
+        profileService.activateProfile(VALID_ID, true);
         Mockito.verify(profileRepository).save(Mockito.<Profile>any());
     }
 

@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 public class CipherPasswordChangeTokenImpl implements CipherPasswordChangeToken {
 
     private static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";
-    
+   
     private Key encryptionKey;
     private static final SecureRandom secureRandom = new SecureRandom();
     protected final Log logger = LogFactory.getLog(getClass());
@@ -36,6 +36,9 @@ public class CipherPasswordChangeTokenImpl implements CipherPasswordChangeToken 
 
     @Override
     public String encrypt(String rawValue) throws CipherException {
+    	if (logger.isDebugEnabled()) {
+    		logger.debug("Starting encrypting " + rawValue);
+        }
         try {
             byte[] iv = generateIv();
 
@@ -47,12 +50,16 @@ public class CipherPasswordChangeTokenImpl implements CipherPasswordChangeToken 
             // The IV can be sent in clear text, no security issue on that
             return Base64.encodeBase64String(encryptedValue) + SEP + Base64.encodeBase64String(iv);
         } catch (Exception e) {
+        	logger.warn("Error while trying to encrypt token value " + rawValue);
             throw new CipherException("Error while trying to encrypt token value " + rawValue, e);
         }
     }
 
     @Override
     public String decrypt(String encryptedValue) throws CipherException {
+    	if (logger.isDebugEnabled()) {
+    		logger.debug("Starting decrypting " + encryptedValue);
+        }
         String[] encryptedValueAndIv = StringUtils.split(encryptedValue, SEP);
 
         return decrypt(encryptedValueAndIv[ENCRYPTED_VALUE], Base64.decodeBase64(encryptedValueAndIv[IV]));
@@ -70,6 +77,7 @@ public class CipherPasswordChangeTokenImpl implements CipherPasswordChangeToken 
 
             return new String(decryptedValue, "UTF-8");
         } catch (Exception e) {
+        	logger.warn("Error while trying to decrypt token value " + encryptedValue);
             throw new CipherException("Error while trying to decrypt token value", e);
         }
     }
@@ -99,12 +107,16 @@ public class CipherPasswordChangeTokenImpl implements CipherPasswordChangeToken 
      */
     @PostConstruct
     public void init() throws CipherException {
+    	if (logger.isDebugEnabled()) {
+    		logger.debug(" Initializing cipher password change token");
+        }
         KeyFile keyFile = getEncryptionKeyFile();
 
         if (encryptionKeyFile.length() > 0) {
             try {
                 encryptionKey = keyFile.readKey();
             } catch (IOException e) {
+            	logger.warn("Error while trying to read encryption key from file " + encryptionKeyFile);
                 throw new CipherException("Error while trying to read encryption key from file " + encryptionKeyFile,
                     e);
             }
@@ -117,6 +129,7 @@ public class CipherPasswordChangeTokenImpl implements CipherPasswordChangeToken 
             try {
                 keyFile.writeKey(encryptionKey);
             } catch (IOException e) {
+            	logger.warn("Error while trying to write encryption key to file " + encryptionKeyFile);
                 throw new CipherException("Error while trying to write encryption key to file " + encryptionKeyFile, e);
             }
 

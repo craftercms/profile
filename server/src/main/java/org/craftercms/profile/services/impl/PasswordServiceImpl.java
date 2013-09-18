@@ -26,8 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-//import org.apache.log4j.Logger;
-
 /**
  * Implements the functionality for password management.
  *
@@ -37,9 +35,6 @@ import org.springframework.util.StringUtils;
 public class PasswordServiceImpl implements PasswordService {
 
     protected final Log log = LogFactory.getLog(getClass());
-
-    private String profileCipherKey;
-
     @Autowired
     private ProfileService profileService;
 
@@ -83,6 +78,7 @@ public class PasswordServiceImpl implements PasswordService {
         try {
             encryptedToken = URLEncoder.encode(encryptedToken, "UTF-8");
         } catch (UnsupportedEncodingException e) {
+        	log.warn("Unsupported Ending error");
             throw new CipherException("Unsupported Ending error");
         }
         if (log.isDebugEnabled()) {
@@ -105,23 +101,6 @@ public class PasswordServiceImpl implements PasswordService {
         return profile;
     }
 
-    private String getRawValue(String tenantName, String username) {
-        return tenantName + CipherPasswordChangeToken.SEP + username + CipherPasswordChangeToken.SEP + DateFormat
-            .getDateTimeInstance().format(new Date());
-    }
-
-    private String[] splitTokens(String tokens) {
-        String[] data = new String[3];
-        String[] result = StringUtils.split(tokens, CipherPasswordChangeToken.SEP);
-        data[0] = result[0];
-        result = StringUtils.split(result[1], CipherPasswordChangeToken.SEP);
-        data[1] = result[0];
-        if (result.length > 1) {
-            data[2] = result[1];
-        }
-        return data;
-    }
-
     /*
      * (non-Javadoc)
      * @see org.craftercms.profile.services.PasswordService#changePassword(java.lang.String, java.lang.String)
@@ -132,6 +111,7 @@ public class PasswordServiceImpl implements PasswordService {
         try {
             token = URLDecoder.decode(token, "UTF-8");
         } catch (UnsupportedEncodingException e) {
+        	log.warn("Unsupported decode error UTF-8");
             throw new CipherException("Unsupported decode error");
         }
         if (log.isDebugEnabled()) {
@@ -161,50 +141,90 @@ public class PasswordServiceImpl implements PasswordService {
         return profile;
     }
 
-    private String decodeToken(String token) throws CipherException {
-        try {
-            return URLDecoder.decode(token, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new CipherException("Token " + token + " has unsupported encoding");
-        }
-    }
-
-    @Value("#{ssrSettings['crafter.profile.cipher.key']}")
-    public void setProfileCipherKey(String key) {
-        this.profileCipherKey = key;
-    }
-
+    /**
+     * Sets the reset email template that will be used to email the url.
+     * 
+     * @param resetEmailTemplate
+     */
     @Value("#{ssrSettings['crafter.profile.password.reset.mail.ftl']}")
     public void setResetEmailTemplateFtl(String resetEmailTemplate) {
         this.resetEmailTemplate = resetEmailTemplate;
     }
 
+    /**
+     * Sets the email subject to be sent whenever an email for resenting the password is sent.
+     * 
+     * @param resetEmailSubject Subject of the reset email
+     */
     @Value("#{ssrSettings['crafter.profile.password.reset.mail.subject']}")
     public void setResetEmailSubject(String resetEmailSubject) {
         this.resetEmailSubject = resetEmailSubject;
     }
 
+    /**
+     * Sets the mail account will be used to email the url to reset the password
+     * 
+     * @param mailFrom Email account used to email the url to reset the password.
+     */
     @Value("#{ssrSettings['crafter.profile.mail.from.address']}")
     public void setMailFrom(String mailFrom) {
         this.fromAddress = mailFrom;
     }
 
-    @Value("#{ssrSettings['crafter.profile.password.change.token.expiry']}") //TODO: change to minutes
+    /**
+     * Sets the expiration time (minutes) for the token. Default value is 60 minutes
+     * 
+     * @param value New expiry token in minutes
+     */
+    @Value("#{ssrSettings['crafter.profile.password.change.token.expiry']}") 
     public void setPasswordChangeTokenExpiry(String value) {
         if (value != null && value.equals("")) {
             this.expiryMinutes = Integer.parseInt(value);
         }
     }
 
+    /**
+     * Checks is the token has not expired.
+     * 
+     * @param dateStr creation date of this token. It shouldn't be older than the expiry time(minutes)
+     * 
+     * @return <code>true</code> if the dateStr is not older than the expiry value in minutes, <code>false</code> otherwise
+     * 
+     * @throws ParseException If an error occurs when the date is parsed.
+     */
     private boolean isValidTokenDate(String dateStr) throws ParseException {
         Date tokenDate = DateFormat.getDateTimeInstance().parse(dateStr);
         Calendar expiryDate = Calendar.getInstance();
         Calendar currentDate = Calendar.getInstance();
 
         expiryDate.setTime(tokenDate);
-        expiryDate.add(Calendar.MINUTE, this.expiryMinutes); //TODO: change to minutes
+        expiryDate.add(Calendar.MINUTE, this.expiryMinutes); 
 
         return currentDate.before(expiryDate);
+    }
+    
+    private String getRawValue(String tenantName, String username) {
+        return tenantName + CipherPasswordChangeToken.SEP + username + CipherPasswordChangeToken.SEP + DateFormat
+            .getDateTimeInstance().format(new Date());
+    }
+
+    /**
+     * Split token using | character to split them
+     * 
+     * @param tokens Token value
+     * 
+     * @return the array containing each value of the token
+     */
+    private String[] splitTokens(String tokens) {
+        String[] data = new String[3];
+        String[] result = StringUtils.split(tokens, CipherPasswordChangeToken.SEP);
+        data[0] = result[0];
+        result = StringUtils.split(result[1], CipherPasswordChangeToken.SEP);
+        data[1] = result[0];
+        if (result.length > 1) {
+            data[2] = result[1];
+        }
+        return data;
     }
 
 }

@@ -52,6 +52,9 @@ public class MultiTenantServiceImpl implements MultiTenantService {
     @Autowired
     private RoleService roleService;
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.MultiTenantService#createTenant(java.lang.String, boolean, java.util.List, java.util.List, javax.servlet.http.HttpServletResponse)
+     */
     @Override
     public Tenant createTenant(String tenantName, boolean createDefaults, List<String> roles, List<String> domains,
                                HttpServletResponse response) {
@@ -80,6 +83,9 @@ public class MultiTenantServiceImpl implements MultiTenantService {
         return current;
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.MultiTenantService#updateTenant(java.lang.String, java.lang.String, java.util.List, java.util.List)
+     */
     @Override
     public Tenant updateTenant(String id, String tenantName, List<String> roles, List<String> domains) {
         Tenant tenant = tenantRepository.findTenantById(new ObjectId(id));
@@ -112,10 +118,11 @@ public class MultiTenantServiceImpl implements MultiTenantService {
         return tenant;
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.MultiTenantService#deleteTenant(java.lang.String)
+     */
     @Override
     public void deleteTenant(String tenantName) {
-
-        //roleService.deleteAllRoles(tenantName); SYSTEM ROLES SHOULD NOT BE DELETED
 
         profileService.deleteProfiles(tenantName);
         Tenant t = tenantRepository.getTenantByName(tenantName);
@@ -125,16 +132,25 @@ public class MultiTenantServiceImpl implements MultiTenantService {
 
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.MultiTenantService#getTenantById(java.lang.String)
+     */
     @Override
     public Tenant getTenantById(String tenantId) {
         return tenantRepository.findTenantById(new ObjectId(tenantId));
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.MultiTenantService#getTenantByName(java.lang.String)
+     */
     @Override
     public Tenant getTenantByName(String tenantName) {
         return tenantRepository.getTenantByName(tenantName);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.MultiTenantService#getTenantByTicket(java.lang.String)
+     */
     @Override
     public Tenant getTenantByTicket(String ticket) {
         Profile profile = this.profileService.getProfileByTicket(ticket);
@@ -142,6 +158,9 @@ public class MultiTenantServiceImpl implements MultiTenantService {
 
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.MultiTenantService#exists(java.lang.String)
+     */
     @Override
     public boolean exists(String tenantName) {
         Tenant t = getTenantByName(tenantName);
@@ -152,21 +171,33 @@ public class MultiTenantServiceImpl implements MultiTenantService {
 
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.MultiTenantService#getTenantRange(java.lang.String, java.lang.String, int, int)
+     */
     @Override
     public List<Tenant> getTenantRange(String sortBy, String sortOrder, int start, int end) {
         return tenantRepository.getTenantRange(sortBy, sortOrder, start, end);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.MultiTenantService#getTenantsCount()
+     */
     @Override
     public long getTenantsCount() {
         return tenantRepository.count();
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.MultiTenantService#getAllTenants()
+     */
     @Override
     public List<Tenant> getAllTenants() {
         return tenantRepository.findAll();
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.MultiTenantService#getTenantsByRoleName(java.lang.String)
+     */
     @Override
     public List<Tenant> getTenantsByRoleName(String roleName) {
         return tenantRepository.getTenants(new String[] {roleName});

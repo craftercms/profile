@@ -34,11 +34,17 @@ public class PersistentTicketServiceImpl implements PersistentTokenRepository, P
     @Autowired
     private TicketRepository ticketRepository;
 
+    /* (non-Javadoc)
+     * @see org.springframework.security.web.authentication.rememberme.PersistentTokenRepository#createNewToken(org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken)
+     */
     @Override
     public void createNewToken(PersistentRememberMeToken token) {
         ticketRepository.save(new Ticket((PersistentTenantRememberMeToken)token));
     }
 
+    /* (non-Javadoc)
+     * @see org.springframework.security.web.authentication.rememberme.PersistentTokenRepository#updateToken(java.lang.String, java.lang.String, java.util.Date)
+     */
     @Override
     public void updateToken(String series, String tokenValue, Date lastUsed) {
         Ticket ticket = ticketRepository.findBySeries(series);
@@ -47,12 +53,18 @@ public class PersistentTicketServiceImpl implements PersistentTokenRepository, P
         ticketRepository.save(ticket);
     }
 
+    /* (non-Javadoc)
+     * @see org.springframework.security.web.authentication.rememberme.PersistentTokenRepository#getTokenForSeries(java.lang.String)
+     */
     @Override
     public PersistentRememberMeToken getTokenForSeries(String seriesId) {
         Ticket ticket = ticketRepository.findBySeries(seriesId);
         return (ticket != null)? ticket.toPersistentRememberMeToken(): null;
     }
 
+    /* (non-Javadoc)
+     * @see org.springframework.security.web.authentication.rememberme.PersistentTokenRepository#removeUserTokens(java.lang.String)
+     */
     @Override
     public void removeUserTokens(String username) {
         ticketRepository.removeUserTickets(username);

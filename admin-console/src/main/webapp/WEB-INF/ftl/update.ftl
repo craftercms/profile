@@ -17,8 +17,6 @@
         <ul class="page-actions">
             <li><a type="submit" href="javascript:onsubmitform('Logout');" value="Logout" id="Logout" name="operation">Logout</a>
             </li>
-            <li><a style="float:right" name="currentuser"
-                   href="item?username=${currentuser.userName}">User: ${currentuser.userName!""}</a></li>
         </ul>
         <h1 class="mainTitle">Manage Profiles > Update Profile</h1>
     </div>

@@ -17,8 +17,6 @@
         <ul class="page-actions">
             <li><a type="submit" href="javascript:onsubmitform('Logout');" value="Logout" id="Logout" name="operation">Logout</a>
             </li>
-            <li><a style="float:right" name="currentuser"
-                   href="item?username=${currentuser.userName}">User: ${currentuser.userName!""}</a></li>
         </ul>
         <h1 class="mainTitle">Manage Profiles > New Profile</h1>
     </div>
@@ -46,26 +44,30 @@
 
             <p>
                 <label id="usernameLabel" for="username">*User Name:</label>
+            <@spring.bind "account.username"/>    
             <@crafter.formInput "account.username", "username", "style=width:270 class='test'", "text"/>
                 <span class="hintField">Username for the new  Profile</span>
             <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
 
             <p>
+            	<@spring.bind "account.email"/>
                 <label id="emailLabel" for="email">*Email:</label>
-            <@crafter.formInput "account.email", "email", "style=width:270 class='test'", "text"/>
+            <@crafter.formInput "account.email", "emailAccount", "style=width:270 class='test'", "text"/>
                 <span class="hintField">Valid Profile email account</span>
             <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
 
             <p>
+            	<@spring.bind "account.password"/>
                 <label id="passwordLabel" for="password">*Password:</label>
-            <@crafter.formInput "account.password", "password", "style=width:270 class='test'", "password"/>
+            <@crafter.formInput "account.password", "passwordAccount", "style=width:270 class='test'", "password"/>
                 <span class="hintField">Profile password</span>
             <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
 
             <p>
+            	<@spring.bind "account.confirmPassword"/>
                 <label id="passwordConfirmLabel" for="passwordConfirm">*Confirm Password:</label>
             <@crafter.formInput "account.confirmPassword", "confirmPassword", "style=width:270 class='test'", "password"/>
                 <span class="hintField">Confirm password</span>
@@ -73,6 +75,7 @@
             </p>
 
             <p>
+            	<@spring.bind "account.active"/>
                 <label id="acountActive" for="active">Active?:</label>
             <@crafter.formCheckbox "account.active", "active"/>
                 <span class="hintField">Is this account active?</span>

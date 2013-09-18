@@ -176,8 +176,6 @@ public class AccountController {
         mav.addObject("account", account);
         mav.addObject("attributeList", t.getSchema().getAttributes());
         mav.addObject("tenantNames", tenantNames);
-        RequestContext context = RequestContext.getCurrent();
-        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
 
@@ -199,7 +197,6 @@ public class AccountController {
                 model.addAttribute("account", account);
                 model.addAttribute("attributeList", tenant.getSchema().getAttributes());
                 model.addAttribute("tenantNames", tenantNames);
-                model.addAttribute("currentuser", RequestContext.getCurrent().getAuthenticationToken().getProfile());
                 return "new";
             }
 
@@ -245,8 +242,6 @@ public class AccountController {
             model.addAttribute("account", account);
             model.addAttribute("tenantName", tenant.getTenantName());
             model.addAttribute("attributeList", tenant.getSchema().getAttributes());
-            RequestContext context = RequestContext.getCurrent();
-            model.addAttribute("currentuser", context.getAuthenticationToken().getProfile());
             return "update";
         }
     }
@@ -262,8 +257,6 @@ public class AccountController {
         mav.addObject("account", a);
         mav.addObject("tenantName", tenant.getTenantName());
         mav.addObject("attributeList", tenant.getSchema().getAttributes());
-        RequestContext context = RequestContext.getCurrent();
-        mav.addObject("currentuser", context.getAuthenticationToken().getProfile());
         return mav;
     }
 

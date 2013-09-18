@@ -21,6 +21,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -45,8 +47,9 @@ public class Profile implements Serializable {
 
     @Field(ProfileConstants.USER_NAME)
     private String userName;
-
-    @Field(ProfileConstants.PASSWORD)
+    
+    //@Field(ProfileConstants.PASSWORD)
+    @XmlTransient
     private String password;
 
     @Field(ProfileConstants.ACTIVE)
@@ -86,6 +89,7 @@ public class Profile implements Serializable {
         this.userName = userName;
     }
 
+    @XmlTransient
     public String getPassword() {
         return password;
     }

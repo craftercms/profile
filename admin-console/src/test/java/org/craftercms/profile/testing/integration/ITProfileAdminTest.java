@@ -111,9 +111,9 @@ public class ITProfileAdminTest extends IntegrationTestingBase {
         assertEquals("Title error, Wrong page", true, driver.getTitle().contains("Crafter Admin Console - New " +
             "Profile"));
         WebElement newUsername = driver.findElement(By.id("username"));
-        WebElement email = driver.findElement(By.id("email"));
+        WebElement email = driver.findElement(By.id("emailAccount"));
 
-        WebElement newPass = driver.findElement(By.id("password"));
+        WebElement newPass = driver.findElement(By.id("passwordAccount"));
         WebElement newConffirmPass = driver.findElement(By.id("confirmPassword"));
         WebElement role = driver.findElement(By.id("roles"));
         List<WebElement> options = role.findElements(By.tagName("option"));
