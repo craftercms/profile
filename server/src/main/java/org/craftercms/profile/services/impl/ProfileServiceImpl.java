@@ -19,6 +19,7 @@ package org.craftercms.profile.services.impl;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -53,9 +54,16 @@ public class ProfileServiceImpl implements ProfileService {
     @Autowired
     private EmailValidatorService emailValidatorService;
     
-    private List<String> protectedDisableUsers;
+    private List<String> enabledUsers;
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#createProfile(java.lang.String, java.lang.String, java.lang.Boolean, java.lang.String, java.lang.String, java.util.Map, java.util.List, javax.servlet.http.HttpServletResponse)
+     */
     @Override
+    /*
+     * (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#createProfile(java.lang.String, java.lang.String, java.lang.Boolean, java.lang.String, java.lang.String, java.util.Map, java.util.List, javax.servlet.http.HttpServletResponse)
+     */
     public Profile createProfile(String userName, String password, Boolean active, String tenantName, String email,
                                  Map<String, Serializable> attributes, List<String> roles,
                                  HttpServletResponse response) throws InvalidEmailException {
@@ -66,7 +74,7 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = new Profile();
         profile.setUserName(userName);
         profile.setPassword(hashedPassword);
-        if (!isProtectedToKeepActive(userName)) {
+        if (!isEnabledUser(userName)) {
         	profile.setActive(active);
         } else {
         	profile.setActive(true);
@@ -91,18 +99,30 @@ public class ProfileServiceImpl implements ProfileService {
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getProfileRange(java.lang.String, java.lang.String, java.lang.String, java.util.List, int, int)
+     */
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getProfileRange(java.lang.String, java.lang.String, java.lang.String, java.util.List, int, int)
+     */
     @Override
     public List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder,
                                          List<String> attributesList, int start, int end) {
         return profileRepository.getProfileRange(tenantName, sortBy, sortOrder, attributesList, start, end);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getProfilesCount(java.lang.String)
+     */
     @Override
     public long getProfilesCount(String tenantName) {
         return profileRepository.getProfilesCount(tenantName);
     }
 
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#updateProfile(java.lang.String, java.lang.String, java.lang.String, java.lang.Boolean, java.lang.String, java.lang.String, java.util.Map, java.util.List)
+     */
     @Override
     public Profile updateProfile(String profileId, String userName, String password, Boolean active,
                                  String tenantName, String email, Map<String, Serializable> attributes,
@@ -121,7 +141,7 @@ public class ProfileServiceImpl implements ProfileService {
             profile.setPassword(hashedPassword);
         }
 
-        if (active != null && !isProtectedToKeepActive(userName)) {
+        if (active != null && !isEnabledUser(userName)) {
             profile.setActive(active);
         }
 
@@ -149,6 +169,9 @@ public class ProfileServiceImpl implements ProfileService {
         return profile;
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getProfileByTicket(java.lang.String)
+     */
     @Override
     public Profile getProfileByTicket(String ticketStr) {
         Ticket ticket = ticketRepository.getByTicket(ticketStr);
@@ -158,6 +181,9 @@ public class ProfileServiceImpl implements ProfileService {
         return getProfileByUserName(ticket.getUsername(), ticket.getTenantName(), null);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getProfileByTicket(java.lang.String, java.util.List)
+     */
     @Override
     public Profile getProfileByTicket(String ticketStr, List<String> attributes) {
         Ticket ticket = ticketRepository.getByTicket(ticketStr);
@@ -167,6 +193,9 @@ public class ProfileServiceImpl implements ProfileService {
         return getProfileByUserName(ticket.getUsername(), ticket.getTenantName(), attributes);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getProfileByTicketWithAllAttributes(java.lang.String)
+     */
     @Override
     public Profile getProfileByTicketWithAllAttributes(String ticketString) {
         Ticket ticket = ticketRepository.getByTicket(ticketString);
@@ -176,73 +205,111 @@ public class ProfileServiceImpl implements ProfileService {
         return getProfileByUserNameWithAllAttributes(ticket.getUsername(), ticket.getTenantName());
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getProfile(java.lang.String)
+     */
     @Override
     public Profile getProfile(String profileId) {
         return profileRepository.getProfile(profileId);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getProfile(java.lang.String, java.util.List)
+     */
     @Override
     public Profile getProfile(String profileId, List<String> attributes) {
         return profileRepository.getProfile(profileId, attributes);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getProfileWithAllAttributes(java.lang.String)
+     */
     @Override
     public Profile getProfileWithAllAttributes(String profileId) {
         return profileRepository.findOne(new ObjectId(profileId));
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getProfileByUserName(java.lang.String, java.lang.String)
+     */
     @Override
     public Profile getProfileByUserName(String userName, String tenantName) {
         return profileRepository.getProfileByUserName(userName, tenantName);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getProfileByUserName(java.lang.String, java.lang.String, java.util.List)
+     */
     @Override
     public Profile getProfileByUserName(String userName, String tenantName, List<String> attributes) {
         return profileRepository.getProfileByUserName(userName, tenantName, attributes);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getProfileByUserNameWithAllAttributes(java.lang.String, java.lang.String)
+     */
     @Override
     public Profile getProfileByUserNameWithAllAttributes(String userName, String tenantName) {
         return profileRepository.getProfileByUserNameWithAllAttributes(userName, tenantName);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getProfiles(java.util.List)
+     */
     @Override
     public List<Profile> getProfiles(List<String> profileIdList) {
         return profileRepository.getProfiles(profileIdList);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getProfilesWithAttributes(java.util.List)
+     */
     @Override
     public List<Profile> getProfilesWithAttributes(List<String> profileIdList) {
         return profileRepository.getProfilesWithAttributes(profileIdList);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#activateProfile(java.lang.String, boolean)
+     */
     @Override
-    public void activeProfile(String profileId, boolean active) {
+    public void activateProfile(String profileId, boolean active) {
         Profile p = profileRepository.findOne(new ObjectId(profileId));
         if (p != null) {
-            activeProfile(p, active);
+            activateProfile(p, active);
         }
 
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#activateProfiles(boolean)
+     */
     @Override
-    public void activeProfiles(boolean active) {
+    public void activateProfiles(boolean active) {
         List<Profile> l = profileRepository.findAll();
         for (Profile p : l) {
-            activeProfile(p, active);
+            activateProfile(p, active);
         }
     }
 
-    private void activeProfile(Profile p, boolean active) {
-        p.setActive(active);
-        profileRepository.save(p);
+    private void activateProfile(Profile p, boolean active) {
+    	if (!isEnabledUser(p.getUserName())) {
+	        p.setActive(active);
+	        profileRepository.save(p);
+    	}
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#deleteProfiles(java.lang.String)
+     */
     @Override
     public void deleteProfiles(String tenantName) {
         profileRepository.delete(getProfilesByTenant(tenantName));
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getProfilesByRoleName(java.lang.String, java.lang.String)
+     */
     public List<Profile> getProfilesByRoleName(String roleName, String tenantName) {
         return profileRepository.findByRolesAndTenantName(roleName, tenantName);
     }
@@ -251,65 +318,79 @@ public class ProfileServiceImpl implements ProfileService {
         return profileRepository.getProfilesByTenantName(tenantName);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#setAttributes(java.lang.String, java.util.Map)
+     */
     @Override
     public void setAttributes(String profileId, Map<String, Serializable> attributes) {
         profileRepository.setAttributes(profileId, attributes);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getAllAttributes(java.lang.String)
+     */
     @Override
     public Map<String, Serializable> getAllAttributes(String profileId) {
         return profileRepository.getAllAttributes(profileId);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getAttributes(java.lang.String, java.util.List)
+     */
     @Override
     public Map<String, Serializable> getAttributes(String profileId, List<String> attributes) {
         return profileRepository.getAttributes(profileId, attributes);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#getAttribute(java.lang.String, java.lang.String)
+     */
     @Override
     public Map<String, Serializable> getAttribute(String profileId, String attributeKey) {
         return profileRepository.getAttribute(profileId, attributeKey);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#deleteAllAttributes(java.lang.String)
+     */
     @Override
     public void deleteAllAttributes(String profileId) {
         profileRepository.deleteAllAttributes(profileId);
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.ProfileService#deleteAttributes(java.lang.String, java.util.List)
+     */
     @Override
     public void deleteAttributes(String profileId, List<String> attributes) {
         profileRepository.deleteAttributes(profileId, attributes);
     }
     
-    @Value("#{ssrSettings['protected-disabled-users']}")
+    /**
+     * @param users
+     */
+    @Value("#{ssrSettings['enabled-users']}")
     public void setProtectedDisableUsers(String users) {
-        this.protectedDisableUsers = convertLineToList(users);
+        this.enabledUsers = convertLineToList(users);
 
     }
     
     private List<String> convertLineToList(String list) {
-        List<String> values = new ArrayList<String>();
         if (list == null || list.length() == 0) {
-            return values;
+            return new ArrayList<String>();
         }
         String[] arrayRoles = list.split(",");
-        for (String role : arrayRoles) {
-            values.add(role.trim());
-        }
-        return values;
+        return Arrays.asList(arrayRoles);
+
     }
     
-    private boolean isProtectedToKeepActive(String username) {
-    	boolean protectedUsername = false;
-    	if (this.protectedDisableUsers == null || this.protectedDisableUsers.size() == 0) {
-    		return protectedUsername;
+    private boolean isEnabledUser(String username) {
+    	boolean isEnabled = false;
+    	if (enabledUsers!=null) {
+    		isEnabled = enabledUsers.contains(username);
     	}
-    	for(String u: protectedDisableUsers) {
-    		if (u.equals(username)) {
-    			protectedUsername = true;
-    		}
-    	}
-    	return protectedUsername;
+    	return isEnabled;
+
     }
 
 }

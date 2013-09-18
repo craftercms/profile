@@ -8,6 +8,11 @@ import org.craftercms.profile.exceptions.ExpiryDateException;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
 
+/**
+ * Manage all the services related to profile password
+ * @author Alvaro Gonzalez
+ *
+ */
 public interface PasswordService {
     /**
      * Updates the password with the new value sent by argument.

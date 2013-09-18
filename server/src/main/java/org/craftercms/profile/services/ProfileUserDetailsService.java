@@ -18,6 +18,13 @@ package org.craftercms.profile.services;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+/**
+ * Manage to load the profile based on an username and tenant name and returns 
+ * org.springframework.security.core.userdetails.User instance using the information
+ * store in the profile collection including the active propertie 
+ * @author Alvaro Gonzalez
+ *
+ */
 public interface ProfileUserDetailsService extends UserDetailsService {
 
 }

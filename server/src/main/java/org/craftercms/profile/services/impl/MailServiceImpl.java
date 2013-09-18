@@ -24,8 +24,6 @@ import org.craftercms.profile.services.MailService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-//import org.apache.log4j.Logger;
-
 @Service
 public class MailServiceImpl implements MailService {
 

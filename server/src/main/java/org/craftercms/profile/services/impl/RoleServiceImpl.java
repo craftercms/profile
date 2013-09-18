@@ -42,6 +42,9 @@ public class RoleServiceImpl implements RoleService {
     @Autowired
     private RoleRepository roleRepository;
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.RoleService#createRole(java.lang.String, javax.servlet.http.HttpServletResponse)
+     */
     @Override
     public Role createRole(String roleName, HttpServletResponse response) {
         Role role = new Role();
@@ -60,6 +63,9 @@ public class RoleServiceImpl implements RoleService {
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.RoleService#deleteRole(java.lang.String, javax.servlet.http.HttpServletResponse)
+     */
     @Override
     public void deleteRole(String roleName, HttpServletResponse response) {
         List<Tenant> list = tenantRepository.getTenants(new String[] {roleName});
@@ -79,6 +85,9 @@ public class RoleServiceImpl implements RoleService {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.RoleService#deleteAllRoles()
+     */
     @Override
     public void deleteAllRoles() {
         List<Role> roles = getAllRoles();
@@ -87,12 +96,18 @@ public class RoleServiceImpl implements RoleService {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.RoleService#getAllRoles()
+     */
     @Override
     public List<Role> getAllRoles() {
 
         return roleRepository.findAll();
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.RoleService#getRole(java.lang.String)
+     */
     @Override
     public Role getRole(String roleName) {
         return roleRepository.findByRoleName(roleName);

@@ -30,12 +30,18 @@ public class SchemaServiceImpl implements SchemaService {
     @Autowired
     private TenantRepository tenantRepository;
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.SchemaService#setAttribute(java.lang.String, org.craftercms.profile.domain.Attribute)
+     */
     @Override
     public void setAttribute(String tenantName, Attribute attribute) {
         tenantRepository.setAttribute(tenantName, attribute);
 
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.SchemaService#geSchemaByTenantName(java.lang.String)
+     */
     @Override
     public Schema geSchemaByTenantName(String tenantName) {
         Tenant tenant = tenantRepository.getTenantByName(tenantName);
@@ -46,6 +52,9 @@ public class SchemaServiceImpl implements SchemaService {
         return schema;
     }
 
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.SchemaService#deleteAttribute(java.lang.String, java.lang.String)
+     */
     @Override
     public void deleteAttribute(String tenantName, String attributeName) {
         tenantRepository.deleteAttribute(tenantName, attributeName);

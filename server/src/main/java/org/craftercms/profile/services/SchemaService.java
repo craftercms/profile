@@ -19,10 +19,38 @@ package org.craftercms.profile.services;
 import org.craftercms.profile.domain.Attribute;
 import org.craftercms.profile.domain.Schema;
 
+/**
+ * Encapsulates services for the schema
+ * 
+ * @author Alvaro Gonzalez
+ *
+ */
 public interface SchemaService {
+	/**
+	 * Sets a new attributes for a tenant
+	 * 
+	 * @param tenantName is going to be updated
+	 * 
+	 * @param attribute new attribute data
+	 * 
+	 */
     void setAttribute(String tenantName, Attribute attribute);
 
+    /**
+     * Deletes an attribute
+     * 
+     * @param tenantName used to delete the attribute
+     * 
+     * @param attributeName attribute is going to be deleted
+     */
     void deleteAttribute(String tenantName, String attributeName);
 
+    /**
+     * Gets a schema based on a tenant name
+     * 
+     * @param tenantName used to get the schema
+     * 
+     * @return a schema instance 
+     */
     Schema geSchemaByTenantName(String tenantName);
 }
