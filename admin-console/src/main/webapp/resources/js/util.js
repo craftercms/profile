@@ -1,5 +1,5 @@
 function removeDomain(param) {
-    if ($('.domainParent').size() >= 2) {
+    if ($('.domainParent').size() > 1) {
         document.getElementById(param).remove();
     }
 
