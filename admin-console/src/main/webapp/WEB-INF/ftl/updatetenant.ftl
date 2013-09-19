@@ -70,7 +70,7 @@
 
             <div id="domainList">
             <#if tenant.domains?size == 0>
-                <div id='${spring.status.expression}Parent'>
+                <div id='${spring.status.expression}Parent' class="domainParent">
                     <input type="text" class="field" name="${spring.status.expression}" id="${spring.status.expression}"
                            value="" "style=width:270" />
                     <button name="${spring.status.expression}Button" id="${spring.status.expression}Button"
