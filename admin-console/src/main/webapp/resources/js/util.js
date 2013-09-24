@@ -240,10 +240,14 @@ $(document)
                 index++;
             });
         $('#reset').click(function () {
-            while (i > 1) {
-                $('.domainParent:last').remove();
-                i--;
-            }
+        	list = $(".domainParent");
+        	if (list != null && list.size() > 0) {
+        		i = list.size();
+	            while (i > 1) {
+	                $('.domainParent:last').remove();
+	                i--;
+	            }
+        	}
         });
 
     });

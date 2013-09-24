@@ -22,16 +22,6 @@
         <h1 class="mainTitle">Manage Tenants</h1>
     </div>
     <form id="form-item" onsubmit="return onsubmitform();">
-        <!--div class="top">
-          <div class="pad">
-        <nav>
-            <ul class="main-nav clearfix">
-                <li><a type="submit" href="javascript:onsubmitform('Groups');" onclick="javascript:onsubmitform('Groups');" value="Manage Groups" id="Groups" name="operation">Manage Groups-Roles Mapping</a></li>
-            </ul>
-           </ul>
-        </nav>
-    </div>
-    </div-->
         <div class="box pad style-inputs">
             <p>
                 <label id="tenantName" for="tenantName">Tenant Name:</label>
@@ -69,15 +59,15 @@
                                                                                         style="text-decoration: none;cursor: pointer;">Reset</a>
 
             <div id="domainList">
-            <#if tenant.domains?size == 0>
-                <div id='${spring.status.expression}Parent' class="domainParent">
+                <#if tenant.domains?size == 0>
+                    <div id='${spring.status.expression}Parent' class="domainParent">
                     <input type="text" class="field" name="${spring.status.expression}" id="${spring.status.expression}"
                            value="" "style=width:270" />
                     <button name="${spring.status.expression}Button" id="${spring.status.expression}Button"
-                            onclick="removeDomain('${spring.status.expression}')">X
+                            onclick="removeDomain('${spring.status.expression}Parent')">X
                     </button>
-                </div>
-            <#else>
+                    </div>
+                <#else>    
                 <#list tenant.domains as domain>
                     <div id='${domain}Parent' class="domainParent">
                         <input type="text" class="field" id="${domain}" name="${spring.status.expression}"
@@ -86,15 +76,8 @@
                             X
                         </button>
                     </div>
-                    <div id='${domain}Parent' class="domainParent">
-                        <input type="text" class="field" id="${domain}" name="${spring.status.expression}"
-                               value="${domain}" "style=width:270" />
-                        <button name="${domain}Button" id="${domain}Button" onclick="removeDomain('${domain}Parent')">
-                            X
-                        </button>
-                    </div>
                 </#list>
-            </#if>
+                </#if>
             </div>
             <span id="tenantDomainHint" class="hintField">Domain names allow to access this Tenant</span>
         <@crafter.showErrors "error-msg", "mbs", ""/>
