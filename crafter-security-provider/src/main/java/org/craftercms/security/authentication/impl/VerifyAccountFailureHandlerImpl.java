@@ -1,19 +1,19 @@
 package org.craftercms.security.authentication.impl;
 
 import java.io.IOException;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
-import org.craftercms.security.authentication.ForgotPasswordFailureHandler;
+import org.craftercms.security.authentication.VerifyAccountFailureHandler;
 import org.craftercms.security.exception.CrafterSecurityException;
-import org.craftercms.security.exception.PasswordException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ForgotPasswordFailureHandlerImpl implements ForgotPasswordFailureHandler {
+public class VerifyAccountFailureHandlerImpl implements VerifyAccountFailureHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginFailureHandlerImpl.class);
 
@@ -27,32 +27,30 @@ public class ForgotPasswordFailureHandlerImpl implements ForgotPasswordFailureHa
     }
 
     @Override
-    public void onForgotPasswordFailure(Exception e, RequestContext context) throws CrafterSecurityException,
-        IOException {
-
+    public void onVerifyAccountFailure(Exception e, RequestContext context,
+                                       String token) throws CrafterSecurityException, IOException {
         saveException(e, context);
-
+        updateTargetUrl(token);
         if (StringUtils.isNotEmpty(targetUrl)) {
             redirectToTargetUrl(context);
         } else {
             sendError(e, context);
         }
-
     }
 
     /**
      * Saves the exception in the session,
-     * under the {@link SecurityConstants#FORGOT_PASSWORD_EXCEPTION}
+     * under the {@link SecurityConstants#VERIFY_ACCOUNT_EXCEPTION}
      * 
      */
     protected void saveException(Exception e, RequestContext context) {
         if (logger.isDebugEnabled()) {
-            logger.debug("Saving forgot password exception in session for use after redirect");
+            logger.debug("Saving authentication exception in session for use after redirect");
         }
 
         HttpSession session = context.getRequest().getSession();
         if (e instanceof Exception) {
-            session.setAttribute(SecurityConstants.FORGOT_PASSWORD_EXCEPTION, new PasswordException(e.getMessage()));
+            session.setAttribute(SecurityConstants.VERIFY_ACCOUNT_EXCEPTION, new SecurityException(e.getMessage()));
         }
     }
 
@@ -69,12 +67,25 @@ public class ForgotPasswordFailureHandlerImpl implements ForgotPasswordFailureHa
         context.getResponse().sendRedirect(redirectUrl);
     }
 
+    /**
+     * Sends a error.
+     */
     protected void sendError(Exception e, RequestContext context) throws IOException {
         if (logger.isDebugEnabled()) {
-            logger.debug("Forgot password error");
+            logger.debug("Sending error " + e.getMessage());
         }
 
-        context.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+        context.getResponse().sendError(HttpServletResponse.SC_CONFLICT, e.getMessage());
     }
+
+    private void updateTargetUrl(String token) {
+        if (token != null && !token.equals("") && targetUrl.contains("?")) {
+            targetUrl = targetUrl + "&token=" + token;
+        } else if (token != null && !token.equals("") && !targetUrl.contains("?")) {
+            targetUrl = targetUrl + "?token=" + token;
+        }
+
+    }
+
 
 }

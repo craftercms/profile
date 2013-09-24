@@ -19,10 +19,15 @@ package org.craftercms.profile.services;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.InvalidEmailException;
+import org.craftercms.profile.exceptions.MailException;
+import org.craftercms.profile.exceptions.NoSuchProfileException;
 
 /**
  * Encapsulates the services to manage the profiles data.
@@ -48,15 +53,22 @@ public interface ProfileService {
      * 
      * @param roles list of roles of the profile account
      * 
+     * @param verificationAccountUrl verification account url
+     * 
      * @param response current HttpServletResponse instance
+     * 
+     * @param request current HttpServletRequest instance
      * 
      * @return new Profile instance has just been created
      * 
      * @throws InvalidEmailException If the email account is not following a valid format
+     * @throws NoSuchProfileException 
+     * @throws MailException 
+     * @throws CipherException 
      */
     Profile createProfile(String userName, String password, Boolean active, String tenantName, String email,
-                          Map<String, Serializable> attributes, List<String> roles,
-                          HttpServletResponse response) throws InvalidEmailException;
+                          Map<String, Serializable> attributes, List<String> roles, String verificationAccountUrl,
+                          HttpServletResponse response, HttpServletRequest request) throws InvalidEmailException, CipherException, MailException, NoSuchProfileException;
 
 
     /**
@@ -82,6 +94,13 @@ public interface ProfileService {
      */
     Profile updateProfile(String profileId, String userName, String password, Boolean active, String tenantName,
                           String email, Map<String, Serializable> attributes, List<String> roles);
+    
+    /**
+     * Updates a profile account with the profile instance passes as parameter
+     * 
+     * @return a profile instance updated
+     */
+    Profile updateProfile(Profile profile);
 
     /**
      * Gets a profile account based on the ticket passed as a parameter

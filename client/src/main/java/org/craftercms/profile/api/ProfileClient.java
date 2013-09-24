@@ -618,4 +618,15 @@ public interface ProfileClient {
      */
     public Profile resetPassword(String appToken, String token, String newPassword);
 
+    /**
+     * Verifies a profile account using the encrypted token
+     * 
+     * @param appToken Application token
+     * 
+     * @param token Encrypted token sent by email
+     * 
+     * @return The profile instance verified
+     */
+	Profile verifyProfile(String appToken, String token);
+
 }

@@ -44,6 +44,8 @@ public class Profile implements Serializable {
     private String tenantName;
 
     private String email;
+    
+    private Boolean verify;
 
     private Map<String, Object> attributes;
 
@@ -53,13 +55,13 @@ public class Profile implements Serializable {
     }
 
     public Profile(String id, String userName, String password, Boolean active, Date created, Date modified,
-                   Map<String, Object> attributes, String email) {
+                   Map<String, Object> attributes, String email, Boolean verify) {
 
-        this(id, userName, password, active, created, modified, attributes, null, "", email);
+        this(id, userName, password, active, created, modified, attributes, null, "", email, verify);
     }
 
     public Profile(String id, String userName, String password, Boolean active, Date created, Date modified,
-                   Map<String, Object> attributes, List<String> roles, String tenantName, String email) {
+                   Map<String, Object> attributes, List<String> roles, String tenantName, String email, Boolean verify) {
         super();
 
         this.id = id;
@@ -72,6 +74,7 @@ public class Profile implements Serializable {
         this.roles = roles;
         this.tenantName = tenantName;
         this.email = email;
+        this.verify = verify;
     }
 
     public String getId() {
@@ -104,6 +107,14 @@ public class Profile implements Serializable {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+    
+    public Boolean getVerify() {
+        return verify;
+    }
+
+    public void setVerify(Boolean verify) {
+        this.verify = verify;
     }
 
     public Date getCreated() {

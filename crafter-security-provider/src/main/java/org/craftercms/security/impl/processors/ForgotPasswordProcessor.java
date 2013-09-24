@@ -158,18 +158,22 @@ public class ForgotPasswordProcessor implements RequestSecurityProcessor {
     private String createUrlResetPassword(RequestContext context,
 			String uriResetPassword) {
     	String url = uriResetPassword;
-    	int index = context.getRequest().getRequestURL().indexOf(context.getRequest().getRequestURI());
-    	if (index >= 0) {
-    		String baseUri = context.getRequest().getRequestURL().substring(0, index);
-    		if (baseUri.endsWith("/") && uriResetPassword.startsWith("/")) {
-    			url = baseUri + uriResetPassword.substring(1);
-    		} else if (baseUri.endsWith("/")) {
-    			url = baseUri + uriResetPassword;
-    		} else if (uriResetPassword.startsWith("/")) {
-	    		url = baseUri + uriResetPassword;
-	    	} else {
-	    		url = baseUri + "/" + uriResetPassword;
+    	try {
+	    	int index = context.getRequest().getRequestURL().indexOf(context.getRequest().getRequestURI());
+	    	if (index >= 0) {
+	    		String baseUri = context.getRequest().getRequestURL().substring(0, index);
+	    		if (baseUri.endsWith("/") && uriResetPassword.startsWith("/")) {
+	    			url = baseUri + uriResetPassword.substring(1);
+	    		} else if (baseUri.endsWith("/")) {
+	    			url = baseUri + uriResetPassword;
+	    		} else if (uriResetPassword.startsWith("/")) {
+		    		url = baseUri + uriResetPassword;
+		    	} else {
+		    		url = baseUri + "/" + uriResetPassword;
+		    	}
 	    	}
+    	} catch(Exception e) {
+    		this.logger.error("Error generating the reset password url: " + e.getMessage());
     	}
     	return url;
 	}

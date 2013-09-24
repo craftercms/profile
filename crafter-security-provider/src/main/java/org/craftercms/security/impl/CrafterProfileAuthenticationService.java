@@ -16,6 +16,9 @@
  */
 package org.craftercms.security.impl;
 
+import java.io.Serializable;
+import java.util.Map;
+
 import org.craftercms.profile.api.ProfileClient;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.UserAuthenticationFailedException;
@@ -106,8 +109,6 @@ public class CrafterProfileAuthenticationService implements AuthenticationServic
      */
     protected String getAppToken() throws AuthenticationException {
         try {
-            logger.warn(" +++++++++ SECURITY getAppToken " + this.appUsername + " " + this.appPassword);
-
             return profileClient.getAppToken(appUsername, appPassword);
         } catch (AppAuthenticationFailedException e) {
             throw new AuthenticationSystemException("App authentication for '" + appUsername + "' failed", e);
@@ -134,6 +135,34 @@ public class CrafterProfileAuthenticationService implements AuthenticationServic
      */
     public UserProfile resetPassword(String password, String token) throws AuthenticationException {
         Profile profile = profileClient.resetPassword(getAppToken(), token, password);
+        if (profile != null) {
+            return new UserProfile(profile);
+        } else {
+            return null;
+        }
+
+    }
+    
+    @Override
+    /**
+     * {@inheritDoc}
+     */
+    public UserProfile createProfile(Map<String, Serializable>  queryParams) throws AuthenticationException {
+        Profile profile = profileClient.createProfile(getAppToken(), queryParams);
+        if (profile != null) {
+            return new UserProfile(profile);
+        } else {
+            return null;
+        }
+
+    }
+    
+    @Override
+    /**
+     * {@inheritDoc}
+     */
+    public UserProfile verifyAccount(String token) throws AuthenticationException {
+        Profile profile = profileClient.verifyProfile(getAppToken(), token);
         if (profile != null) {
             return new UserProfile(profile);
         } else {

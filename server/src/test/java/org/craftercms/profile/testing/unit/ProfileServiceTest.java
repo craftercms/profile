@@ -10,10 +10,14 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.domain.Ticket;
+import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.InvalidEmailException;
+import org.craftercms.profile.exceptions.MailException;
+import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.craftercms.profile.services.EmailValidatorService;
+import org.craftercms.profile.services.VerifyAccountService;
 import org.craftercms.profile.services.impl.ProfileServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +39,8 @@ public class ProfileServiceTest {
 
     @Mock
     private TicketRepository ticketRepository;
+    @Mock
+    private VerifyAccountService verifyAccountService;
     @Mock
     ProfileRepository profileRepository;
     @Mock
@@ -179,10 +185,16 @@ public class ProfileServiceTest {
         Profile p = null;
         try {
             p = profileService.createProfile(current.getUserName(), "test", true, "test", "test@test.com",
-                current.getAttributes(), current.getRoles(), null);
+                current.getAttributes(), current.getRoles(), null, null, null);
         } catch (InvalidEmailException e) {
             fail(e.getMessage());
-        }
+        } catch (CipherException e) {
+        	fail(e.getMessage());
+		} catch (MailException e) {
+			fail(e.getMessage());
+		} catch (NoSuchProfileException e) {
+			fail(e.getMessage());
+		}
         assertNotNull(p);
 
     }

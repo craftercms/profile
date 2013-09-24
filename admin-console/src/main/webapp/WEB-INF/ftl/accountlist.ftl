@@ -37,6 +37,8 @@
                             Profile</a></li>
                         <li><a type="submit" href="javascript:onsubmitform('GetTenants');" value="Get Tenants"
                                id="GetTenants" name="operation">Manage Tenants</a></li>
+						<!--li><a type="submit" href="register-account" value="register-account"
+                               id="register-account" name="register-account" method="get">Registration</a></li-->                               
                     </ul>
                     <ul class="page-actions">
                         <li>

@@ -17,6 +17,7 @@
 package org.craftercms.profile.controllers.rest;
 
 import java.io.Serializable;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,9 +28,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.exceptions.CipherException;
+import org.craftercms.profile.exceptions.ExpiryDateException;
 import org.craftercms.profile.exceptions.InvalidEmailException;
+import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.services.ProfileService;
+import org.craftercms.profile.services.VerifyAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -44,6 +49,9 @@ public class ProfileRestController {
 
     @Autowired
     private ProfileService profileService;
+    
+    @Autowired
+    private VerifyAccountService verifyAccountService;
 
     /**
      * Create profile
@@ -59,6 +67,9 @@ public class ProfileRestController {
      * @param suffix
      * @return
      * @throws InvalidEmailException
+     * @throws NoSuchProfileException 
+     * @throws MailException 
+     * @throws CipherException 
      */
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ModelAttribute
@@ -67,10 +78,11 @@ public class ProfileRestController {
     String password, @RequestParam(ProfileConstants.ACTIVE) Boolean active,
                                  @RequestParam(ProfileConstants.TENANT_NAME) String tenantName,
                                  @RequestParam(ProfileConstants.EMAIL) String email,
-                                 @RequestParam(value = ProfileConstants.ROLES) String[] rolesArray,
-                                 HttpServletResponse response) throws InvalidEmailException {
+                                 @RequestParam(required=false, value = ProfileConstants.ROLES) String[] rolesArray,
+                                 @RequestParam(required=false) String verificationAccountUrl,
+                                 HttpServletResponse response) throws InvalidEmailException, CipherException, MailException, NoSuchProfileException {
         return profileService.createProfile(userName, password, active, tenantName, email, getAttributeMap(request),
-            (rolesArray != null? Arrays.asList(rolesArray): null), response);
+            (rolesArray != null? Arrays.asList(rolesArray): null), verificationAccountUrl, response, request);
     }
 
     /**
@@ -371,6 +383,26 @@ public class ProfileRestController {
                               @PathVariable String profileId, @RequestParam(ProfileConstants.ACTIVE) Boolean active,
                               HttpServletResponse response) {
         profileService.activateProfile(profileId, active);
+    }
+    
+    /**
+     * Active Profile for appToken and profile Id
+     *
+     * @param appToken  The application token
+     * @param profileId that is going to be deleted
+     * @param active    indicates if the profile will be actived or inactived.
+     * @param response  Servlet response instance
+     * @throws ExpiryDateException 
+     * @throws ParseException 
+     * @throws NoSuchProfileException 
+     * @throws CipherException 
+     */
+    @RequestMapping(value = "verify", method = RequestMethod.POST)
+    @ModelAttribute
+    public Profile verifyProfile(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+                              @RequestParam(ProfileConstants.TOKEN) String token,
+                              HttpServletResponse response) throws CipherException, NoSuchProfileException, ParseException, ExpiryDateException {
+        return this.verifyAccountService.verifyAccount(token);
     }
 
     /**

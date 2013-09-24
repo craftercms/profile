@@ -61,8 +61,12 @@ public class CipherPasswordChangeTokenImpl implements CipherPasswordChangeToken 
     		logger.debug("Starting decrypting " + encryptedValue);
         }
         String[] encryptedValueAndIv = StringUtils.split(encryptedValue, SEP);
-
-        return decrypt(encryptedValueAndIv[ENCRYPTED_VALUE], Base64.decodeBase64(encryptedValueAndIv[IV]));
+        
+        if (encryptedValueAndIv.length > 1) {
+        	return decrypt(encryptedValueAndIv[ENCRYPTED_VALUE], Base64.decodeBase64(encryptedValueAndIv[IV]));
+        } else {
+        	throw new CipherException("Token doesn't have the structure expected");
+        }
     }
 
 

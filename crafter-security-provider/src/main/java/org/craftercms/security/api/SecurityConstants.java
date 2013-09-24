@@ -34,5 +34,10 @@ public abstract class SecurityConstants {
     public static final String RESET_PASSWORD_EXCEPTION = "profileResetException";
     public static final String PROFILE_FORGOT_PASSWORD = "profileForgotPassword";
     public static final String PROFILE_RESET_PASSWORD = "profileResetPassword";
+    public static final String PROFILE_CREATE_PROFILE = "createProfile";
+    public static final String VERIFY_ACCOUNT_RESULT = "verifyAccountResult";
+    public static final String PROFILE_CREATE_EXCEPTION = "createProfileException";
+    public static final String VERIFY_ACCOUNT_EXCEPTION = "verifyAccountException";
+    
 
 }

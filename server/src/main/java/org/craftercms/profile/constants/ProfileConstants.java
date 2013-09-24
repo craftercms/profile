@@ -26,6 +26,8 @@ public final class ProfileConstants {
     public static final String USER_NAME = "userName";
     public static final String PASSWORD = "password";
     public static final String EMAIL = "email";
+    public static final String VERIFY = "verify";
+    public static final String VERIFY_ACCOUNT_URL = "verificationAccountUrl";
     public static final String ACTIVE = "active";
     public static final String CREATED = "created";
     public static final String MODIFIED = "modified";
@@ -34,6 +36,7 @@ public final class ProfileConstants {
 
     // Request Parameter Constants
     public static final String APP_TOKEN = "appToken";
+    public static final String TOKEN = "token";
     public static final String SORT_BY = "sortBy";
     public static final String ATTRIBUTES = "attributes";
     public static final String ATTRIBUTES_DOT = ATTRIBUTES + ".";
@@ -64,7 +67,7 @@ public final class ProfileConstants {
     public static final String[] DOMAIN_PROFILE_FIELDS = {ProfileConstants.USER_NAME, ProfileConstants.PASSWORD,
         ProfileConstants.ACTIVE};
     public static final String[] BASE_PROFILE_FIELDS = {ProfileConstants.USER_NAME, ProfileConstants.PASSWORD,
-        ProfileConstants.ACTIVE, ProfileConstants.TENANT_NAME, ProfileConstants.ROLES, ProfileConstants.EMAIL,
+        ProfileConstants.ACTIVE, ProfileConstants.TENANT_NAME, ProfileConstants.ROLES, ProfileConstants.EMAIL, ProfileConstants.VERIFY_ACCOUNT_URL,
         ProfileConstants.APP_TOKEN, ProfileConstants.PROFILE_ID, ProfileConstants.PROFILE_ID_LIST};
 
     public static final String[] TENANT_ORDER_BY_FIELDS = {ProfileConstants.FIELD_ID, ProfileConstants.TENANT_NAME};
