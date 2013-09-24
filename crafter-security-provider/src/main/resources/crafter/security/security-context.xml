@@ -61,6 +61,8 @@
                 <ref bean="crafter.logoutProcessor"/>
                 <ref bean="crafter.forgotPasswordProcessor"/>
                 <ref bean="crafter.resetPasswordProcessor"/>
+                <ref bean="crafter.createProfileProcessor"/>
+                <ref bean="crafter.verifyAccountProcessor"/>
                 <ref bean="crafter.saveRequestAwareProcessor"/>
                 <ref bean="crafter.securityExceptionProcessor"/>
                 <ref bean="crafter.urlAccessRestrictionCheckingProcessor"/>
@@ -125,6 +127,18 @@
         <property name="authenticationService" ref="crafter.authenticationService"/>
         <property name="forgotPasswordSuccessHandler" ref="crafter.forgotSuccessHandler"/>
         <property name="forgotPasswordFailureHandler" ref="crafter.forgotFailureHandler"/>
+    </bean>
+    
+    <bean id="crafter.createProfileProcessor" class="org.craftercms.security.impl.processors.CreateProfileProcessor">
+        <property name="authenticationService" ref="crafter.authenticationService"/>
+        <property name="createProfileSuccessHandler" ref="crafter.createProfileSuccessHandler"/>
+        <property name="createProfileFailureHandler" ref="crafter.createProfileFailureHandler"/>
+    </bean>
+    
+    <bean id="crafter.verifyAccountProcessor" class="org.craftercms.security.impl.processors.VerifyAccountProcessor">
+        <property name="authenticationService" ref="crafter.authenticationService"/>
+        <property name="verifyAccountSuccessHandler" ref="crafter.verifyAccountSuccessHandler"/>
+        <property name="verifyAccountFailureHandler" ref="crafter.verifyAccountFailureHandler"/>
     </bean>
 
     <!-- ////////////////////////////////// -->
@@ -197,6 +211,26 @@
     <bean id="crafter.authenticationRequiredHandler"
           class="org.craftercms.security.authentication.impl.AuthenticationRequiredHandlerImpl">
         <property name="loginFormUrl" value="${crafter.security.login.form.url}"/>
+    </bean>
+    
+    <bean id="crafter.createProfileSuccessHandler"
+          class="org.craftercms.security.authentication.impl.CreateProfileSuccessHandlerImpl">
+        <property name="defaultTargetUrl" value="${crafter.security.createprofile.success.url}"/>
+    </bean>
+
+    <bean id="crafter.createProfileFailureHandler"
+          class="org.craftercms.security.authentication.impl.CreateProfileFailureHandlerImpl">
+        <property name="targetUrl" value="${crafter.security.createprofile.failure.url}"/>
+    </bean>
+    
+    <bean id="crafter.verifyAccountSuccessHandler"
+          class="org.craftercms.security.authentication.impl.VerifyAccountSuccessHandlerImpl">
+        <property name="defaultTargetUrl" value="${crafter.security.verifyaccount.success.url}"/>
+    </bean>
+
+    <bean id="crafter.verifyAccountFailureHandler"
+          class="org.craftercms.security.authentication.impl.VerifyAccountFailureHandlerImpl">
+        <property name="targetUrl" value="${crafter.security.verifyaccount.failure.url}"/>
     </bean>
 
     <!-- ////////////////////////////////// -->

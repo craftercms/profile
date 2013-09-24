@@ -23,16 +23,21 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
 import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.domain.Ticket;
+import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.InvalidEmailException;
+import org.craftercms.profile.exceptions.MailException;
+import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.craftercms.profile.services.EmailValidatorService;
 import org.craftercms.profile.services.ProfileService;
+import org.craftercms.profile.services.VerifyAccountService;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,19 +59,19 @@ public class ProfileServiceImpl implements ProfileService {
     @Autowired
     private EmailValidatorService emailValidatorService;
     
+    @Autowired
+    private VerifyAccountService verifyAccountService;
+    
     private List<String> enabledUsers;
 
-    /* (non-Javadoc)
-     * @see org.craftercms.profile.services.ProfileService#createProfile(java.lang.String, java.lang.String, java.lang.Boolean, java.lang.String, java.lang.String, java.util.Map, java.util.List, javax.servlet.http.HttpServletResponse)
-     */
     @Override
     /*
      * (non-Javadoc)
      * @see org.craftercms.profile.services.ProfileService#createProfile(java.lang.String, java.lang.String, java.lang.Boolean, java.lang.String, java.lang.String, java.util.Map, java.util.List, javax.servlet.http.HttpServletResponse)
      */
     public Profile createProfile(String userName, String password, Boolean active, String tenantName, String email,
-                                 Map<String, Serializable> attributes, List<String> roles,
-                                 HttpServletResponse response) throws InvalidEmailException {
+                                 Map<String, Serializable> attributes, List<String> roles, String verifyAccountUrl,
+                                 HttpServletResponse response, HttpServletRequest request) throws InvalidEmailException, CipherException, MailException, NoSuchProfileException {
         if (!emailValidatorService.validateEmail(email)) {
             throw new InvalidEmailException("Invalid email account format");
         }
@@ -75,9 +80,12 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setUserName(userName);
         profile.setPassword(hashedPassword);
         if (!isEnabledUser(userName)) {
-        	profile.setActive(active);
+        	//profile.setActive(active);
+        	profile.setActive(false); //until the account is verify then the account is actived and user will be able to authenticate
+        	profile.setVerify(false);
         } else {
         	profile.setActive(true);
+        	profile.setVerify(true);
         }
         profile.setTenantName(tenantName);
         profile.setCreated(new Date());
@@ -85,8 +93,13 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setAttributes(attributes);
         profile.setEmail(email);
         profile.setRoles(roles);
+        Profile savedProfile = null;
         try {
-            return profileRepository.save(profile);
+        	savedProfile =  profileRepository.save(profile);
+            if (!isEnabledUser(userName)) {
+            	verifyAccountService.sendVerifyNotification(profile, verifyAccountUrl, request);
+            }
+            
         } catch (DuplicateKeyException e) {
             try {
                 if (response != null) {
@@ -95,8 +108,10 @@ public class ProfileServiceImpl implements ProfileService {
             } catch (IOException e1) {
                 log.error("Can't set error status after a DuplicateKey exception was received.");
             }
+        } catch (Exception e) {
+        	log.error("Error in ProfileService.createProfile: " + e.getMessage());
         }
-        return null;
+        return savedProfile;
     }
 
     /* (non-Javadoc)
@@ -167,6 +182,11 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setModified(new Date());
         profile = profileRepository.save(profile);
         return profile;
+    }
+    
+    public Profile updateProfile(Profile profile) {
+    	Profile p = profileRepository.save(profile);
+        return p;
     }
 
     /* (non-Javadoc)

@@ -86,6 +86,13 @@
                             X
                         </button>
                     </div>
+                    <div id='${domain}Parent' class="domainParent">
+                        <input type="text" class="field" id="${domain}" name="${spring.status.expression}"
+                               value="${domain}" "style=width:270" />
+                        <button name="${domain}Button" id="${domain}Button" onclick="removeDomain('${domain}Parent')">
+                            X
+                        </button>
+                    </div>
                 </#list>
             </#if>
             </div>

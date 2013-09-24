@@ -46,7 +46,6 @@
         <module>spring-security-preauth</module>
         <module>spring-security-provider-filter</module>
         <module>admin-console</module>
-        <module>loader</module>
     </modules>
     <profiles>
         <profile>

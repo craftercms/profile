@@ -61,6 +61,7 @@ import org.craftercms.profile.exceptions.ResourceNotFoundException;
 import org.craftercms.profile.exceptions.RestException;
 import org.craftercms.profile.exceptions.UnauthorizedException;
 import org.craftercms.profile.exceptions.UserAuthenticationFailedException;
+import org.craftercms.profile.exceptions.VerifyAccountException;
 import org.craftercms.profile.impl.domain.Attribute;
 import org.craftercms.profile.impl.domain.GroupRole;
 import org.craftercms.profile.impl.domain.Profile;
@@ -873,8 +874,55 @@ public class ProfileRestClientImpl implements ProfileClient {
             }
         }
     }
-
+    
     @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.craftercms.profile.httpclient.ProfileRestClient#deleteProfile(java
+	 * .lang.String, java.lang.String)
+	 */
+    public Profile verifyProfile(String appToken, String token) {
+        if (log.isDebugEnabled()) {
+            log.debug("Verify a profile using the  token " + token);
+        }
+        Profile profile = new Profile();
+        List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+        qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
+        qparams.add(new BasicNameValuePair(ProfileConstants.TOKEN, token));
+        HttpEntity entity = null;
+
+        try {
+            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/profile/verify.json", URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+            HttpPost httppost = new HttpPost(uri);
+
+            HttpResponse response = clientService.getHttpClient().execute(httppost);
+
+            entity = response.getEntity();
+
+            if (response.getStatusLine().getStatusCode() == 200) {
+                profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
+                
+            } else {
+            	handleVerifyError(entity, response);
+            }
+        } catch (VerifyAccountException e) {
+            log.error(e.getMessage(), e);
+            throw e;
+        } catch (Exception e) {
+        	log.error(e.getMessage(), e);
+        } finally {
+            try {
+                EntityUtils.consume(entity);
+            } catch (IOException e) {
+                log.error("Could not consume entity", e);
+            }
+        }
+        return profile;
+    }
+
+   	@Override
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -2389,7 +2437,7 @@ public class ProfileRestClientImpl implements ProfileClient {
                 throw new RestException(errorMsg);
         }
     }
-
+    
     /**
      * ************** ROLES SERVICES *****************************
      */
@@ -2957,6 +3005,28 @@ public class ProfileRestClientImpl implements ProfileClient {
     }
 
     /*** END CHANGING PASSWORD services ***/
+    
+    private String getVerifyErrorMessage(StatusLine statusLine, HttpEntity entity) {
+        @SuppressWarnings("rawtypes") Map map = null;
+        String message = "";
+
+        try {
+            map = objectMapper.readValue(entity.getContent(), Map.class);
+            message = (map != null)? (String)map.get("message"): "";
+        } catch (Exception e) {
+            // ignore the error
+        }
+        return message;
+    }
+    
+    private void handleVerifyError(HttpEntity entity, HttpResponse response) {
+    	String message = getVerifyErrorMessage(response.getStatusLine(), entity);
+    	if (message == null || message.equals("")) {
+    		message = "Error when the account was trying to be verified";
+    	}
+    	throw new VerifyAccountException(message);
+		
+	}
 
 
 }

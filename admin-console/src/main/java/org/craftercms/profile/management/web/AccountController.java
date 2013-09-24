@@ -21,6 +21,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.ConflictRequestException;
 import org.craftercms.profile.exceptions.RestException;
@@ -28,6 +32,7 @@ import org.craftercms.profile.impl.domain.Attribute;
 import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.management.model.FilterForm;
 import org.craftercms.profile.management.model.ProfileUserAccountForm;
+import org.craftercms.profile.management.model.VerifyAccount;
 import org.craftercms.profile.management.services.EmailValidatorService;
 import org.craftercms.profile.management.services.ProfileAccountService;
 import org.craftercms.profile.management.services.TenantDAOService;
@@ -41,7 +46,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
@@ -178,14 +188,14 @@ public class AccountController {
         mav.addObject("tenantNames", tenantNames);
         return mav;
     }
-
+    
     @RequestMapping(value = "/new", method = RequestMethod.POST)
     public String newAccount(@ModelAttribute("account") ProfileUserAccountForm account, BindingResult bindingResult,
-                             Model model) throws Exception {
+                             Model model, HttpServletRequest request) throws Exception {
         validateNewAccount(account, bindingResult, account.getTenantName());
         if (!bindingResult.hasErrors()) {
             try {
-                profileAccountService.createUserAccount(account);
+                profileAccountService.createUserAccount(account, request);
                 model.addAttribute("selectedTenantName", account.getTenantName());
                 return "redirect:/get";
             } catch (ConflictRequestException e) {
@@ -258,6 +268,60 @@ public class AccountController {
         mav.addObject("tenantName", tenant.getTenantName());
         mav.addObject("attributeList", tenant.getSchema().getAttributes());
         return mav;
+    }
+    
+    /**
+     * Initial verify account request.
+     *
+     * @param token . Security token sent by email
+     * @return <code>ModelAndView</code> instance with the verify-account form
+     */
+    @RequestMapping(value = "/verify-account", method = RequestMethod.GET)
+    public ModelAndView getVerifyAccount(@RequestParam(required = false) String token) {
+        ModelAndView mav = new ModelAndView();
+
+        VerifyAccount verifyAccount = new VerifyAccount();
+        verifyAccount.setToken(token);
+        mav.setViewName("verify-account");
+        mav.addObject("verifyAccount", verifyAccount);
+
+        return mav;
+    }
+    
+    /**
+     * Post to manage the change password process.Validates that both new
+     * password and confirm password are the same and are not blanket
+     *
+     * @param <code>PasswordChange</code> instance that contains the new
+     *                                    password and the confirm password values
+     * @param bindingResult               Binding result for <code>PasswordChange</code> instance
+     * @param model                       <code>Model</code> instance
+     * @return redirect to login page
+     * @throws AppAuthenticationFailedException
+     *          If an appToken exception occurred
+     */
+    @RequestMapping(value = "/verify-account", method = RequestMethod.POST)
+    public ModelAndView verifyAccount(@RequestParam String token,
+                                         Model model, HttpServletRequest request, HttpServletResponse response) throws AppAuthenticationFailedException {
+        ModelAndView mav = new ModelAndView();
+        
+        if (token !=null && !token.equals("")) {
+        	profileAccountService.verifyAccount(token);
+            mav.setViewName("verify-account");
+            request.setAttribute("success", true);
+            return mav;
+        } else {
+        	VerifyAccount verifyAccount = new VerifyAccount();
+        	
+        	request.getSession().setAttribute("tokenError", "Token is required");
+        	request.setAttribute("error", "true");
+            verifyAccount.setToken(token);
+            mav.setViewName("verify-account");
+            mav.addObject("verifyAccount", verifyAccount);
+
+            return mav;
+        }
+
     }
 
     @ExceptionHandler(org.craftercms.security.exception.AuthenticationRequiredException.class)

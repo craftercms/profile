@@ -23,7 +23,7 @@ package org.craftercms.profile.exceptions;
  * @author Alvaro Gonzalez
  */
 public class AppAuthenticationException extends RuntimeException {
-
+	private static final long serialVersionUID = 987920857142577145L;
     public AppAuthenticationException() {
         super();
     }

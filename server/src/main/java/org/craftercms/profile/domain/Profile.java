@@ -48,7 +48,7 @@ public class Profile implements Serializable {
     @Field(ProfileConstants.USER_NAME)
     private String userName;
     
-    //@Field(ProfileConstants.PASSWORD)
+    @Field(ProfileConstants.PASSWORD)
     @XmlTransient
     private String password;
 
@@ -66,6 +66,9 @@ public class Profile implements Serializable {
 
     @Field(ProfileConstants.EMAIL)
     private String email;
+    
+    @Field(ProfileConstants.VERIFY)
+    private Boolean verify;
 
     @Field(ProfileConstants.ROLES)
     private List<String> roles;
@@ -104,6 +107,14 @@ public class Profile implements Serializable {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+    
+    public Boolean getVerify() {
+        return verify;
+    }
+
+    public void setVerify(Boolean verify) {
+        this.verify = verify;
     }
 
     public Date getCreated() {

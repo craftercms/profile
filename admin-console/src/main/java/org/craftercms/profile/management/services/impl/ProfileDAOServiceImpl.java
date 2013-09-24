@@ -25,7 +25,10 @@ import org.apache.log4j.Logger;
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.RestException;
-import org.craftercms.profile.impl.domain.*;
+import org.craftercms.profile.impl.domain.Attribute;
+import org.craftercms.profile.impl.domain.Profile;
+import org.craftercms.profile.impl.domain.Role;
+import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.management.model.SchemaModel;
 import org.craftercms.profile.management.services.ProfileDAOService;
 import org.craftercms.profile.management.util.ProfileUserAccountConstants;
@@ -34,11 +37,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProfileDAOServiceImpl implements ProfileDAOService {
 
-    private static final Logger log = Logger.getLogger(ProfileDAOServiceImpl.class);
-
-
-    public ProfileDAOServiceImpl() {
-
+	private static final Logger log = Logger.getLogger(ProfileDAOServiceImpl.class);
+	public ProfileDAOServiceImpl() {
+    
     }
 
     public void activeUser(String profileId, boolean active) throws AppAuthenticationFailedException {
@@ -73,7 +74,7 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
             ProfileServiceManager.setAppToken();
         }
         try {
-            return ProfileServiceManager.getProfileClient().createProfile(ProfileServiceManager.getAppToken(), data);
+        	return ProfileServiceManager.getProfileClient().createProfile(ProfileServiceManager.getAppToken(), data);
         } catch (AppAuthenticationException e) {
             try {
                 ProfileServiceManager.setAppToken();
@@ -99,10 +100,6 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
             return ProfileServiceManager.getProfileClient().getAllRoles(ProfileServiceManager.getAppToken());
         }
     }
-
-    //	public void setAppToken() throws AppAuthenticationFailedException {
-    //		appToken = profileRestClient.getAppToken(username, password);
-    //	}
 
     public Profile updateUser(Map<String, Serializable> data) throws AppAuthenticationFailedException {
         if (!ProfileServiceManager.isAppTokenInit()) {
@@ -338,5 +335,22 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
         }
 
     }
-
+    
+    public Profile verifyAccount(String token) throws AppAuthenticationFailedException {
+        if (!ProfileServiceManager.isAppTokenInit()) {
+            ProfileServiceManager.setAppToken();
+        }
+        try {												
+            return ProfileServiceManager.getProfileClient().verifyProfile(ProfileServiceManager.getAppToken(),
+                token);
+        } catch (AppAuthenticationException e) {
+            try {
+                ProfileServiceManager.setAppToken();
+            } catch (AppAuthenticationFailedException e1) {
+                log.error("could not get an AppToken", e);
+            }
+            return ProfileServiceManager.getProfileClient().verifyProfile(ProfileServiceManager.getAppToken(),
+                    token);
+        }
+    }
 }

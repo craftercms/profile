@@ -40,7 +40,7 @@ public class UserProfile extends Profile {
     public UserProfile(Profile profile) {
         super(profile.getId(), profile.getUserName(), profile.getPassword(), profile.getActive(),
             profile.getCreated(), profile.getModified(), profile.getAttributes(), profile.getRoles(),
-            profile.getTenantName(), profile.getEmail());
+            profile.getTenantName(), profile.getEmail(), profile.getVerify());
 
     }
 

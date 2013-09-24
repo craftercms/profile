@@ -36,7 +36,7 @@ public class ProfileConstants {
 
     //Anonymous user
     public static final Profile ANONYMOUS = new Profile("Anonymous", "anonymous", null, true, new Date(), new Date(),
-        null, ANONYMOUS_ROLES, "", "anonymous@email.com");
+        null, ANONYMOUS_ROLES, "", "anonymous@email.com", true);
 
     public static final String ROLES = "roles";
     public static final String DOMAINS = "domains";
@@ -45,7 +45,9 @@ public class ProfileConstants {
 
     public static final String TENANT_NAME = "tenantName";
     public static final String EMAIL = "email";
+    public static final String VERIFICATION_ACCOUNT_URL = "verificationAccountUrl";
     public static final String APP_TOKEN = "appToken";
+    public static final String TOKEN = "token";
     public static final String USER_NAME = "userName";
     public static final String PASSWORD = "password";
     public static final String ACTIVE = "active";

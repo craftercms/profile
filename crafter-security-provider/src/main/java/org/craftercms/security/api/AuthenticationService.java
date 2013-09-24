@@ -16,6 +16,9 @@
  */
 package org.craftercms.security.api;
 
+import java.io.Serializable;
+import java.util.Map;
+
 import org.craftercms.security.exception.AuthenticationException;
 
 /**
@@ -63,5 +66,24 @@ public interface AuthenticationService {
      * @param a        token sent by email the user email account
      */
     UserProfile resetPassword(String password, String token) throws Exception;
+
+    /**
+     * Creates a new profile password service request
+     *
+     * @param queryParams query parameters that are going to be sent to crafter-profile server
+     * 
+     * @throws AuthenticationException if an error occurs
+     */
+	UserProfile createProfile(Map<String, Serializable> queryParams)
+			throws AuthenticationException;
+
+	/**
+     * Verifies a new profile account
+     *
+     * @param token used to verify the account
+     * 
+     * @throws AuthenticationException if an error occurs
+     */
+	UserProfile verifyAccount(String token) throws AuthenticationException;
 
 }
