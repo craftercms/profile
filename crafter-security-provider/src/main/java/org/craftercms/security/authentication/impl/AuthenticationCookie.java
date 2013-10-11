@@ -75,12 +75,9 @@ public class AuthenticationCookie {
      * @param cookieMaxAge the max age of the cookie.
      */
     public void save(RequestContext context, int cookieMaxAge) {
-        String contextPath = context.getRequest().getContextPath();
-
         Cookie cookie = new Cookie(COOKIE, toCookieValue());
-        cookie.setPath(StringUtils.isNotEmpty(contextPath)? contextPath: "/");
+        cookie.setPath("/");
         cookie.setMaxAge(cookieMaxAge);
-
         context.getResponse().addCookie(cookie);
     }
 
