@@ -4,11 +4,11 @@
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-profile-parent</artifactId>
-        <version>2.2.3-SNAPSHOT</version>
+        <version>2.2.3</version>
     </parent>
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-profile-admin-console</artifactId>
-    <version>2.2.3-SNAPSHOT</version>
+    <version>2.2.3</version>
     <packaging>war</packaging>
     <name>Admin Console</name>
 
