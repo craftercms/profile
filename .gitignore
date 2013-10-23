@@ -28,3 +28,4 @@ Thumbs.db
 
 # Maven build overlays #
 overlays
+encryption-keys/
