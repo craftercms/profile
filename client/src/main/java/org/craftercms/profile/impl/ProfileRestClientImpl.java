@@ -657,6 +657,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/profile/" + "create.json",
                 URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
             HttpPost httppost = new HttpPost(uri);
+            
 
             HttpResponse response = clientService.getHttpClient().execute(httppost);
 
@@ -701,7 +702,11 @@ public class ProfileRestClientImpl implements ProfileClient {
         }
         attributes.put(ProfileConstants.USER_NAME, userName);
         attributes.put(ProfileConstants.PASSWORD, password);
-        attributes.put(ProfileConstants.ACTIVE, active);
+        if (active != null) {
+        	attributes.put(ProfileConstants.ACTIVE, active.toString());
+        } else {
+        	attributes.put(ProfileConstants.ACTIVE, "false");
+        }
         attributes.put(ProfileConstants.TENANT_NAME, tenantName);
         attributes.put(ProfileConstants.EMAIL, email);
         return createProfile(appToken, attributes);
