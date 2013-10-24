@@ -372,10 +372,11 @@ public interface ProfileClient {
      * @param roles
      * @param domains
      * @param createDefaults
+     * @param emailNewProfile Indicates if a verification email is going to send to the email account to verify the account
      * @return new tenant
      */
     public Tenant createTenant(String appToken, String tenantName, List<String> roles, List<String> domains,
-                               boolean createDefaults);
+                               boolean createDefaults, boolean emailNewProfile);
 
     /**
      * Update the Tenant that match the given Id
@@ -385,9 +386,10 @@ public interface ProfileClient {
      * @param tenantName
      * @param roles
      * @param domains
+     * @param emailNewProfile Indicates if a verification email is sent whenever a new user profile is create
      * @return updated tenant
      */
-    public Tenant updateTenant(String appToken, String id, String tenantName, List<String> roles, List<String> domains);
+    public Tenant updateTenant(String appToken, String id, String tenantName, List<String> roles, List<String> domains, boolean emailNewProfile);
 
     /**
      * Delete a Tenant that match the given tenant name

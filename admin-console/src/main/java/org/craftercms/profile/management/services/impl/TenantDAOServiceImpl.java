@@ -59,7 +59,7 @@ public class TenantDAOServiceImpl implements TenantDAOService {
         Tenant created = null;
         try {
             created = ProfileServiceManager.getProfileClient().createTenant(ProfileServiceManager.getAppToken(),
-                tenant.getTenantName(), tenant.getRoles(), tenant.getDomains(), false);
+                tenant.getTenantName(), tenant.getRoles(), tenant.getDomains(), false, tenant.isEmailNewProfile());
         } catch (AppAuthenticationException e) {
             try {
 
@@ -68,7 +68,7 @@ public class TenantDAOServiceImpl implements TenantDAOService {
                 log.error("could not get an AppToken", e);
             }
             created = ProfileServiceManager.getProfileClient().createTenant(ProfileServiceManager.getAppToken(),
-                tenant.getTenantName(), tenant.getRoles(), tenant.getDomains(), false);
+                tenant.getTenantName(), tenant.getRoles(), tenant.getDomains(), false, tenant.isEmailNewProfile());
         }
         if (created != null && created.getTenantName() != null) {
             for (Attribute attribute : tenant.getSchema().getAttributes()) {
@@ -227,7 +227,7 @@ public class TenantDAOServiceImpl implements TenantDAOService {
         }
         try {
             return ProfileServiceManager.getProfileClient().updateTenant(ProfileServiceManager.getAppToken(),
-                tenant.getId(), tenant.getTenantName(), tenant.getRoles(), tenant.getDomains());
+                tenant.getId(), tenant.getTenantName(), tenant.getRoles(), tenant.getDomains(), tenant.isEmailNewProfile());
         } catch (AppAuthenticationException e) {
             try {
 
@@ -237,7 +237,7 @@ public class TenantDAOServiceImpl implements TenantDAOService {
                 log.error("could not get an AppToken", e);
             }
             return ProfileServiceManager.getProfileClient().updateTenant(ProfileServiceManager.getAppToken(),
-                tenant.getId(), tenant.getTenantName(), tenant.getRoles(), tenant.getDomains());
+                tenant.getId(), tenant.getTenantName(), tenant.getRoles(), tenant.getDomains(), tenant.isEmailNewProfile());
         }
     }
 

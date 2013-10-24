@@ -45,12 +45,13 @@ public class MultiTenantRestController {
     public Tenant createTenant(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
                                @RequestParam String tenantName, @RequestParam(required = false) String
         createDefaultRoles, @RequestParam(value = ProfileConstants.ROLES) String[] rolesArray,
+        @RequestParam(required=false, defaultValue="true") Boolean emailNewProfile,
                                @RequestParam(value = ProfileConstants.DOMAINS) String[] domainsArray,
                                HttpServletResponse response) {
 
         return multiTenantService.createTenant(tenantName, createDefaultRoles == null? false: Boolean.valueOf
             (createDefaultRoles).booleanValue(), (rolesArray != null? Arrays.asList(rolesArray): null),
-            (domainsArray != null? Arrays.asList(domainsArray): null), response);
+            (domainsArray != null? Arrays.asList(domainsArray): null), emailNewProfile, response);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
@@ -58,10 +59,11 @@ public class MultiTenantRestController {
     public Tenant updateTenant(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
                                @RequestParam(ProfileConstants.FIELD_ID) String id, @RequestParam(required = false,
         value = ProfileConstants.TENANT_NAME) String tenantName, @RequestParam(value = ProfileConstants.ROLES)
-    String[] rolesArray, @RequestParam(value = ProfileConstants.DOMAINS) String[] domainsArray,
+    String[] rolesArray, @RequestParam(required=false, value = ProfileConstants.EMAIL_NEW_PROFILE, defaultValue="true") Boolean emailNewProfile, 
+    @RequestParam(value = ProfileConstants.DOMAINS) String[] domainsArray,
                                HttpServletResponse response) {
         return multiTenantService.updateTenant(id, tenantName, (rolesArray != null? Arrays.asList(rolesArray): null),
-            (domainsArray != null? Arrays.asList(domainsArray): null));
+            (domainsArray != null? Arrays.asList(domainsArray): null), emailNewProfile);
     }
 
 

@@ -33,9 +33,11 @@ import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.InvalidEmailException;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
+import org.craftercms.profile.domain.Tenant;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.craftercms.profile.services.EmailValidatorService;
+import org.craftercms.profile.services.MultiTenantService;
 import org.craftercms.profile.services.ProfileService;
 import org.craftercms.profile.services.VerifyAccountService;
 import org.mindrot.jbcrypt.BCrypt;
@@ -60,6 +62,9 @@ public class ProfileServiceImpl implements ProfileService {
     private EmailValidatorService emailValidatorService;
     
     @Autowired
+    private MultiTenantService multiTenantService;
+    
+    @Autowired
     private VerifyAccountService verifyAccountService;
     
     private List<String> enabledUsers;
@@ -79,13 +84,14 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = new Profile();
         profile.setUserName(userName);
         profile.setPassword(hashedPassword);
-        if (!isEnabledUser(userName)) {
-        	//profile.setActive(active);
-        	profile.setActive(false); //until the account is verify then the account is actived and user will be able to authenticate
+        boolean emailNewProfiles = isEmailNewProfiles(tenantName, userName);
+        
+        if (emailNewProfiles) {
+        	profile.setActive(false); 
         	profile.setVerify(false);
         } else {
-        	profile.setActive(true);
-        	profile.setVerify(true);
+        	profile.setActive(active);
+        	profile.setVerify(active);
         }
         profile.setTenantName(tenantName);
         profile.setCreated(new Date());
@@ -96,7 +102,7 @@ public class ProfileServiceImpl implements ProfileService {
         Profile savedProfile = null;
         try {
         	savedProfile =  profileRepository.save(profile);
-            if (!isEnabledUser(userName)) {
+            if (emailNewProfiles) {
             	verifyAccountService.sendVerifyNotification(profile, verifyAccountUrl, request);
             }
             
@@ -114,7 +120,21 @@ public class ProfileServiceImpl implements ProfileService {
         return savedProfile;
     }
 
-    /* (non-Javadoc)
+    private boolean isEmailNewProfiles(String tenantName, String username) {
+    	return isTenantEmailNewProfiles(multiTenantService.getTenantByName(tenantName)) &&
+    			!isEnabledUser(username);
+    	
+	}
+
+	private boolean isTenantEmailNewProfiles(Tenant tenant) {
+    	boolean isTenantEmailNewProfiles = true;
+		if (tenant == null || (tenant.getEmailNewProfile() != null && !tenant.getEmailNewProfile())) {
+			isTenantEmailNewProfiles = false;
+		}
+		return isTenantEmailNewProfiles;
+	}
+
+	/* (non-Javadoc)
      * @see org.craftercms.profile.services.ProfileService#getProfileRange(java.lang.String, java.lang.String, java.lang.String, java.util.List, int, int)
      */
     /* (non-Javadoc)

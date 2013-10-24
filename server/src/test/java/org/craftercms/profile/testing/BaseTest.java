@@ -69,6 +69,7 @@ public class BaseTest {
     protected void initAppToken() throws AppAuthenticationFailedException {
         if (appToken == null) {
             appToken = profileRestClientImpl.getAppToken(appUsername, appPassword);
+            System.out.println("******** APP TOKEN " + appToken);
         }
     }
 
