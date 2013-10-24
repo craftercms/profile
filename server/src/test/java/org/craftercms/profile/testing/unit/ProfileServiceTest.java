@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.domain.Tenant;
 import org.craftercms.profile.domain.Ticket;
 import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.InvalidEmailException;
@@ -17,6 +18,7 @@ import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.craftercms.profile.services.EmailValidatorService;
+import org.craftercms.profile.services.MultiTenantService;
 import org.craftercms.profile.services.VerifyAccountService;
 import org.craftercms.profile.services.impl.ProfileServiceImpl;
 import org.junit.Before;
@@ -39,6 +41,8 @@ public class ProfileServiceTest {
 
     @Mock
     private TicketRepository ticketRepository;
+    @Mock
+    private MultiTenantService multiTenantService;
     @Mock
     private VerifyAccountService verifyAccountService;
     @Mock
@@ -77,6 +81,7 @@ public class ProfileServiceTest {
 
         when(profileRepository.save(Mockito.<Profile>any())).thenReturn(new Profile());
         when(emailValidatorService.validateEmail(Mockito.<String>any())).thenReturn(true);
+        when(multiTenantService.getTenantByName(Mockito.<String>any())).thenReturn(getTenant());
 
 
         when(profileRepository.getAllAttributes("ok")).thenReturn(current.getAttributes());
@@ -275,6 +280,11 @@ public class ProfileServiceTest {
         ticket.setUsername("test");
 
         return ticket;
+    }
+    private Tenant getTenant() {
+    	Tenant tenant = new Tenant();
+    	tenant.setEmailNewProfile(true);
+    	return tenant;
     }
 
 }

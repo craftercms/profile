@@ -44,6 +44,7 @@ public class ProfileConstants {
     public static final String SUPER_ADMIN = "SUPERADMIN";
 
     public static final String TENANT_NAME = "tenantName";
+    public static final String EMAIL_NEW_PROFILE = "emailNewProfile";
     public static final String EMAIL = "email";
     public static final String VERIFICATION_ACCOUNT_URL = "verificationAccountUrl";
     public static final String APP_TOKEN = "appToken";

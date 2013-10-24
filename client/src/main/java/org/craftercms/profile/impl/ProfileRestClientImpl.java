@@ -1597,7 +1597,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 	 * java.util.List, boolean)
 	 */
     public Tenant createTenant(String appToken, String tenantName, List<String> roles, List<String> domains,
-                               boolean createDefaultRoles) {
+                               boolean createDefaultRoles, boolean emailNewProfile) {
         if (log.isDebugEnabled()) {
             log.debug("Creating a tenant: " + tenantName);
         }
@@ -1607,6 +1607,7 @@ public class ProfileRestClientImpl implements ProfileClient {
         qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
         qparams.add(new BasicNameValuePair(ProfileConstants.TENANT_NAME, tenantName));
         qparams.add(new BasicNameValuePair("createDefaultRoles", Boolean.toString(createDefaultRoles)));
+        qparams.add(new BasicNameValuePair("emailNewProfile", Boolean.toString(emailNewProfile)));
 
         if (roles != null && !roles.isEmpty()) {
             for (String role : roles) {
@@ -1658,7 +1659,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 	 * java.util.List, java.util.List)
 	 */
     public Tenant updateTenant(String appToken, String id, String tenantName, List<String> roles,
-                               List<String> domains) {
+                               List<String> domains, boolean emailNewProfile) {
         if (log.isDebugEnabled()) {
             log.debug("Updating a tenant the tenantId : " + id);
         }
@@ -1668,6 +1669,7 @@ public class ProfileRestClientImpl implements ProfileClient {
         qparams.add(new BasicNameValuePair("_id", id));
         qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
         qparams.add(new BasicNameValuePair(ProfileConstants.TENANT_NAME, tenantName));
+        qparams.add(new BasicNameValuePair("emailNewProfile", Boolean.toString(emailNewProfile)));
 
         if (roles != null && !roles.isEmpty()) {
             for (String role : roles) {

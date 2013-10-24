@@ -26,6 +26,7 @@ public class Tenant implements Serializable {
         this.schema = new Schema();
         this.roles = new ArrayList<String>();
         this.domains = new ArrayList<String>();
+        this.emailNewProfile = true;
     }
 
     private String id;
@@ -33,6 +34,8 @@ public class Tenant implements Serializable {
     private String tenantName;
 
     private Schema schema;
+    
+    private boolean emailNewProfile;
 
     private List<String> roles;
 
@@ -77,4 +80,12 @@ public class Tenant implements Serializable {
     public void setRoles(List<String> roles) {
         this.roles = roles;
     }
+
+	public boolean isEmailNewProfile() {
+		return emailNewProfile;
+	}
+
+	public void setEmailNewProfile(boolean emailNewProfile) {
+		this.emailNewProfile = emailNewProfile;
+	}
 }

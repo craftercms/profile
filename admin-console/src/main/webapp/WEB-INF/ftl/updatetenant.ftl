@@ -28,6 +28,13 @@
                 <span class="unit size1of3">${tenant.tenantName!""}</span><br/>
             </p>
         <@crafter.formInput "tenant.tenantName", "tenantName", "style=width:270", "hidden"/>
+        	<p>
+            	<@spring.bind "tenant.emailNewProfile"/>
+                <label id="emailNewProfile" for="emailNewProfile">Email New Accounts?:</label>
+            <@crafter.formCheckbox "tenant.emailNewProfile", "emailNewProfile"/>
+                <span class="hintField">Verification email will be sent whenever a new profile account is created?</span>
+            <@crafter.showErrors "error-msg", "mbs", ""/>
+            </p>
             <p>
                 <label id="roleLabel" for="role">*Roles:</label>
             <@spring.bind "tenant.roles"/>
