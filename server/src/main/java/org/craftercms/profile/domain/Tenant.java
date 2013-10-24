@@ -35,6 +35,9 @@ public class Tenant {
     @Field(ProfileConstants.TENANT_NAME)
     @Indexed(unique = true)
     private String tenantName;
+    
+    @Field("emailNewProfile")
+    private Boolean emailNewProfile;
 
     @Field(ProfileConstants.DOMAINS)
     private List<String> domains;
@@ -84,6 +87,14 @@ public class Tenant {
     public void setRoles(List<String> roles) {
         this.roles = roles;
     }
+
+	public Boolean getEmailNewProfile() {
+		return emailNewProfile;
+	}
+
+	public void setEmailNewProfile(Boolean emailNewProfile) {
+		this.emailNewProfile = emailNewProfile;
+	}
 
 
 }

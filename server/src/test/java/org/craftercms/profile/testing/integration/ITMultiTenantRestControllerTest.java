@@ -23,7 +23,7 @@ public class ITMultiTenantRestControllerTest extends BaseTest {
         roles.add("TESTER");
         List<String> domains = new ArrayList<String>();
         domains.add("test.com");
-        Tenant tenant = profileRestClientImpl.createTenant(appToken, "testtenant", roles, domains, false);
+        Tenant tenant = profileRestClientImpl.createTenant(appToken, "testtenant", roles, domains, false, false);
         assertNotNull(tenant);
         assertTrue(tenant.getTenantName().equals("testtenant"));
         profileRestClientImpl.deleteTenant(appToken, "testtenant");
@@ -37,14 +37,14 @@ public class ITMultiTenantRestControllerTest extends BaseTest {
         roles.add("ADMIN");
         List<String> domains = new ArrayList<String>();
         domains.add("test.com");
-        Tenant tenant = profileRestClientImpl.createTenant(appToken, "testtenant", roles, domains, false);
+        Tenant tenant = profileRestClientImpl.createTenant(appToken, "testtenant", roles, domains, false, false);
         assertNotNull(tenant);
         assertTrue(tenant.getTenantName().equals("testtenant"));
         roles = new ArrayList<String>();
         roles.add("USER");
         domains = new ArrayList<String>();
         domains.add("dev.test.com");
-        Tenant t = profileRestClientImpl.updateTenant(appToken, tenant.getId(), "testtenant", roles, domains);
+        Tenant t = profileRestClientImpl.updateTenant(appToken, tenant.getId(), "testtenant", roles, domains, false);
         boolean found = false;
         for (String d : t.getDomains()) {
             if (d.equalsIgnoreCase("dev.test.com")) {
@@ -64,7 +64,7 @@ public class ITMultiTenantRestControllerTest extends BaseTest {
         roles.add("ADMIN");
         List<String> domains = new ArrayList<String>();
         domains.add("test.com");
-        Tenant tenant = profileRestClientImpl.createTenant(appToken, "testtenant", roles, domains, false);
+        Tenant tenant = profileRestClientImpl.createTenant(appToken, "testtenant", roles, domains, false, false);
         assertNotNull(tenant);
         assertTrue(tenant.getTenantName().equals("testtenant"));
 
@@ -98,7 +98,7 @@ public class ITMultiTenantRestControllerTest extends BaseTest {
         roles.add("ADMIN");
         List<String> domains = new ArrayList<String>();
         domains.add("test.com");
-        Tenant tenant = profileRestClientImpl.createTenant(appToken, "testtenant", roles, domains, false);
+        Tenant tenant = profileRestClientImpl.createTenant(appToken, "testtenant", roles, domains, false, false);
         assertNotNull(tenant);
         Tenant tenantFound = profileRestClientImpl.getTenantById(appToken, tenant.getId());
         assertNotNull(tenantFound);
@@ -124,7 +124,7 @@ public class ITMultiTenantRestControllerTest extends BaseTest {
         roles.add("TESTER");
         List<String> domains = new ArrayList<String>();
         domains.add("test.com");
-        Tenant tenant = profileRestClientImpl.createTenant(appToken, "testtenant", roles, domains, false);
+        Tenant tenant = profileRestClientImpl.createTenant(appToken, "testtenant", roles, domains, false, false);
         assertNotNull(tenant);
         assertTrue(tenant.getTenantName().equals("testtenant"));
         assertTrue(profileRestClientImpl.exitsTenant(appToken, "testtenant"));

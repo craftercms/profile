@@ -56,7 +56,7 @@ public class MultiTenantServiceImpl implements MultiTenantService {
      * @see org.craftercms.profile.services.MultiTenantService#createTenant(java.lang.String, boolean, java.util.List, java.util.List, javax.servlet.http.HttpServletResponse)
      */
     @Override
-    public Tenant createTenant(String tenantName, boolean createDefaults, List<String> roles, List<String> domains,
+    public Tenant createTenant(String tenantName, boolean createDefaults, List<String> roles, List<String> domains, boolean emailNewProfile,
                                HttpServletResponse response) {
 
         Schema schema = new Schema();
@@ -67,6 +67,7 @@ public class MultiTenantServiceImpl implements MultiTenantService {
         tenant.setSchema(schema);
         tenant.setRoles(roles);
         tenant.setDomains(domains);
+        tenant.setEmailNewProfile(emailNewProfile);
 
         Tenant current = null;
         try {
@@ -82,15 +83,25 @@ public class MultiTenantServiceImpl implements MultiTenantService {
         }
         return current;
     }
+    
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.MultiTenantService#createTenant(java.lang.String, boolean, java.util.List, java.util.List, javax.servlet.http.HttpServletResponse)
+     */
+    @Override
+    public Tenant createTenant(String tenantName, boolean createDefaults, List<String> roles, List<String> domains, 
+                               HttpServletResponse response) {
+    	return createTenant(tenantName, createDefaults, roles, domains, true, response);
+    }
 
     /* (non-Javadoc)
      * @see org.craftercms.profile.services.MultiTenantService#updateTenant(java.lang.String, java.lang.String, java.util.List, java.util.List)
      */
     @Override
-    public Tenant updateTenant(String id, String tenantName, List<String> roles, List<String> domains) {
+    public Tenant updateTenant(String id, String tenantName, List<String> roles, List<String> domains, boolean emailNewProfile) {
         Tenant tenant = tenantRepository.findTenantById(new ObjectId(id));
 
         if (tenant != null) {
+        	tenant.setEmailNewProfile(emailNewProfile);
 
             if (id != null && !id.trim().isEmpty()) {
                 tenant.setId(new ObjectId(id));
@@ -116,6 +127,14 @@ public class MultiTenantServiceImpl implements MultiTenantService {
         }
 
         return tenant;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.craftercms.profile.services.MultiTenantService#updateTenant(java.lang.String, java.lang.String, java.util.List, java.util.List)
+     */
+    @Override
+    public Tenant updateTenant(String id, String tenantName, List<String> roles, List<String> domains) {
+    	return updateTenant(id, tenantName, roles, domains, true);
     }
 
     /* (non-Javadoc)

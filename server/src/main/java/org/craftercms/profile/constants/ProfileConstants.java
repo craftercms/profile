@@ -55,6 +55,8 @@ public final class ProfileConstants {
 
     public static final String PROFILE_ID = "profileId";
     public static final String PROFILE_ID_LIST = "profileIdList";
+    
+    public static final String EMAIL_NEW_PROFILE = "emailNewProfile";
 
     // Sort Constants
     public static final String SORT_ORDER_DESC = "DESC";

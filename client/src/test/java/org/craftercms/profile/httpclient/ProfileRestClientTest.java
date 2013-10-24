@@ -19,6 +19,7 @@ package org.craftercms.profile.httpclient;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.craftercms.profile.impl.ProfileRestClientImpl;
@@ -33,6 +34,39 @@ public class ProfileRestClientTest {
 
             String appToken = c.getAppToken("crafterengine", "crafterengine");
             String ticket = c.getTicket(appToken, "admin", "admin", "craftercms");
+            
+            Map<String, Serializable> resultMap = new HashMap<String, Serializable>();
+    		
+    		// Set an initial ROLE the user will have in Social.
+    		ArrayList<String> rolesList = new ArrayList<String>();
+    		rolesList.add("SOCIAL_USER");
+    		resultMap.put("roles", rolesList);
+
+            c.createProfile(appToken, "mytest", "test", 
+					true, "test", "aa@email.com", resultMap);
+            
+            Map<String, Serializable> attributes = new HashMap<String, Serializable>();
+            
+            ArrayList<String> periods = new ArrayList<String>();
+            periods.add("instant");
+            ArrayList<String> action = new ArrayList<String>();
+            action.add("email");
+            ArrayList<String> format = new ArrayList<String>();
+            format.add("single");
+            ArrayList<String> target = new ArrayList<String>();
+            target.add("craftercms");
+            HashMap<String, Serializable> subscriptionData = new HashMap<String, Serializable>();
+            subscriptionData.put("period", periods);
+            subscriptionData.put("action", action);
+            subscriptionData.put("format", format);
+            subscriptionData.put("target", target);
+            attributes.put("subscriptions", subscriptionData);
+            c.createProfile(appToken, "myisaca", "myisaca", true, "isaca", "aagonzalezrojas@gmail.com",attributes);
+            
+//            period: "["instant", "daily", "weekly"]",
+// 	       action: "["email" (potentially "im", "sms" in the future)]"
+// 	       format: "["single", "short", "long"]"
+            
 //            Map<String, Serializable> params = new HashMap<String, Serializable>();
 //            ArrayList<String> roles = new ArrayList<String>();
 //            roles.add("SOCIAL_ADMIN");

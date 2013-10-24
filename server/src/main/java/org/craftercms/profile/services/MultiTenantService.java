@@ -30,11 +30,26 @@ public interface MultiTenantService {
      * @param createDefaults
      * @param roles          roles that can be assigned to profiles created in this tenant
      * @param domains        domains that can access content in this tenant
+     * @param emailNewProfile <code>true</code> New profiles will send a verification email, otherwise it will just create the account
      * @return
      */
-    Tenant createTenant(String tenantName, boolean createDefaults, List<String> roles, List<String> domains,
+    Tenant createTenant(String tenantName, boolean createDefaults, List<String> roles, List<String> domains, boolean emailNewProfile,
                         HttpServletResponse response);
+    
+    Tenant createTenant(String tenantName, boolean createDefaults, List<String> roles, List<String> domains,
+    		HttpServletResponse response);
 
+    Tenant updateTenant(String id, String tenantName, List<String> roles, List<String> domains, boolean emailNewProfile);
+    
+    /**
+     * Updates a tenant
+     * @param id valid id value
+     * @param tenantName the tenantName
+     * @param roles          roles that can be assigned to profiles created in this tenant
+     * @param domains        domains that can access content in this tenant
+     * @param emailNewProfile <code>true</code> New profiles will send a verification email, otherwise it will just create the account
+     * @return
+     */
     Tenant updateTenant(String id, String tenantName, List<String> roles, List<String> domains);
 
     void deleteTenant(String tenantName);
