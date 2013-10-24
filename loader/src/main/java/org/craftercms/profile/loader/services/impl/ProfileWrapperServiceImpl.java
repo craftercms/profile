@@ -42,6 +42,7 @@ public class ProfileWrapperServiceImpl implements ProfileWrapperService {
 
     // assign all the same emails
     private String testEmail;
+    private String password;
 
     @Override
     public Profile createProfile(String tenant) throws AppAuthenticationFailedException {
@@ -49,11 +50,11 @@ public class ProfileWrapperServiceImpl implements ProfileWrapperService {
 
 
         String username = RandomStringUtils.randomAlphabetic(randomFromInterval(8, 12));
-        String password = RandomStringUtils.randomAscii(randomFromInterval(8, 20));
+        //String password = RandomStringUtils.randomAscii(randomFromInterval(8, 20));
 
         Profile createdProfile = null;
         try {
-            createdProfile =  profileService.createProfile(username, password, activeArray[randomFromInterval(1, 10)-1], tenant, testEmail, null, null, null);
+            createdProfile =  profileService.createProfile(username, this.password, activeArray[randomFromInterval(1, 10)-1], tenant, testEmail, null, null, null);
         } catch (InvalidEmailException e) {
             // Don't really care about this, continue to try create profiles
             System.out.println(e);
@@ -92,6 +93,13 @@ public class ProfileWrapperServiceImpl implements ProfileWrapperService {
     public void setTestEmail(String testEmail) {
         this.testEmail = testEmail;
     }
+
+
+    @Value("${crafter.profile.loader.password}")
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
 
     @Value("${crafter.profile.loader.tenant.domains}")
     public void setTenantDomains(String tenantDomains) {
