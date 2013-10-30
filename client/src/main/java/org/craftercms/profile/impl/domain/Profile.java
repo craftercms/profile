@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -50,6 +51,8 @@ public class Profile implements Serializable {
     private Map<String, Object> attributes;
 
     private List<String> roles;
+    
+    private Subscriptions subscriptions;
 
     public Profile() {
     }
@@ -169,4 +172,12 @@ public class Profile implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
+    
+    public Subscriptions getSubscriptions() {
+		return subscriptions;
+	}
+
+	public void setSubscriptions(Subscriptions subscriptions) {
+		this.subscriptions = subscriptions;
+	}
 }
