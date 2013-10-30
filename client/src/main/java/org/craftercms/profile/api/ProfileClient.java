@@ -631,4 +631,21 @@ public interface ProfileClient {
      */
 	Profile verifyProfile(String appToken, String token);
 
+	Profile addSubscription(String appToken, String profileId, String targetId,
+			String targetDescription, String targetUrl);
+
+	Profile addSubscription(String appToken, String profileId, Target target);
+	
+	Profile updateSubscription(String appToken, String profileId, Target target);
+
+	Profile updateSubscription(String appToken, String profileId, String targetId,
+			String targetDescription, String targetUrl);
+	
+	Profile removeSubscription(String appToken, String profileId, String targetId);
+	
+	Subscriptions getSubscriptions(String appToken, String profileId);
+
+	Subscriptions setSubscriptions(String appToken, String profileId,
+			Subscriptions subscriptions);
+
 }
