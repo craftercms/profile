@@ -20,17 +20,18 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.bson.types.ObjectId;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.craftercms.profile.constants.ProfileConstants;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("profile")
 @XmlRootElement
@@ -74,6 +75,9 @@ public class Profile implements Serializable {
 
     @Field(ProfileConstants.ATTRIBUTES)
     private Map<String, Serializable> attributes;
+    
+    @Field(ProfileConstants.SUBSCRIPTIONS)
+    private Subscriptions subscriptions;
 
     public ObjectId getId() {
         return id;
@@ -168,4 +172,12 @@ public class Profile implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
+    
+    public Subscriptions getSubscriptions() {
+		return subscriptions;
+	}
+
+	public void setSubscriptions(Subscriptions subscriptions) {
+		this.subscriptions = subscriptions;
+	}
 }
