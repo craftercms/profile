@@ -38,22 +38,49 @@ public class ProfileRestClientTest {
             String ticket = c.getTicket(appToken, "admin", "admin", "craftercms");
             
             
-//            Profile p = c.getProfileByUsername(appToken, "myisaca", "isaca");
-//            c.addSubscription(appToken, p.getId(), "craftercms","craftercms","craftercms.org");
+//            Subscriptions subscriptions = profile.getSubscriptions();
+//            subscriptions.setFrequency("instant");
             
+//          Subscriptions s = new Subscriptions();
+//          s.setAction("email");
+//          s.setFormat("single");
+//          s.setFrequency("instant");
+//          Target t2= new Target();
+//          t2.setTargetId("isaca");
+//          t2.setTargetDescription("isaca");
+//          t2.setTargetUrl("isaca.com");
+//          s.getSubscription().add(t2);
+//          Target t3= new Target();
+//          t3.setTargetId("mycontent");
+//          t3.setTargetDescription("craftercms");
+//          t3.setTargetUrl("craftercms.com");
+//          s.getSubscription().add(t3);
+//            
+//          c.setSubscriptions(appToken, "526ef0da92b3de5a34b2354e", s);
             
-            
-            Map<String, Serializable> resultMap = new HashMap<String, Serializable>();
-    		
-    		ArrayList<String> rolesList = new ArrayList<String>();
-    		rolesList.add("SOCIAL_USER");
-    		resultMap.put("roles", rolesList);
-
-//            c.createProfile(appToken, "mytest11", "test", 
-//					true, "test", "aa@email.com", resultMap);
-            
-            Map<String, Serializable> attributes = new HashMap<String, Serializable>();
-            
+          Profile profile = c.getProfile(appToken, "526ef0da92b3de5a34b2354e");
+          c.createOrUpdateSubscription(appToken, "5270088303642582af45fb4c", "algo", "algodescription", "hola.com");
+          
+//          Subscriptions subscriptions = profile.getSubscriptions();
+//          if (subscriptions==null) {
+//        	  System.out.println("ES NULL");
+//          } else {
+//        	  System.out.println("GREAT");
+//          }
+//          
+//          ArrayList<String> rolesList = new ArrayList<String>();
+//          rolesList.add("SOCIAL_ADMIN");
+//          
+//          Map<String, Serializable> params = new HashMap<String, Serializable>();
+//          params.put("tenantName", "craftercms");
+//          params.put("roles", rolesList);
+//        params.put("userName", "testsubscript28");
+//        params.put("password", "sancarlos");
+//        params.put("email", "agonsales.r@gmail.com");
+//        params.put("active", "true");
+//        params.put("profileId", profile.getId());
+//        c.updateProfile(appToken, params);
+                        
 //            ArrayList<String> periods = new ArrayList<String>();
 //            periods.add("instant");
 //            ArrayList<String> action = new ArrayList<String>();
@@ -67,8 +94,8 @@ public class ProfileRestClientTest {
 //            subscriptionData.put("action", action);
 //            subscriptionData.put("format", format);
 //            subscriptionData.put("target", target);
+    		
             
-            Profile p = c.createProfile(appToken, "myisaca71", "myisaca511", true, "isaca", "aagonzalezrojas@gmail.com",attributes);
 //            Target t= new Target();
 //            t.setTargetId("isaca");
 //            t.setTargetDescription("isaca");
@@ -81,43 +108,45 @@ public class ProfileRestClientTest {
             //Profile p101 = c.addSubscription(appToken, p.getId(), t);
             
             
-            Subscriptions s = new Subscriptions();
-            s.setAction("email");
-            s.setFormat("single");
-            s.setFrequency("instant");
-            Target t2= new Target();
-            t2.setTargetId("isaca");
-            t2.setTargetDescription("isaca");
-            t2.setTargetUrl("isaca.com");
-            s.getSubscription().add(t2);
-            Target t3= new Target();
-            t3.setTargetId("isaca1");
-            t3.setTargetDescription("isaca1");
-            t3.setTargetUrl("isaca1.com");
-            s.getSubscription().add(t3);
-//            s.setEltarget(t3);
-            
-            Subscriptions a = c.setSubscriptions(appToken, p.getId(), s);
-            System.out.print(a.getSubscription().get(0).getTargetId());
-            
-            
-            Target t= new Target();
-          t.setTargetId("updateisaca");
-          t.setTargetDescription("updateisaca");
-          t.setTargetUrl("updateisaca.com");
-          //Profile p100 = c.addSubscription(appToken, p.getId(), t);
-          Target t1= new Target();
-          t1.setTargetId("updateisaca1");
-          t1.setTargetDescription("updateisaca1");
-          t1.setTargetUrl("updateisaca1.com");
-          s.getSubscription().clear();
-          s.getSubscription().add(t);
-          s.getSubscription().add(t1);
-          a = c.setSubscriptions(appToken, p.getId(), s);
+//            Map<String, Serializable> resultMap = new HashMap<String, Serializable>();
+//    		
+//    		ArrayList<String> rolesList = new ArrayList<String>();
+//    		rolesList.add("SOCIAL_USER");
+//    		resultMap.put("roles", rolesList);
+//            Map<String, Serializable> attributes = new HashMap<String, Serializable>();
+//            Profile p = c.createProfile(appToken, "myisaca71", "myisaca511", true, "isaca", "aagonzalezrojas@gmail.com",attributes);
+//            Subscriptions s = new Subscriptions();
+//            s.setAction("email");
+//            s.setFormat("single");
+//            s.setFrequency("instant");
+//            Target t2= new Target();
+//            t2.setTargetId("isaca");
+//            t2.setTargetDescription("isaca");
+//            t2.setTargetUrl("isaca.com");
+//            s.getSubscription().add(t2);
+//            Target t3= new Target();
+//            t3.setTargetId("isaca1");
+//            t3.setTargetDescription("isaca1");
+//            t3.setTargetUrl("isaca1.com");
+//            s.getSubscription().add(t3);
+//            Subscriptions a = c.setSubscriptions(appToken, p.getId(), s);
+//            System.out.print(a.getSubscription().get(0).getTargetId());
+//            
+//            Target t= new Target();
+//          t.setTargetId("updateisaca");
+//          t.setTargetDescription("updateisaca");
+//          t.setTargetUrl("updateisaca.com");
+//
+//          Target t1= new Target();
+//          t1.setTargetId("updateisaca1");
+//          t1.setTargetDescription("updateisaca1");
+//          t1.setTargetUrl("updateisaca1.com");
+//          s.getSubscription().clear();
+//          s.getSubscription().add(t);
+//          s.getSubscription().add(t1);
+//          a = c.setSubscriptions(appToken, p.getId(), s);
           
-          //Profile p101 = c.addSubscription(appToken, p.getId(), t);
-          Subscriptions l = c.getSubscriptions(appToken, p.getId());
-            System.out.println(l.getSubscription().size());
+
             
             //c.removeSubscription(appToken, p.getId(), "craftercms");
 //            c.addSubscription(appToken, p.getId(), "isaca","isaca title", "isaca.com");
@@ -143,7 +172,7 @@ public class ProfileRestClientTest {
 //            c.activeProfile(appToken, admindeleteuser.getId().toString(), false);
 //
 //            Profile inactive = c.getProfileByUsername(appToken, "adminactiveuser4", "craftercms");
-            System.out.println(ticket);
+            //System.out.println(ticket);
             //assertTrue(inactive.getActive()==false);
 
 

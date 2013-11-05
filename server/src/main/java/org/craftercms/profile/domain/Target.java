@@ -35,5 +35,16 @@ public class Target {
 		this.targetUrl = targetUrl;
 	}
 	
+	@Override
+	public boolean equals(Object object) {
+		boolean sameSame = false;
+
+		if (object != null && object instanceof Target) {
+			sameSame = this.targetId == ((Target) object).targetId;
+		}
+
+		return sameSame;
+	}
+	
 
 }

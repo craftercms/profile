@@ -23,13 +23,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.domain.Subscriptions;
-import org.craftercms.profile.domain.Target;
 import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.ExpiryDateException;
 import org.craftercms.profile.exceptions.InvalidEmailException;
@@ -45,7 +45,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/api/2/profile/")
@@ -607,6 +606,28 @@ public class ProfileRestController {
                                  @RequestParam(ProfileConstants.TARGET_URL) String targetUrl,
                                  HttpServletResponse response) throws  NoSuchProfileException {
         return profileService.updateSubscription(profileId, targetId, targetDescription, targetUrl);
+    }
+    
+    /**
+     * Create or Update subscription
+     *
+     * @param appToken
+     * @param profileId
+     * @param targetId
+     * @param targetDescription
+     * @param targetUrl
+     *
+     * @throws NoSuchProfileException 
+     */
+    @RequestMapping(value = "subscription/create-update/{profileId}", method = RequestMethod.POST)
+    @ModelAttribute
+    public Profile createOrUpdateSubscription(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String
+        appToken, @PathVariable String profileId, 
+        						 @RequestParam(ProfileConstants.TARGET_ID) String targetId,
+                                 @RequestParam(ProfileConstants.TARGET_DESCRIPTION) String targetDescription,
+                                 @RequestParam(ProfileConstants.TARGET_URL) String targetUrl,
+                                 HttpServletResponse response) throws  NoSuchProfileException {
+        return profileService.createUpdateSubscription(profileId, targetId, targetDescription, targetUrl);
     }
     
     /**

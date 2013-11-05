@@ -648,4 +648,7 @@ public interface ProfileClient {
 	Subscriptions setSubscriptions(String appToken, String profileId,
 			Subscriptions subscriptions);
 
+	Profile createOrUpdateSubscription(String appToken, String profileId,
+			String targetId, String targetDescription, String targetUrl);
+
 }

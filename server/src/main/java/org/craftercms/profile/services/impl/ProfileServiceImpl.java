@@ -253,7 +253,8 @@ public class ProfileServiceImpl implements ProfileService {
      */
     @Override
     public Profile getProfile(String profileId) {
-        return profileRepository.getProfile(profileId);
+        Profile p =  profileRepository.getProfile(profileId);
+        return p;
     }
 
     /* (non-Javadoc)
@@ -506,6 +507,46 @@ public class ProfileServiceImpl implements ProfileService {
 		p.setSubscriptions(subscriptions);
 		Profile p1 =  this.profileRepository.save(p);
 		return p1.getSubscriptions();
+	}
+
+	@Override
+	public Profile createUpdateSubscription(String profileId, String targetId,
+			String targetDescription, String targetUrl) throws NoSuchProfileException {
+		Profile p = this.profileRepository.findOne(new ObjectId(profileId));
+		if (p == null) {
+			throw new NoSuchProfileException("The profile with the id " + profileId + " was not found");
+		}
+		Target target = null;
+		if (p.getSubscriptions()==null) {
+			p.setSubscriptions(new Subscriptions());
+		} else {
+			target = findTargetById(p.getSubscriptions().getSubscription(), targetId);
+		}
+		if (target == null) {
+			target = new Target(targetId,targetDescription,targetUrl);
+			p.getSubscriptions().addSubscription(target);
+		} else {
+			target.setTargetDescription(targetDescription);
+			target.setTargetUrl(targetUrl);
+		}
+		return this.profileRepository.save(p);
+	}
+	
+	private Target findTargetById(List<Target> targets, String targetId) {
+		Target result = null;
+		if (targets == null || targets.size() == 0) {
+			return result;
+		}
+		if (!targets.contains(new Target(targetId,"",""))) {
+			return result;
+		}
+		for (Target current: targets) {
+			if (current.getTargetId().equals(targetId)) {
+				result = current;
+				break;
+			}
+		}
+		return result;
 	}
 
 }
