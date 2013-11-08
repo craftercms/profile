@@ -3117,6 +3117,52 @@ public class ProfileRestClientImpl implements ProfileClient {
     }
     
     @Override
+    public Profile createOrUpdateSubscription(String appToken, String profileId, String targetId, String targetDescription, String targetUrl) {
+    	if (log.isDebugEnabled()) {
+            log.debug("Creating or updating a subscription: " +  profileId);
+        }
+    	HttpEntity entity = null;
+        Profile profile = new Profile();
+        List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+        qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
+        qparams.add(new BasicNameValuePair(ProfileConstants.TARGET_ID, targetId));
+        
+        qparams.add(new BasicNameValuePair(ProfileConstants.TARGET_DESCRIPTION, targetDescription));
+        qparams.add(new BasicNameValuePair(ProfileConstants.TARGET_URL, targetUrl));
+        
+        try {
+            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/profile/subscription/create-update/" + profileId  + ".json",
+                URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+            HttpPost httppost = new HttpPost(uri);
+            
+            HttpResponse response = clientService.getHttpClient().execute(httppost);
+
+            entity = response.getEntity();
+            if (response.getStatusLine().getStatusCode() == 200) {
+                profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
+            } else {
+                handleErrorStatus(response.getStatusLine(), entity);
+            }
+        } catch (URISyntaxException e) {
+            log.error(e.getMessage(), e);
+        } catch (ClientProtocolException e) {
+            log.error(e.getMessage(), e);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        } catch (RestException e) {
+            log.error(e.getMessage(), e);
+            throw new PasswordException(formatPasswordErrorMessage(e.getMessage()), e);
+        } finally {
+            try {
+                EntityUtils.consume(entity);
+            } catch (IOException e) {
+                log.error("Could not consume entity", e);
+            }
+        }
+        return profile;
+    }
+    
+    @Override
 	public Profile updateSubscription(String appToken, String profileId,
 			Target target) {
 		return updateSubscription(appToken, profileId, target.getTargetId(), target.getTargetDescription(), target.getTargetUrl());

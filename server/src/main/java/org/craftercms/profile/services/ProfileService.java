@@ -354,4 +354,8 @@ public interface ProfileService {
 
 	Subscriptions updateSubscriptions(String profileId, Subscriptions subscriptions) throws NoSuchProfileException;
 
+
+	Profile createUpdateSubscription(String profileId, String targetId,
+			String targetDescription, String targetUrl) throws NoSuchProfileException;
+
 }
