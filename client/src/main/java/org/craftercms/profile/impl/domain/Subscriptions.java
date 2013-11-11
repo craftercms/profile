@@ -7,6 +7,7 @@ public class Subscriptions {
 	private String frequency;
 	private String action;
 	private String format;
+	private boolean autoWath;
 	private ArrayList<Target> subscription;
 	
 	public Subscriptions() {
@@ -39,4 +40,12 @@ public class Subscriptions {
 		this.subscription = subscription;
 	}
 
+	public boolean isAutoWath() {
+		return autoWath;
+	}
+
+
+	public void setAutoWath(boolean autoWath) {
+		this.autoWath = autoWath;
+	}
 }

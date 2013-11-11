@@ -7,10 +7,12 @@ public class Subscriptions {
 	private static final String FREQUENCY = "instant";
 	private static final String ACTION = "email";
 	private static final String FORMAT = "single";
+	private static final boolean AUTOWATCH_DEFAULT = false;
 	
 	private String frequency;
 	private String action;
 	private String format;
+	private boolean autoWath;
 	private ArrayList<Target> subscription;
 	
 	public Subscriptions() {
@@ -18,6 +20,7 @@ public class Subscriptions {
 		this.frequency = FREQUENCY;
 		this.format = FORMAT;
 		this.action = ACTION;
+		autoWath = AUTOWATCH_DEFAULT;
 	}
 	
 	
@@ -68,5 +71,12 @@ public class Subscriptions {
 		return result;
 	}
 
+	public boolean isAutoWath() {
+		return autoWath;
+	}
+
+	public void setAutoWath(boolean autoWath) {
+		this.autoWath = autoWath;
+	}
 
 }
