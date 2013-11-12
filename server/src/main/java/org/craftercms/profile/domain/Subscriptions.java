@@ -12,7 +12,7 @@ public class Subscriptions {
 	private String frequency;
 	private String action;
 	private String format;
-	private boolean autoWath;
+	private boolean autowatch;
 	private ArrayList<Target> subscription;
 	
 	public Subscriptions() {
@@ -20,7 +20,7 @@ public class Subscriptions {
 		this.frequency = FREQUENCY;
 		this.format = FORMAT;
 		this.action = ACTION;
-		autoWath = AUTOWATCH_DEFAULT;
+		autowatch = AUTOWATCH_DEFAULT;
 	}
 	
 	
@@ -71,12 +71,12 @@ public class Subscriptions {
 		return result;
 	}
 
-	public boolean isAutoWath() {
-		return autoWath;
+	public boolean isAutowatch() {
+		return autowatch;
 	}
 
-	public void setAutoWath(boolean autoWath) {
-		this.autoWath = autoWath;
+	public void setAutowatch(boolean autoWatch) {
+		this.autowatch = autoWatch;
 	}
 
 }
