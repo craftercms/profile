@@ -17,6 +17,8 @@
 package org.craftercms.security.servlet.filters;
 
 import java.io.IOException;
+import java.util.Enumeration;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +49,10 @@ public class RequestContextBindingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
+    	Enumeration paramNames = request.getParameterNames();
+	    while(paramNames.hasMoreElements()) {
+	      System.out.println("PARAM NAME " + (String)paramNames.nextElement());
+	    }
         RequestContext context = createRequestContext(request, response);
 
         if (logger.isDebugEnabled()) {

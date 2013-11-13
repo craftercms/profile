@@ -96,6 +96,7 @@
         <property name="loginSuccessHandler" ref="crafter.loginSuccessHandler"/>
         <property name="loginFailureHandler" ref="crafter.loginFailureHandler"/>
         <property name="authenticationService" ref="crafter.authenticationService"/>
+        
     </bean>
 
     <bean id="crafter.logoutProcessor" class="org.craftercms.security.impl.processors.LogoutProcessor">
