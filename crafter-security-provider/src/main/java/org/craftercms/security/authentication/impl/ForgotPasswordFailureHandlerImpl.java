@@ -73,7 +73,7 @@ public class ForgotPasswordFailureHandlerImpl implements ForgotPasswordFailureHa
         if (logger.isDebugEnabled()) {
             logger.debug("Forgot password error");
         }
-
+        
         context.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
     }
 

@@ -43,6 +43,7 @@
         <!-- Dependency Version Numbers -->
         <spring.version>3.1.1.RELEASE</spring.version>
         <spring.security.version>3.1.0.RELEASE</spring.security.version>
+        <org.codehaus.jackson.version>1.9.5</org.codehaus.jackson.version>
     </properties>
 
     <dependencies>
@@ -150,6 +151,23 @@
             <artifactId>aspectjweaver</artifactId>
             <version>1.7.2</version>
         </dependency>
+        
+        <!-- JSON & XML marshallers -->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <version>${org.codehaus.jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>${org.codehaus.jackson.version}</version>
+        </dependency>
+        <!-- <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>${com.thoughtworks.xstream.version}</version>
+        </dependency> -->
     </dependencies>
     <build>
         <plugins>
