@@ -19,6 +19,8 @@ package org.craftercms.security.authentication.impl;
 import java.io.IOException;
 import javax.servlet.http.HttpSession;
 
+import org.apache.http.HttpStatus;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
 import org.craftercms.security.api.UserProfile;
@@ -52,9 +54,12 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
     protected AuthenticationTokenCache authenticationTokenCache;
     protected RequestCache requestCache;
     protected String defaultTargetUrl;
+    
+    protected boolean isRedirectRequired;
 
     public LoginSuccessHandlerImpl() {
         requestCache = new HttpSessionRequestCache();
+        isRedirectRequired = true;
     }
 
     /**
@@ -104,10 +109,28 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
 
         clearException(context);
         cacheAuthenticationToken(token, context);
-        redirectToSavedUrl(context);
+        
+        if (this.isRedirectRequired) {
+        	redirectToSavedUrl(context);
+        } else {
+        	this.sendResponseLogin(context, profile);
+        }
     }
 
-    /**
+    private void sendResponseLogin(RequestContext context, UserProfile profile) {
+    	try {
+	    	 context.getResponse().setContentType("application/json");
+	    	 context.getResponse().setStatus(HttpStatus.SC_OK);
+	    	 ObjectMapper mapper = new ObjectMapper();
+	    	 context.getResponse().getWriter().write(mapper.writeValueAsString(profile));
+    	} catch(IOException e) {
+    		this.logger.error(e.getMessage());
+    		context.getResponse().setStatus(HttpStatus.SC_OK, "Unable to include profile data");
+    	}
+		
+	}
+
+	/**
      * Remove any previous saved authentication exception from the cache.
      */
     protected void clearException(RequestContext context) {
@@ -163,5 +186,13 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
 
         context.getResponse().sendRedirect(redirectUrl);
     }
+
+	public boolean isRedirectRequired() {
+		return isRedirectRequired;
+	}
+
+	public void setRedirectRequired(boolean isRedirectRequired) {
+		this.isRedirectRequired = isRedirectRequired;
+	}
 
 }

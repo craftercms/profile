@@ -30,8 +30,8 @@ public class ResetPasswordFailureHandlerImpl implements ResetPasswordFailureHand
     public void onResetPasswordFailure(Exception e, RequestContext context,
                                        String token) throws CrafterSecurityException, IOException {
         saveException(e, context);
-        updateTargetUrl(token);
         if (StringUtils.isNotEmpty(targetUrl)) {
+        	updateTargetUrl(token);
             redirectToTargetUrl(context);
         } else {
             sendError(e, context);
@@ -79,6 +79,7 @@ public class ResetPasswordFailureHandlerImpl implements ResetPasswordFailureHand
     }
 
     private void updateTargetUrl(String token) {
+    	
         if (token != null && !token.equals("") && targetUrl.contains("?")) {
             targetUrl = targetUrl + "&token=" + token;
         } else if (token != null && !token.equals("") && !targetUrl.contains("?")) {

@@ -30,8 +30,9 @@ public class VerifyAccountFailureHandlerImpl implements VerifyAccountFailureHand
     public void onVerifyAccountFailure(Exception e, RequestContext context,
                                        String token) throws CrafterSecurityException, IOException {
         saveException(e, context);
-        updateTargetUrl(token);
+        
         if (StringUtils.isNotEmpty(targetUrl)) {
+        	updateTargetUrl(token);
             redirectToTargetUrl(context);
         } else {
             sendError(e, context);
