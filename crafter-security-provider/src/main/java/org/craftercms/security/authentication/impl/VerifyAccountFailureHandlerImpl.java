@@ -8,16 +8,21 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
+import org.craftercms.security.authentication.BaseHandler;
 import org.craftercms.security.authentication.VerifyAccountFailureHandler;
 import org.craftercms.security.exception.CrafterSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class VerifyAccountFailureHandlerImpl implements VerifyAccountFailureHandler {
+public class VerifyAccountFailureHandlerImpl extends BaseHandler implements VerifyAccountFailureHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginFailureHandlerImpl.class);
 
     protected String targetUrl;
+    
+    public VerifyAccountFailureHandlerImpl() {
+    	super();
+    }
 
     /**
      * Sets the URL to redirect to.
@@ -31,7 +36,7 @@ public class VerifyAccountFailureHandlerImpl implements VerifyAccountFailureHand
                                        String token) throws CrafterSecurityException, IOException {
         saveException(e, context);
         
-        if (StringUtils.isNotEmpty(targetUrl)) {
+        if (isRedirectRequired && StringUtils.isNotEmpty(targetUrl)) {
         	updateTargetUrl(token);
             redirectToTargetUrl(context);
         } else {

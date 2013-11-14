@@ -24,6 +24,8 @@ http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
             <list>
                 <value>classpath:crafter/profile/admin-console/profile.properties</value>
                 <value>classpath*:crafter/profile/admin-console/extension/profile.properties</value>
+                <value>classpath:crafter/profile/admin-console/security/security.custom.properties</value>
+                <value>classpath*:crafter/profile/admin-console/security/extension/security.custom.properties</value>
             </list>
         </property>
     </bean>

@@ -101,6 +101,7 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setModified(new Date());
         profile.setAttributes(attributes);
         profile.setEmail(email);
+        
         profile.setRoles(roles);
         Profile savedProfile = null;
         try {
