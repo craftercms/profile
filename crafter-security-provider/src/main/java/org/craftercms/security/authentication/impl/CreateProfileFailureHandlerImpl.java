@@ -8,16 +8,21 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
+import org.craftercms.security.authentication.BaseHandler;
 import org.craftercms.security.authentication.CreateProfileFailureHandler;
 import org.craftercms.security.exception.CrafterSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CreateProfileFailureHandlerImpl implements CreateProfileFailureHandler {
+public class CreateProfileFailureHandlerImpl extends BaseHandler implements CreateProfileFailureHandler {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CreateProfileFailureHandlerImpl.class);
 
     protected String targetUrl;
+    
+    public CreateProfileFailureHandlerImpl() {
+    	super();
+    }
 
     /**
      * Sets the URL to redirect to.
@@ -33,7 +38,7 @@ public class CreateProfileFailureHandlerImpl implements CreateProfileFailureHand
 	public void onCreateProfileFailure(Exception e, RequestContext context) throws CrafterSecurityException, IOException {
 		saveException(e, context);
 
-        if (StringUtils.isNotEmpty(targetUrl)) {
+        if (this.isRedirectRequired && StringUtils.isNotEmpty(targetUrl)) {
             redirectToTargetUrl(context);
         } else {
             sendError(e, context);
@@ -74,7 +79,7 @@ public class CreateProfileFailureHandlerImpl implements CreateProfileFailureHand
         if (logger.isDebugEnabled()) {
             logger.debug("Error creating a profile'");
         }
-
+        context.getResponse().setContentType("application/json");
         context.getResponse().sendError(HttpServletResponse.SC_CONFLICT, e.getMessage());
     }
 

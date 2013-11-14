@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.authentication.AuthenticationRequiredHandler;
+import org.craftercms.security.authentication.BaseHandler;
 import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.CrafterSecurityException;
 import org.slf4j.Logger;
@@ -41,20 +42,19 @@ import org.springframework.security.web.savedrequest.RequestCache;
  *
  * @author Alfonso Vásquez
  */
-public class AuthenticationRequiredHandlerImpl implements AuthenticationRequiredHandler {
+public class AuthenticationRequiredHandlerImpl extends BaseHandler implements AuthenticationRequiredHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationRequiredHandlerImpl.class);
 
     protected String loginFormUrl;
     protected RequestCache requestCache;
-    protected boolean isRedirectRequired;
-
+    
     /**
      * Default constructor
      */
     public AuthenticationRequiredHandlerImpl() {
+    	super();
         requestCache = new HttpSessionRequestCache();
-        isRedirectRequired = true;
     }
 
     /**
@@ -125,13 +125,5 @@ public class AuthenticationRequiredHandlerImpl implements AuthenticationRequired
         context.getResponse().setContentType("application/json");
         context.getResponse().sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
     }
-
-	public boolean isRedirectRequired() {
-		return isRedirectRequired;
-	}
-
-	public void setRedirectRequired(boolean isRedirectRequired) {
-		this.isRedirectRequired = isRedirectRequired;
-	}
 
 }

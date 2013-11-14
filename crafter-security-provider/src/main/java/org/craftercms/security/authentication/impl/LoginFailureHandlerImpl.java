@@ -23,6 +23,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
+import org.craftercms.security.authentication.BaseHandler;
 import org.craftercms.security.authentication.LoginFailureHandler;
 import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.AuthenticationSystemException;
@@ -41,14 +42,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author Alfonso Vásquez
  */
-public class LoginFailureHandlerImpl implements LoginFailureHandler {
+/**
+ * @author Alvaro Gonzalez
+ *
+ */
+public class LoginFailureHandlerImpl extends BaseHandler implements LoginFailureHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginFailureHandlerImpl.class);
 
     protected String targetUrl;
-
+    
+    public LoginFailureHandlerImpl() {
+    	super();
+    }
+    
     /**
+     * 
      * Sets the URL to redirect to.
+     * 
      */
     public void setTargetUrl(String targetUrl) {
         this.targetUrl = targetUrl;
@@ -70,7 +81,7 @@ public class LoginFailureHandlerImpl implements LoginFailureHandler {
         IOException {
         saveException(e, context);
 
-        if (StringUtils.isNotEmpty(targetUrl)) {
+        if (isRedirectRequired && StringUtils.isNotEmpty(targetUrl)) {
             redirectToTargetUrl(context);
         } else {
             sendError(e, context);
@@ -115,8 +126,9 @@ public class LoginFailureHandlerImpl implements LoginFailureHandler {
         if (logger.isDebugEnabled()) {
             logger.debug("Sending 401 UNAUTHORIZED error");
         }
-
+        context.getResponse().setContentType("application/json");
         context.getResponse().sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
     }
 
+    
 }

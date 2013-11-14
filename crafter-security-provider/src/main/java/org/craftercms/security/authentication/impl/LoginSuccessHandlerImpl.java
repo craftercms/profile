@@ -26,6 +26,7 @@ import org.craftercms.security.api.SecurityConstants;
 import org.craftercms.security.api.UserProfile;
 import org.craftercms.security.authentication.AuthenticationToken;
 import org.craftercms.security.authentication.AuthenticationTokenCache;
+import org.craftercms.security.authentication.BaseHandler;
 import org.craftercms.security.authentication.LoginSuccessHandler;
 import org.craftercms.security.exception.CrafterSecurityException;
 import org.slf4j.Logger;
@@ -47,19 +48,18 @@ import org.springframework.security.web.savedrequest.SavedRequest;
  *
  * @author Alfonso Vásquez
  */
-public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
+public class LoginSuccessHandlerImpl extends BaseHandler implements LoginSuccessHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginSuccessHandlerImpl.class);
 
     protected AuthenticationTokenCache authenticationTokenCache;
     protected RequestCache requestCache;
     protected String defaultTargetUrl;
-    
-    protected boolean isRedirectRequired;
-
+   
     public LoginSuccessHandlerImpl() {
+    	super();
         requestCache = new HttpSessionRequestCache();
-        isRedirectRequired = true;
+        
     }
 
     /**
@@ -110,7 +110,7 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
         clearException(context);
         cacheAuthenticationToken(token, context);
         
-        if (this.isRedirectRequired) {
+        if (isRedirectRequired) {
         	redirectToSavedUrl(context);
         } else {
         	this.sendResponseLogin(context, profile);
@@ -187,12 +187,5 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
         context.getResponse().sendRedirect(redirectUrl);
     }
 
-	public boolean isRedirectRequired() {
-		return isRedirectRequired;
-	}
-
-	public void setRedirectRequired(boolean isRedirectRequired) {
-		this.isRedirectRequired = isRedirectRequired;
-	}
 
 }

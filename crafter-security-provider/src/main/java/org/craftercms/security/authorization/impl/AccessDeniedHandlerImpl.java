@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
+import org.craftercms.security.authentication.BaseHandler;
 import org.craftercms.security.authorization.AccessDeniedHandler;
 import org.craftercms.security.exception.AccessDeniedException;
 import org.craftercms.security.exception.CrafterSecurityException;
@@ -38,11 +39,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Alfonso Vásquez
  */
-public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
+public class AccessDeniedHandlerImpl extends BaseHandler implements AccessDeniedHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AccessDeniedHandlerImpl.class);
 
     protected String errorPageUrl;
+    
+    public AccessDeniedHandlerImpl() {
+    	super();
+    	
+    } 
 
     /**
      * Sets the error page URL to forward to.
@@ -65,7 +71,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         IOException {
         saveException(e, context);
 
-        if (StringUtils.isNotEmpty(errorPageUrl)) {
+        if (isRedirectRequired && StringUtils.isNotEmpty(errorPageUrl)) {
             forwardToErrorPage(context);
         } else {
             sendError(e, context);
@@ -111,8 +117,16 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         if (logger.isDebugEnabled()) {
             logger.debug("Sending 403 FORBIDDEN error");
         }
-
+        requestContext.getResponse().setContentType("application/json");
         requestContext.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
     }
+
+	public boolean isRedirectRequired() {
+		return isRedirectRequired;
+	}
+
+	public void setRedirectRequired(boolean isRedirectRequired) {
+		this.isRedirectRequired = isRedirectRequired;
+	}
 
 }
