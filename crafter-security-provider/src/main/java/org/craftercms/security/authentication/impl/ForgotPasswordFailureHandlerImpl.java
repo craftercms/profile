@@ -7,17 +7,22 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
+import org.craftercms.security.authentication.BaseHandler;
 import org.craftercms.security.authentication.ForgotPasswordFailureHandler;
 import org.craftercms.security.exception.CrafterSecurityException;
 import org.craftercms.security.exception.PasswordException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ForgotPasswordFailureHandlerImpl implements ForgotPasswordFailureHandler {
+public class ForgotPasswordFailureHandlerImpl extends BaseHandler implements ForgotPasswordFailureHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginFailureHandlerImpl.class);
 
     protected String targetUrl;
+    
+    public ForgotPasswordFailureHandlerImpl() {
+    	super();
+    }
 
     /**
      * Sets the URL to redirect to.
@@ -32,7 +37,7 @@ public class ForgotPasswordFailureHandlerImpl implements ForgotPasswordFailureHa
 
         saveException(e, context);
 
-        if (StringUtils.isNotEmpty(targetUrl)) {
+        if (isRedirectRequired && StringUtils.isNotEmpty(targetUrl)) {
             redirectToTargetUrl(context);
         } else {
             sendError(e, context);
@@ -73,7 +78,7 @@ public class ForgotPasswordFailureHandlerImpl implements ForgotPasswordFailureHa
         if (logger.isDebugEnabled()) {
             logger.debug("Forgot password error");
         }
-        
+        context.getResponse().setContentType("application/json");
         context.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
     }
 

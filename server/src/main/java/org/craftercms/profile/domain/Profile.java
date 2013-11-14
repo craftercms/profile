@@ -79,6 +79,10 @@ public class Profile implements Serializable {
     
     @Field(ProfileConstants.SUBSCRIPTIONS)
     private Subscriptions subscriptions;
+    
+    public Profile() {
+    	subscriptions = new Subscriptions();
+    }
 
     public ObjectId getId() {
         return id;
