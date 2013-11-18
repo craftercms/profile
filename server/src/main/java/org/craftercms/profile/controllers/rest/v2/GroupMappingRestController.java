@@ -1,4 +1,4 @@
-package org.craftercms.profile.controllers.rest;
+package org.craftercms.profile.controllers.rest.v2;
 
 import java.util.Arrays;
 import java.util.List;
