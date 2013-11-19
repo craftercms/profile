@@ -31,7 +31,7 @@ import org.craftercms.profile.impl.domain.Target;
 public class ProfileRestClientTest {
     public static void main(String[] args) {
         ProfileRestClientImpl c = new ProfileRestClientImpl();
-        c.setPort(8090);
+        c.setPort(8080);
         try {
 
             String appToken = c.getAppToken("crafterengine", "crafterengine");
