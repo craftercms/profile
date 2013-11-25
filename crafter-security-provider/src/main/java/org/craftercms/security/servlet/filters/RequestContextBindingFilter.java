@@ -49,11 +49,7 @@ public class RequestContextBindingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
-    	Enumeration paramNames = request.getParameterNames();
-	    while(paramNames.hasMoreElements()) {
-	      System.out.println("PARAM NAME " + (String)paramNames.nextElement());
-	    }
-        RequestContext context = createRequestContext(request, response);
+    	RequestContext context = createRequestContext(request, response);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Binding request context for request '" + request.getRequestURI() + "' to current thread");
