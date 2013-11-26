@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.domain.Profile;
-import org.craftercms.profile.domain.Subscriptions;
 import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.ExpiryDateException;
 import org.craftercms.profile.exceptions.InvalidEmailException;
@@ -413,8 +412,6 @@ public class ProfileRestController {
      *
      * @param appToken      The application token
      * @param profileId     that is going to be updated
-     * @param attributesMap Attributes values are going to be set
-     * @param response      Servlet response instance
      */
     @RequestMapping(value = "set_attributes/{profileId}", method = RequestMethod.POST)
     @ModelAttribute
@@ -541,131 +538,5 @@ public class ProfileRestController {
     public List<Profile> getProfilesByRole(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken, @RequestParam(ProfileConstants.TENANT_ID) String tenantName, @RequestParam(ProfileConstants.ROLE_NAME) String roleName) {
         return profileService.getProfilesByRoleName(roleName, tenantName);
     }
-    
-    /******************* SUBSCRIPTIONS *****************/
-    
-    /**
-     * Create subscriptions
-     *
-     * @param appToken
-     * @param profileId
-     * @param targetId
-     * @param targetDescription
-     * @param targetUrl
-     *
-     * @throws NoSuchProfileException 
-     */
-    @RequestMapping(value = "subscriptions/{profileId}", method = RequestMethod.POST)
-    @ModelAttribute
-    public Subscriptions setSubscriptions(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String
-        appToken, @PathVariable String profileId, 
-        @RequestBody Subscriptions subscriptions,
-                                 HttpServletResponse response) throws  NoSuchProfileException {
-        return profileService.createSubscriptions(profileId, subscriptions);
-    }
-    
-    /**
-     * Add subscription
-     *
-     * @param appToken
-     * @param profileId
-     * @param targetId
-     * @param targetDescription
-     * @param targetUrl
-     *
-     * @throws NoSuchProfileException 
-     */
-    @RequestMapping(value = "subscribe/{profileId}", method = RequestMethod.POST)
-    @ModelAttribute
-    public Profile addSubscription(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String
-        appToken, @PathVariable String profileId, 
-        						 @RequestParam(ProfileConstants.TARGET_ID) String targetId,
-                                 @RequestParam(ProfileConstants.TARGET_DESCRIPTION) String targetDescription,
-                                 @RequestParam(ProfileConstants.TARGET_URL) String targetUrl,
-                                 HttpServletResponse response) throws  NoSuchProfileException {
-        return profileService.addSubscription(profileId, targetId, targetDescription, targetUrl);
-    }
-    
-    /**
-     * Update subscription
-     *
-     * @param appToken
-     * @param profileId
-     * @param targetId
-     * @param targetDescription
-     * @param targetUrl
-     *
-     * @throws NoSuchProfileException 
-     */
-    @RequestMapping(value = "subscription/update/{profileId}", method = RequestMethod.POST)
-    @ModelAttribute
-    public Profile updateSubscription(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String
-        appToken, @PathVariable String profileId, 
-        						 @RequestParam(ProfileConstants.TARGET_ID) String targetId,
-                                 @RequestParam(ProfileConstants.TARGET_DESCRIPTION) String targetDescription,
-                                 @RequestParam(ProfileConstants.TARGET_URL) String targetUrl,
-                                 HttpServletResponse response) throws  NoSuchProfileException {
-        return profileService.updateSubscription(profileId, targetId, targetDescription, targetUrl);
-    }
-    
-    /**
-     * Create or Update subscription
-     *
-     * @param appToken
-     * @param profileId
-     * @param targetId
-     * @param targetDescription
-     * @param targetUrl
-     *
-     * @throws NoSuchProfileException 
-     */
-    @RequestMapping(value = "subscription/create-update/{profileId}", method = RequestMethod.POST)
-    @ModelAttribute
-    public Profile createOrUpdateSubscription(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String
-        appToken, @PathVariable String profileId, 
-        						 @RequestParam(ProfileConstants.TARGET_ID) String targetId,
-                                 @RequestParam(ProfileConstants.TARGET_DESCRIPTION) String targetDescription,
-                                 @RequestParam(ProfileConstants.TARGET_URL) String targetUrl,
-                                 HttpServletResponse response) throws  NoSuchProfileException {
-        return profileService.createUpdateSubscription(profileId, targetId, targetDescription, targetUrl);
-    }
-    
-    /**
-     * Update subscription
-     *
-     * @param appToken
-     * @param profileId
-     * @param targetId
-     * @param targetDescription
-     * @param targetUrl
-     *
-     * @throws NoSuchProfileException 
-     */
-    @RequestMapping(value = "unsubscribe/{profileId}", method = RequestMethod.POST)
-    @ModelAttribute
-    public Profile removeSubscription(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String
-        appToken, @PathVariable String profileId, 
-        						 @RequestParam(ProfileConstants.TARGET_ID) String targetId,
-                                 HttpServletResponse response) throws  NoSuchProfileException {
-        return profileService.removeSubscription(profileId, targetId);
-    }
-    
-    /**
-     * Update subscription
-     *
-     * @param appToken
-     * @param profileId
-     * @param targetId
-     * @param targetDescription
-     * @param targetUrl
-     *
-     * @throws NoSuchProfileException 
-     */
-    @RequestMapping(value = "subscriptions/{profileId}", method = RequestMethod.GET)
-    @ModelAttribute
-    public Subscriptions getSubscriptions(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String
-        appToken, @PathVariable String profileId,
-                                 HttpServletResponse response) throws  NoSuchProfileException {
-        return profileService.getSubscriptions(profileId);
-    }
+
 }

@@ -95,7 +95,6 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
         query.fields().include(ProfileConstants.MODIFIED);
         query.fields().include(ProfileConstants.TENANT_NAME);
         query.fields().include(ProfileConstants.ROLES);
-        query.fields().include(ProfileConstants.SUBSCRIPTIONS);
         query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
 
         return mongoTemplate.findOne(query, Profile.class);
@@ -112,7 +111,6 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
         query.fields().include(ProfileConstants.CREATED);
         query.fields().include(ProfileConstants.MODIFIED);
         query.fields().include(ProfileConstants.TENANT_NAME);
-        query.fields().include(ProfileConstants.SUBSCRIPTIONS);
         query.fields().include(ProfileConstants.ROLES);
         if (attributes != null) {
             for (String attribute : attributes) {
@@ -133,7 +131,6 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
         query.fields().include(ProfileConstants.MODIFIED);
         query.fields().include(ProfileConstants.TENANT_NAME);
         query.fields().include(ProfileConstants.ROLES);
-        query.fields().include(ProfileConstants.SUBSCRIPTIONS);
         query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).in(profileIdList));
 
         return mongoTemplate.find(query, Profile.class);
@@ -153,7 +150,6 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
         query.fields().include(ProfileConstants.MODIFIED);
         query.fields().include(ProfileConstants.TENANT_NAME);
         query.fields().include(ProfileConstants.ROLES);
-        query.fields().include(ProfileConstants.SUBSCRIPTIONS);
         return mongoTemplate.findOne(query, Profile.class);
     }
 
@@ -171,7 +167,6 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
         query.fields().include(ProfileConstants.MODIFIED);
         query.fields().include(ProfileConstants.TENANT_NAME);
         query.fields().include(ProfileConstants.ROLES);
-        query.fields().include(ProfileConstants.SUBSCRIPTIONS);
         if (attributes != null) {
             for (String attribute : attributes) {
                 query.fields().include(ProfileConstants.ATTRIBUTES_DOT + attribute);
@@ -196,7 +191,6 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
         query.fields().include(ProfileConstants.ATTRIBUTES);
         query.fields().include(ProfileConstants.TENANT_NAME);
         query.fields().include(ProfileConstants.ROLES);
-        query.fields().include(ProfileConstants.SUBSCRIPTIONS);
         return mongoTemplate.findOne(query, Profile.class);
     }
 

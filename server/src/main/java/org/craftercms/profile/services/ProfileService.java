@@ -24,8 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.profile.domain.Profile;
-import org.craftercms.profile.domain.Subscriptions;
-import org.craftercms.profile.domain.Target;
 import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.InvalidEmailException;
 import org.craftercms.profile.exceptions.MailException;
@@ -333,29 +331,5 @@ public interface ProfileService {
      * @return List of profiles that belongs to the tenant name and have the role name
      */
     List<Profile> getProfilesByRoleName(String roleName, String tenantName);
-
-
-	Profile addSubscription(String profileId, String targetId,
-			String targetDescription, String targetUrl) throws NoSuchProfileException;
-
-
-	Profile updateSubscription(String profileId, String targetId,
-			String targetDescription, String targetUrl) throws NoSuchProfileException;
-
-
-	Profile removeSubscription(String profileId, String targetId) throws NoSuchProfileException;
-
-
-	Subscriptions getSubscriptions(String profileId) throws NoSuchProfileException;
-
-
-	Subscriptions createSubscriptions(String profileId, Subscriptions subscriptions) throws NoSuchProfileException ;
-
-
-	Subscriptions updateSubscriptions(String profileId, Subscriptions subscriptions) throws NoSuchProfileException;
-
-
-	Profile createUpdateSubscription(String profileId, String targetId,
-			String targetDescription, String targetUrl) throws NoSuchProfileException;
 
 }

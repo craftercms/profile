@@ -18,6 +18,7 @@ package org.craftercms.profile.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,13 +76,6 @@ public class Profile implements Serializable {
 
     @Field(ProfileConstants.ATTRIBUTES)
     private Map<String, Serializable> attributes;
-    
-    @Field(ProfileConstants.SUBSCRIPTIONS)
-    private Subscriptions subscriptions;
-    
-    public Profile() {
-    	subscriptions = new Subscriptions();
-    }
 
     public ObjectId getId() {
         return id;
@@ -176,12 +170,5 @@ public class Profile implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
-    
-    public Subscriptions getSubscriptions() {
-		return subscriptions;
-	}
 
-	public void setSubscriptions(Subscriptions subscriptions) {
-		this.subscriptions = subscriptions;
-	}
 }

@@ -55,9 +55,5 @@ public class ProfileConstants {
     public static final String TICKET = "ticket";
     public static final String ROLE_NAME = "roleName";
     public static final String SSO = "sso";
-    
-    public static final String TARGET_ID = "targetId";
-    public static final String TARGET_DESCRIPTION = "targetDescription";
-    public static final String TARGET_URL = "targetUrl";
 
 }

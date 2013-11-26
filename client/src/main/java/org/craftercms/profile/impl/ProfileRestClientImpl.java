@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -42,6 +43,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
@@ -68,8 +71,6 @@ import org.craftercms.profile.impl.domain.GroupRole;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.profile.impl.domain.Role;
 import org.craftercms.profile.impl.domain.Schema;
-import org.craftercms.profile.impl.domain.Subscriptions;
-import org.craftercms.profile.impl.domain.Target;
 import org.craftercms.profile.impl.domain.Tenant;
 
 /**
@@ -99,8 +100,6 @@ public class ProfileRestClientImpl implements ProfileClient {
 
     private static Log log = LogFactory.getLog(ProfileRestClientImpl.class);
 
-    private final TypeReference<List<Target>> TARGET_LIST_TYPE = new TypeReference<List<Target>>() {
-    };
     private final TypeReference<List<Profile>> PROFILE_LIST_TYPE = new TypeReference<List<Profile>>() {
     };
     private final TypeReference<List<Role>> ROLE_LIST_TYPE = new TypeReference<List<Role>>() {
@@ -790,31 +789,30 @@ public class ProfileRestClientImpl implements ProfileClient {
 	 * org.craftercms.profile.httpclient.ProfileRestClient#setAttributesForProfile
 	 * (java.lang.String, java.lang.String, java.util.Map)
 	 */
-    public void setAttributesForProfile(String appToken, String profileId, Map<String, Serializable> queryParams) {
+    public void setAttributesForProfile(String appToken, String profileId, Map<String, Serializable> attributes) {
         if (log.isDebugEnabled()) {
             log.debug("Setting attributes for the profileId " + profileId);
         }
+
         HttpEntity entity = null;
+
         List<NameValuePair> qparams = new ArrayList<NameValuePair>();
         qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
-        if (queryParams != null && !queryParams.isEmpty() && queryParams.keySet() != null) {
-            @SuppressWarnings("rawtypes") Iterator it = queryParams.keySet().iterator();
-            Object value;
-            while (it.hasNext()) {
-                String key = (String)it.next();
-                value = queryParams.get(key);
-                if (value instanceof String) {
-                    qparams.add(new BasicNameValuePair(key, (String)value));
-                }
+
+        for (Map.Entry<String, Serializable> entry : attributes.entrySet()) {
+            if (entry.getValue() != null) {
+                qparams.add(new BasicNameValuePair(entry.getKey(), entry.getValue().toString()));
+            } else {
+                qparams.add(new BasicNameValuePair(entry.getKey(), ""));
             }
         }
 
         try {
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/profile/" + "set_attributes/" +
+            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/profile/set_attributes/" +
                 profileId + ".json", URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
-            HttpPost httppost = new HttpPost(uri);
+            HttpPost httpPost = new HttpPost(uri);
 
-            HttpResponse response = clientService.getHttpClient().execute(httppost);
+            HttpResponse response = clientService.getHttpClient().execute(httpPost);
             entity = response.getEntity();
 
             if (response.getStatusLine().getStatusCode() != 200) {
@@ -3007,301 +3005,6 @@ public class ProfileRestClientImpl implements ProfileClient {
         }
         return profile;
     }
-    
-    /************************************SUBSCRITIONS*******************************/
-    
-    @Override
-    public Subscriptions setSubscriptions(String appToken, String profileId, Subscriptions subscriptions) {
-    	if (log.isDebugEnabled()) {
-            log.debug("Adding a new subscription: " +  profileId);
-        }
-    	HttpEntity entity = null;
-    	Subscriptions subscriptionsResponse = null;
-        List<NameValuePair> qparams = new ArrayList<NameValuePair>();
-        qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
-        
-        try {
-        	
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/profile/subscriptions/" + profileId  + ".json",
-                URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
-            HttpPost httppost = new HttpPost(uri);
-            String test = this.objectMapper.writeValueAsString(subscriptions);
-            StringEntity input = new StringEntity(test);
-            input.setContentType("application/json");
-            httppost.setEntity(input);
-            
-            HttpResponse response = clientService.getHttpClient().execute(httppost);
-
-            entity = response.getEntity();
-            if (response.getStatusLine().getStatusCode() == 200) {
-            	subscriptionsResponse = (Subscriptions) objectMapper.readValue(entity.getContent(), Subscriptions.class);
-
-            } else {
-                handleErrorStatus(response.getStatusLine(), entity);
-            }
-        } catch (URISyntaxException e) {
-            log.error(e.getMessage(), e);
-        } catch (ClientProtocolException e) {
-            log.error(e.getMessage(), e);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        } catch (RestException e) {
-            log.error(e.getMessage(), e);
-            throw new PasswordException(formatPasswordErrorMessage(e.getMessage()), e);
-        } finally {
-            try {
-                EntityUtils.consume(entity);
-            } catch (IOException e) {
-                log.error("Could not consume entity", e);
-            }
-        }
-        return subscriptionsResponse;
-    }
-    
-    /*
-     * (non-Javadoc)
-     * @see org.craftercms.profile.api.ProfileClient#updateGroupRoleMapping(java.lang.String, java.lang.String,
-     * java.lang.String, java.util.List)
-     */
-    @Override
-    public Profile addSubscription(String appToken, String profileId, Target target) {
-        return addSubscription(appToken, profileId, target.getTargetId(), target.getTargetDescription(), target.getTargetUrl());
-    }
-    
-    
-    
-    @Override
-    public Profile addSubscription(String appToken, String profileId, String targetId, String targetDescription, String targetUrl) {
-    	if (log.isDebugEnabled()) {
-            log.debug("Adding a new subscription: " +  profileId);
-        }
-    	HttpEntity entity = null;
-        Profile profile = new Profile();
-        List<NameValuePair> qparams = new ArrayList<NameValuePair>();
-        qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
-        qparams.add(new BasicNameValuePair(ProfileConstants.TARGET_ID, targetId));
-        
-        qparams.add(new BasicNameValuePair(ProfileConstants.TARGET_DESCRIPTION, targetDescription));
-        qparams.add(new BasicNameValuePair(ProfileConstants.TARGET_URL, targetUrl));
-        
-        try {
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/profile/subscribe/" + profileId  + ".json",
-                URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
-            HttpPost httppost = new HttpPost(uri);
-            
-            HttpResponse response = clientService.getHttpClient().execute(httppost);
-
-            entity = response.getEntity();
-            if (response.getStatusLine().getStatusCode() == 200) {
-                profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
-            } else {
-                handleErrorStatus(response.getStatusLine(), entity);
-            }
-        } catch (URISyntaxException e) {
-            log.error(e.getMessage(), e);
-        } catch (ClientProtocolException e) {
-            log.error(e.getMessage(), e);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        } catch (RestException e) {
-            log.error(e.getMessage(), e);
-            throw new PasswordException(formatPasswordErrorMessage(e.getMessage()), e);
-        } finally {
-            try {
-                EntityUtils.consume(entity);
-            } catch (IOException e) {
-                log.error("Could not consume entity", e);
-            }
-        }
-        return profile;
-    }
-    
-    @Override
-    public Profile createOrUpdateSubscription(String appToken, String profileId, String targetId, String targetDescription, String targetUrl) {
-    	if (log.isDebugEnabled()) {
-            log.debug("Creating or updating a subscription: " +  profileId);
-        }
-    	HttpEntity entity = null;
-        Profile profile = new Profile();
-        List<NameValuePair> qparams = new ArrayList<NameValuePair>();
-        qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
-        qparams.add(new BasicNameValuePair(ProfileConstants.TARGET_ID, targetId));
-        
-        qparams.add(new BasicNameValuePair(ProfileConstants.TARGET_DESCRIPTION, targetDescription));
-        qparams.add(new BasicNameValuePair(ProfileConstants.TARGET_URL, targetUrl));
-        
-        try {
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/profile/subscription/create-update/" + profileId  + ".json",
-                URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
-            HttpPost httppost = new HttpPost(uri);
-            
-            HttpResponse response = clientService.getHttpClient().execute(httppost);
-
-            entity = response.getEntity();
-            if (response.getStatusLine().getStatusCode() == 200) {
-                profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
-            } else {
-                handleErrorStatus(response.getStatusLine(), entity);
-            }
-        } catch (URISyntaxException e) {
-            log.error(e.getMessage(), e);
-        } catch (ClientProtocolException e) {
-            log.error(e.getMessage(), e);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        } catch (RestException e) {
-            log.error(e.getMessage(), e);
-            throw new PasswordException(formatPasswordErrorMessage(e.getMessage()), e);
-        } finally {
-            try {
-                EntityUtils.consume(entity);
-            } catch (IOException e) {
-                log.error("Could not consume entity", e);
-            }
-        }
-        return profile;
-    }
-    
-    @Override
-	public Profile updateSubscription(String appToken, String profileId,
-			Target target) {
-		return updateSubscription(appToken, profileId, target.getTargetId(), target.getTargetDescription(), target.getTargetUrl());
-	}
-
-	@Override
-	public Profile updateSubscription(String appToken, String profileId,
-			String targetId, String targetDescription, String targetUrl) {
-		if (log.isDebugEnabled()) {
-            log.debug("Updating a subscription in: " +  profileId);
-        }
-		HttpEntity entity = null;
-        Profile profile = new Profile();
-        List<NameValuePair> qparams = new ArrayList<NameValuePair>();
-        qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
-        qparams.add(new BasicNameValuePair(ProfileConstants.TARGET_ID, targetId));
-        
-        qparams.add(new BasicNameValuePair(ProfileConstants.TARGET_DESCRIPTION, targetDescription));
-        qparams.add(new BasicNameValuePair(ProfileConstants.TARGET_URL, targetUrl));
-        
-        try {
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/profile/subscription/update/" + profileId  + ".json",
-                URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
-            HttpPost httppost = new HttpPost(uri);
-            HttpResponse response = clientService.getHttpClient().execute(httppost);
-
-            entity = response.getEntity();
-            if (response.getStatusLine().getStatusCode() == 200) {
-                profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
-            } else {
-                handleErrorStatus(response.getStatusLine(), entity);
-            }
-        } catch (URISyntaxException e) {
-            log.error(e.getMessage(), e);
-        } catch (ClientProtocolException e) {
-            log.error(e.getMessage(), e);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        } catch (RestException e) {
-            log.error(e.getMessage(), e);
-            throw new PasswordException(formatPasswordErrorMessage(e.getMessage()), e);
-        } finally {
-            try {
-                EntityUtils.consume(entity);
-            } catch (IOException e) {
-                log.error("Could not consume entity", e);
-            }
-        }
-        return profile;
-	}
-
-	@Override
-	public Profile removeSubscription(String appToken, String profileId,
-			String targetId) {
-		if (log.isDebugEnabled()) {
-            log.debug("Removing a subscription from: " +  profileId);
-        }
-		HttpEntity entity = null;
-        Profile profile = new Profile();
-        List<NameValuePair> qparams = new ArrayList<NameValuePair>();
-        qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
-        qparams.add(new BasicNameValuePair(ProfileConstants.TARGET_ID, targetId));
-        
-        try {
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/profile/unsubscribe/" + profileId  + ".json",
-                URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
-            HttpPost httppost = new HttpPost(uri);
-            HttpResponse response = clientService.getHttpClient().execute(httppost);
-
-            entity = response.getEntity();
-            if (response.getStatusLine().getStatusCode() == 200) {
-                profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
-            } else {
-                handleErrorStatus(response.getStatusLine(), entity);
-            }
-        } catch (URISyntaxException e) {
-            log.error(e.getMessage(), e);
-        } catch (ClientProtocolException e) {
-            log.error(e.getMessage(), e);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        } catch (RestException e) {
-            log.error(e.getMessage(), e);
-            throw new PasswordException(formatPasswordErrorMessage(e.getMessage()), e);
-        } finally {
-            try {
-                EntityUtils.consume(entity);
-            } catch (IOException e) {
-                log.error("Could not consume entity", e);
-            }
-        }
-        return profile;
-	}
-
-	@Override
-	public Subscriptions getSubscriptions(String appToken, String profileId) {
-		
-		if (log.isDebugEnabled()) {
-            log.debug("Getting subscription list for: " +  profileId);
-        }
-		Subscriptions subscriptions = null;
-        List<NameValuePair> qparams = new ArrayList<NameValuePair>();
-        qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
-        
-        HttpEntity entity = null;
-
-        try {
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/profile/subscriptions/" + profileId +
-                ".json", URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
-            HttpGet httpget = new HttpGet(uri);
-
-            HttpResponse response = clientService.getHttpClient().execute(httpget);
-            entity = response.getEntity();
-            if (response.getStatusLine().getStatusCode() == 200) {
-                subscriptions = (Subscriptions)objectMapper.readValue(entity.getContent(), Subscriptions.class);
-            } else {
-                handleErrorStatus(response.getStatusLine(), entity);
-            }
-        } catch (URISyntaxException e) {
-            log.error(e.getMessage(), e);
-        } catch (ClientProtocolException e) {
-            log.error(e.getMessage(), e);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        } catch (RestException e) {
-            log.error(e.getMessage(), e);
-        } finally {
-            try {
-                EntityUtils.consume(entity);
-            } catch (IOException e) {
-                log.error("Could not consume entity", e);
-            }
-        }
-
-        return subscriptions;
-		
-	}
-    
-    /************************************END SUBSCRITIONS*******************************/
 
     private String formatPasswordErrorMessage(String message) {
         String result = message;
@@ -3334,10 +3037,5 @@ public class ProfileRestClientImpl implements ProfileClient {
     	throw new VerifyAccountException(message);
 		
 	}
-
-	
-
-	
-
 
 }
