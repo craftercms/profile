@@ -33,8 +33,17 @@
 
     <mongo:db-factory dbname="${mongo.db}" mongo-ref="mongo"/>
 
+    <mongo:mapping-converter id="mappingConverter" db-factory-ref="mongoDbFactory">
+        <mongo:custom-converters>
+            <mongo:converter>
+                <bean class="org.craftercms.profile.util.support.spring.data.AttributesConverter"/>
+            </mongo:converter>
+        </mongo:custom-converters>
+    </mongo:mapping-converter>
+
     <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
         <constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>
+        <constructor-arg name="mongoConverter" ref="mappingConverter"/>
     </bean>
 
     <mongo:repositories base-package="org.craftercms.profile.repositories" create-query-indexes="false"

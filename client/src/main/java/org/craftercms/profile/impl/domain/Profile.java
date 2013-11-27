@@ -51,8 +51,6 @@ public class Profile implements Serializable {
     private Map<String, Object> attributes;
 
     private List<String> roles;
-    
-    private Subscriptions subscriptions;
 
     public Profile() {
     }
@@ -172,12 +170,5 @@ public class Profile implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
-    
-    public Subscriptions getSubscriptions() {
-		return subscriptions;
-	}
 
-	public void setSubscriptions(Subscriptions subscriptions) {
-		this.subscriptions = subscriptions;
-	}
 }

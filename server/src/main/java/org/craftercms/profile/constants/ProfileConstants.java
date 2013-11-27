@@ -39,7 +39,6 @@ public final class ProfileConstants {
     public static final String TOKEN = "token";
     public static final String SORT_BY = "sortBy";
     public static final String ATTRIBUTES = "attributes";
-    public static final String SUBSCRIPTIONS = "subscriptions";
     						   
     public static final String ATTRIBUTES_DOT = ATTRIBUTES + ".";
     public static final String ROLES_DOT = ROLES + ".";

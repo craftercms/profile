@@ -170,9 +170,18 @@ public interface ProfileClient {
      *
      * @param appToken    previously returned by Crafter Profile Server
      * @param profileId   is going to be updated with the new attributes values
-     * @param queryParams key pair list of attributes that will be updated
+     * @param attributes  map of attributes, sent as query params
      */
-    public void setAttributesForProfile(String appToken, String profileId, Map<String, Serializable> queryParams);
+    public void setAttributesForProfile(String appToken, String profileId, Map<String, Serializable> attributes);
+
+    /**
+     * Updates the profile's attributes
+     *
+     * @param appToken    previously returned by Crafter Profile Server
+     * @param profileId   is going to be updated with the new attributes values
+     * @param attributes  map of attributes (serialized to JSON)
+     */
+    public void updateAttributesForProfile(String appToken, String profileId, Map<String, Serializable> attributes);
 
     /**
      * Actives a profile
@@ -630,25 +639,5 @@ public interface ProfileClient {
      * @return The profile instance verified
      */
 	Profile verifyProfile(String appToken, String token);
-
-	Profile addSubscription(String appToken, String profileId, String targetId,
-			String targetDescription, String targetUrl);
-
-	Profile addSubscription(String appToken, String profileId, Target target);
-	
-	Profile updateSubscription(String appToken, String profileId, Target target);
-
-	Profile updateSubscription(String appToken, String profileId, String targetId,
-			String targetDescription, String targetUrl);
-	
-	Profile removeSubscription(String appToken, String profileId, String targetId);
-	
-	Subscriptions getSubscriptions(String appToken, String profileId);
-
-	Subscriptions setSubscriptions(String appToken, String profileId,
-			Subscriptions subscriptions);
-
-	Profile createOrUpdateSubscription(String appToken, String profileId,
-			String targetId, String targetDescription, String targetUrl);
 
 }

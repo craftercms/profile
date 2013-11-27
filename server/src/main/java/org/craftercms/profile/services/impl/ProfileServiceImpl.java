@@ -29,8 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
 import org.craftercms.profile.domain.Profile;
-import org.craftercms.profile.domain.Subscriptions;
-import org.craftercms.profile.domain.Target;
 import org.craftercms.profile.domain.Tenant;
 import org.craftercms.profile.domain.Ticket;
 import org.craftercms.profile.exceptions.CipherException;
@@ -437,117 +435,5 @@ public class ProfileServiceImpl implements ProfileService {
     	return isEnabled;
 
     }
-    
-    @Override
-    public Subscriptions createSubscriptions(String profileId, Subscriptions subscriptions) throws NoSuchProfileException {
-    	Profile p = this.profileRepository.findOne(new ObjectId(profileId));
-		if (p == null) {
-			throw new NoSuchProfileException("The profile with the id " + profileId + " was not found");
-		}
-		p.setSubscriptions(subscriptions);
-		Profile p1 =  this.profileRepository.save(p);
-		return p1.getSubscriptions();
-    }
-
-	@Override
-	public Profile addSubscription(String profileId, String targetId,
-			String targetDescription, String targetUrl) throws NoSuchProfileException {
-		Profile p = this.profileRepository.findOne(new ObjectId(profileId));
-		if (p == null) {
-			throw new NoSuchProfileException("The profile with the id " + profileId + " was not found");
-		}
-		if (p.getSubscriptions() == null) {
-			Subscriptions s = new Subscriptions();
-			p.setSubscriptions(s);
-		}
-		p.getSubscriptions().addSubscription(new Target(targetId, targetDescription, targetUrl));
-		return this.profileRepository.save(p);
-	}
-
-	@Override
-	public Profile updateSubscription(String profileId, String targetId,
-			String targetDescription, String targetUrl) throws NoSuchProfileException {
-		Profile p = this.profileRepository.findOne(new ObjectId(profileId));
-		if (p == null) {
-			throw new NoSuchProfileException("The profile with the id " + profileId + " was not found");
-		}
-		Target target = p.getSubscriptions().getByTargetId(targetId);
-		target.setTargetDescription(targetDescription);
-		target.setTargetUrl(targetUrl);
-		return this.profileRepository.save(p);
-		
-	}
-
-	@Override
-	public Profile removeSubscription(String profileId, String targetId) throws NoSuchProfileException {
-		Profile p = this.profileRepository.findOne(new ObjectId(profileId));
-		if (p == null) {
-			throw new NoSuchProfileException("The profile with the id " + profileId + " was not found");
-		}
-		Target target = p.getSubscriptions().getByTargetId(targetId);
-		p.getSubscriptions().removeSubscription(target);
-		return this.profileRepository.save(p);
-	}
-
-	@Override
-	public Subscriptions getSubscriptions(String profileId) throws NoSuchProfileException {
-		Profile p = this.profileRepository.findOne(new ObjectId(profileId));
-		if (p == null) {
-			throw new NoSuchProfileException("The profile with the id " + profileId + " was not found");
-		}
-		return p.getSubscriptions();
-	}
-
-	@Override
-	public Subscriptions updateSubscriptions(String profileId,
-			Subscriptions subscriptions) throws NoSuchProfileException{
-		Profile p = this.profileRepository.findOne(new ObjectId(profileId));
-		if (p == null) {
-			throw new NoSuchProfileException("The profile with the id " + profileId + " was not found");
-		}
-		p.setSubscriptions(subscriptions);
-		Profile p1 =  this.profileRepository.save(p);
-		return p1.getSubscriptions();
-	}
-
-	@Override
-	public Profile createUpdateSubscription(String profileId, String targetId,
-			String targetDescription, String targetUrl) throws NoSuchProfileException {
-		Profile p = this.profileRepository.findOne(new ObjectId(profileId));
-		if (p == null) {
-			throw new NoSuchProfileException("The profile with the id " + profileId + " was not found");
-		}
-		Target target = null;
-		if (p.getSubscriptions()==null) {
-			p.setSubscriptions(new Subscriptions());
-		} else {
-			target = findTargetById(p.getSubscriptions().getSubscription(), targetId);
-		}
-		if (target == null) {
-			target = new Target(targetId,targetDescription,targetUrl);
-			p.getSubscriptions().addSubscription(target);
-		} else {
-			target.setTargetDescription(targetDescription);
-			target.setTargetUrl(targetUrl);
-		}
-		return this.profileRepository.save(p);
-	}
-	
-	private Target findTargetById(List<Target> targets, String targetId) {
-		Target result = null;
-		if (targets == null || targets.size() == 0) {
-			return result;
-		}
-		if (!targets.contains(new Target(targetId,"",""))) {
-			return result;
-		}
-		for (Target current: targets) {
-			if (current.getTargetId().equals(targetId)) {
-				result = current;
-				break;
-			}
-		}
-		return result;
-	}
 
 }
