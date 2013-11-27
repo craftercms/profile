@@ -214,21 +214,19 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
 
     @Override
     public void setAttributes(String profileId, Map<String, Serializable> attributes) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
-        Update update = new Update();
+        if (attributes != null && !attributes.isEmpty()) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
+            Update update = new Update();
 
-        if (!attributes.isEmpty() && attributes.keySet() != null) {
             Iterator it = attributes.keySet().iterator();
-
             while (it.hasNext()) {
                 String key = (String)it.next();
-                String value = (String)attributes.get(key);
-                update.set(ProfileConstants.ATTRIBUTES_DOT + key, value);
+                update.set(ProfileConstants.ATTRIBUTES_DOT + key, attributes.get(key));
             }
-        }
 
-        mongoTemplate.updateFirst(query, update, Profile.class);
+            mongoTemplate.updateFirst(query, update, Profile.class);
+        }
     }
 
     @Override

@@ -835,6 +835,48 @@ public class ProfileRestClientImpl implements ProfileClient {
         }
     }
 
+    public void updateAttributesForProfile(String appToken, String profileId, Map<String, Serializable> attributes) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting attributes for the profileId " + profileId);
+        }
+
+        HttpEntity entity = null;
+
+        List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+        qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
+
+        try {
+            entity = new ByteArrayEntity(objectMapper.writeValueAsBytes(attributes), ContentType.APPLICATION_JSON);
+
+            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/profile/update_attributes/" +
+                    profileId + ".json", URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+
+            HttpPost httpPost = new HttpPost(uri);
+            httpPost.setEntity(entity);
+
+            HttpResponse response = clientService.getHttpClient().execute(httpPost);
+            entity = response.getEntity();
+
+            if (response.getStatusLine().getStatusCode() != 200) {
+                handleErrorStatus(response.getStatusLine(), response.getEntity());
+            }
+        } catch (URISyntaxException e) {
+            log.error(e.getMessage(), e);
+        } catch (ClientProtocolException e) {
+            log.error(e.getMessage(), e);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        } catch (RestException e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            try {
+                EntityUtils.consume(entity);
+            } catch (IOException e) {
+                log.error("Could not consume entity", e);
+            }
+        }
+    }
+
     @Override
 	/*
 	 * (non-Javadoc)

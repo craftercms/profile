@@ -421,6 +421,21 @@ public class ProfileRestController {
     }
 
     /**
+     * Update attributes to profile
+     *
+     * @param appToken      The application token
+     * @param profileId     that is going to be updated
+     * @param attributes    the attributes to update
+     */
+    @RequestMapping(value = "update_attributes/{profileId}", method = RequestMethod.POST)
+    @ModelAttribute
+    public void updateAttributes(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+                                 @PathVariable String profileId,
+                                 @RequestBody Map<String, Serializable> attributes) {
+        profileService.setAttributes(profileId, attributes);
+    }
+
+    /**
      * Get all Attributes for a profile
      *
      * @param appToken  The application token

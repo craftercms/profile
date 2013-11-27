@@ -170,9 +170,18 @@ public interface ProfileClient {
      *
      * @param appToken    previously returned by Crafter Profile Server
      * @param profileId   is going to be updated with the new attributes values
-     * @param attributes  map of attributes (serialized to JSON)
+     * @param attributes  map of attributes, sent as query params
      */
     public void setAttributesForProfile(String appToken, String profileId, Map<String, Serializable> attributes);
+
+    /**
+     * Updates the profile's attributes
+     *
+     * @param appToken    previously returned by Crafter Profile Server
+     * @param profileId   is going to be updated with the new attributes values
+     * @param attributes  map of attributes (serialized to JSON)
+     */
+    public void updateAttributesForProfile(String appToken, String profileId, Map<String, Serializable> attributes);
 
     /**
      * Actives a profile
