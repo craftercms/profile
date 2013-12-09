@@ -19,7 +19,7 @@ package org.craftercms.security.aop;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.beans.factory.annotation.Required;
+import org.craftercms.security.utils.SecurityEnabledAware;
 
 /**
  * Aspect that handles the {@link org.craftercms.security.annotations.RunIfSecurityEnabled} annotation
@@ -27,11 +27,10 @@ import org.springframework.beans.factory.annotation.Required;
  * @author Alfonso Vásquez
  */
 @Aspect
-public class RunIfSecurityEnabledAspect {
+public class RunIfSecurityEnabledAspect implements SecurityEnabledAware {
 
     private boolean securityEnabled;
 
-    @Required
     public void setSecurityEnabled(boolean securityEnabled) {
         this.securityEnabled = securityEnabled;
     }

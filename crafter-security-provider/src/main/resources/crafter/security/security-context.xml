@@ -30,15 +30,17 @@
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
+    <bean id="crafter.securityEnabledAwareProcessor" class="org.craftercms.security.utils.spring.SecurityEnabledAwareProcessor">
+        <constructor-arg value="${crafter.security.enabled}"/>
+    </bean>
+
     <!-- ////////////////////////////////// -->
     <!--								 	-->
     <!--			 Aspects				-->
     <!--									-->
     <!-- ////////////////////////////////// -->
 
-    <bean id="crafter.runIfSecurityEnabledAspect" class="org.craftercms.security.aop.RunIfSecurityEnabledAspect">
-        <property name="securityEnabled" value="${crafter.security.enabled}"/>
-    </bean>
+    <bean id="crafter.runIfSecurityEnabledAspect" class="org.craftercms.security.aop.RunIfSecurityEnabledAspect" />
 
     <!-- ////////////////////////////////// -->
     <!--								 	-->
@@ -51,7 +53,6 @@
 
     <!-- Order of the processors is important, so if you need to override this bean try to maintain a similar order -->
     <bean id="crafter.securityFilter" class="org.craftercms.security.servlet.filters.RequestSecurityFilter">
-        <property name="securityEnabled" value="${crafter.security.enabled}"/>
         <property name="securityProcessors">
             <list>
                 <ref bean="crafter.saveAuthenticationCookieResponseWrappingProcessor"/>
