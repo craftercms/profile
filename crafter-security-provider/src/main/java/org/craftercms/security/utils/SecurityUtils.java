@@ -28,9 +28,9 @@ public abstract class SecurityUtils {
 
     public static UserProfile getAnonymousProfile() {
         UserProfile profile = new UserProfile();
-        profile.setId(SecurityConstants.ANONYMOUS_ID);
+        profile.setId(null);
         profile.setUserName(SecurityConstants.ANONYMOUS_USERNAME);
-        profile.setPassword(SecurityConstants.ANONYMOUS_PASSWORD);
+        profile.setPassword("");
         profile.setActive(true);
 
         return profile;
