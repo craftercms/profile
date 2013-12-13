@@ -23,9 +23,7 @@ package org.craftercms.security.api;
  */
 public abstract class SecurityConstants {
 
-    public static final String ANONYMOUS_ID = "Anonymous";
-    public static final String ANONYMOUS_USERNAME = "Anonymous";
-    public static final String ANONYMOUS_PASSWORD = "Anonymous";
+    public static final String ANONYMOUS_USERNAME = "anonymous";
 
     public static final String AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE = "authenticationSystemException";
     public static final String USER_AUTHENTICATION_EXCEPTION_ATTRIBUTE = "userAuthenticationException";

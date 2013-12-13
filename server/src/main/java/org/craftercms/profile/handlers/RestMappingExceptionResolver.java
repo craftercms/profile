@@ -20,6 +20,8 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
@@ -38,6 +40,8 @@ import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
  */
 public class RestMappingExceptionResolver extends SimpleMappingExceptionResolver {
 
+    private final Logger log = LoggerFactory.getLogger(RestMappingExceptionResolver.class);
+
     @Override
     protected String determineViewName(Exception ex, HttpServletRequest request) {
         return ex.getClass().getCanonicalName();
@@ -45,6 +49,8 @@ public class RestMappingExceptionResolver extends SimpleMappingExceptionResolver
 
     @Override
     protected ModelAndView getModelAndView(String viewName, Exception ex) {
+        log.error(ex.getMessage(), ex);
+
         ModelAndView mv = new ModelAndView(viewName);
         HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("message", ex.getMessage());
