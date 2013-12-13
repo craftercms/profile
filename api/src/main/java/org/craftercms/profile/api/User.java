@@ -3,29 +3,29 @@ package org.craftercms.profile.api;
 import java.util.*;
 
 /**
- * Representation of a user's profile.
+ * Representation of a user.
  *
  * @author avasquez
  */
-public class Profile {
+public class User {
 
     private String username;
     private String password;
     private String email;
-    private Boolean active;
+    private Boolean enabled;
     private Date created;
     private Date modified;
-    private String tenantName;
+    private String tenant;
     private List<String> roles;
     private List<Group> groups;
     private Map<String, Object> attributes;
 
-    public String getTenantName() {
-        return tenantName;
+    public String getTenant() {
+        return tenant;
     }
 
-    public void setTenantName(String tenantName) {
-        this.tenantName = tenantName;
+    public void setTenant(String tenant) {
+        this.tenant = tenant;
     }
 
     public String getUsername() {
@@ -52,12 +52,12 @@ public class Profile {
         this.email = email;
     }
 
-    public Boolean getActive() {
-        return active;
+    public Boolean getEnabled() {
+        return enabled;
     }
 
-    public void setActive(Boolean active) {
-        this.active = active;
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Date getCreated() {

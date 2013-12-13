@@ -11,10 +11,11 @@ import java.util.List;
 public class Tenant {
 
     private String name;
-    private boolean verifyNewProfiles;
+    private boolean verifyNewAccounts;
     private List<String> domains;
     private List<String> roles;
     private List<Group> groups;
+    private List<AttributeDefinition> attributeDefinitions;
 
     public String getName() {
         return name;
@@ -24,12 +25,12 @@ public class Tenant {
         this.name = name;
     }
 
-    public boolean isVerifyNewProfiles() {
-        return verifyNewProfiles;
+    public boolean isVerifyNewAccounts() {
+        return verifyNewAccounts;
     }
 
-    public void setVerifyNewProfiles(boolean verifyNewProfiles) {
-        this.verifyNewProfiles = verifyNewProfiles;
+    public void setVerifyNewAccounts(boolean verifyNewAccounts) {
+        this.verifyNewAccounts = verifyNewAccounts;
     }
 
     public List<String> getDomains() {
@@ -62,6 +63,14 @@ public class Tenant {
 
     public void setGroups(List<Group> groups) {
         this.groups = groups;
+    }
+
+    public List<AttributeDefinition> getAttributeDefinitions() {
+        return attributeDefinitions;
+    }
+
+    public void setAttributeDefinitions(List<AttributeDefinition> attributeDefinitions) {
+        this.attributeDefinitions = attributeDefinitions;
     }
 
 }
