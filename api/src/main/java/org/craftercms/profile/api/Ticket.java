@@ -3,38 +3,29 @@ package org.craftercms.profile.api;
 import java.util.Date;
 
 /**
- * An authentication ticket for a profile.
+ * An authentication ticket for a profile. The ticket will later be encrypted for secure transmission.
  *
  * @author avasquez
  */
 public class Ticket {
 
-    private String id;
-    private String username;
-    private Date date;
+    private String userId;
+    private Date expiresOn;
 
-    public String getId() {
-        return id;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getUsername() {
-        return username;
+    public Date getExpiresOn() {
+        return expiresOn;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
+    public void setExpiresOn(Date expiresOn) {
+        this.expiresOn = expiresOn;
     }
 
 }

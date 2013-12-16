@@ -1,5 +1,8 @@
 package org.craftercms.profile.api;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represents the definition of an attribute in a tenant.
  *
@@ -7,12 +10,32 @@ package org.craftercms.profile.api;
  */
 public class AttributeDefinition {
 
+    /**
+     * Indicates the type of access the others besides the owner of the attribute have.
+     */
+    public enum AccessType {
+        /**
+         * Others can only view the attribute.
+         */
+        PUBLIC_READ_ONLY,
+        /**
+         * Others can view and modify the attribute.
+         */
+        PUBLIC_READ_WRITE,
+        /**
+         * Only the owner can see the attribute.
+         */
+        PRIVATE;
+    }
+
     private String name;
     private String label;
     private int order;
     private String type;
     private String constraint;
     private boolean required;
+    private AccessType accessType;
+    private List<AttributeDefinition> subAttributes;
 
     /**
      * Returns the name of the attribute.
@@ -96,6 +119,38 @@ public class AttributeDefinition {
      */
     public void setRequired(boolean required) {
         this.required = required;
+    }
+
+    /**
+     * Returns the access type.
+     */
+    public AccessType getAccessType() {
+        return accessType;
+    }
+
+    /**
+     * Sets the access type.
+     */
+    public void setAccessType(AccessType accessType) {
+        this.accessType = accessType;
+    }
+
+    /**
+     * Returns the sub-attributes of this attribute.
+     */
+    public List<AttributeDefinition> getSubAttributes() {
+        if (subAttributes == null) {
+            subAttributes = new ArrayList<AttributeDefinition>();
+        }
+
+        return subAttributes;
+    }
+
+    /**
+     * Sets the sub-attributes of this attribute.
+     */
+    public void setSubAttributes(List<AttributeDefinition> subAttributes) {
+        this.subAttributes = subAttributes;
     }
 
 }

@@ -9,6 +9,7 @@ import java.util.*;
  */
 public class User {
 
+    private String id;
     private String username;
     private String password;
     private String email;
@@ -20,12 +21,12 @@ public class User {
     private List<Group> groups;
     private Map<String, Object> attributes;
 
-    public String getTenant() {
-        return tenant;
+    public String getId() {
+        return id;
     }
 
-    public void setTenant(String tenant) {
-        this.tenant = tenant;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -74,6 +75,14 @@ public class User {
 
     public void setModified(Date modified) {
         this.modified = modified;
+    }
+
+    public String getTenant() {
+        return tenant;
+    }
+
+    public void setTenant(String tenant) {
+        this.tenant = tenant;
     }
 
     public List<String> getRoles() {

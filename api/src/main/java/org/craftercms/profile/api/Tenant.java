@@ -15,7 +15,6 @@ public class Tenant {
     private List<String> domains;
     private List<String> roles;
     private List<Group> groups;
-    private List<AttributeDefinition> attributeDefinitions;
 
     public String getName() {
         return name;
@@ -63,14 +62,6 @@ public class Tenant {
 
     public void setGroups(List<Group> groups) {
         this.groups = groups;
-    }
-
-    public List<AttributeDefinition> getAttributeDefinitions() {
-        return attributeDefinitions;
-    }
-
-    public void setAttributeDefinitions(List<AttributeDefinition> attributeDefinitions) {
-        this.attributeDefinitions = attributeDefinitions;
     }
 
 }
