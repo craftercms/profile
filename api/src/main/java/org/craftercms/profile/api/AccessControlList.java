@@ -14,7 +14,7 @@ public class AccessControlList {
     public enum Propagation {
         NONE,
         PROPAGATE,
-        INHERIT
+        INHERIT;
     }
     
     private Propagation propagation;

@@ -142,6 +142,16 @@ public interface UserService {
     User getUser(String userId);
 
     /**
+     * Returns the user for the specified tenant and username
+     *
+     * @param tenant    the tenant's name
+     * @param username  the user's username
+     *
+     * @return the user, or null if not found
+     */
+    User getUserByTenantAndUsername(String tenant, String username);
+
+    /**
      * Returns the user for the specified ticket.
      *
      * @param ticket        the ticket of the authenticated user

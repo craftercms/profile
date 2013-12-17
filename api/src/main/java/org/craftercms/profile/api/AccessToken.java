@@ -10,6 +10,14 @@ import java.util.Date;
  */
 public class AccessToken {
 
+    /**
+     * Indicates the type of access the application has.
+     */
+    public enum Type {
+        ADMIN,
+        CLIENT;
+    }
+
     private String application;
     private String tenant;
     private Date expiresOn;

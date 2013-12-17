@@ -12,7 +12,6 @@ public class Tenant {
 
     private String name;
     private boolean verifyNewAccounts;
-    private List<String> domains;
     private List<String> roles;
     private List<Group> groups;
 
@@ -30,14 +29,6 @@ public class Tenant {
 
     public void setVerifyNewAccounts(boolean verifyNewAccounts) {
         this.verifyNewAccounts = verifyNewAccounts;
-    }
-
-    public List<String> getDomains() {
-        return domains;
-    }
-
-    public void setDomains(List<String> domains) {
-        this.domains = domains;
     }
 
     public List<String> getRoles() {
