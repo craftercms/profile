@@ -4,11 +4,11 @@
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-profile-parent</artifactId>
-        <version>2.2.4-SNAPSHOT</version>
+        <version>2.3.0</version>
     </parent>
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-profile-spring-security-provider</artifactId>
-    <version>2.2.4-SNAPSHOT</version>
+    <version>2.3.0</version>
     <name>Spring Security Provider Filter</name>
     <description>Spring Security Provider Filter</description>
     <url>https://github.com/craftercms/profile/tree/master/spring-security-provider-filter</url>
@@ -62,9 +62,8 @@
         <dependency>
             <groupId>org.craftercms</groupId>
             <artifactId>crafter-profile-client</artifactId>
-            <version>2.2.2</version>
+            <version>2.3.0</version>
         </dependency>
-
 
         <!-- Spring Security -->
         <dependency>

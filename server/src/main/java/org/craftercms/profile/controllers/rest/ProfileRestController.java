@@ -136,6 +136,15 @@ public class ProfileRestController {
         return profileService.getProfile(profileId);
     }
 
+    @RequestMapping(value = "profiles/{attribute}/{attributeValue}", method = RequestMethod.GET)
+    @ModelAttribute
+    public List<Profile> getProfilesByAttributeValue(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+                                                     @PathVariable String attribute,
+                                                     @PathVariable() String attributeValue){
+
+         return profileService.getProfilesByAttributeValue(attribute, attributeValue);
+    }
+
     /**
      * Get Profile with Attributes
      *
