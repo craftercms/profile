@@ -58,4 +58,5 @@ public interface ProfileRepositoryCustom {
 
     void deleteRole(String profileId, String roleName);
 
+    List<Profile> findByAttributeAndValue(String attribute, String attributeValue);
 }

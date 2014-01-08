@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,6 +42,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ByteArrayEntity;
@@ -51,6 +53,7 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.craftercms.profile.ProfileClientException;
 import org.craftercms.profile.api.ProfileClient;
 import org.craftercms.profile.constants.AttributeConstants;
 import org.craftercms.profile.constants.GroupConstants;
@@ -90,6 +93,7 @@ import org.craftercms.profile.impl.domain.Tenant;
  */
 public class ProfileRestClientImpl implements ProfileClient {
 
+    private static final int HTTP_OK = 200;
     private ProfileRestClientService clientService = ProfileRestClientService.getInstance();
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -216,7 +220,7 @@ public class ProfileRestClientImpl implements ProfileClient {
     }
 
     @Override
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see
@@ -661,7 +665,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/profile/" + "create.json",
                 URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
             HttpPost httppost = new HttpPost(uri);
-            
+
 
             HttpResponse response = clientService.getHttpClient().execute(httppost);
 
@@ -707,9 +711,9 @@ public class ProfileRestClientImpl implements ProfileClient {
         attributes.put(ProfileConstants.USER_NAME, userName);
         attributes.put(ProfileConstants.PASSWORD, password);
         if (active != null) {
-        	attributes.put(ProfileConstants.ACTIVE, active.toString());
+            attributes.put(ProfileConstants.ACTIVE, active.toString());
         } else {
-        	attributes.put(ProfileConstants.ACTIVE, "false");
+            attributes.put(ProfileConstants.ACTIVE, "false");
         }
         attributes.put(ProfileConstants.TENANT_NAME, tenantName);
         attributes.put(ProfileConstants.EMAIL, email);
@@ -849,7 +853,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             entity = new ByteArrayEntity(objectMapper.writeValueAsBytes(attributes), ContentType.APPLICATION_JSON);
 
             URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/profile/update_attributes/" +
-                    profileId + ".json", URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+                profileId + ".json", URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
 
             HttpPost httpPost = new HttpPost(uri);
             httpPost.setEntity(entity);
@@ -924,7 +928,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             }
         }
     }
-    
+
     @Override
 	/*
 	 * (non-Javadoc)
@@ -944,7 +948,8 @@ public class ProfileRestClientImpl implements ProfileClient {
         HttpEntity entity = null;
 
         try {
-            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/profile/verify.json", URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
+            URI uri = URIUtils.createURI(scheme, host, port, profileAppPath + "/api/2/profile/verify.json",
+                URLEncodedUtils.format(qparams, HTTP.UTF_8), null);
             HttpPost httppost = new HttpPost(uri);
 
             HttpResponse response = clientService.getHttpClient().execute(httppost);
@@ -953,15 +958,15 @@ public class ProfileRestClientImpl implements ProfileClient {
 
             if (response.getStatusLine().getStatusCode() == 200) {
                 profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
-                
+
             } else {
-            	handleVerifyError(entity, response);
+                handleVerifyError(entity, response);
             }
         } catch (VerifyAccountException e) {
             log.error(e.getMessage(), e);
             throw e;
         } catch (Exception e) {
-        	log.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         } finally {
             try {
                 EntityUtils.consume(entity);
@@ -972,7 +977,7 @@ public class ProfileRestClientImpl implements ProfileClient {
         return profile;
     }
 
-   	@Override
+    @Override
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -2030,7 +2035,8 @@ public class ProfileRestClientImpl implements ProfileClient {
     @Override
 	/*
 	 * (non-Javadoc)
-	 * @see org.craftercms.profile.api.ProfileClient#getTenantRange(java.lang.String, java.lang.String, java.lang.String,
+	 * @see org.craftercms.profile.api.ProfileClient#getTenantRange(java.lang.String, java.lang.String,
+	 * java.lang.String,
 	  * int, int)
 	 */
     public List<Tenant> getTenantRange(String appToken, String sortBy, String sortOrder, int start, int end) {
@@ -2489,7 +2495,7 @@ public class ProfileRestClientImpl implements ProfileClient {
                 throw new RestException(errorMsg);
         }
     }
-    
+
     /**
      * ************** ROLES SERVICES *****************************
      */
@@ -3048,6 +3054,52 @@ public class ProfileRestClientImpl implements ProfileClient {
         return profile;
     }
 
+    @Override
+    public List<Profile> getProfilesByAttributeValue(final String appToken, final String attribute,
+                                                     final String attributeName) throws ProfileClientException {
+        HttpEntity entity = null;
+        Profile profile = null;
+        List<Profile> profiles = null;
+
+        List<NameValuePair> qparams = new ArrayList<NameValuePair>();
+        qparams.add(new BasicNameValuePair(ProfileConstants.APP_TOKEN, appToken));
+        URIBuilder builder = new URIBuilder();
+        builder.setScheme(scheme);
+        builder.setHost(host);
+        builder.setPort(port);
+        builder.setQuery(URLEncodedUtils.format(qparams, Charset.forName("UTF-8")));
+        builder.setPath(profileAppPath+"/api/2/profile/profiles/" + attribute + "/" + attributeName + ".json");
+        try {
+            URI uri = builder.build();
+            HttpGet request = new HttpGet(uri);
+            HttpResponse response = clientService.getHttpClient().execute(request);
+            entity = response.getEntity();
+            int httpResponseCode = response.getStatusLine().getStatusCode();
+            if (response.getStatusLine().getStatusCode() == HTTP_OK) {
+                profiles = (List<Profile>)objectMapper.readValue(entity.getContent(), PROFILE_LIST_TYPE);
+            } else {
+                throw new ProfileClientException("Http Response Code was " + httpResponseCode + " " + response
+                    .getStatusLine().getReasonPhrase());
+            }
+        } catch (URISyntaxException e) {
+            log.error("Unable to create URI for request.", e);
+            throw new ProfileClientException("Error creating URI", e);
+        } catch (ClientProtocolException e) {
+            log.error("Unable to process Http call", e);
+            throw new ProfileClientException("Protocol Exception ", e);
+        } catch (IOException e) {
+            log.error("Unable to process HTTP call due IO Error", e);
+            throw new ProfileClientException("Unable to Process HTTP due IO error", e);
+        } finally {
+            try {
+                EntityUtils.consume(entity);
+            } catch (IOException e) {
+                log.error("Unable to close HTTP entity", e);
+            }
+        }
+        return profiles;
+    }
+
     private String formatPasswordErrorMessage(String message) {
         String result = message;
         if (result != null && result.indexOf(":") > 0) {
@@ -3056,8 +3108,10 @@ public class ProfileRestClientImpl implements ProfileClient {
         return result;
     }
 
-    /*** END CHANGING PASSWORD services ***/
-    
+    /**
+     * END CHANGING PASSWORD services **
+     */
+
     private String getVerifyErrorMessage(StatusLine statusLine, HttpEntity entity) {
         @SuppressWarnings("rawtypes") Map map = null;
         String message = "";
@@ -3070,14 +3124,14 @@ public class ProfileRestClientImpl implements ProfileClient {
         }
         return message;
     }
-    
+
     private void handleVerifyError(HttpEntity entity, HttpResponse response) {
-    	String message = getVerifyErrorMessage(response.getStatusLine(), entity);
-    	if (message == null || message.equals("")) {
-    		message = "Error when the account was trying to be verified";
-    	}
-    	throw new VerifyAccountException(message);
-		
-	}
+        String message = getVerifyErrorMessage(response.getStatusLine(), entity);
+        if (message == null || message.equals("")) {
+            message = "Error when the account was trying to be verified";
+        }
+        throw new VerifyAccountException(message);
+
+    }
 
 }
