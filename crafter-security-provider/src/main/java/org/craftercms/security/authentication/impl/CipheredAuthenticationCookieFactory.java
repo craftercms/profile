@@ -16,31 +16,32 @@
  */
 package org.craftercms.security.authentication.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.Key;
-import java.security.SecureRandom;
-import java.util.Date;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
+import org.craftercms.security.exception.CrafterSecurityException;
+import org.craftercms.security.utils.SecurityEnabledAware;
+import org.craftercms.security.utils.crypto.KeyFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
+
 import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.IvParameterSpec;
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
-import org.craftercms.security.exception.CrafterSecurityException;
-import org.craftercms.security.utils.crypto.KeyFile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import java.io.File;
+import java.io.IOException;
+import java.security.Key;
+import java.security.SecureRandom;
+import java.util.Date;
 
 /**
  * Extends {@link AuthenticationCookieFactory} to decrypt the cookie before creating the object.
  *
  * @author Alfonso Vásquez
  */
-public class CipheredAuthenticationCookieFactory extends AuthenticationCookieFactory {
+public class CipheredAuthenticationCookieFactory extends AuthenticationCookieFactory implements SecurityEnabledAware {
 
     public static final SecureRandom secureRandom = new SecureRandom();
 
@@ -52,8 +53,13 @@ public class CipheredAuthenticationCookieFactory extends AuthenticationCookieFac
 
     private static final Logger logger = LoggerFactory.getLogger(CipheredAuthenticationCookieFactory.class);
 
+    protected boolean securityEnabled;
     protected File encryptionKeyFile;
     protected Key encryptionKey;
+
+    public void setSecurityEnabled(boolean securityEnabled) {
+        this.securityEnabled = securityEnabled;
+    }
 
     /**
      * Sets the file to the cookie encryption key.
@@ -72,31 +78,38 @@ public class CipheredAuthenticationCookieFactory extends AuthenticationCookieFac
     public void init() throws CrafterSecurityException {
         KeyFile keyFile = getEncryptionKeyFile();
 
-        if (encryptionKeyFile.length() > 0) {
-            try {
-                encryptionKey = keyFile.readKey();
-            } catch (IOException e) {
-                throw new CrafterSecurityException("Error while trying to read encryption key from file " +
-                    encryptionKeyFile, e);
-            }
+        if (securityEnabled) {
+            if (encryptionKeyFile.length() > 0) {
+                try {
+                    encryptionKey = keyFile.readKey();
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Found encryption key for authentication cookies in file " + encryptionKeyFile);
+                    logger.info("Read encryption key for authentication cookies from file " + encryptionKeyFile);
+                } catch (IOException e) {
+                    logger.warn("***** Encryption key couldn't be read from file " + encryptionKeyFile +
+                            ". PLEASE MAKE SURE THAT THIS FILE CAN BE READ ON STARTUP *****", e);
+                }
+            } else {
+                encryptionKey = generateRandomKey();
+
+                logger.info("Random encryption key for authentication cookies generated");
+
+                try {
+                    keyFile.writeKey(encryptionKey);
+
+                    logger.info("Stored encryption key for authentication cookies in file " + encryptionKeyFile +
+                            " for future use after reboots");
+                } catch (IOException e) {
+                    logger.warn("***** Encryption key couldn't be written to file " + encryptionKeyFile +
+                            ". PLEASE MAKE SURE THAT THIS FILE CAN BE WRITTEN ON STARTUP *****", e);
+                }
             }
-        } else {
+        }
+
+        // This is just in case the encryption key file couldn't be read or if security is disabled.
+        if (encryptionKey == null) {
             encryptionKey = generateRandomKey();
-            try {
-                keyFile.writeKey(encryptionKey);
-            } catch (IOException e) {
-                throw new CrafterSecurityException("Error while trying to write encryption key to file " +
-                    encryptionKeyFile, e);
-            }
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("No encryption key for authentication cookies found. A new random encryption key was " +
-                    "generated and " +
-                    "stored in file " + encryptionKeyFile + " for future use");
-            }
+            logger.info("Random encryption key for authentication cookies generated");
         }
     }
 
