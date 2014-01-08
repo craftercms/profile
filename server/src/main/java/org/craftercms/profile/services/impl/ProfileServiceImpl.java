@@ -408,7 +408,13 @@ public class ProfileServiceImpl implements ProfileService {
     public void deleteAttributes(String profileId, List<String> attributes) {
         profileRepository.deleteAttributes(profileId, attributes);
     }
-    
+
+    @Override
+    public List<Profile> getProfilesByAttributeValue(final String attribute, final String attributeValue) {
+        return profileRepository.findByAttributeAndValue(attribute,attributeValue);
+
+    }
+
     /**
      * @param users
      */

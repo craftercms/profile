@@ -332,4 +332,12 @@ public interface ProfileService {
      */
     List<Profile> getProfilesByRoleName(String roleName, String tenantName);
 
+    /**
+     * Get profile by an attribute name/value.
+     *
+     * @param attribute Attribute name .
+     * @param attributeValue Attribute Value .
+     * @return A list of Profiles where have a attribute with the given value, empty list if nothing is found.
+     */
+    List<Profile> getProfilesByAttributeValue(String attribute, String attributeValue);
 }
