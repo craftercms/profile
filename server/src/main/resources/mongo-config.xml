@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-
-		http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
-    <bean name="profile.mongo.properties"
+    <bean name="profile.mongodb.properties"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <!-- <property name="ignoreResourceNotFound" value="true"/> -->
@@ -19,34 +16,60 @@
         </property>
     </bean>
 
-    <!-- to configure a replica set, use this as the first line of the configuration instead -->
-    <!-- mongo:mongo write-concern="REPLICA_SAFE" replica-set="${mongo.replica.set}"-->
-    <mongo:mongo host="${mongo.host}" port="${mongo.port}" write-concern="SAFE" >
-        <mongo:options connections-per-host="${mongo.connectionsPerHost}"
-                       threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
-                       connect-timeout="${mongo.connectTimeout}" max-wait-time="${mongo.maxWaitTime}"
-                       auto-connect-retry="${mongo.autoConnectRetry}"
-                       socket-keep-alive="${mongo.socketKeepAlive}"
-                       slave-ok="${mongo.slaveOk}" write-number="1"
-                       write-timeout="0" write-fsync="true"/>
-    </mongo:mongo>
-
-    <mongo:db-factory dbname="${mongo.db}" mongo-ref="mongo"/>
-
-    <mongo:mapping-converter id="mappingConverter" db-factory-ref="mongoDbFactory">
-        <mongo:custom-converters>
-            <mongo:converter>
-                <bean class="org.craftercms.profile.util.support.spring.data.AttributesConverter"/>
-            </mongo:converter>
-        </mongo:custom-converters>
-    </mongo:mapping-converter>
-
-    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
-        <constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>
-        <constructor-arg name="mongoConverter" ref="mappingConverter"/>
+    <bean id="profile.mongodb.optionsFactory" class="org.craftercms.commons.mongo.MongoClientOptionsFactory">
+        <property name="autoConnectRetry" value="${studio.profile.mongodb.connection.autoConnectRetry}"/>
+        <property name="connectionsPerHost" value="${studio.profile.mongodb.connection.connectionsPerHost}"/>
+        <property name="maxAutoConnectRetryTime" value="${studio.profile.mongodb.connection.maxWaitTime}"/>
+        <property name="socketKeepAlive" value="${studio.profile.mongodb.connection.socketKeepAlive}"/>
+        <property name="threadsAllowedToBlockForConnectionMultiplier"
+                  value="${studio.profile.mongodb.connection.threadsAllowedToBlockForConnectionMultiplier}"/>
+        <property name="connectTimeout" value="${studio.profile.mongodb.connection.connectTimeout}"/>
+        <property name="writeConcern" value="${studio.profile.mongodb.connection.writeConcern}"/>
+        <property name="readPreference" value="${studio.profile.mongodb.connection.readPreference}"/>
     </bean>
 
-    <mongo:repositories base-package="org.craftercms.profile.repositories" create-query-indexes="false"
-                        mongo-template-ref="mongoTemplate"/>
+
+    <bean class="com.mongodb.MongoClient" id="profile.mongodb.mongoClient">
+        <constructor-arg>
+            <list>
+                <ref bean="profile.mongo.mainServer"/>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="profile.mongodb.optionsFactory"/>
+    </bean>
+
+    <bean id="profile.mongo.mainServer" class="com.mongodb.ServerAddress">
+        <constructor-arg value="${studio.profile.mongodb.connection.host}"/>
+        <constructor-arg value="${studio.profile.mongodb.connection.port}"/>
+    </bean>
+
+    <bean id="profile.mongodb.jongoFactory" class="org.craftercms.commons.mongo.JongoFactoryBean">
+        <property name="mongoClient" ref="profile.mongodb.mongoClient"/>
+        <property name="username" value="${studio.profile.mongodb.connection.dbUser}"/>
+        <property name="password" value="${studio.profile.mongodb.connection.dbPassword}"/>
+        <property name="dbName" value="${studio.profile.mongodb.connection.db}" />
+    </bean>
+
+    <bean id="profile.mongodb.queries" class="org.craftercms.commons.mongo.JongoQueries">
+        <property name="queryFiles">
+            <list>
+                <value>classpath:/crafter/profile/profile-queries.xml</value>
+                <value>classpath:/crafter/profile/extension/profile-queries.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="profile.mongodb.jongoRepository" class="org.craftercms.commons.mongo.JongoRepository"
+          abstract="true">
+        <property name="queries" ref="profile.mongodb.queries"/>
+        <property name="jongo" ref="profile.mongodb.jongoFactory"/>
+    </bean>
+
+    <bean id="profile.mongodb.ticketRepository" class="org.craftercms.profile.repositories.TicketRepositoryImpl"
+          parent="profile.mongodb.jongoRepository"/>
+
+
+
+
 
 </beans>

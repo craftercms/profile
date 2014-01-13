@@ -216,7 +216,7 @@ public class ProfileServiceImpl implements ProfileService {
      */
     @Override
     public Profile getProfileByTicket(String ticketStr) {
-        Ticket ticket = ticketRepository.getByTicket(ticketStr);
+        Ticket ticket = ticketRepository.findByTicket(ticketStr);
         if (ticket == null) {
             return null;
         }
@@ -228,7 +228,7 @@ public class ProfileServiceImpl implements ProfileService {
      */
     @Override
     public Profile getProfileByTicket(String ticketStr, List<String> attributes) {
-        Ticket ticket = ticketRepository.getByTicket(ticketStr);
+        Ticket ticket = ticketRepository.findByTicket(ticketStr);
         if (ticket == null) {
             return null;
         }
@@ -240,7 +240,7 @@ public class ProfileServiceImpl implements ProfileService {
      */
     @Override
     public Profile getProfileByTicketWithAllAttributes(String ticketString) {
-        Ticket ticket = ticketRepository.getByTicket(ticketString);
+        Ticket ticket = ticketRepository.findByTicket(ticketString);
         if (ticket == null) {
             return null;
         }

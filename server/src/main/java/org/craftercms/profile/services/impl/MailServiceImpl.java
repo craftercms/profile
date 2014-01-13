@@ -18,7 +18,7 @@ import javax.mail.internet.MimeMessage;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.services.MailService;
 import org.springframework.beans.factory.annotation.Value;

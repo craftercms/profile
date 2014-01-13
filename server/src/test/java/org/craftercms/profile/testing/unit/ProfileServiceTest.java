@@ -98,7 +98,7 @@ public class ProfileServiceTest {
         when(profileRepository.findOne(new ObjectId(VALID_ID))).thenReturn(current);
         //(profileRepository.deleteAllAttributes("ok")).thenReturn(current);
 
-        when(ticketRepository.getByTicket("ticketStr")).thenReturn(ticket);
+        when(ticketRepository.findByTicket("ticketStr")).thenReturn(ticket);
 
     }
 
