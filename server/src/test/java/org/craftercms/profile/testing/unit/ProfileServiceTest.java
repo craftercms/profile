@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.domain.Tenant;
 import org.craftercms.profile.domain.Ticket;
@@ -98,7 +99,12 @@ public class ProfileServiceTest {
         when(profileRepository.findOne(new ObjectId(VALID_ID))).thenReturn(current);
         //(profileRepository.deleteAllAttributes("ok")).thenReturn(current);
 
-        when(ticketRepository.findByTicket("ticketStr")).thenReturn(ticket);
+        try {
+            when(ticketRepository.findByTicket("ticketStr")).thenReturn(ticket);
+        } catch (MongoDataException e) {
+            e.printStackTrace();
+            // TODO FIX THIS !!!!
+        }
 
     }
 

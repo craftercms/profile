@@ -2,6 +2,7 @@ package org.craftercms.profile.testing.unit;
 
 import java.util.Date;
 
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.domain.Ticket;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.craftercms.profile.security.PersistentTenantRememberMeToken;
@@ -17,7 +18,7 @@ import org.springframework.security.web.authentication.rememberme.PersistentReme
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
-
+/// TODO FIX THIS !!!
 @RunWith(MockitoJUnitRunner.class)
 public class PersistentTicketServiceTest {
 
@@ -34,7 +35,11 @@ public class PersistentTicketServiceTest {
     @Before
     public void startup() {
         ticket = getTicket();
-        when(ticketRepository.findBySeries(seriesId)).thenReturn(ticket);
+        try {
+            when(ticketRepository.findBySeries(seriesId)).thenReturn(ticket);
+        } catch (MongoDataException e) {
+
+        }
 
     }
 
@@ -56,7 +61,11 @@ public class PersistentTicketServiceTest {
         PersistentTenantRememberMeToken token = new PersistentTenantRememberMeToken("test", seriesId,
             "hH4FxVA+LWzimU9mtQsJJw==", new Date(), "test");
         persistentTicketService.createNewToken(token);
-        Mockito.verify(ticketRepository).save(Mockito.<Ticket>any());
+        try {
+            Mockito.verify(ticketRepository).save(Mockito.<Ticket>any());
+        } catch (MongoDataException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -64,7 +73,11 @@ public class PersistentTicketServiceTest {
     public void testUpdateTokens() {
 
         persistentTicketService.updateToken(this.seriesId, "LWzimU9mtQsJJw==", new Date());
-        Mockito.verify(ticketRepository).save(Mockito.<Ticket>any());
+        try {
+            Mockito.verify(ticketRepository).save(Mockito.<Ticket>any());
+        } catch (MongoDataException e) {
+            e.printStackTrace();
+        }
 
     }
 

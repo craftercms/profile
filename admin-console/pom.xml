@@ -197,7 +197,7 @@
             <plugin>
                 <groupId>com.github.joelittlejohn.embedmongo</groupId>
                 <artifactId>embedmongo-maven-plugin</artifactId>
-                <version>0.1.9</version>
+                <version>0.1.10</version>
                 <executions>
                     <execution>
                         <id>start</id>
@@ -221,9 +221,9 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.mortbay.jetty</groupId>
+                <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>8.1.11.v20130520</version>
+                <version>9.1.0.v20131115</version>
                 <configuration>
                     <webXml>${basedir}/src/test/resources/test-web.xml</webXml>
                     <webDefaultXml>${basedir}/src/test/resources/test-web.xml</webDefaultXml>
@@ -247,6 +247,7 @@
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <stopKey>foo</stopKey>
                     <stopPort>9999</stopPort>
+                    <skip>true</skip>
                 </configuration>
                 <executions>
                     <execution>
@@ -313,6 +314,7 @@
                 <configuration>
                     <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                     <testFailureIgnore>false</testFailureIgnore>
+                    <skip>true</skip>
                     <includes>
                         <include>
                             **/integration/**/*.java

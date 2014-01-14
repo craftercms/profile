@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.domain.Tenant;
 import org.craftercms.profile.domain.Ticket;
@@ -49,6 +50,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
+/**
+ * TODO FIX THIS.
+ */
 @Component
 public class ProfileServiceImpl implements ProfileService {
 
@@ -216,7 +220,12 @@ public class ProfileServiceImpl implements ProfileService {
      */
     @Override
     public Profile getProfileByTicket(String ticketStr) {
-        Ticket ticket = ticketRepository.findByTicket(ticketStr);
+        Ticket ticket = null;
+        try {
+            ticket = ticketRepository.findByTicket(ticketStr);
+        } catch (MongoDataException e) {
+            e.printStackTrace();
+        }
         if (ticket == null) {
             return null;
         }
@@ -228,7 +237,12 @@ public class ProfileServiceImpl implements ProfileService {
      */
     @Override
     public Profile getProfileByTicket(String ticketStr, List<String> attributes) {
-        Ticket ticket = ticketRepository.findByTicket(ticketStr);
+        Ticket ticket = null;
+        try {
+            ticket = ticketRepository.findByTicket(ticketStr);
+        } catch (MongoDataException e) {
+            e.printStackTrace();
+        }
         if (ticket == null) {
             return null;
         }
@@ -240,7 +254,12 @@ public class ProfileServiceImpl implements ProfileService {
      */
     @Override
     public Profile getProfileByTicketWithAllAttributes(String ticketString) {
-        Ticket ticket = ticketRepository.findByTicket(ticketString);
+        Ticket ticket = null;
+        try {
+            ticket = ticketRepository.findByTicket(ticketString);
+        } catch (MongoDataException e) {
+            e.printStackTrace();
+        }
         if (ticket == null) {
             return null;
         }

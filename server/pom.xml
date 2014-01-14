@@ -338,6 +338,7 @@
                 <configuration>
                     <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                     <testFailureIgnore>false</testFailureIgnore>
+                    <skip>true</skip>
                     <includes>
                         <include>
                             **/integration/**/*.java
@@ -448,7 +449,7 @@
             <plugin>
                 <groupId>com.github.joelittlejohn.embedmongo</groupId>
                 <artifactId>embedmongo-maven-plugin</artifactId>
-                <version>0.1.9</version>
+                <version>0.1.10</version>
                 <executions>
                     <execution>
                         <id>start</id>
@@ -476,6 +477,7 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>9.1.0.v20131115</version>
                 <configuration>
+                    <skip>true</skip>
                     <classesDirectory>${basedir}/target/classes</classesDirectory>
                     <webXml>${basedir}/src/test/resources/test-web.xml</webXml>
                     <webDefaultXml>${basedir}/src/test/resources/test-web.xml</webDefaultXml>
