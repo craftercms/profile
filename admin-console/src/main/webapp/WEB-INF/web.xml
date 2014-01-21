@@ -18,6 +18,19 @@
         </init-param>
     </filter>
 
+
+    <context-param>
+        <param-name>log4jConfigLocation</param-name>
+        <param-value>classpath:crafter/profile/admin-console/extension/log4j-override.xml</param-value>
+    </context-param>
+    <context-param>
+        <param-name>webAppRootKey</param-name>
+        <param-value>crafter-profile-admin</param-value>
+    </context-param>
+    <listener>
+        <listener-class>org.craftercms.profile.management.web.ExtendedLog4jConfigListener</listener-class>
+    </listener>
+
     <filter>
         <filter-name>crafter.requestContextBindingFilter</filter-name>
         <filter-class>org.craftercms.security.servlet.filters.RequestContextBindingFilter</filter-class>
@@ -56,6 +69,7 @@
     <servlet>
         <servlet-name>spring</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet-mapping>

@@ -16,6 +16,16 @@
         </param-value>
     </context-param>
 
+    <context-param>
+        <param-name>log4jConfigLocation</param-name>
+        <param-value>classpath:crafter/profile/extension/log4j-override.xml</param-value>
+    </context-param>
+
+
+    <listener>
+        <listener-class>org.craftercms.profile.util.ExtendedLog4jConfigListener</listener-class>
+    </listener>
+
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
