@@ -50,8 +50,8 @@ public class MultiTenantRestController {
                                HttpServletResponse response) {
 
         return multiTenantService.createTenant(tenantName, createDefaultRoles == null? false: Boolean.valueOf
-            (createDefaultRoles).booleanValue(), (rolesArray != null? Arrays.asList(rolesArray): null),
-            (domainsArray != null? Arrays.asList(domainsArray): null), emailNewProfile, response);
+            (createDefaultRoles).booleanValue(), (rolesArray != null? Arrays.asList(rolesArray): null), (domainsArray
+            != null? Arrays.asList(domainsArray): null), emailNewProfile);
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)

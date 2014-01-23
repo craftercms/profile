@@ -17,8 +17,8 @@
 package org.craftercms.profile.repositories;
 
 import org.craftercms.commons.mongo.CrudRepository;
-import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.domain.Ticket;
+import org.craftercms.profile.exceptions.TicketException;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -32,7 +32,7 @@ public interface TicketRepository extends CrudRepository<Ticket> {
      * @param username Username which ticket will be search.
      * @return Current valid ticket for the given user,<b>Null</b> if nothing is found.
      */
-    Ticket findByUsername(final String username) throws MongoDataException;
+    Ticket findByUsername(final String username) throws TicketException;
 
     /**
      * Finds the Ticket for the given series.
@@ -40,21 +40,21 @@ public interface TicketRepository extends CrudRepository<Ticket> {
      * @param series Series to search ticket.
      * @return Current Valid Ticket for the given series ,<b>Null</b> if nothing is found.
      */
-    Ticket findBySeries(final String series) throws MongoDataException;
+    Ticket findBySeries(final String series) throws TicketException;
 
     /**
      * Removes all tickets for the given username.
      *
      * @param username Username to delete all tickets.
      */
-    void removeUserTickets(final String username);
+    void removeUserTickets(final String username) throws TicketException;
 
     /**
      * Removes all tickets older that the date calculated.
      *
      * @param expirationSeconds Time in milliseconds to calculate the expiration Date/time of a ticket.
      */
-    void removeTicketsOlderThan(final long expirationSeconds);
+    void removeTicketsOlderThan(final long expirationSeconds) throws TicketException;
 
     /**
      * Gets the ticket by its string representation.
@@ -62,5 +62,5 @@ public interface TicketRepository extends CrudRepository<Ticket> {
      * @param ticketStr String representation of a Ticket.
      * @return Ticket with the given representation,<b>Null</b> if ticket with given representation couldn't be found.§
      */
-    Ticket findByTicket(final String ticketStr) throws MongoDataException;
+    Ticket findByTicket(final String ticketStr) throws TicketException;
 }

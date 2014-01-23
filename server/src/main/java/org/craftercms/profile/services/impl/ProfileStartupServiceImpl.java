@@ -103,15 +103,15 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
             } catch (InvalidEmailException e) {
                 log.error("Profile startup error: ", e);
             } catch (CipherException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (MailException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchProfileException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (MailException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (NoSuchProfileException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
@@ -125,8 +125,7 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
     private Tenant createBasicCollections(String tenantName) {
         Tenant tenant = null;
 
-        tenant = this.multiTenantService.createTenant(tenantName, false, tenantDefaultRoles, tenantDefaultDomains,
-            null);
+        tenant = this.multiTenantService.createTenant(tenantName, false, tenantDefaultRoles, tenantDefaultDomains);
         addAttributes(tenantName, schemaAttributes);
 
         if (this.isDefaultRolesOn) {
@@ -160,7 +159,8 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
         }
     }
 
-    private void createBaseProfiles(String tenantName) throws InvalidEmailException, CipherException, MailException, NoSuchProfileException {
+    private void createBaseProfiles(String tenantName) throws InvalidEmailException, CipherException, MailException,
+        NoSuchProfileException {
 
         if (this.adminRoles == null || this.adminRoles.size() == 0) {
             if (this.adminRoles == null) {

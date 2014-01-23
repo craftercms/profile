@@ -21,7 +21,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.profile.domain.Role;
-import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.exceptions.RoleException;
+import org.craftercms.profile.exceptions.TenantException;
 import org.craftercms.profile.repositories.RoleRepository;
 import org.craftercms.profile.repositories.TenantRepository;
 import org.craftercms.profile.services.RoleService;
@@ -35,15 +36,14 @@ import org.springframework.stereotype.Component;
 public class RoleServiceImpl implements RoleService {
 
     private final transient Logger log = LoggerFactory.getLogger(RoleServiceImpl.class);
-
     @Autowired
     private TenantRepository tenantRepository;
-
     @Autowired
     private RoleRepository roleRepository;
 
     /* (non-Javadoc)
-     * @see org.craftercms.profile.services.RoleService#createRole(java.lang.String, javax.servlet.http.HttpServletResponse)
+     * @see org.craftercms.profile.services.RoleService#createRole(java.lang.String,
+     * javax.servlet.http.HttpServletResponse)
      */
     @Override
     public Role createRole(String roleName, HttpServletResponse response) {
@@ -64,20 +64,23 @@ public class RoleServiceImpl implements RoleService {
     }
 
     /* (non-Javadoc)
-     * @see org.craftercms.profile.services.RoleService#deleteRole(java.lang.String, javax.servlet.http.HttpServletResponse)
+     * @see org.craftercms.profile.services.RoleService#deleteRole(java.lang.String,
+     * javax.servlet.http.HttpServletResponse)
      */
     @Override
-    public void deleteRole(String roleName, HttpServletResponse response) {
-        List<Tenant> list = tenantRepository.getTenants(new String[] {roleName});
-        if (list != null & list.size() > 0) {
-            try {
-                response.sendError(HttpServletResponse.SC_CONFLICT);
-            } catch (IOException e) {
-                log.error(" Can't delete the role but the precondition faile was not sent to the client: " + e
-                    .getMessage());
-            }
-        } else {
+    public void deleteRole(final String roleName) throws TenantException, RoleException {
+        long count;
 
+        try {
+            count = tenantRepository.countTenantsWithRoles(new String[] {roleName});
+        } catch (TenantException e) {
+            throw new TenantException("Unable to count tenant with roles " + roleName, e);
+        }
+
+        if (count > 0) {
+            log.error("Role {} will not be deleted since they are {} tenants with that role", roleName, count);
+            throw new RoleException("They are tenants associated with the role " + roleName);
+        } else {
             Role role = getRole(roleName);
             if (role != null) {
                 roleRepository.delete(role);

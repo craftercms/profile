@@ -202,6 +202,11 @@
             <artifactId>commons-codec</artifactId>
             <version>${org.apache.commons.codec.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.2.1</version>
+        </dependency>
 
         <!-- Servlet -->
         <!-- JSP -->
@@ -309,10 +314,10 @@
             <version>${org.bouncycastle.crypto.version}</version>
         </dependency>
         <dependency>
-        	<groupId>org.mindrot</groupId>
-        	<artifactId>jbcrypt</artifactId>
-        	<version>0.3m</version>
-      	</dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.3m</version>
+        </dependency>
 
 
     </dependencies>

@@ -33,4 +33,13 @@
     <entry key="profile.ticket.getById">
         {_id:#}
     </entry>
+
+    <entry key="profile.tenant.byRoles">
+        {roles : {$in:#} }
+    </entry>
+
+    <entry key="profile.tenant.byName">
+        {tenantName : #}
+    </entry>
+
 </properties>

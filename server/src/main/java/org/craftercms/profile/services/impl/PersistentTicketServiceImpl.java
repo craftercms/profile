@@ -51,7 +51,8 @@ public class PersistentTicketServiceImpl implements PersistentTokenRepository {
             ticketRepository.save(new Ticket((PersistentTenantRememberMeToken)token));
         } catch (MongoDataException e) {
             log.error("Unable to save Ticket", e);
-            throw new TicketException("Unable to create ticket", e);
+            throw new SecurityException("Unable to create ticket for " + ((PersistentTenantRememberMeToken)token)
+                .getTenantName());
         }
     }
 
@@ -64,14 +65,14 @@ public class PersistentTicketServiceImpl implements PersistentTokenRepository {
         try {
             Ticket ticket = ticketRepository.findBySeries(series);
             if (ticket == null) {
-                throw new TicketException("Ticket for series " + series + " not found");
+                throw new SecurityException("Ticket with for " + tokenValue + " does not exist");
             }
             ticket.setTokenValue(tokenValue);
             ticket.setDate(lastUsed);
             ticketRepository.save(ticket);
-        } catch (MongoDataException e) {
+        } catch (TicketException | MongoDataException e) {
             log.error("Unable to update ticket ", e);
-            throw new TicketException("Unable to update given ticket", e);
+            throw new SecurityException("Unable to update for " + series, e);
         }
 
     }
@@ -85,10 +86,11 @@ public class PersistentTicketServiceImpl implements PersistentTokenRepository {
         Ticket ticket;
         try {
             ticket = ticketRepository.findBySeries(seriesId);
-        } catch (MongoDataException e) {
+        } catch (TicketException e) {
             log.error("Unable to find ticket ", e);
-            throw new TicketException("Unable to find ticket", e);
+            throw new SecurityException("Unable to find Ticket for " + seriesId, e);
         }
+
         if (ticket == null) {
             log.debug("Ticket {} not found", seriesId);
             return null;
@@ -103,6 +105,10 @@ public class PersistentTicketServiceImpl implements PersistentTokenRepository {
      */
     @Override
     public void removeUserTokens(final String username) {
-        ticketRepository.removeUserTickets(username);
+        try {
+            ticketRepository.removeUserTickets(username);
+        } catch (TicketException e) {
+            log.error("Unable to Remove Tokens for user " + username, e);
+        }
     }
 }

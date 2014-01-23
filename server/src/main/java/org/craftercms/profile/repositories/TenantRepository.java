@@ -19,11 +19,47 @@ package org.craftercms.profile.repositories;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.CrudRepository;
+import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.profile.domain.Attribute;
 import org.craftercms.profile.domain.Tenant;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.craftercms.profile.exceptions.TenantException;
 
-public interface TenantRepository extends MongoRepository<Tenant, ObjectId>, TenantRepositoryCustom {
-    List<Tenant> findAll();
+public interface TenantRepository extends CrudRepository<Tenant>, TenantRepositoryCustom {
 
-    Tenant findTenantById(ObjectId id);
+    Tenant findTenantById(ObjectId id) throws TenantException;
+
+    List<Tenant> getTenantRange(String sortBy, String sortOrder, int start, int end);
+
+    Tenant getTenantByName(String tenantName) throws TenantException;
+
+    void setAttribute(String tenantName, Attribute attribute);
+
+    void deleteAttribute(String tenantName, String attributeName);
+
+    Iterable<Tenant> getTenants(String[] roles) throws TenantException;
+
+    /**
+     * Counts how many tenants are with a given set of roles.
+     *
+     * @param roles Roles that tenant should have
+     * @return number of Tenants with given roles.
+     * @throws TenantException If unable to count tenants
+     */
+    long countTenantsWithRoles(String[] roles) throws TenantException;
+
+    /**
+     * Deletes a Tenant by its tenantId.
+     *
+     * @param tenantId ObjectId that represent the tenant Id.
+     * @throws org.craftercms.profile.exceptions.TenantException if tenant can't be deleted.
+     */
+    void deleteTenant(final ObjectId tenantId) throws MongoDataException;
+
+    /**
+     * Counts all the tenants.
+     *
+     * @return number of tenants store.
+     */
+    long count() throws MongoDataException;
 }

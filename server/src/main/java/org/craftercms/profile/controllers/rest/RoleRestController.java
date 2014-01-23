@@ -17,11 +17,11 @@
 package org.craftercms.profile.controllers.rest;
 
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.domain.Role;
+import org.craftercms.profile.exceptions.ProfileException;
 import org.craftercms.profile.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,54 +30,49 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/**
+ * Role rest Controller.
+ */
 @Controller
-@RequestMapping("/api/2/role/")
+@RequestMapping("/api/3/role/")
 public class RoleRestController {
 
     @Autowired
     private RoleService roleService;
 
     /**
-     * Create a new role
+     * Create a new role.
      *
-     * @param appToken The application token
-     * @param roleName The role name
-     * @return the new role instance
+     * @param roleName The role name.
+     * @return the new role instance.
      */
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ModelAttribute
-    public Role createRole(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-                           @RequestParam(ProfileConstants.ROLE_NAME) String roleName, HttpServletResponse response) {
+    public Role createRole(@RequestParam(ProfileConstants.ROLE_NAME) final String roleName,
+                           final HttpServletResponse response) {
         return roleService.createRole(roleName, response);
     }
 
     /**
-     * Delete role
+     * Deletes role.
      *
-     * @param appToken The application token
-     * @param roleName used to delete the role
+     * @param roleName used to delete the role.
      */
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     @ModelAttribute
-    public void deleteRole(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-                           @RequestParam(ProfileConstants.ROLE_NAME) String roleName, HttpServletResponse response) {
-        roleService.deleteRole(roleName, response);
+    public void deleteRole(@RequestParam(ProfileConstants.ROLE_NAME) final String roleName) throws ProfileException {
+        roleService.deleteRole(roleName);
     }
 
     /**
-     * Get all roles in the database
+     * Get all roles in the database.
      *
-     * @param request  instance
-     * @param appToken The application token
-     * @param response instance
-     * @return list of all roles
+     * @return list of all roles.
      */
 
     @RequestMapping(value = "get_all_roles", method = RequestMethod.GET)
     @ModelAttribute
-    public List<Role> getAllRoles(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String
-        appToken, HttpServletResponse response) {
+    public List<Role> getAllRoles() {
         return roleService.getAllRoles();
     }
-
 }

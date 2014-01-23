@@ -19,6 +19,7 @@ package org.craftercms.profile.services.impl;
 import org.craftercms.profile.domain.Attribute;
 import org.craftercms.profile.domain.Schema;
 import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.exceptions.TenantException;
 import org.craftercms.profile.repositories.TenantRepository;
 import org.craftercms.profile.services.SchemaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class SchemaServiceImpl implements SchemaService {
      * @see org.craftercms.profile.services.SchemaService#geSchemaByTenantName(java.lang.String)
      */
     @Override
-    public Schema geSchemaByTenantName(String tenantName) {
+    public Schema geSchemaByTenantName(String tenantName) throws TenantException {
         Tenant tenant = tenantRepository.getTenantByName(tenantName);
         Schema schema = null;
         if (tenant != null) {
