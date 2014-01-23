@@ -18,7 +18,6 @@ package org.craftercms.profile.services;
 
 import java.util.List;
 
-import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.domain.Tenant;
 import org.craftercms.profile.exceptions.TenantException;
 import org.craftercms.profile.exceptions.TicketException;
@@ -66,7 +65,7 @@ public interface MultiTenantService {
 
     Tenant getTenantById(String tenantName) throws TenantException;
 
-    long getTenantsCount() throws MongoDataException;
+    long getTenantsCount() throws TenantException;
 
     boolean exists(String tenantName) throws TenantException;
 

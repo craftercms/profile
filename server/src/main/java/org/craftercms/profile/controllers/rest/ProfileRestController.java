@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,6 +33,8 @@ import org.craftercms.profile.exceptions.ExpiryDateException;
 import org.craftercms.profile.exceptions.InvalidEmailException;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
+import org.craftercms.profile.exceptions.TenantException;
+import org.craftercms.profile.exceptions.TicketException;
 import org.craftercms.profile.services.ProfileService;
 import org.craftercms.profile.services.VerifyAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,8 +82,9 @@ public class ProfileRestController {
                                  @RequestParam(ProfileConstants.TENANT_NAME) String tenantName,
                                  @RequestParam(ProfileConstants.EMAIL) String email,
                                  @RequestParam(required=false, value = ProfileConstants.ROLES) String[] rolesArray,
-                                 @RequestParam(required=false) String verificationAccountUrl,
-                                 HttpServletResponse response) throws InvalidEmailException, CipherException, MailException, NoSuchProfileException {
+                                 @RequestParam(required=false) String verificationAccountUrl, HttpServletResponse
+        response) throws InvalidEmailException, CipherException, MailException, NoSuchProfileException,
+        TenantException {
         return profileService.createProfile(userName, password, active, tenantName, email, getAttributeMap(request),
             (rolesArray != null? Arrays.asList(rolesArray): null), verificationAccountUrl, response, request);
     }
@@ -259,8 +261,8 @@ public class ProfileRestController {
      */
     @RequestMapping(value = "ticket/{ticket}", method = RequestMethod.GET)
     @ModelAttribute
-    public Profile getProfileByTicket(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-                                      @PathVariable String ticket) throws NoSuchProfileException {
+    public Profile getProfileByTicket(@RequestParam(ProfileConstants.APP_TOKEN) String appToken, @PathVariable String
+        ticket) throws NoSuchProfileException, TicketException {
 
         Profile profile = profileService.getProfileByTicket(ticket);
         if (profile == null) {
@@ -283,7 +285,7 @@ public class ProfileRestController {
     @ModelAttribute
     public Profile getProfileByTicketWithAttributes(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
                                                     @PathVariable String ticket, @RequestParam(required = false,
-        value = ProfileConstants.ATTRIBUTES) List<String> attributes) throws NoSuchProfileException {
+        value = ProfileConstants.ATTRIBUTES) List<String> attributes) throws NoSuchProfileException, TicketException {
 
         Profile profile = profileService.getProfileByTicket(ticket, attributes);
         if (profile == null) {
@@ -302,8 +304,7 @@ public class ProfileRestController {
      */
     @RequestMapping(value = "ticket/{ticket}/with_all_attributes", method = RequestMethod.GET)
     @ModelAttribute
-    public Profile getProfileByTicketWithAllAttributes(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-                                                       @PathVariable String ticket) throws NoSuchProfileException {
+    public Profile getProfileByTicketWithAllAttributes(@RequestParam(ProfileConstants.APP_TOKEN) String appToken, @PathVariable String ticket) throws NoSuchProfileException, TicketException {
 
         Profile profile = profileService.getProfileByTicketWithAllAttributes(ticket);
         if (profile == null) {

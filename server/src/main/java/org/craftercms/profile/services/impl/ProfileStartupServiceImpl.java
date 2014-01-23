@@ -29,6 +29,7 @@ import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.InvalidEmailException;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
+import org.craftercms.profile.exceptions.TenantException;
 import org.craftercms.profile.services.MultiTenantService;
 import org.craftercms.profile.services.ProfileService;
 import org.craftercms.profile.services.RoleService;
@@ -96,7 +97,7 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
     private boolean createBasicUser = false;
 
     @Override
-    public void onApplicationEvent(ApplicationEvent event) {
+    public void onApplicationEvent(final ApplicationEvent event) {
         if (event instanceof ContextRefreshedEvent) {
             try {
                 startup();
@@ -111,18 +112,21 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
             } catch (NoSuchProfileException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+            } catch (TenantException e) {
+                e.printStackTrace();
             }
         }
     }
 
-    public void startup() throws InvalidEmailException, CipherException, MailException, NoSuchProfileException {
+    public void startup() throws InvalidEmailException, CipherException, MailException, NoSuchProfileException,
+        TenantException {
         if (!isTenantExist()) {
             createBasicCollections(tenantName);
             createBaseProfiles(tenantName);
         }
     }
 
-    private Tenant createBasicCollections(String tenantName) {
+    private Tenant createBasicCollections(final String tenantName) throws TenantException {
         Tenant tenant = null;
 
         tenant = this.multiTenantService.createTenant(tenantName, false, tenantDefaultRoles, tenantDefaultDomains);
@@ -134,7 +138,7 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
         return tenant;
     }
 
-    private void addAttributes(String tenantName, Map<String, String> attributes) {
+    private void addAttributes(final String tenantName, final Map<String, String> attributes) {
         List<String> key = new ArrayList<String>(attributes.keySet());
         List<String> value = new ArrayList<String>(attributes.values());
         Attribute attribute;
@@ -160,7 +164,7 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
     }
 
     private void createBaseProfiles(String tenantName) throws InvalidEmailException, CipherException, MailException,
-        NoSuchProfileException {
+        NoSuchProfileException, TenantException {
 
         if (this.adminRoles == null || this.adminRoles.size() == 0) {
             if (this.adminRoles == null) {

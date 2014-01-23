@@ -213,8 +213,13 @@ public class MultiTenantServiceImpl implements MultiTenantService {
      * @see org.craftercms.profile.services.MultiTenantService#getTenantsCount()
      */
     @Override
-    public long getTenantsCount() throws MongoDataException {
-        return tenantRepository.count();
+    public long getTenantsCount() throws TenantException {
+        try {
+            return tenantRepository.count();
+        } catch (MongoDataException ex) {
+            log.error("Unable to count tenants", ex);
+            throw new TenantException("Unable to count tenants", ex);
+        }
     }
 
     /* (non-Javadoc)
