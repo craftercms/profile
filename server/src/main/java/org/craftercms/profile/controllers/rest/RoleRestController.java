@@ -16,12 +16,10 @@
  */
 package org.craftercms.profile.controllers.rest;
 
-import java.util.List;
-import javax.servlet.http.HttpServletResponse;
-
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.domain.Role;
 import org.craftercms.profile.exceptions.ProfileException;
+import org.craftercms.profile.exceptions.RoleException;
 import org.craftercms.profile.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * Role rest Controller.
  */
 @Controller
-@RequestMapping("/api/3/role/")
+@RequestMapping("/api/2/role/")
 public class RoleRestController {
 
     @Autowired
@@ -48,9 +46,8 @@ public class RoleRestController {
      */
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ModelAttribute
-    public Role createRole(@RequestParam(ProfileConstants.ROLE_NAME) final String roleName,
-                           final HttpServletResponse response) {
-        return roleService.createRole(roleName, response);
+    public Role createRole(@RequestParam(ProfileConstants.ROLE_NAME) final String roleName) throws RoleException {
+        return roleService.createRole(roleName);
     }
 
     /**
@@ -72,7 +69,7 @@ public class RoleRestController {
 
     @RequestMapping(value = "get_all_roles", method = RequestMethod.GET)
     @ModelAttribute
-    public List<Role> getAllRoles() {
+    public Iterable<Role> getAllRoles() throws RoleException {
         return roleService.getAllRoles();
     }
 }

@@ -22,13 +22,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mongodb.MongoException;
 import org.craftercms.profile.domain.Attribute;
 import org.craftercms.profile.domain.Tenant;
 import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.InvalidEmailException;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
+import org.craftercms.profile.exceptions.RoleException;
 import org.craftercms.profile.exceptions.TenantException;
 import org.craftercms.profile.services.MultiTenantService;
 import org.craftercms.profile.services.ProfileService;
@@ -44,17 +44,16 @@ import org.springframework.context.event.ContextRefreshedEvent;
 
 public class ProfileStartupServiceImpl implements ApplicationListener {
 
+    private final transient Logger log = LoggerFactory.getLogger(ProfileStartupServiceImpl.class);
     private Map<String, String> schemaAttributes = new HashMap<String, String>() {
         {
             put("last-name", "Last Name");
             put("first-name", "First Name");
         }
     };
-
     private String profilePassword = "admin";
     private String profileUsername = "admin";
     private String profileEmail = "adminprofile@craftercms.com";
-
     private String authorPassword = "author";
     private String authorUsername = "author";
     private String authorEmail = "authorprofile@craftercms.com";
@@ -65,27 +64,19 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
     private String superAdminUsername = "superadmin";
     private String superAdminEmail = "superadminprofile@craftercms.com";
     private String tenantName = "craftercms";
-
     private List<String> adminRoles;
     private List<String> superadminRoles;
     private List<String> authorRoles;
     private List<String> regularRoles;
-
     @Autowired
     private MultiTenantService multiTenantService;
-
     @Autowired
     private SchemaService schemaService;
-
     @Autowired
     private ProfileService profileService;
-
     @Autowired
     private RoleService roleService;
-
     private boolean isDefaultRolesOn = true;
-    private final transient Logger log = LoggerFactory.getLogger(ProfileStartupServiceImpl.class);
-
     private String propertiesFile;
 
     private List<String> appRoles;
@@ -101,32 +92,25 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
         if (event instanceof ContextRefreshedEvent) {
             try {
                 startup();
-            } catch (InvalidEmailException e) {
-                log.error("Profile startup error: ", e);
-            } catch (CipherException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (MailException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (NoSuchProfileException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (TenantException e) {
-                e.printStackTrace();
+            } catch (InvalidEmailException | CipherException | MailException | NoSuchProfileException |
+                TenantException | RoleException ex) {
+                log.error("Unable to create validate or create basic system information, " +
+                    "startup will be stop" + "until this issues are fix.", ex);
+                throw new UnsupportedOperationException("Unable to create or validate basic system information", ex);
+
             }
         }
+
     }
 
-    public void startup() throws InvalidEmailException, CipherException, MailException, NoSuchProfileException,
-        TenantException {
+    public void startup() throws InvalidEmailException, CipherException, MailException, NoSuchProfileException, TenantException, RoleException {
         if (!isTenantExist()) {
             createBasicCollections(tenantName);
             createBaseProfiles(tenantName);
         }
     }
 
-    private Tenant createBasicCollections(final String tenantName) throws TenantException {
+    private Tenant createBasicCollections(final String tenantName) throws TenantException, RoleException {
         Tenant tenant = null;
 
         tenant = this.multiTenantService.createTenant(tenantName, false, tenantDefaultRoles, tenantDefaultDomains);
@@ -154,12 +138,9 @@ public class ProfileStartupServiceImpl implements ApplicationListener {
     }
 
 
-    private void createSystemAppRoles(String tenantName) {
+    private void createSystemAppRoles(String tenantName) throws RoleException {
         for (String role : this.appRoles) {
-            try {
-                this.roleService.createRole(role, null);
-            } catch (MongoException.DuplicateKey e) {
-            }
+            this.roleService.createRole(role);
         }
     }
 

@@ -5,32 +5,24 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.bson.types.ObjectId;
-import org.craftercms.profile.constants.GroupRoleConstants;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
-import org.springframework.data.mongodb.core.mapping.Field;
+import org.craftercms.commons.mongo.Document;
+import org.jongo.marshall.jackson.oid.Id;
 
 @XStreamAlias("group")
 @XmlRootElement
-@CompoundIndexes({@CompoundIndex(name = "name_tenantName_idx", def = "{'name': 1, 'tenantName': 1}", unique = true)})
+@Document(collectionName = "groupRole")
 public class GroupRole {
-
-    @Field(GroupRoleConstants.FIELD_ID)
+    @Id
     private ObjectId id;
-    @Field(GroupRoleConstants.GROUP_NAME)
     private String name;
-    @Field(GroupRoleConstants.TENANT)
     private String tenantName;
-    @Field(GroupRoleConstants.ROLES)
     private List<String> roles;
-
-    private static final long serialVersionUID = 3370284215738389721L;
 
     public ObjectId getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(final ObjectId id) {
         this.id = id;
     }
 
@@ -38,7 +30,7 @@ public class GroupRole {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -46,7 +38,7 @@ public class GroupRole {
         return tenantName;
     }
 
-    public void setTenantName(String tenantName) {
+    public void setTenantName(final String tenantName) {
         this.tenantName = tenantName;
     }
 
@@ -54,7 +46,7 @@ public class GroupRole {
         return roles;
     }
 
-    public void setRoles(List<String> roles) {
+    public void setRoles(final List<String> roles) {
         this.roles = roles;
     }
 

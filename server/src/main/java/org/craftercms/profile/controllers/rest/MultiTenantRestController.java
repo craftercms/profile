@@ -17,7 +17,6 @@
 package org.craftercms.profile.controllers.rest;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.domain.Tenant;
@@ -33,10 +32,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/**
+ * Multitenant Rest controller.
+ */
 @Controller
 @RequestMapping("/api/2/tenant/")
 public class MultiTenantRestController {
 
+    /**
+     * Multitenant Services.
+     */
     @Autowired
     private MultiTenantService multiTenantService;
 
@@ -114,11 +119,10 @@ public class MultiTenantRestController {
 
     @RequestMapping(value = "range", method = RequestMethod.GET)
     @ModelAttribute
-    public List<Tenant> getTenantRange(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-                                       @RequestParam(required = false, value = ProfileConstants.SORT_BY) String
-                                           sortBy, @RequestParam(required = false,
-        value = ProfileConstants.SORT_ORDER) String sortOrder, @RequestParam(ProfileConstants.START) int start,
-                                       @RequestParam(ProfileConstants.END) int end) {
+    public Iterable<Tenant> getTenantRange(@RequestParam(required = false, value = ProfileConstants.SORT_BY)
+                                           final String sortBy, @RequestParam(required = false,
+        value = ProfileConstants.SORT_ORDER) final String sortOrder, @RequestParam(ProfileConstants.START) final int
+        start, @RequestParam(ProfileConstants.END) final int end) {
         return multiTenantService.getTenantRange(sortBy, sortOrder, start, end);
     }
 

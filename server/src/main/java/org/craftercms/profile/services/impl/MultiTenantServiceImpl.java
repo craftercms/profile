@@ -153,16 +153,12 @@ public class MultiTenantServiceImpl implements MultiTenantService {
      */
     @Override
     public void deleteTenant(final String tenantName) throws TenantException {
-        try {
-            Tenant t = tenantRepository.getTenantByName(tenantName);
-            profileService.deleteProfiles(tenantName);
-            if (t != null) {
-                tenantRepository.deleteTenant(t.getId());
-            }
-        } catch (MongoDataException ex) {
-            log.error("Unable to delete tenant " + tenantName, ex);
-            throw new TenantException("Unable to delete tenant", ex);
+        Tenant t = tenantRepository.getTenantByName(tenantName);
+        profileService.deleteProfiles(tenantName);
+        if (t != null) {
+            tenantRepository.deleteTenant(t.getId());
         }
+
 
     }
 
@@ -205,7 +201,7 @@ public class MultiTenantServiceImpl implements MultiTenantService {
      * int, int)
      */
     @Override
-    public List<Tenant> getTenantRange(final String sortBy, String sortOrder, int start, int end) {
+    public Iterable<Tenant> getTenantRange(final String sortBy, String sortOrder, int start, int end) {
         return tenantRepository.getTenantRange(sortBy, sortOrder, start, end);
     }
 
@@ -214,12 +210,7 @@ public class MultiTenantServiceImpl implements MultiTenantService {
      */
     @Override
     public long getTenantsCount() throws TenantException {
-        try {
-            return tenantRepository.count();
-        } catch (MongoDataException ex) {
-            log.error("Unable to count tenants", ex);
-            throw new TenantException("Unable to count tenants", ex);
-        }
+        return tenantRepository.count();
     }
 
     /* (non-Javadoc)

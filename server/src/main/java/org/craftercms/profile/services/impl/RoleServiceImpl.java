@@ -16,10 +16,7 @@
  */
 package org.craftercms.profile.services.impl;
 
-import java.io.IOException;
-import java.util.List;
-import javax.servlet.http.HttpServletResponse;
-
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.domain.Role;
 import org.craftercms.profile.exceptions.RoleException;
 import org.craftercms.profile.exceptions.TenantException;
@@ -29,7 +26,6 @@ import org.craftercms.profile.services.RoleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -46,21 +42,16 @@ public class RoleServiceImpl implements RoleService {
      * javax.servlet.http.HttpServletResponse)
      */
     @Override
-    public Role createRole(String roleName, HttpServletResponse response) {
+    public Role createRole(String roleName) throws RoleException {
         Role role = new Role();
         role.setRoleName(roleName);
         try {
-            return roleRepository.save(role);
-        } catch (DuplicateKeyException e) {
-            try {
-                if (response != null) {
-                    response.sendError(HttpServletResponse.SC_CONFLICT);
-                }
-            } catch (IOException e1) {
-                log.error("Can't set error status after a DuplicateKey exception was received.");
-            }
+            roleRepository.save(role);
+            return role;
+        } catch (MongoDataException e) {
+            log.error("Unable to Save new role " + roleName);
+            throw new RoleException("Unable to save Role", e);
         }
-        return null;
     }
 
     /* (non-Javadoc)
@@ -83,7 +74,12 @@ public class RoleServiceImpl implements RoleService {
         } else {
             Role role = getRole(roleName);
             if (role != null) {
-                roleRepository.delete(role);
+                try {
+                    roleRepository.removeById(role.getId().toString());
+                } catch (MongoDataException e) {
+                    log.error("Unable to delete Role with id" + role.getId().toString(), e);
+                    throw new RoleException("Unable to delete Role", e);
+                }
             }
         }
     }
@@ -92,27 +88,28 @@ public class RoleServiceImpl implements RoleService {
      * @see org.craftercms.profile.services.RoleService#deleteAllRoles()
      */
     @Override
-    public void deleteAllRoles() {
-        List<Role> roles = getAllRoles();
-        for (Role r : roles) {
-            roleRepository.delete(r);
-        }
+    public void deleteAllRoles() throws RoleException {
+        roleRepository.removeAll();
     }
 
     /* (non-Javadoc)
      * @see org.craftercms.profile.services.RoleService#getAllRoles()
      */
     @Override
-    public List<Role> getAllRoles() {
-
-        return roleRepository.findAll();
+    public Iterable<Role> getAllRoles() throws RoleException {
+        try {
+            return roleRepository.findAll();
+        } catch (MongoDataException e) {
+            log.error("Unable to search Roles", e);
+            throw new RoleException("Unable to search for all roles", e);
+        }
     }
 
     /* (non-Javadoc)
      * @see org.craftercms.profile.services.RoleService#getRole(java.lang.String)
      */
     @Override
-    public Role getRole(String roleName) {
+    public Role getRole(String roleName) throws RoleException {
         return roleRepository.findByRoleName(roleName);
     }
 

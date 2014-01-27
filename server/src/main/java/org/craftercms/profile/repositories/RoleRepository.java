@@ -16,16 +16,28 @@
  */
 package org.craftercms.profile.repositories;
 
-import java.util.List;
-
-import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.CrudRepository;
 import org.craftercms.profile.domain.Role;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.craftercms.profile.exceptions.RoleException;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Definition of Role Repositories.
+ */
 @Repository("roleRepository")
-public interface RoleRepository extends MongoRepository<Role, ObjectId>, RoleRepositoryCustom {
-    List<Role> findAll();
+public interface RoleRepository extends CrudRepository<Role> {
+    /**
+     * Gets a Role by its name.
+     *
+     * @param roleName Name of the Role.
+     * @return The Role with the given name.<b>Null if not found</b>.
+     * @throws org.craftercms.profile.exceptions.RoleException if a error is raise while searching.
+     */
+    Role findByRoleName(final String roleName) throws RoleException;
 
-    Role findByRoleName(String roleName);
+    /**
+     * <b>Removes all the Roles in the collections</b><br/>
+     * Think twice before calling this.
+     */
+    void removeAll() throws RoleException;
 }

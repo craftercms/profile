@@ -20,7 +20,7 @@
     <comment>
         This File contains default CrafterCms MongoDBQueries.
         If you want to override any of this queries use custom-queries.properties file located
-        classpath:craftercms/extension/studio/mongodb/custom-queries.properties
+        classpath:crafter/profile/extension/mongo.properties
     </comment>
 
     <entry key="profile.ticket.ByUsername">
@@ -40,6 +40,18 @@
 
     <entry key="profile.tenant.byName">
         {tenantName : #}
+    </entry>
+
+    <entry key="profile.role.byName">
+        {roleName :#}
+    </entry>
+
+    <entry key="profile.grouproles.byNameAndTenantName">
+        {name:{$in:#},tenantName:#}
+    </entry>
+
+    <entry key="profile.grouproles.byTenantName">
+        {tenantName:#}
     </entry>
 
 </properties>

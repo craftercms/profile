@@ -69,7 +69,7 @@ public interface MultiTenantService {
 
     boolean exists(String tenantName) throws TenantException;
 
-    List<Tenant> getTenantRange(String sortBy, String sortOrder, int start, int end);
+    Iterable<Tenant> getTenantRange(String sortBy, String sortOrder, int start, int end);
 
     Iterable<Tenant> getAllTenants() throws TenantException;
 

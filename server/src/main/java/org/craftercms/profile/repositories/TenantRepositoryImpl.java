@@ -31,13 +31,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+/**
+ * Default Implementation of tenant repository.
+ */
 @Component
 public class TenantRepositoryImpl extends JongoRepository<Tenant> implements TenantRepository {
 
+    /**
+     * Find by Tenant Roles query.
+     */
     public static final String PROFILE_TENANT_BY_ROLES = "profile.tenant.byRoles";
+    /**
+     * Find by Tenant by It's name query.
+     */
     public static final String PROFILE_TENANT_BY_NAME = "profile.tenant.byName";
-    Logger log = LoggerFactory.getLogger(TenantRepositoryImpl.class);
+    /**
+     * Das Logger.
+     */
+    private Logger log = LoggerFactory.getLogger(TenantRepositoryImpl.class);
 
+    /**
+     * Default Ctr.
+     *
+     * @throws MongoDataException, If parent couldn't get information of the Tenant class.
+     */
     public TenantRepositoryImpl() throws MongoDataException {
     }
 
@@ -53,7 +70,7 @@ public class TenantRepositoryImpl extends JongoRepository<Tenant> implements Ten
 
     @Override
     public List<Tenant> getTenantRange(final String sortBy, final String sortOrder, final int start, final int end) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -109,19 +126,19 @@ public class TenantRepositoryImpl extends JongoRepository<Tenant> implements Ten
     }
 
     @Override
-    public void deleteTenant(final ObjectId tenantId) throws MongoDataException {
+    public void deleteTenant(final ObjectId tenantId) throws TenantException {
         try {
             log.debug("Deleting tenant with tenantId {}", tenantId);
             WriteResult writeResult = getCollection().remove(tenantId);
             checkCommandResult(writeResult);
-        } catch (MongoException ex) {
+        } catch (MongoDataException ex) {
             log.debug("Unable to delete Tenant with tenantId " + tenantId.toString(), ex);
-            throw new MongoDataException("Unable to delete tenant", ex);
+            throw new TenantException("Unable to delete tenant", ex);
         }
     }
 
     @Override
-    public long count() throws MongoDataException {
+    public long count() throws TenantException {
         try {
             log.debug("Counting tenants");
             long total = getCollection().count();
@@ -129,7 +146,7 @@ public class TenantRepositoryImpl extends JongoRepository<Tenant> implements Ten
             return total;
         } catch (MongoException ex) {
             log.debug("Unable to count tenants");
-            throw new MongoDataException("Unable count tenants", ex);
+            throw new TenantException("Unable count tenants", ex);
 
         }
     }
