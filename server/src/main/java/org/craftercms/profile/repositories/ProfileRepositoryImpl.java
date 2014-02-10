@@ -312,4 +312,11 @@ public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
 
     }
 
+    @Override
+    public List<Profile> findByAttributeAndValue(final String attribute, final String attributeValue) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(ProfileConstants.ATTRIBUTES_DOT + attribute).is(attributeValue));
+        return mongoTemplate.find(query,Profile.class);
+    }
+
 }

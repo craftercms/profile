@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.craftercms.profile.ProfileClientException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.UserAuthenticationFailedException;
 import org.craftercms.profile.impl.domain.*;
@@ -639,5 +640,16 @@ public interface ProfileClient {
      * @return The profile instance verified
      */
 	Profile verifyProfile(String appToken, String token);
+
+    /**
+     * Returns a list of profiles where the given attribute has the given value.
+     * @param attribute Attribute to Look for
+     * @param attributeName value of the attribute
+     * @return Empty List if nothing is found,List of Profiles that have the given property with the given value.
+     * @throws org.craftercms.profile.ProfileClientException If return status is not 200 or a error processing the
+     * request is thrown.
+     */
+    public List<Profile> getProfilesByAttributeValue(final String appToken, final String attribute,
+                                                     final String attributeName) throws ProfileClientException;
 
 }
