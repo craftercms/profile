@@ -195,87 +195,12 @@
         <finalName>crafter-profile-admin-console</finalName>
         <plugins>
             <plugin>
-                <groupId>com.github.joelittlejohn.embedmongo</groupId>
-                <artifactId>embedmongo-maven-plugin</artifactId>
-                <version>0.1.9</version>
-                <executions>
-                    <execution>
-                        <id>start</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                        <configuration>
-                            <port>26017</port>
-                            <databaseDirectory>${basedir}/target</databaseDirectory>
-                            <randomPort>false</randomPort>
-                            <logging>none</logging>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>stop</id>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>8.1.11.v20130520</version>
-                <configuration>
-                    <webXml>${basedir}/src/test/resources/test-web.xml</webXml>
-                    <webDefaultXml>${basedir}/src/test/resources/test-web.xml</webDefaultXml>
-                    <overrideWebXml>${basedir}/src/test/resources/test-web.xml</overrideWebXml>
-                    <connectors>
-                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                            <port>8888</port>
-                        </connector>
-                    </connectors>
-                    <webAppConfig>
-                        <contextPath>/crafter-profile-admin-console</contextPath>
-                        <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
-                    </webAppConfig>
-                    <contextHandlers>
-                        <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-                            <war>${basedir}/../server/target/crafter-profile.war</war>
-                            <contextPath>/crafter-profile</contextPath>
-                            <extraClasspath>${basedir}/src/test/resources/</extraClasspath>
-                        </contextHandler>
-                    </contextHandlers>
-                    <scanIntervalSeconds>10</scanIntervalSeconds>
-                    <stopKey>foo</stopKey>
-                    <stopPort>9999</stopPort>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>start-jetty</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                        <configuration>
-                            <scanIntervalSeconds>0</scanIntervalSeconds>
-                            <daemon>true</daemon>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>stop-jetty</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.plugin.version}</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
             <plugin>
