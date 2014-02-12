@@ -515,7 +515,7 @@
                             <goal>start</goal>
                         </goals>
                         <configuration>
-                            <port>28017</port>
+                            <port>18017</port>
                             <databaseDirectory>${basedir}/target</databaseDirectory>
                             <randomPort>false</randomPort>
                             <logging>none</logging>
