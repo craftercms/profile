@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import org.craftercms.profile.constants.GroupRoleConstants;
 import org.craftercms.profile.domain.GroupRole;
 import org.craftercms.profile.exceptions.GroupRoleException;
+import org.craftercms.profile.exceptions.ProfileException;
 import org.craftercms.profile.services.GroupRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -58,22 +59,20 @@ public class GroupMappingRestController {
     public List<String> getGroupRoleMapping(@RequestParam(required = true) final String profileId,
                                             @RequestParam(required = true) final String tenantName,
                                             @RequestParam(required = true, value = GroupRoleConstants.GROUPS)
-    final String[] groups) throws GroupRoleException {
+    final String[] groups) throws GroupRoleException, ProfileException {
         return groupService.getGroupRoleMapping(profileId, tenantName, groups);
     }
 
     @RequestMapping(value = "get_all", method = RequestMethod.GET)
     @ModelAttribute
     public List<String> getGroupRoles(@RequestParam(required = true) final String profileId,
-                                      @RequestParam(required = true) final String tenantName) throws
-        GroupRoleException {
+                                      @RequestParam(required = true) final String tenantName) throws GroupRoleException, ProfileException {
         return groupService.getGroupRoleMapping(profileId, tenantName);
     }
 
     @RequestMapping(value = "get_all_tenant", method = RequestMethod.GET)
     @ModelAttribute
-    public Iterable<GroupRole> getGroupRole(@RequestParam(required = true) final String tenantName) throws
-        GroupRoleException {
+    public Iterable<GroupRole> getGroupRole(@RequestParam(required = true) final String tenantName) throws GroupRoleException {
         return groupService.getGroupRoleMapping(tenantName);
     }
 

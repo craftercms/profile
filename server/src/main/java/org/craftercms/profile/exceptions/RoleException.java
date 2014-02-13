@@ -5,7 +5,7 @@ package org.craftercms.profile.exceptions;
  *
  * @author Carlos Ortiz.
  */
-public class RoleException extends ProfileException {
+public class RoleException extends AbstractProfileException {
 
     private static final long serialVersionUID = -2495205339397178280L;
 

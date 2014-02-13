@@ -5,7 +5,7 @@ package org.craftercms.profile.exceptions;
  * <p>Since ticket operations are backbone of the application execution of any flow should be suspended
  * if there is a problem with the ticket (persistence of it).</p>
  */
-public class TicketException extends ProfileException {
+public class TicketException extends AbstractProfileException {
 
     private static final long serialVersionUID = -8791745852807299843L;
 

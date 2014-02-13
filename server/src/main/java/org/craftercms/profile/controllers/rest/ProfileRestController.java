@@ -33,6 +33,7 @@ import org.craftercms.profile.exceptions.ExpiryDateException;
 import org.craftercms.profile.exceptions.InvalidEmailException;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
+import org.craftercms.profile.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.TenantException;
 import org.craftercms.profile.exceptions.TicketException;
 import org.craftercms.profile.services.ProfileService;
@@ -52,12 +53,12 @@ public class ProfileRestController {
 
     @Autowired
     private ProfileService profileService;
-    
+
     @Autowired
     private VerifyAccountService verifyAccountService;
 
     /**
-     * Create profile
+     * Create profile.
      *
      * @param appToken
      * @param origin
@@ -70,27 +71,28 @@ public class ProfileRestController {
      * @param suffix
      * @return
      * @throws InvalidEmailException
-     * @throws NoSuchProfileException 
-     * @throws MailException 
-     * @throws CipherException 
+     * @throws NoSuchProfileException
+     * @throws MailException
+     * @throws CipherException
      */
     @RequestMapping(value = "create", method = RequestMethod.POST)
     @ModelAttribute
-    public Profile createProfile(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String
-        appToken, @RequestParam(ProfileConstants.USER_NAME) String userName, @RequestParam(ProfileConstants.PASSWORD)
-    String password, @RequestParam(ProfileConstants.ACTIVE) Boolean active,
-                                 @RequestParam(ProfileConstants.TENANT_NAME) String tenantName,
-                                 @RequestParam(ProfileConstants.EMAIL) String email,
-                                 @RequestParam(required=false, value = ProfileConstants.ROLES) String[] rolesArray,
-                                 @RequestParam(required=false) String verificationAccountUrl, HttpServletResponse
-        response) throws InvalidEmailException, CipherException, MailException, NoSuchProfileException,
-        TenantException {
+    public Profile createProfile(final HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN)
+    final String appToken, @RequestParam(ProfileConstants.USER_NAME) final String userName,
+                                 @RequestParam(ProfileConstants.PASSWORD) final String password,
+                                 @RequestParam(ProfileConstants.ACTIVE) final Boolean active,
+                                 @RequestParam(ProfileConstants.TENANT_NAME) final String tenantName,
+                                 @RequestParam(ProfileConstants.EMAIL) final String email,
+                                 @RequestParam(required = false, value = ProfileConstants.ROLES) final String[]
+                                     rolesArray, @RequestParam(required = false) final String verificationAccountUrl,
+                                 final HttpServletResponse response) throws InvalidEmailException, CipherException,
+        MailException, NoSuchProfileException, TenantException {
         return profileService.createProfile(userName, password, active, tenantName, email, getAttributeMap(request),
             (rolesArray != null? Arrays.asList(rolesArray): null), verificationAccountUrl, response, request);
     }
 
     /**
-     * Get Profiles Count
+     * Get Profiles Count.
      *
      * @param appToken
      * @param response
@@ -98,13 +100,15 @@ public class ProfileRestController {
      */
     @RequestMapping(value = "count", method = RequestMethod.GET)
     @ModelAttribute
-    public long getProfilesCount(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String
-        appToken, @RequestParam(ProfileConstants.TENANT_NAME) String tenantName, HttpServletResponse response) {
+    public long getProfilesCount(final HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN)
+        final String
+        appToken, @RequestParam(ProfileConstants.TENANT_NAME) final String tenantName,
+                                 HttpServletResponse response) throws ProfileException {
         return profileService.getProfilesCount(tenantName);
     }
 
     /**
-     * Get Profiles in given range
+     * Get Profiles in given range.
      *
      * @param request
      * @param start
@@ -134,7 +138,7 @@ public class ProfileRestController {
     @RequestMapping(value = "{profileId}", method = RequestMethod.GET)
     @ModelAttribute
     public Profile getProfile(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-                              @PathVariable String profileId, HttpServletResponse response) {
+                              @PathVariable String profileId, HttpServletResponse response) throws ProfileException {
         return profileService.getProfile(profileId);
     }
 
@@ -142,9 +146,9 @@ public class ProfileRestController {
     @ModelAttribute
     public List<Profile> getProfilesByAttributeValue(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
                                                      @PathVariable String attribute,
-                                                     @PathVariable() String attributeValue){
+                                                     @PathVariable() String attributeValue) {
 
-         return profileService.getProfilesByAttributeValue(attribute, attributeValue);
+        return profileService.getProfilesByAttributeValue(attribute, attributeValue);
     }
 
     /**
@@ -157,10 +161,10 @@ public class ProfileRestController {
      */
     @RequestMapping(value = "{profileId}/with_attributes", method = RequestMethod.GET)
     @ModelAttribute
-    public Profile getProfileWithAttributes(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-                                            @PathVariable String profileId,
+    public Profile getProfileWithAttributes(final @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+                                         final   @PathVariable String profileId,
                                             @RequestParam(ProfileConstants.ATTRIBUTES) List<String> attributes,
-                                            HttpServletResponse response) {
+                                            HttpServletResponse response) throws ProfileException {
         return profileService.getProfile(profileId, attributes);
     }
 
@@ -175,7 +179,8 @@ public class ProfileRestController {
     @RequestMapping(value = "{profileId}/with_all_attributes", method = RequestMethod.GET)
     @ModelAttribute
     public Profile getProfileWithAllAttributes(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-                                               @PathVariable String profileId, HttpServletResponse response) {
+                                               @PathVariable String profileId, HttpServletResponse response) throws
+        ProfileException {
         return profileService.getProfileWithAllAttributes(profileId);
     }
 
@@ -261,8 +266,8 @@ public class ProfileRestController {
      */
     @RequestMapping(value = "ticket/{ticket}", method = RequestMethod.GET)
     @ModelAttribute
-    public Profile getProfileByTicket(@RequestParam(ProfileConstants.APP_TOKEN) String appToken, @PathVariable String
-        ticket) throws NoSuchProfileException, TicketException {
+    public Profile getProfileByTicket(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+                                      @PathVariable String ticket) throws NoSuchProfileException, TicketException {
 
         Profile profile = profileService.getProfileByTicket(ticket);
         if (profile == null) {
@@ -304,7 +309,9 @@ public class ProfileRestController {
      */
     @RequestMapping(value = "ticket/{ticket}/with_all_attributes", method = RequestMethod.GET)
     @ModelAttribute
-    public Profile getProfileByTicketWithAllAttributes(@RequestParam(ProfileConstants.APP_TOKEN) String appToken, @PathVariable String ticket) throws NoSuchProfileException, TicketException {
+    public Profile getProfileByTicketWithAllAttributes(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
+                                                       @PathVariable String ticket) throws NoSuchProfileException,
+        TicketException {
 
         Profile profile = profileService.getProfileByTicketWithAllAttributes(ticket);
         if (profile == null) {
@@ -366,7 +373,7 @@ public class ProfileRestController {
         value = ProfileConstants.ACTIVE) Boolean active, @RequestParam(required = false,
         value = ProfileConstants.TENANT_NAME) String tenantName, @RequestParam(ProfileConstants.EMAIL) String email,
                                  @RequestParam(required = false, value = ProfileConstants.ROLES) String[] rolesArray,
-                                 HttpServletResponse response) {
+                                 HttpServletResponse response) throws ProfileException {
         return profileService.updateProfile(profileId, userName, password, active, tenantName, email,
             getAttributeMap(request), (rolesArray != null? Arrays.asList(rolesArray): null));
     }
@@ -377,7 +384,8 @@ public class ProfileRestController {
     @RequestMapping(value = "active/all", method = RequestMethod.GET)
     @ModelAttribute
     public void activeProfiles(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-                               @RequestParam(ProfileConstants.ACTIVE) Boolean active, HttpServletResponse response) {
+                               @RequestParam(ProfileConstants.ACTIVE) Boolean active,
+                               HttpServletResponse response) throws ProfileException {
         profileService.activateProfiles(active);
     }
 
@@ -393,35 +401,32 @@ public class ProfileRestController {
     @ModelAttribute
     public void activeProfile(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
                               @PathVariable String profileId, @RequestParam(ProfileConstants.ACTIVE) Boolean active,
-                              HttpServletResponse response) {
+                              HttpServletResponse response) throws ProfileException {
         profileService.activateProfile(profileId, active);
     }
-    
+
     /**
      * Active Profile for appToken and profile Id
      *
-     * @param appToken  The application token
      * @param profileId that is going to be deleted
      * @param active    indicates if the profile will be actived or inactived.
-     * @param response  Servlet response instance
-     * @throws ExpiryDateException 
-     * @throws ParseException 
-     * @throws NoSuchProfileException 
-     * @throws CipherException 
+     * @throws ExpiryDateException
+     * @throws ParseException
+     * @throws NoSuchProfileException
+     * @throws CipherException
      */
     @RequestMapping(value = "verify", method = RequestMethod.POST)
     @ModelAttribute
-    public Profile verifyProfile(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-                              @RequestParam(ProfileConstants.TOKEN) String token,
-                              HttpServletResponse response) throws CipherException, NoSuchProfileException, ParseException, ExpiryDateException {
+    public Profile verifyProfile(@RequestParam(ProfileConstants.TOKEN) final String token) throws CipherException,
+        NoSuchProfileException, ParseException, ExpiryDateException, ProfileException {
         return this.verifyAccountService.verifyAccount(token);
     }
 
     /**
      * Set attributes to profile
      *
-     * @param appToken      The application token
-     * @param profileId     that is going to be updated
+     * @param appToken  The application token
+     * @param profileId that is going to be updated
      */
     @RequestMapping(value = "set_attributes/{profileId}", method = RequestMethod.POST)
     @ModelAttribute
@@ -433,15 +438,14 @@ public class ProfileRestController {
     /**
      * Update attributes to profile
      *
-     * @param appToken      The application token
-     * @param profileId     that is going to be updated
-     * @param attributes    the attributes to update
+     * @param appToken   The application token
+     * @param profileId  that is going to be updated
+     * @param attributes the attributes to update
      */
     @RequestMapping(value = "update_attributes/{profileId}", method = RequestMethod.POST)
     @ModelAttribute
     public void updateAttributes(@RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-                                 @PathVariable String profileId,
-                                 @RequestBody Map<String, Serializable> attributes) {
+                                 @PathVariable String profileId, @RequestBody Map<String, Serializable> attributes) {
         profileService.setAttributes(profileId, attributes);
     }
 
@@ -532,7 +536,7 @@ public class ProfileRestController {
      * @param request
      * @return
      */
-    private Map<String, Serializable> getAttributeMap(HttpServletRequest request) {
+    private Map<String, Serializable> getAttributeMap(final HttpServletRequest request) {
         Map<String, Serializable> attributes = new HashMap<String, Serializable>();
         Map reqParams = request.getParameterMap();
         if (!reqParams.isEmpty() && reqParams.keySet() != null) {
@@ -552,15 +556,19 @@ public class ProfileRestController {
     /**
      * Get Profiles list which all of them have the role passed as parameter
      *
-     * @param appToken   The application token
+     *
      * @param request    servlet instance
+     * @param appToken   The application token
      * @param tenantName the tenant name
      * @param roleName   is used to get the profile list
      * @return a profile list
      */
     @RequestMapping(value = "profile_role", method = RequestMethod.GET)
     @ModelAttribute
-    public List<Profile> getProfilesByRole(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken, @RequestParam(ProfileConstants.TENANT_ID) String tenantName, @RequestParam(ProfileConstants.ROLE_NAME) String roleName) {
+    public Iterable<Profile> getProfilesByRole(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN)
+    String appToken, @RequestParam(ProfileConstants.TENANT_ID) String tenantName,
+                                               @RequestParam(ProfileConstants.ROLE_NAME) String roleName) throws
+        ProfileException {
         return profileService.getProfilesByRoleName(roleName, tenantName);
     }
 

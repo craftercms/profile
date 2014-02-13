@@ -18,7 +18,7 @@ package org.craftercms.profile.controllers.rest;
 
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.domain.Role;
-import org.craftercms.profile.exceptions.ProfileException;
+import org.craftercms.profile.exceptions.AbstractProfileException;
 import org.craftercms.profile.exceptions.RoleException;
 import org.craftercms.profile.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +57,7 @@ public class RoleRestController {
      */
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     @ModelAttribute
-    public void deleteRole(@RequestParam(ProfileConstants.ROLE_NAME) final String roleName) throws ProfileException {
+    public void deleteRole(@RequestParam(ProfileConstants.ROLE_NAME) final String roleName) throws AbstractProfileException {
         roleService.deleteRole(roleName);
     }
 

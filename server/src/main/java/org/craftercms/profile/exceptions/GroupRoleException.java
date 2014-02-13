@@ -5,7 +5,7 @@ package org.craftercms.profile.exceptions;
  *
  * @author Carlos Ortiz.
  */
-public class GroupRoleException extends ProfileException {
+public class GroupRoleException extends AbstractProfileException {
 
     public GroupRoleException() {
     }

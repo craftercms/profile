@@ -8,6 +8,7 @@ import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.domain.GroupRole;
 import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.exceptions.GroupRoleException;
+import org.craftercms.profile.exceptions.ProfileException;
 import org.craftercms.profile.repositories.GroupRoleRepository;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.services.GroupRoleService;
@@ -95,9 +96,12 @@ public class GroupRoleServiceImpl implements GroupRoleService {
      */
     @Override
     public List<String> getGroupRoleMapping(final String profileId, final String tenantName,
-                                            final String[] groups) throws GroupRoleException {
 
-        Profile profile = profileRepository.findOne(new ObjectId(profileId));
+                                            final String[] groups) throws GroupRoleException, ProfileException {
+        Profile profile;
+
+        profile = profileRepository.findById(new ObjectId(profileId));
+
         List<GroupRole> groupRoles = (List<GroupRole>)groupRepository.findByNamesAndTenantName(groups, tenantName);
 
         return loadRolesFromGroups(profile.getRoles(), groupRoles);
@@ -107,9 +111,9 @@ public class GroupRoleServiceImpl implements GroupRoleService {
      * @see org.craftercms.profile.services.GroupRoleService#getGroupRoleMapping(java.lang.String, java.lang.String)
      */
     @Override
-    public List<String> getGroupRoleMapping(final String profileId, final String tenantName) throws GroupRoleException {
+    public List<String> getGroupRoleMapping(final String profileId, final String tenantName) throws GroupRoleException, ProfileException {
 
-        Profile profile = profileRepository.findOne(new ObjectId(profileId));
+        Profile profile = profileRepository.findById(new ObjectId(profileId));
         List<GroupRole> groupRoles = (List<GroupRole>)groupRepository.findByTenantName(tenantName);
 
         return loadRolesFromGroups(profile.getRoles(), groupRoles);

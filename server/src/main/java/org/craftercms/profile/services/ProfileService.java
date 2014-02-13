@@ -27,6 +27,7 @@ import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.InvalidEmailException;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
+import org.craftercms.profile.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.TenantException;
 import org.craftercms.profile.exceptions.TicketException;
 
@@ -77,14 +78,14 @@ public interface ProfileService {
      */
     Profile updateProfile(final String profileId, final String userName, final String password, final boolean active,
                           final String tenantName, final String email, final Map<String, Serializable> attributes,
-                          final List<String> role);
+                          final List<String> role) throws ProfileException;
 
     /**
      * Updates a profile account with the profile instance passes as parameter
      *
      * @return a profile instance updated
      */
-    Profile updateProfile(Profile profile);
+    Profile updateProfile(Profile profile) throws ProfileException;
 
     /**
      * Gets a profile account based on the ticket passed as a parameter
@@ -118,7 +119,7 @@ public interface ProfileService {
      * @param profileId the unique identifier used to get the profile
      * @return a profile account instance
      */
-    Profile getProfile(String profileId);
+    Profile getProfile(String profileId) throws ProfileException;
 
     /**
      * Get Profile using the unique identifier passed as a parameter
@@ -127,7 +128,7 @@ public interface ProfileService {
      * @param attributes list of attributes included in the profile instance returned
      * @return a profile account instance found
      */
-    Profile getProfile(String profileId, List<String> attributes);
+    Profile getProfile(String profileId, List<String> attributes) throws ProfileException;
 
     /**
      * Get Profile using the unique identifier passed as a parameter and the instance will have all the attributes
@@ -135,7 +136,7 @@ public interface ProfileService {
      * @param profileId the unique identifier used to get the profile
      * @return a profile account instance found
      */
-    Profile getProfileWithAllAttributes(String profileId);
+    Profile getProfileWithAllAttributes(String profileId) throws ProfileException;
 
     /**
      * Gets a list of profile using pagination
@@ -172,7 +173,7 @@ public interface ProfileService {
      *
      * @return the number of profiles for a tenant
      */
-    long getProfilesCount(String tenantName);
+    long getProfilesCount(String tenantName) throws ProfileException;
 
     /**
      * Activate or in-activate a profile account, based on the <code>active</code> passed as parameter
@@ -181,7 +182,7 @@ public interface ProfileService {
      * @param active    <code>true</code> the profile accounts are going to be activated,
      *                  <code>false</code> otherwise the account is going to be in-activated
      */
-    void activateProfile(String profileId, boolean active);
+    void activateProfile(String profileId, boolean active) throws ProfileException;
 
     /**
      * Activate or in-activate all profiles based on the <code>active</code> passed as parameter
@@ -189,7 +190,7 @@ public interface ProfileService {
      * @param active <code>true</code> the profile accounts are going to be activated,
      *               <code>false</code> otherwise the account is going to be in-activated
      */
-    void activateProfiles(boolean active);
+    void activateProfiles(boolean active) throws ProfileException;
 
     /**
      * Set attributes to Profile account based on a unique profile identifier
@@ -281,11 +282,12 @@ public interface ProfileService {
     /**
      * Get profile list based on the role and tenant name passed argument
      *
+     *
      * @param roleName   The role name
      * @param tenantName the tenant name
      * @return List of profiles that belongs to the tenant name and have the role name
      */
-    List<Profile> getProfilesByRoleName(String roleName, String tenantName);
+    Iterable<Profile> getProfilesByRoleName(String roleName, String tenantName) throws ProfileException;
 
     /**
      * Get profile by an attribute name/value.

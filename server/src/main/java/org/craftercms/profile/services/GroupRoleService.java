@@ -5,6 +5,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.craftercms.profile.domain.GroupRole;
 import org.craftercms.profile.exceptions.GroupRoleException;
+import org.craftercms.profile.exceptions.ProfileException;
 
 /**
  * Encapsulates the services related to group - roles feature
@@ -41,7 +42,7 @@ public interface GroupRoleService {
      * @param groups     Groups names
      * @return a group-role list
      */
-    List<String> getGroupRoleMapping(String profileId, String tenantName, String[] groups) throws GroupRoleException;
+    List<String> getGroupRoleMapping(String profileId, String tenantName, String[] groups) throws GroupRoleException, ProfileException;
 
     /**
      * Gets a list of Group of roles belonging to the tenant name passed as parameter
@@ -59,7 +60,7 @@ public interface GroupRoleService {
      * @param tenantName tenant name
      * @return a list of group-roles
      */
-    List<String> getGroupRoleMapping(String profileId, String tenantName) throws GroupRoleException;
+    List<String> getGroupRoleMapping(String profileId, String tenantName) throws GroupRoleException, ProfileException;
 
     /**
      * Deletes a group-role mapping

@@ -98,6 +98,7 @@ public class TenantRepositoryImpl extends JongoRepository<Tenant> implements Ten
     }
 
     @Override
+
     public Iterable<Tenant> getTenants(final String[] roles) throws TenantException {
         log.debug("Getting tenants by roles {}", roles);
         String query = getQueryFor(PROFILE_TENANT_BY_ROLES);

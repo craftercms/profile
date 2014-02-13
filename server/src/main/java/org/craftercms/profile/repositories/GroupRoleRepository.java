@@ -13,7 +13,7 @@ public interface GroupRoleRepository extends CrudRepository<GroupRole> {
      *
      * @param tenantName Tenant name of the GroupRoles.
      * @return The List of Group Roles the tenant. <b>null</b> if nothing is found.
-     * @throws GroupRoleException if GroupRoles couldn't be search for.
+     * @throws org.craftercms.profile.exceptions.GroupRoleException if GroupRoles couldn't be search for.
      */
     Iterable<GroupRole> findByTenantName(String tenantName) throws GroupRoleException;
 
@@ -23,7 +23,7 @@ public interface GroupRoleRepository extends CrudRepository<GroupRole> {
      * @param names      Names of the GroupRoles to look for.
      * @param tenantName Tenant name of the GroupRoles.
      * @return The List of Group Roles the tenant. <b>null</b> if nothing is found.
-     * @throws GroupRoleException
+     * @throws org.craftercms.profile.exceptions.GroupRoleException
      */
     Iterable<GroupRole> findByNamesAndTenantName(String[] names, String tenantName) throws GroupRoleException;
 

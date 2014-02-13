@@ -31,7 +31,7 @@ public interface TenantRepository extends CrudRepository<Tenant> {
      *
      * @param id Object Id of the tenant.
      * @return The Tenant with that id, null if not found.
-     * @throws TenantException If tenant can't be search for.
+     * @throws org.craftercms.profile.exceptions.TenantException If tenant can't be search for.
      */
     Tenant findTenantById(ObjectId id) throws TenantException;
 
@@ -52,7 +52,7 @@ public interface TenantRepository extends CrudRepository<Tenant> {
      *
      * @param tenantName Name of the tenant looking for.
      * @return Tenant with the given name <br/> <b>null</b> if nothing is found.
-     * @throws TenantException If tenant can't be search for.
+     * @throws org.craftercms.profile.exceptions.TenantException If tenant can't be search for.
      */
     Tenant getTenantByName(String tenantName) throws TenantException;
 
@@ -62,7 +62,7 @@ public interface TenantRepository extends CrudRepository<Tenant> {
      *
      * @param tenantName Name of the tenant to set Attribute.
      * @param attribute  Attribute to set.
-     * @throws TenantException If tenant can't be search for or Attribute can be written.
+     * @throws org.craftercms.profile.exceptions.TenantException If tenant can't be search for or Attribute can be written.
      */
     void setAttribute(String tenantName, Attribute attribute);
 
@@ -72,7 +72,7 @@ public interface TenantRepository extends CrudRepository<Tenant> {
      *
      * @param tenantName    Name of the tenant to delete Attribute.
      * @param attributeName Name of the Attribute to delete.
-     * @throws TenantException If tenant can't be search for or Attribute can be written.
+     * @throws org.craftercms.profile.exceptions.TenantException If tenant can't be search for or Attribute can be written.
      */
     void deleteAttribute(String tenantName, String attributeName);
 
@@ -81,7 +81,7 @@ public interface TenantRepository extends CrudRepository<Tenant> {
      *
      * @param roles Roles that tenant should have.
      * @return A list of the tenants with the given roles.
-     * @throws TenantException If tenants can't be search for.
+     * @throws org.craftercms.profile.exceptions.TenantException If tenants can't be search for.
      */
     Iterable<Tenant> getTenants(String[] roles) throws TenantException;
 
@@ -90,7 +90,7 @@ public interface TenantRepository extends CrudRepository<Tenant> {
      *
      * @param roles Roles that tenant should have
      * @return number of Tenants with given roles.
-     * @throws TenantException If unable to count tenants
+     * @throws org.craftercms.profile.exceptions.TenantException If unable to count tenants
      */
     long countTenantsWithRoles(String[] roles) throws TenantException;
 
@@ -106,7 +106,7 @@ public interface TenantRepository extends CrudRepository<Tenant> {
      * Counts all the tenants.
      *
      * @return number of tenants store.
-     * @throws TenantException If tenant can't be counted.
+     * @throws org.craftercms.profile.exceptions.TenantException If tenant can't be counted.
      */
     long count() throws TenantException;
 }

@@ -50,8 +50,7 @@ public class MultiTenantRestController {
     public Tenant createTenant(@RequestParam final String tenantName, @RequestParam(required = false) final String
         createDefaultRoles, @RequestParam(value = ProfileConstants.ROLES) final String[] rolesArray,
                                @RequestParam(required = false, defaultValue = "true") final boolean emailNewProfile,
-                               @RequestParam(value = ProfileConstants.DOMAINS) final String[] domainsArray) throws
-        TenantException {
+                               @RequestParam(value = ProfileConstants.DOMAINS) final String[] domainsArray) throws TenantException {
         return multiTenantService.createTenant(tenantName, createDefaultRoles == null? false: Boolean.valueOf
             (createDefaultRoles).booleanValue(), (rolesArray != null? Arrays.asList(rolesArray): null),
             (domainsArray != null? Arrays.asList(domainsArray): null), emailNewProfile);
@@ -95,8 +94,7 @@ public class MultiTenantRestController {
 
     @RequestMapping(value = "ticket/{ticket}", method = RequestMethod.GET)
     @ModelAttribute
-    public Tenant getTenantByTicket(@PathVariable final String ticket) throws NoSuchProfileException,
-        TenantException, TicketException {
+    public Tenant getTenantByTicket(@PathVariable final String ticket) throws NoSuchProfileException, TenantException, TicketException {
 
         Tenant tenant = multiTenantService.getTenantByTicket(ticket);
         if (tenant == null) {

@@ -3,7 +3,7 @@ package org.craftercms.profile.exceptions;
 /**
  * Thrown when there is a Tenant Operation Error
  */
-public class TenantException extends ProfileException {
+public class TenantException extends AbstractProfileException {
 
     private static final long serialVersionUID = 2482344813938364874L;
 

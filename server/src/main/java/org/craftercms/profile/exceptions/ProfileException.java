@@ -1,10 +1,13 @@
 package org.craftercms.profile.exceptions;
 
 /**
- * Created by Carlos on 1/23/14.
+ *
  */
-public abstract class ProfileException extends Exception {
+public class ProfileException extends AbstractProfileException {
+
+
     protected ProfileException() {
+        super();
     }
 
     public ProfileException(final String message) {

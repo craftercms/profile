@@ -43,8 +43,7 @@ public class GroupRoleRepositoryImpl extends JongoRepository<GroupRole> implemen
     }
 
     @Override
-    public Iterable<GroupRole> findByNamesAndTenantName(final String[] names, final String tenantName) throws
-        GroupRoleException {
+    public Iterable<GroupRole> findByNamesAndTenantName(final String[] names, final String tenantName) throws GroupRoleException {
         try {
             log.debug("Searching for RoleGroups with names {} of tenant {}", names, tenantName);
             String query = getQueryFor(PROFILE_GROUPROLES_BY_NAME_AND_TENANT);

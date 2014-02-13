@@ -17,306 +17,522 @@
 package org.craftercms.profile.repositories;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
+import com.mongodb.MongoException;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.JongoRepository;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.domain.Profile;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Order;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
+import org.craftercms.profile.exceptions.ProfileException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * Default implementation of Profile Repository Impl.
+ *
+ * @author Carlos Ortiz.
+ * @author Alvaro Gonzales.
+ */
+public class ProfileRepositoryImpl extends JongoRepository<Profile> implements ProfileRepository {
+    /**
+     * Find by Role and tenant.
+     */
+    public static final String PROFILE_PROFILES_GET_BY_ROLES_AND_TENANT = "profile.profiles.getByRolesAndTenant";
+    /**
+     * Find by Tenant Name.
+     */
+    public static final String PROFILE_PROFILES_BY_TENANT_NAME = "profile.profiles.byTenantName";
+    /**
+     * Default Profiles return fields.
+     */
+    public static final String PROFILE_DEFAULT_RETURN_FIELDS = "profile.profiles.defaultFields";
+    /**
+     * Find By Id.
+     */
+    public static final String PROFILE_PROFILES_BY_ID = "profile.profiles.byId";
+    public static final String PROFILE_PROFILE_BY_IDS = "profile.profile.byIds";
+    /**
+     * Das Logger.
+     */
+    private Logger log = LoggerFactory.getLogger(ProfileRepositoryImpl.class);
 
-public class ProfileRepositoryImpl implements ProfileRepositoryCustom {
-
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
-    public List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder,
-                                         List<String> attributesList, int start, int end) {
-        Query query = new Query();
-        query.fields().include(ProfileConstants.USER_NAME);
-        query.fields().include(ProfileConstants.EMAIL);
-        query.fields().include(ProfileConstants.PASSWORD);
-        query.fields().include(ProfileConstants.ACTIVE);
-        query.fields().include(ProfileConstants.CREATED);
-        query.fields().include(ProfileConstants.MODIFIED);
-        query.fields().include(ProfileConstants.TENANT_NAME);
-        query.fields().include(ProfileConstants.ROLES);
-
-        if (attributesList != null) {
-            for (String attribute : attributesList) {
-                query.fields().include(ProfileConstants.ATTRIBUTES_DOT + attribute);
-            }
-        }
-
-        if (sortBy != null) {
-            String sorting = sortBy;
-            if (!Arrays.asList(ProfileConstants.DOMAIN_PROFILE_FIELDS).contains(sortBy)) {
-                sorting = ProfileConstants.ATTRIBUTES_DOT + sortBy;
-            }
-
-            if (sortOrder != null) {
-                query.sort().on(sorting, sortOrder.equalsIgnoreCase(ProfileConstants.SORT_ORDER_DESC)? Order
-                    .DESCENDING: Order.ASCENDING);
-            } else {
-                query.sort().on(sorting, Order.ASCENDING);
-            }
-        }
-
-        query.skip(start);
-        query.limit(end > start? (end - start + 1): 0);
-        query = query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
-
-        return mongoTemplate.find(query, Profile.class);
+    /**
+     * Creates A instance of a Jongo Repository.
+     */
+    public ProfileRepositoryImpl() throws MongoDataException {
     }
+
 
     @Override
-    public long getProfilesCount(String tenantName) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
-        return mongoTemplate.count(query, Profile.class);
-    }
-
-    public Profile getProfile(String profileId) {
-        Query query = new Query();
-        query.fields().include(ProfileConstants.USER_NAME);
-        query.fields().include(ProfileConstants.EMAIL);
-        query.fields().include(ProfileConstants.PASSWORD);
-        query.fields().include(ProfileConstants.ACTIVE);
-        query.fields().include(ProfileConstants.CREATED);
-        query.fields().include(ProfileConstants.MODIFIED);
-        query.fields().include(ProfileConstants.TENANT_NAME);
-        query.fields().include(ProfileConstants.ROLES);
-        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
-
-        return mongoTemplate.findOne(query, Profile.class);
-    }
-
-    public Profile getProfile(String profileId, List<String> attributes) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
-
-        query.fields().include(ProfileConstants.USER_NAME);
-        query.fields().include(ProfileConstants.PASSWORD);
-        query.fields().include(ProfileConstants.EMAIL);
-        query.fields().include(ProfileConstants.ACTIVE);
-        query.fields().include(ProfileConstants.CREATED);
-        query.fields().include(ProfileConstants.MODIFIED);
-        query.fields().include(ProfileConstants.TENANT_NAME);
-        query.fields().include(ProfileConstants.ROLES);
-        if (attributes != null) {
-            for (String attribute : attributes) {
-                query.fields().include(ProfileConstants.ATTRIBUTES_DOT + attribute);
-            }
-        }
-
-        return mongoTemplate.findOne(query, Profile.class);
-    }
-
-    public List<Profile> getProfiles(List<String> profileIdList) {
-        Query query = new Query();
-        query.fields().include(ProfileConstants.USER_NAME);
-        query.fields().include(ProfileConstants.PASSWORD);
-        query.fields().include(ProfileConstants.EMAIL);
-        query.fields().include(ProfileConstants.ACTIVE);
-        query.fields().include(ProfileConstants.CREATED);
-        query.fields().include(ProfileConstants.MODIFIED);
-        query.fields().include(ProfileConstants.TENANT_NAME);
-        query.fields().include(ProfileConstants.ROLES);
-        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).in(profileIdList));
-
-        return mongoTemplate.find(query, Profile.class);
-    }
-
-    @Override
-    public Profile getProfileByUserName(String userName, String tenantName) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(ProfileConstants.USER_NAME).is(userName));
-        query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
-
-        query.fields().include(ProfileConstants.USER_NAME);
-        query.fields().include(ProfileConstants.EMAIL);
-        query.fields().include(ProfileConstants.PASSWORD);
-        query.fields().include(ProfileConstants.ACTIVE);
-        query.fields().include(ProfileConstants.CREATED);
-        query.fields().include(ProfileConstants.MODIFIED);
-        query.fields().include(ProfileConstants.TENANT_NAME);
-        query.fields().include(ProfileConstants.ROLES);
-        return mongoTemplate.findOne(query, Profile.class);
-    }
-
-    @Override
-    public Profile getProfileByUserName(String userName, String tenantName, List<String> attributes) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(ProfileConstants.USER_NAME).is(userName));
-        query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
-
-        query.fields().include(ProfileConstants.USER_NAME);
-        query.fields().include(ProfileConstants.EMAIL);
-        query.fields().include(ProfileConstants.PASSWORD);
-        query.fields().include(ProfileConstants.ACTIVE);
-        query.fields().include(ProfileConstants.CREATED);
-        query.fields().include(ProfileConstants.MODIFIED);
-        query.fields().include(ProfileConstants.TENANT_NAME);
-        query.fields().include(ProfileConstants.ROLES);
-        if (attributes != null) {
-            for (String attribute : attributes) {
-                query.fields().include(ProfileConstants.ATTRIBUTES_DOT + attribute);
-            }
-        }
-
-        return mongoTemplate.findOne(query, Profile.class);
-    }
-
-    @Override
-    public Profile getProfileByUserNameWithAllAttributes(String userName, String tenantName) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(ProfileConstants.USER_NAME).is(userName));
-        query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
-
-        query.fields().include(ProfileConstants.USER_NAME);
-        query.fields().include(ProfileConstants.EMAIL);
-        query.fields().include(ProfileConstants.PASSWORD);
-        query.fields().include(ProfileConstants.ACTIVE);
-        query.fields().include(ProfileConstants.CREATED);
-        query.fields().include(ProfileConstants.MODIFIED);
-        query.fields().include(ProfileConstants.ATTRIBUTES);
-        query.fields().include(ProfileConstants.TENANT_NAME);
-        query.fields().include(ProfileConstants.ROLES);
-        return mongoTemplate.findOne(query, Profile.class);
-    }
-
-    @Override
-    public List<Profile> getProfilesWithAttributes(List<String> profileIdList) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).in(profileIdList));
-
-        return mongoTemplate.find(query, Profile.class);
-    }
-
-    @Override
-    public List<Profile> getProfilesByTenantName(String tenantName) {
-
-        Query query = new Query();
-        query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
-
-
-        return mongoTemplate.find(query, Profile.class);
-    }
-
-    @Override
-    public void setAttributes(String profileId, Map<String, Serializable> attributes) {
-        if (attributes != null && !attributes.isEmpty()) {
-            Query query = new Query();
-            query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
-            Update update = new Update();
-
-            Iterator it = attributes.keySet().iterator();
-            while (it.hasNext()) {
-                String key = (String)it.next();
-                update.set(ProfileConstants.ATTRIBUTES_DOT + key, attributes.get(key));
-            }
-
-            mongoTemplate.updateFirst(query, update, Profile.class);
+    public Profile findById(final ObjectId id) throws ProfileException {
+        try {
+            return super.findById(id.toString());
+        } catch (MongoDataException ex) {
+            log.error("Unable to search for profile with id" + id, ex);
+            throw new ProfileException("Unable to find profile by Id", ex);
         }
     }
 
     @Override
-    public Map<String, Serializable> getAllAttributes(String profileId) {
-        Map<String, Serializable> result = new HashMap<String, Serializable>();
-        Query query = new Query();
-        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
-        query.fields().include(ProfileConstants.ATTRIBUTES);
-
-        Profile profile = mongoTemplate.findOne(query, Profile.class);
-        if (profile != null) {
-            return profile.getAttributes();
+    public Iterable<Profile> findByRolesAndTenantName(final String role, final String tenantName) throws
+        ProfileException {
+        try {
+            log.debug("Finding Tenants with Roles {} and Tenant {}", role, tenantName);
+            String query = getQueryFor(PROFILE_PROFILES_GET_BY_ROLES_AND_TENANT);
+            return find(prepareProfileQuery(query, null), role, tenantName);
+        } catch (MongoDataException ex) {
+            log.error("Unable to find Profile by Tenant \"" + tenantName + "\" and Roles \"" + role + "\"", ex);
+            throw new ProfileException("Unable to search for profile by tenant and roles", ex);
         }
-
-        return result;
-    }
-
-    public Map<String, Serializable> getAttributes(String profileId, List<String> attributes) {
-        Map<String, Serializable> result = new HashMap<String, Serializable>();
-        Query query = new Query();
-        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
-
-        if (attributes != null) {
-            for (String attribute : attributes) {
-                query.fields().include(ProfileConstants.ATTRIBUTES_DOT + attribute);
-            }
-        }
-
-        Profile profile = mongoTemplate.findOne(query, Profile.class);
-        if (profile != null) {
-            return profile.getAttributes();
-        }
-
-        return result;
     }
 
     @Override
-    public Map<String, Serializable> getAttribute(String profileId, String attributeKey) {
-        Map<String, Serializable> result = new HashMap<String, Serializable>();
-        Query query = new Query();
-        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
-        query.fields().include(ProfileConstants.ATTRIBUTES_DOT + attributeKey);
+    public List<Profile> getProfileRange(final String tenantName, final String sortBy, final String sortOrder,
+                                         final List<String> attributesList, final int start, final int end) {
 
-        Profile profile = mongoTemplate.findOne(query, Profile.class);
-        if (profile != null) {
-            return profile.getAttributes();
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long getProfilesCount(final String tenantName) throws ProfileException {
+        try {
+            String query = getQueryFor(PROFILE_PROFILES_BY_TENANT_NAME);
+            return getCollection().count(query, tenantName);
+        } catch (MongoException ex) {
+            log.error("Unable to count profiles for tenant " + tenantName, ex);
+            throw new ProfileException("Unable to count profiles for the given tenant.", ex);
         }
-
-        return result;
     }
 
     @Override
-    public void deleteAllAttributes(String profileId) {
-        Query query = new Query();
-        Update update = new Update();
-        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
-        update.unset(ProfileConstants.ATTRIBUTES);
-
-        mongoTemplate.updateFirst(query, update, Profile.class);
+    public Profile getProfile(final String profileId) throws ProfileException {
+        return getProfile(profileId, null);
     }
 
     @Override
-    public void deleteAttributes(String profileId, List<String> attributes) {
-        Query query = new Query();
-        Update update = new Update();
-        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
-
-        if (attributes != null) {
-            for (String attribute : attributes) {
-                update.unset(ProfileConstants.ATTRIBUTES_DOT + attribute);
-            }
+    public Profile getProfile(final String profileId, final List<String> attributes) throws ProfileException {
+        try {
+            String query = getQueryFor(PROFILE_PROFILES_BY_ID);
+            return findOne(prepareProfileQuery(query, attributes), profileId);
+        } catch (MongoDataException ex) {
+            log.error("Unable to search by Id " + profileId + "and attributes" + StringUtils.join(attributes, ","), ex);
+            throw new ProfileException("Unable to search by profile id", ex);
         }
+    }
 
-        mongoTemplate.updateFirst(query, update, Profile.class);
+
+    @Override
+    public Iterable<Profile> getProfiles(final List<String> profileIdList) throws ProfileException {
+        try {
+            return findAll();
+        } catch (MongoDataException ex) {
+            log.error("Unable to search for all profiles", ex);
+            throw new ProfileException("Unable to search all profiles", ex);
+        }
     }
 
     @Override
-    public void deleteRole(String profileId, String roleName) {
-        Query query = new Query();
+    public Iterable<Profile> getProfilesWithAttributes(final List<String> profileIdList) throws ProfileException {
+        try {
+            String query = getQueryFor(PROFILE_PROFILE_BY_IDS);
+            return find(query, profileIdList);
+        } catch (MongoDataException ex) {
+            log.error("Unable to search for all profiles", ex);
+            throw new ProfileException("Unable to search all profiles", ex);
+        }
+    }
 
-        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(new ObjectId(profileId)));
-        mongoTemplate.upsert(query, new Update().pull("roles", roleName), Profile.class);
+    @Override
+    public void setAttributes(final String profileId, final Map<String, Serializable> attributes) throws ProfileException {
+        try{
+
+        }catch (MongoDataException ex){
+            log.error("Unable save attributes for profile "+profileId+" attribute "+attributes,ex);
+            throw new ProfileException("Unable to save profile attributes",ex);
+        }
+    }
+
+    @Override
+    public Map<String, Serializable> getAllAttributes(final String profileId) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Serializable> getAttributes(final String profileId, final List<String> attributes) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Serializable> getAttribute(final String profileId, final String attributeKey) {
+        return null;
+    }
+
+    @Override
+    public void deleteAllAttributes(final String profileId) {
+
+    }
+
+    @Override
+    public void deleteAttributes(final String profileId, final List<String> attributesMap) {
+
+    }
+
+    @Override
+    public Profile getProfileByUserName(final String userName, final String tenantName) {
+        return null;
+    }
+
+    @Override
+    public Profile getProfileByUserName(final String userName, final String tenantName, final List<String> attributes) {
+        return null;
+    }
+
+    @Override
+    public Profile getProfileByUserNameWithAllAttributes(final String userName, final String tenantName) {
+        return null;
+    }
+
+    @Override
+    public List<Profile> getProfilesByTenantName(final String tenantName) {
+        return null;
+    }
+
+    @Override
+    public void deleteRole(final String profileId, final String roleName) {
 
     }
 
     @Override
     public List<Profile> findByAttributeAndValue(final String attribute, final String attributeValue) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(ProfileConstants.ATTRIBUTES_DOT + attribute).is(attributeValue));
-        return mongoTemplate.find(query,Profile.class);
+        return null;
     }
+
+    @Override
+    public void delete(final List<Profile> profilesByTenant) {
+
+    }
+
+    /**
+     * Sort of simple way to append query + Return values.
+     *
+     * @param query      Base Query (the query that does the filtering
+     * @param attributes Attributes (to be return) if null or empty ignore.
+     * @return The complete Query to be send to mongo using jongo.
+     */
+    private String prepareProfileQuery(final String query, final List<String> attributes) {
+        StringBuilder builder = new StringBuilder(query);
+        String defaultFields = getQueryFor(PROFILE_DEFAULT_RETURN_FIELDS);
+        if (attributes == null && attributes.isEmpty()) {
+            builder.append(",");
+            builder.append(defaultFields);
+            return builder.toString();
+        }
+        builder.deleteCharAt(builder.length() - 1);
+        builder.append(",");
+        ListIterator<String> iter = attributes.listIterator();
+        while (iter.hasNext()) {
+            String attribute = iter.next();
+            builder.append("\"");
+            builder.append(ProfileConstants.ATTRIBUTES_DOT);
+            builder.append(attribute);
+            builder.append("\"");
+            builder.append(":1");
+
+            if (iter.hasNext()) {
+                builder.append(",");
+            }
+        }
+        builder.append("}");
+        return builder.toString();
+    }
+
+
+    //    @Autowired
+    //    private MongoTemplate mongoTemplate;
+    //
+    //    public List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder,
+    //                                         List<String> attributesList, int start, int end) {
+    //        Query query = new Query();
+    //        query.fields().include(ProfileConstants.USER_NAME);
+    //        query.fields().include(ProfileConstants.EMAIL);
+    //        query.fields().include(ProfileConstants.PASSWORD);
+    //        query.fields().include(ProfileConstants.ACTIVE);
+    //        query.fields().include(ProfileConstants.CREATED);
+    //        query.fields().include(ProfileConstants.MODIFIED);
+    //        query.fields().include(ProfileConstants.TENANT_NAME);
+    //        query.fields().include(ProfileConstants.ROLES);
+    //
+    //        if (attributesList != null) {
+    //            for (String attribute : attributesList) {
+    //                query.fields().include(ProfileConstants.ATTRIBUTES_DOT + attribute);
+    //            }
+    //        }
+    //
+    //        if (sortBy != null) {
+    //            String sorting = sortBy;
+    //            if (!Arrays.asList(ProfileConstants.DOMAIN_PROFILE_FIELDS).contains(sortBy)) {
+    //                sorting = ProfileConstants.ATTRIBUTES_DOT + sortBy;
+    //            }
+    //
+    //            if (sortOrder != null) {
+    //                query.sort().on(sorting, sortOrder.equalsIgnoreCase(ProfileConstants.SORT_ORDER_DESC)? Order
+    //                    .DESCENDING: Order.ASCENDING);
+    //            } else {
+    //                query.sort().on(sorting, Order.ASCENDING);
+    //            }
+    //        }
+    //
+    //        query.skip(start);
+    //        query.limit(end > start? (end - start + 1): 0);
+    //        query = query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
+    //
+    //        return mongoTemplate.find(query, Profile.class);
+    //    }
+    //
+    //    @Override
+    //    public long getProfilesCount(String tenantName) {
+    //        Query query = new Query();
+    //        query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
+    //        return mongoTemplate.count(query, Profile.class);
+    //    }
+    //
+    //    public Profile getProfile(String profileId) {
+    //        Query query = new Query();
+    //        query.fields().include(ProfileConstants.USER_NAME);
+    //        query.fields().include(ProfileConstants.EMAIL);
+    //        query.fields().include(ProfileConstants.PASSWORD);
+    //        query.fields().include(ProfileConstants.ACTIVE);
+    //        query.fields().include(ProfileConstants.CREATED);
+    //        query.fields().include(ProfileConstants.MODIFIED);
+    //        query.fields().include(ProfileConstants.TENANT_NAME);
+    //        query.fields().include(ProfileConstants.ROLES);
+    //        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
+    //
+    //        return mongoTemplate.findOne(query, Profile.class);
+    //    }
+    //
+    //    public Profile getProfile(String profileId, List<String> attributes) {
+    //        Query query = new Query();
+    //        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
+    //
+    //        query.fields().include(ProfileConstants.USER_NAME);
+    //        query.fields().include(ProfileConstants.PASSWORD);
+    //        query.fields().include(ProfileConstants.EMAIL);
+    //        query.fields().include(ProfileConstants.ACTIVE);
+    //        query.fields().include(ProfileConstants.CREATED);
+    //        query.fields().include(ProfileConstants.MODIFIED);
+    //        query.fields().include(ProfileConstants.TENANT_NAME);
+    //        query.fields().include(ProfileConstants.ROLES);
+    //        if (attributes != null) {
+    //            for (String attribute : attributes) {
+    //                query.fields().include(ProfileConstants.ATTRIBUTES_DOT + attribute);
+    //            }
+    //        }
+    //
+    //        return mongoTemplate.findOne(query, Profile.class);
+    //    }
+    //
+    //    public List<Profile> getProfiles(List<String> profileIdList) {
+    //        Query query = new Query();
+    //        query.fields().include(ProfileConstants.USER_NAME);
+    //        query.fields().include(ProfileConstants.PASSWORD);
+    //        query.fields().include(ProfileConstants.EMAIL);
+    //        query.fields().include(ProfileConstants.ACTIVE);
+    //        query.fields().include(ProfileConstants.CREATED);
+    //        query.fields().include(ProfileConstants.MODIFIED);
+    //        query.fields().include(ProfileConstants.TENANT_NAME);
+    //        query.fields().include(ProfileConstants.ROLES);
+    //        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).in(profileIdList));
+    //
+    //        return mongoTemplate.find(query, Profile.class);
+    //    }
+    //
+    //    @Override
+    //    public Profile getProfileByUserName(String userName, String tenantName) {
+    //        Query query = new Query();
+    //        query.addCriteria(Criteria.where(ProfileConstants.USER_NAME).is(userName));
+    //        query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
+    //
+    //        query.fields().include(ProfileConstants.USER_NAME);
+    //        query.fields().include(ProfileConstants.EMAIL);
+    //        query.fields().include(ProfileConstants.PASSWORD);
+    //        query.fields().include(ProfileConstants.ACTIVE);
+    //        query.fields().include(ProfileConstants.CREATED);
+    //        query.fields().include(ProfileConstants.MODIFIED);
+    //        query.fields().include(ProfileConstants.TENANT_NAME);
+    //        query.fields().include(ProfileConstants.ROLES);
+    //        return mongoTemplate.findOne(query, Profile.class);
+    //    }
+    //
+    //    @Override
+    //    public Profile getProfileByUserName(String userName, String tenantName, List<String> attributes) {
+    //        Query query = new Query();
+    //        query.addCriteria(Criteria.where(ProfileConstants.USER_NAME).is(userName));
+    //        query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
+    //
+    //        query.fields().include(ProfileConstants.USER_NAME);
+    //        query.fields().include(ProfileConstants.EMAIL);
+    //        query.fields().include(ProfileConstants.PASSWORD);
+    //        query.fields().include(ProfileConstants.ACTIVE);
+    //        query.fields().include(ProfileConstants.CREATED);
+    //        query.fields().include(ProfileConstants.MODIFIED);
+    //        query.fields().include(ProfileConstants.TENANT_NAME);
+    //        query.fields().include(ProfileConstants.ROLES);
+    //        if (attributes != null) {
+    //            for (String attribute : attributes) {
+    //                query.fields().include(ProfileConstants.ATTRIBUTES_DOT + attribute);
+    //            }
+    //        }
+    //
+    //        return mongoTemplate.findOne(query, Profile.class);
+    //    }
+    //
+    //    @Override
+    //    public Profile getProfileByUserNameWithAllAttributes(String userName, String tenantName) {
+    //        Query query = new Query();
+    //        query.addCriteria(Criteria.where(ProfileConstants.USER_NAME).is(userName));
+    //        query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
+    //
+    //        query.fields().include(ProfileConstants.USER_NAME);
+    //        query.fields().include(ProfileConstants.EMAIL);
+    //        query.fields().include(ProfileConstants.PASSWORD);
+    //        query.fields().include(ProfileConstants.ACTIVE);
+    //        query.fields().include(ProfileConstants.CREATED);
+    //        query.fields().include(ProfileConstants.MODIFIED);
+    //        query.fields().include(ProfileConstants.ATTRIBUTES);
+    //        query.fields().include(ProfileConstants.TENANT_NAME);
+    //        query.fields().include(ProfileConstants.ROLES);
+    //        return mongoTemplate.findOne(query, Profile.class);
+    //    }
+    //
+    //    @Override
+    //    public List<Profile> getProfilesWithAttributes(List<String> profileIdList) {
+    //        Query query = new Query();
+    //        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).in(profileIdList));
+    //
+    //        return mongoTemplate.find(query, Profile.class);
+    //    }
+    //
+    //    @Override
+    //    public List<Profile> getProfilesByTenantName(String tenantName) {
+    //
+    //        Query query = new Query();
+    //        query.addCriteria(Criteria.where(ProfileConstants.TENANT_NAME).is(tenantName));
+    //
+    //
+    //        return mongoTemplate.find(query, Profile.class);
+    //    }
+    //
+    //    @Override
+    //    public void setAttributes(String profileId, Map<String, Serializable> attributes) {
+    //        if (attributes != null && !attributes.isEmpty()) {
+    //            Query query = new Query();
+    //            query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
+    //            Update update = new Update();
+    //
+    //            Iterator it = attributes.keySet().iterator();
+    //            while (it.hasNext()) {
+    //                String key = (String)it.next();
+    //                update.set(ProfileConstants.ATTRIBUTES_DOT + key, attributes.get(key));
+    //            }
+    //
+    //            mongoTemplate.updateFirst(query, update, Profile.class);
+    //        }
+    //    }
+    //
+    //    @Override
+    //    public Map<String, Serializable> getAllAttributes(String profileId) {
+    //        Map<String, Serializable> result = new HashMap<String, Serializable>();
+    //        Query query = new Query();
+    //        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
+    //        query.fields().include(ProfileConstants.ATTRIBUTES);
+    //
+    //        Profile profile = mongoTemplate.findOne(query, Profile.class);
+    //        if (profile != null) {
+    //            return profile.getAttributes();
+    //        }
+    //
+    //        return result;
+    //    }
+    //
+    //    public Map<String, Serializable> getAttributes(String profileId, List<String> attributes) {
+    //        Map<String, Serializable> result = new HashMap<String, Serializable>();
+    //        Query query = new Query();
+    //        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
+    //
+    //        if (attributes != null) {
+    //            for (String attribute : attributes) {
+    //                query.fields().include(ProfileConstants.ATTRIBUTES_DOT + attribute);
+    //            }
+    //        }
+    //
+    //        Profile profile = mongoTemplate.findOne(query, Profile.class);
+    //        if (profile != null) {
+    //            return profile.getAttributes();
+    //        }
+    //
+    //        return result;
+    //    }
+    //
+    //    @Override
+    //    public Map<String, Serializable> getAttribute(String profileId, String attributeKey) {
+    //        Map<String, Serializable> result = new HashMap<String, Serializable>();
+    //        Query query = new Query();
+    //        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
+    //        query.fields().include(ProfileConstants.ATTRIBUTES_DOT + attributeKey);
+    //
+    //        Profile profile = mongoTemplate.findOne(query, Profile.class);
+    //        if (profile != null) {
+    //            return profile.getAttributes();
+    //        }
+    //
+    //        return result;
+    //    }
+    //
+    //    @Override
+    //    public void deleteAllAttributes(String profileId) {
+    //        Query query = new Query();
+    //        Update update = new Update();
+    //        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
+    //        update.unset(ProfileConstants.ATTRIBUTES);
+    //
+    //        mongoTemplate.updateFirst(query, update, Profile.class);
+    //    }
+    //
+    //    @Override
+    //    public void deleteAttributes(String profileId, List<String> attributes) {
+    //        Query query = new Query();
+    //        Update update = new Update();
+    //        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(profileId));
+    //
+    //        if (attributes != null) {
+    //            for (String attribute : attributes) {
+    //                update.unset(ProfileConstants.ATTRIBUTES_DOT + attribute);
+    //            }
+    //        }
+    //
+    //        mongoTemplate.updateFirst(query, update, Profile.class);
+    //    }
+    //
+    //    @Override
+    //    public void deleteRole(String profileId, String roleName) {
+    //        Query query = new Query();
+    //
+    //        query.addCriteria(Criteria.where(ProfileConstants.FIELD_ID).is(new ObjectId(profileId)));
+    //        mongoTemplate.upsert(query, new Update().pull("roles", roleName), Profile.class);
+    //
+    //    }
+    //
+    //    @Override
+    //    public List<Profile> findByAttributeAndValue(final String attribute, final String attributeValue) {
+    //        Query query = new Query();
+    //        query.addCriteria(Criteria.where(ProfileConstants.ATTRIBUTES_DOT + attribute).is(attributeValue));
+    //        return mongoTemplate.find(query,Profile.class);
+    //    }
 
 }

@@ -16,18 +16,88 @@
  */
 package org.craftercms.profile.repositories;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.CrudRepository;
 import org.craftercms.profile.domain.Profile;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
+import org.craftercms.profile.exceptions.ProfileException;
 
-@Repository("profileRepository")
-public interface ProfileRepository extends MongoRepository<Profile, ObjectId>, ProfileRepositoryCustom {
+/**
+ * Defines the Profile repository services.
+ */
+public interface ProfileRepository extends CrudRepository<Profile> {
 
-    List<Profile> findAll();
+    /**
+     * Finds a Profile by its id.
+     * @param id Id of the profile.
+     * @return The Profile is one exists with the given Id.<b>null</b> if nothing is found.
+     * @throws ProfileException If Profile can't be search for.
+     */
+    Profile findById(ObjectId id) throws ProfileException;
 
-    List<Profile> findByRolesAndTenantName(String roles, String tenantName);
+    /**
+     * Finds all the profiles with a given Tenant and Role.
+     *
+     * @param role Role of the profile looking for.
+     * @param tenantName Tenant Name of the profile.
+     * @return A Iterator of all profiles found.<b>null</b> if nothing is found.
+     * @throws ProfileException If Profiles can't be search for.
+     */
+    Iterable<Profile> findByRolesAndTenantName(String role, String tenantName) throws ProfileException;
 
+    List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder, List<String> attributesList,
+                                  int start, int end);
+
+    /**
+     * Counts the profiles for a given tenant.
+     * @param tenantName Name of the tenant to count.
+     * @return the amount of profiles for a given tenant.
+     * @throws ProfileException If Profiles can't be count.
+     */
+    long getProfilesCount(String tenantName) throws ProfileException;
+
+    /**
+     * Returns the Profile with the given id.<br/>
+     * <i>short hand of <code>findById(new ObjectId(profileId))</code</i>
+     * @see org.craftercms.profile.repositories.ProfileRepository#findById(org.bson.types.ObjectId)
+     * @param profileId Id of the profile.
+     * @return The Profile is one exists with the given Id.<b>null</b> if nothing is found.
+     * @throws ProfileException If Profile can't be search for.
+     */
+    Profile getProfile(String profileId) throws ProfileException;
+
+    Profile getProfile(String profileId, List<String> attributes) throws ProfileException;
+
+    Iterable<Profile> getProfiles(List<String> profileIdList) throws ProfileException;
+
+    Iterable<Profile> getProfilesWithAttributes(List<String> profileIdList) throws ProfileException;
+
+    void setAttributes(String profileId, Map<String, Serializable> attributes) throws ProfileException;
+
+    Map<String, Serializable> getAllAttributes(String profileId);
+
+    Map<String, Serializable> getAttributes(String profileId, List<String> attributes);
+
+    Map<String, Serializable> getAttribute(String profileId, String attributeKey);
+
+    void deleteAllAttributes(String profileId);
+
+    void deleteAttributes(String profileId, List<String> attributesMap);
+
+    Profile getProfileByUserName(String userName, String tenantName);
+
+    Profile getProfileByUserName(String userName, String tenantName, List<String> attributes);
+
+    Profile getProfileByUserNameWithAllAttributes(String userName, String tenantName);
+
+    List<Profile> getProfilesByTenantName(String tenantName);
+
+    void deleteRole(String profileId, String roleName);
+
+    List<Profile> findByAttributeAndValue(String attribute, String attributeValue);
+
+    void delete(List<Profile> profilesByTenant);
 }

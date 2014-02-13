@@ -17,6 +17,7 @@ import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.ExpiryDateException;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
+import org.craftercms.profile.exceptions.ProfileException;
 import org.craftercms.profile.security.util.crypto.CipherPasswordChangeToken;
 import org.craftercms.profile.services.MailService;
 import org.craftercms.profile.services.PasswordService;
@@ -106,8 +107,7 @@ public class PasswordServiceImpl implements PasswordService {
      * @see org.craftercms.profile.services.PasswordService#changePassword(java.lang.String, java.lang.String)
      */
     @Override
-    public Profile resetPassword(String password, String token) throws CipherException, NoSuchProfileException,
-        ParseException, ExpiryDateException {
+    public Profile resetPassword(String password, String token) throws CipherException, NoSuchProfileException, ParseException, ExpiryDateException, ProfileException {
         try {
             token = URLDecoder.decode(token, "UTF-8");
         } catch (UnsupportedEncodingException e) {

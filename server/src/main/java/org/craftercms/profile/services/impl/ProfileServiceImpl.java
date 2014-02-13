@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.domain.Tenant;
 import org.craftercms.profile.domain.Ticket;
@@ -34,6 +35,7 @@ import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.InvalidEmailException;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
+import org.craftercms.profile.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.TenantException;
 import org.craftercms.profile.exceptions.TicketException;
 import org.craftercms.profile.repositories.ProfileRepository;
@@ -104,9 +106,9 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setEmail(email);
 
         profile.setRoles(roles);
-        Profile savedProfile = null;
+
         try {
-            savedProfile = profileRepository.save(profile);
+            profileRepository.save(profile);
             if (emailNewProfiles) {
                 verifyAccountService.sendVerifyNotification(profile, verifyAccountUrl, request);
             }
@@ -122,7 +124,7 @@ public class ProfileServiceImpl implements ProfileService {
         } catch (Exception e) {
             log.error("Error in ProfileService.createProfile: " + e.getMessage());
         }
-        return savedProfile;
+        return profile;
     }
 
     private boolean isEmailNewProfiles(final String tenantName, final String username) throws TenantException {
@@ -155,7 +157,7 @@ public class ProfileServiceImpl implements ProfileService {
      * @see org.craftercms.profile.services.ProfileService#getProfilesCount(java.lang.String)
      */
     @Override
-    public long getProfilesCount(final String tenantName) {
+    public long getProfilesCount(final String tenantName) throws ProfileException {
         return profileRepository.getProfilesCount(tenantName);
     }
 
@@ -166,8 +168,8 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile updateProfile(final String profileId, final String userName, final String password,
                                  final boolean active, final String tenantName, final String email, final Map<String,
-        Serializable> attributes, final List<String> roles) {
-        Profile profile = profileRepository.findOne(new ObjectId(profileId));
+        Serializable> attributes, final List<String> roles) throws ProfileException {
+        Profile profile = profileRepository.findById(new ObjectId(profileId));
 
         if (profile == null) {
             return profile;
@@ -205,13 +207,23 @@ public class ProfileServiceImpl implements ProfileService {
 
         profile.setAttributes(currentAttributes);
         profile.setModified(new Date());
-        profile = profileRepository.save(profile);
+        try {
+            profileRepository.save(profile);
+        } catch (MongoDataException e) {
+            log.error("Unable to save profile "+profile,e);
+            throw new ProfileException("Unable to save profile",e);
+        }
         return profile;
     }
 
-    public Profile updateProfile(final Profile profile) {
-        Profile p = profileRepository.save(profile);
-        return p;
+    public Profile updateProfile(final Profile profile) throws ProfileException {
+        try {
+             profileRepository.save(profile);
+        } catch (MongoDataException e) {
+            log.error("Unable to update profile "+profile,e);
+            throw new ProfileException("Unable to update profile",e);
+        }
+        return profile;
     }
 
     /* (non-Javadoc)
@@ -254,7 +266,7 @@ public class ProfileServiceImpl implements ProfileService {
      * @see org.craftercms.profile.services.ProfileService#getProfile(java.lang.String)
      */
     @Override
-    public Profile getProfile(final String profileId) {
+    public Profile getProfile(final String profileId) throws ProfileException {
         Profile p = profileRepository.getProfile(profileId);
         return p;
     }
@@ -263,7 +275,7 @@ public class ProfileServiceImpl implements ProfileService {
      * @see org.craftercms.profile.services.ProfileService#getProfile(java.lang.String, java.util.List)
      */
     @Override
-    public Profile getProfile(final String profileId, final List<String> attributes) {
+    public Profile getProfile(final String profileId, final List<String> attributes) throws ProfileException {
         return profileRepository.getProfile(profileId, attributes);
     }
 
@@ -271,8 +283,8 @@ public class ProfileServiceImpl implements ProfileService {
      * @see org.craftercms.profile.services.ProfileService#getProfileWithAllAttributes(java.lang.String)
      */
     @Override
-    public Profile getProfileWithAllAttributes(final String profileId) {
-        return profileRepository.findOne(new ObjectId(profileId));
+    public Profile getProfileWithAllAttributes(final String profileId) throws ProfileException {
+        return profileRepository.findById(new ObjectId(profileId));
     }
 
     /* (non-Javadoc)
@@ -321,8 +333,8 @@ public class ProfileServiceImpl implements ProfileService {
      * @see org.craftercms.profile.services.ProfileService#activateProfile(java.lang.String, boolean)
      */
     @Override
-    public void activateProfile(final String profileId, final boolean active) {
-        Profile p = profileRepository.findOne(new ObjectId(profileId));
+    public void activateProfile(final String profileId, final boolean active) throws ProfileException {
+        Profile p = profileRepository.findById(new ObjectId(profileId));
         if (p != null) {
             activateProfile(p, active);
         }
@@ -333,17 +345,28 @@ public class ProfileServiceImpl implements ProfileService {
      * @see org.craftercms.profile.services.ProfileService#activateProfiles(boolean)
      */
     @Override
-    public void activateProfiles(final boolean active) {
-        List<Profile> l = profileRepository.findAll();
+    public void activateProfiles(final boolean active) throws ProfileException {
+        Iterable<Profile> l = null;
+        try {
+            l = profileRepository.findAll();
+        } catch (MongoDataException e) {
+            log.error("Unable to search for all profiles to activated them",e);
+            throw new ProfileException("Unable to search for all profiles",e);
+        }
         for (Profile p : l) {
             activateProfile(p, active);
         }
     }
 
-    private void activateProfile(final Profile p, final boolean active) {
+    private void activateProfile(final Profile p, final boolean active) throws ProfileException {
+        try{
         if (!isEnabledUser(p.getUserName())) {
             p.setActive(active);
             profileRepository.save(p);
+        }
+        }catch (MongoDataException e){
+            log.error("Unable to save profile "+p.getId(), e);
+            throw new ProfileException("Unable to save profile",e);
         }
     }
 
@@ -358,7 +381,7 @@ public class ProfileServiceImpl implements ProfileService {
     /* (non-Javadoc)
      * @see org.craftercms.profile.services.ProfileService#getProfilesByRoleName(java.lang.String, java.lang.String)
      */
-    public List<Profile> getProfilesByRoleName(final String roleName, final String tenantName) {
+    public Iterable<Profile> getProfilesByRoleName(final String roleName, final String tenantName) throws ProfileException {
         return profileRepository.findByRolesAndTenantName(roleName, tenantName);
     }
 
