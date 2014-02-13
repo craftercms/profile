@@ -10,40 +10,26 @@ import java.util.Date;
  */
 public class AccessToken {
 
-    /**
-     * Indicates the type of access the application has.
-     */
-    public enum Type {
-        ADMIN,
-        CLIENT;
-    }
-
     private String application;
     private String tenant;
     private Date expiresOn;
 
-    public String getApplication() {
-        return application;
+    public AccessToken(String application, String tenant, Date expiresOn) {
+        this.application = application;
+        this.tenant = tenant;
+        this.expiresOn = expiresOn;
     }
 
-    public void setApplication(String application) {
-        this.application = application;
+    public String getApplication() {
+        return application;
     }
 
     public String getTenant() {
         return tenant;
     }
 
-    public void setTenant(String tenant) {
-        this.tenant = tenant;
-    }
-
     public Date getExpiresOn() {
         return expiresOn;
-    }
-
-    public void setExpiresOn(Date expiresOn) {
-        this.expiresOn = expiresOn;
     }
 
 }

@@ -16,16 +16,16 @@
  */
 package org.craftercms.security.servlet.filters;
 
-import java.io.IOException;
-import java.util.Enumeration;
+import org.craftercms.security.api.RequestContext;
+import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.craftercms.security.api.RequestContext;
-import org.springframework.web.filter.OncePerRequestFilter;
+import java.io.IOException;
 
 /**
  * Binds a new request context to the current thread before the chain is called, and then removes it after the chain
@@ -33,7 +33,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  *
  * @author Alfonso Vásquez
  */
-public class RequestContextBindingFilter extends OncePerRequestFilter {
+public class RequestContextBindingFilter extends GenericFilterBean {
 
     /**
      * Binds a new {@link RequestContext} to the current thread, and after the the filter chain has finished
@@ -47,12 +47,14 @@ public class RequestContextBindingFilter extends OncePerRequestFilter {
      * @throws IOException
      */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain chain) throws ServletException, IOException {
-    	RequestContext context = createRequestContext(request, response);
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException,
+            IOException {
+        HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse resp = (HttpServletResponse) response;
+    	RequestContext context = createRequestContext(req, resp);
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Binding request context for request '" + request.getRequestURI() + "' to current thread");
+            logger.debug("Binding request context for request '" + req.getRequestURI() + "' to current thread");
         }
 
         RequestContext.setCurrent(context);
@@ -61,7 +63,7 @@ public class RequestContextBindingFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
         } finally {
             if (logger.isDebugEnabled()) {
-                logger.debug("Removing request context for request '" + request.getRequestURI() + "' from current " +
+                logger.debug("Removing request context for request '" + req.getRequestURI() + "' from current " +
                     "thread");
             }
 

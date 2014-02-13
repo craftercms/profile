@@ -10,17 +10,8 @@ import java.util.List;
  */
 public class AttributeSchema {
 
-    private String application;
     private String tenant;
     private List<AttributeDefinition> attributes;
-
-    public String getApplication() {
-        return application;
-    }
-
-    public void setApplication(String application) {
-        this.application = application;
-    }
 
     public String getTenant() {
         return tenant;

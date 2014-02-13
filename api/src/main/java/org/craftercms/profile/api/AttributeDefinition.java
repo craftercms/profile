@@ -1,5 +1,7 @@
 package org.craftercms.profile.api;
 
+import org.craftercms.commons.security.permissions.impl.SecuredObjectBase;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,25 +10,7 @@ import java.util.List;
  *
  * @author avasquez
  */
-public class AttributeDefinition {
-
-    /**
-     * Indicates the type of access the others besides the owner of the attribute have.
-     */
-    public enum AccessType {
-        /**
-         * Others can only view the attribute.
-         */
-        PUBLIC_READ_ONLY,
-        /**
-         * Others can view and modify the attribute.
-         */
-        PUBLIC_READ_WRITE,
-        /**
-         * Only the owner can see the attribute.
-         */
-        PRIVATE;
-    }
+public class AttributeDefinition extends SecuredObjectBase {
 
     private String name;
     private String label;
@@ -34,8 +18,8 @@ public class AttributeDefinition {
     private String type;
     private String constraint;
     private boolean required;
-    private AccessType accessType;
-    private List<AttributeDefinition> subAttributes;
+    private String owner;
+    private List<AttributeDefinition> subAttributeDefinitions;
 
     /**
      * Returns the name of the attribute.
@@ -80,14 +64,14 @@ public class AttributeDefinition {
     }
 
     /**
-     * Returns the type of the attribute to use for convert (string, int, boolean, etc.).
+     * Returns the type (class) of the attribute to use for convert.
      */
     public String getType() {
         return type;
     }
 
     /**
-     * Sets the type of the attribute to use for convert (string, int, boolean, etc.).
+     * Sets the type of the attribute (class) to use for convert.
      */
     public void setType(String type) {
         this.type = type;
@@ -122,35 +106,43 @@ public class AttributeDefinition {
     }
 
     /**
-     * Returns the access type.
+     * Returns the owner (application) of the attribute.
      */
-    public AccessType getAccessType() {
-        return accessType;
+    public String getOwner() {
+        return owner;
     }
 
     /**
-     * Sets the access type.
+     * Sets the owner (application) of the attribute
      */
-    public void setAccessType(AccessType accessType) {
-        this.accessType = accessType;
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     /**
      * Returns the sub-attributes of this attribute.
      */
-    public List<AttributeDefinition> getSubAttributes() {
-        if (subAttributes == null) {
-            subAttributes = new ArrayList<AttributeDefinition>();
+    public List<AttributeDefinition> getSubAttributeDefinitions() {
+        if (subAttributeDefinitions == null) {
+            subAttributeDefinitions = new ArrayList<AttributeDefinition>();
         }
 
-        return subAttributes;
+        return subAttributeDefinitions;
     }
 
     /**
      * Sets the sub-attributes of this attribute.
      */
-    public void setSubAttributes(List<AttributeDefinition> subAttributes) {
-        this.subAttributes = subAttributes;
+    public void setSubAttributeDefinitions(List<AttributeDefinition> subAttributeDefinitions) {
+        this.subAttributeDefinitions = subAttributeDefinitions;
+    }
+
+    private boolean isAttributeEmpty(Object attribute) {
+        return attribute instanceof String && ((String) attribute).isEmpty();
+    }
+
+    private boolean attributeNotMatchesConstraint(Object attribute) {
+        return attribute instanceof String && !((String) attribute).matches(constraint);
     }
 
 }
