@@ -6,9 +6,9 @@
         <artifactId>crafter-profile-parent</artifactId>
         <version>2.5.0-SNAPSHOT</version>
     </parent>
+
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-profile-client</artifactId>
-    <version>2.5.0-SNAPSHOT</version>
     <name>Crafter Profile Client</name>
     <description>Crafter Profile Client</description>
     <url>https://github.com/craftercms/profile/tree/master/client</url>
