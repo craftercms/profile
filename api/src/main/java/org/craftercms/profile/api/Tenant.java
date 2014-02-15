@@ -14,6 +14,7 @@ public class Tenant {
     private boolean verifyNewAccounts;
     private List<String> roles;
     private List<Group> groups;
+    private List<AttributeDefinition> attributeDefinitions;
 
     public String getName() {
         return name;
@@ -53,6 +54,18 @@ public class Tenant {
 
     public void setGroups(List<Group> groups) {
         this.groups = groups;
+    }
+
+    public List<AttributeDefinition> getAttributeDefinitions() {
+        if (attributeDefinitions == null) {
+            attributeDefinitions = new ArrayList<AttributeDefinition>();
+        }
+
+        return attributeDefinitions;
+    }
+
+    public void setAttributeDefinitions(List<AttributeDefinition> attributeDefinitions) {
+        this.attributeDefinitions = attributeDefinitions;
     }
 
 }

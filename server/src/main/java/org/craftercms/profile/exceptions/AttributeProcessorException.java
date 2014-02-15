@@ -16,25 +16,27 @@
  */
 package org.craftercms.profile.exceptions;
 
+import org.craftercms.profile.api.exceptions.ProfileException;
+
 /**
- * Thrown when validation of an attribute fails.
+ * Thrown when processing attributes fails for some reason.
  *
  * @author avasquez
  */
-public class AttributeValidationException extends ProfileException {
+public class AttributeProcessorException extends ProfileException {
 
-    public AttributeValidationException() {
+    public AttributeProcessorException() {
     }
 
-    public AttributeValidationException(String message) {
+    public AttributeProcessorException(String message) {
         super(message);
     }
 
-    public AttributeValidationException(String message, Throwable cause) {
+    public AttributeProcessorException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public AttributeValidationException(Throwable cause) {
+    public AttributeProcessorException(Throwable cause) {
         super(cause);
     }
 

@@ -17,16 +17,16 @@
 package org.craftercms.profile.exceptions;
 
 /**
- * Thrown when an attribute doesn't satisfy it's definition constraint.
+ * Thrown when no definition was found for a new attribute.
  *
  * @author avasquez
  */
-public class AttributeConstraintException extends AttributeProcessorException {
+public class UndefinedAttributeException extends AttributeProcessorException {
 
-    public static final String MESSAGE_FORMAT = "Attribute '%s' doesn't match the constraint '%s'";
+    public static final String MESSAGE_FORMAT = "No definition for attribute '%s' found";
 
-    public AttributeConstraintException(String attributeName, String constraint) {
-        super(String.format(MESSAGE_FORMAT, attributeName, constraint));
+    public UndefinedAttributeException(String attributeName) {
+        super(String.format(MESSAGE_FORMAT, attributeName));
     }
 
 }

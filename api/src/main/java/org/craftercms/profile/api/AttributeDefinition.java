@@ -137,12 +137,4 @@ public class AttributeDefinition extends SecuredObjectBase {
         this.subAttributeDefinitions = subAttributeDefinitions;
     }
 
-    private boolean isAttributeEmpty(Object attribute) {
-        return attribute instanceof String && ((String) attribute).isEmpty();
-    }
-
-    private boolean attributeNotMatchesConstraint(Object attribute) {
-        return attribute instanceof String && !((String) attribute).matches(constraint);
-    }
-
 }
