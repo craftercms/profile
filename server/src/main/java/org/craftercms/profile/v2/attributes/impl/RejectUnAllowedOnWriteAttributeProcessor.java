@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.attributes.impl;
+package org.craftercms.profile.v2.attributes.impl;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
@@ -22,17 +22,17 @@ import org.craftercms.commons.security.exception.PermissionException;
 import org.craftercms.commons.security.permissions.PermissionService;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Tenant;
-import org.craftercms.profile.attributes.AttributesProcessor;
-import org.craftercms.profile.exceptions.AttributeProcessorException;
-import org.craftercms.profile.exceptions.AttributeWriteNotAllowedException;
-import org.craftercms.profile.exceptions.UndefinedAttributeException;
-import org.craftercms.profile.util.ApplicationContext;
+import org.craftercms.profile.v2.attributes.AttributesProcessor;
+import org.craftercms.profile.v2.exceptions.AttributeProcessorException;
+import org.craftercms.profile.v2.exceptions.AttributeWriteNotAllowedException;
+import org.craftercms.profile.v2.exceptions.UndefinedAttributeException;
+import org.craftercms.profile.v2.utils.ApplicationContext;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * {@link org.craftercms.profile.attributes.AttributesProcessor} that rejects attributes to which the current
+ * {@link org.craftercms.profile.v2.attributes.AttributesProcessor} that rejects attributes to which the current
  * application doesn't have permission to write (or that don't have a corresponding definition).
  *
  * @author avasquez

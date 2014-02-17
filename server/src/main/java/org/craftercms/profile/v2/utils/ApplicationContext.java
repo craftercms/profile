@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.util;
+package org.craftercms.profile.v2.utils;
 
 import org.craftercms.profile.api.Tenant;
 
@@ -40,8 +40,8 @@ public class ApplicationContext {
     /**
      * Sets the context for the current thread.
      */
-    public static void setCurrent(ApplicationContext current) {
-        threadLocal.set(current);
+    public static void setCurrent(ApplicationContext context) {
+        threadLocal.set(context);
     }
 
     /**

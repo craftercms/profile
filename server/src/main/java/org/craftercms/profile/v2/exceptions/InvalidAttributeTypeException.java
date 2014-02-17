@@ -14,19 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.exceptions;
+package org.craftercms.profile.v2.exceptions;
 
 /**
- * Thrown when an attribute doesn't satisfy it's definition constraint.
+ * Thrown when an attribute's class doesn't match the attribute definition's class.
  *
  * @author avasquez
  */
-public class AttributeConstraintException extends AttributeProcessorException {
+public class InvalidAttributeTypeException extends AttributeProcessorException {
 
-    public static final String MESSAGE_FORMAT = "Attribute '%s' doesn't match the constraint '%s'";
+    public static final String MESSAGE_FORMAT = "Attribute '%s' is of type %s. Expected type is %s";
 
-    public AttributeConstraintException(String attributeName, String constraint) {
-        super(String.format(MESSAGE_FORMAT, attributeName, constraint));
+    public InvalidAttributeTypeException(String attributeName, String expectedType, String actualType) {
+        super(String.format(MESSAGE_FORMAT, attributeName, expectedType, actualType));
     }
 
 }

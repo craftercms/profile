@@ -14,30 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.exceptions;
-
-import org.craftercms.profile.api.exceptions.ProfileException;
+package org.craftercms.profile.v2.exceptions;
 
 /**
- * Thrown when processing attributes fails for some reason.
+ * Thrown when no definition was found for a new attribute.
  *
  * @author avasquez
  */
-public class AttributeProcessorException extends ProfileException {
+public class UndefinedAttributeException extends AttributeProcessorException {
 
-    public AttributeProcessorException() {
-    }
+    public static final String MESSAGE_FORMAT = "No definition for attribute '%s' found";
 
-    public AttributeProcessorException(String message) {
-        super(message);
-    }
-
-    public AttributeProcessorException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public AttributeProcessorException(Throwable cause) {
-        super(cause);
+    public UndefinedAttributeException(String attributeName) {
+        super(String.format(MESSAGE_FORMAT, attributeName));
     }
 
 }

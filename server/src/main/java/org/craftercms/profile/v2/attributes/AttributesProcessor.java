@@ -14,9 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.attributes;
+package org.craftercms.profile.v2.attributes;
 
-import org.craftercms.profile.exceptions.AttributeProcessorException;
+import org.craftercms.profile.v2.exceptions.AttributeProcessorException;
 
 import java.util.Map;
 

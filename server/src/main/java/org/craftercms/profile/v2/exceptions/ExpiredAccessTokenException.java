@@ -14,19 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.exceptions;
+package org.craftercms.profile.v2.exceptions;
+
+import org.craftercms.profile.api.exceptions.ProfileException;
+
+import java.util.Date;
 
 /**
- * Thrown when no definition was found for a new attribute.
+ * Thrown when the access token has already expired.
  *
  * @author avasquez
  */
-public class UndefinedAttributeException extends AttributeProcessorException {
+public class ExpiredAccessTokenException extends ProfileException {
 
-    public static final String MESSAGE_FORMAT = "No definition for attribute '%s' found";
+    public static final String MESSAGE_FORMAT = "Access token for application '%s' and tenant '%s' expired on %tD";
 
-    public UndefinedAttributeException(String attributeName) {
-        super(String.format(MESSAGE_FORMAT, attributeName));
+    public ExpiredAccessTokenException(String application, String tenant, Date expiredOn) {
+        super(String.format(MESSAGE_FORMAT, application, tenant, expiredOn));
     }
 
 }

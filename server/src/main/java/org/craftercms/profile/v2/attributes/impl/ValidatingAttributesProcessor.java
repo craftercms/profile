@@ -14,23 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.attributes.impl;
+package org.craftercms.profile.v2.attributes.impl;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Tenant;
-import org.craftercms.profile.attributes.AttributesProcessor;
-import org.craftercms.profile.exceptions.AttributeConstraintException;
-import org.craftercms.profile.exceptions.AttributeProcessorException;
-import org.craftercms.profile.exceptions.InvalidAttributeTypeException;
-import org.craftercms.profile.exceptions.RequiredAttributeException;
-import org.craftercms.profile.util.ApplicationContext;
+import org.craftercms.profile.v2.attributes.AttributesProcessor;
+import org.craftercms.profile.v2.exceptions.AttributeConstraintException;
+import org.craftercms.profile.v2.exceptions.AttributeProcessorException;
+import org.craftercms.profile.v2.exceptions.InvalidAttributeTypeException;
+import org.craftercms.profile.v2.exceptions.RequiredAttributeException;
+import org.craftercms.profile.v2.utils.ApplicationContext;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Implementation of {@link org.craftercms.profile.attributes.AttributesProcessor} that validates attributes
+ * Implementation of {@link org.craftercms.profile.v2.attributes.AttributesProcessor} that validates attributes
  * on write.
  *
  * @author avasquez

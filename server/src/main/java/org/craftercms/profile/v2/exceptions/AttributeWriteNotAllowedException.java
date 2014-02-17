@@ -1,4 +1,4 @@
-package org.craftercms.profile.exceptions;
+package org.craftercms.profile.v2.exceptions;
 
 /**
  * Thrown when an application doesn't have the permissions to set a new user attribute.
