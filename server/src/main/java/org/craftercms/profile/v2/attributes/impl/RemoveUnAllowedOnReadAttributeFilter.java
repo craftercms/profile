@@ -18,52 +18,48 @@ package org.craftercms.profile.v2.attributes.impl;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.craftercms.commons.security.exception.PermissionException;
-import org.craftercms.commons.security.permissions.PermissionService;
+import org.craftercms.commons.security.permissions.PermissionEvaluator;
+import org.craftercms.profile.api.AttributeActions;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Tenant;
-import org.craftercms.profile.v2.attributes.AttributesProcessor;
-import org.craftercms.profile.v2.exceptions.AttributeProcessorException;
-import org.craftercms.profile.v2.utils.ApplicationContext;
+import org.craftercms.profile.v2.attributes.AttributeFilter;
+import org.craftercms.profile.v2.exceptions.AttributeFilterException;
+import org.craftercms.profile.v2.permissions.Application;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * {@link org.craftercms.profile.v2.attributes.AttributesProcessor} that filters out attributes to which the current
+ * {@link org.craftercms.profile.v2.attributes.AttributeFilter} that filters out attributes to which the current
  * application doesn't have permission to read.
  *
  * @author avasquez
  */
-public class FilterUnAllowedOnReadAttributeProcessor implements AttributesProcessor {
+public class RemoveUnAllowedOnReadAttributeFilter implements AttributeFilter {
 
-    protected PermissionService permissionService;
-    protected String readActionName;
+    protected PermissionEvaluator<Application, AttributeDefinition> permissionEvaluator;
 
-    public void setPermissionService(PermissionService permissionService) {
-        this.permissionService = permissionService;
-    }
-
-    public void setReadActionName(String readActionName) {
-        this.readActionName = readActionName;
+    @Required
+    public void setPermissionEvaluator(PermissionEvaluator<Application, AttributeDefinition> permissionEvaluator) {
+        this.permissionEvaluator = permissionEvaluator;
     }
 
     @Override
-    public Map<String, Object> process(Map<String, Object> attributes) throws AttributeProcessorException {
-        String application = ApplicationContext.getCurrent().getApplication();
-        Tenant tenant = ApplicationContext.getCurrent().getTenant();
+    public Map<String, Object> filter(Tenant tenant, Map<String, Object> attributes) throws AttributeFilterException {
         List<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
 
         for (AttributeDefinition attributeDefinition : attributeDefinitions) {
-            filterIfNotAllowed(application, attributeDefinition, attributes);
+            filterIfNotAllowed(attributeDefinition, attributes);
         }
 
         return attributes;
     }
 
-    protected void filterIfNotAllowed(String application, AttributeDefinition attributeDefinition,
-                                      Map<String, Object> attributes) throws AttributeProcessorException {
+    protected void filterIfNotAllowed(AttributeDefinition attributeDefinition, Map<String, Object> attributes)
+            throws AttributeFilterException {
         try {
-            if (!permissionService.allow(application, attributeDefinition, readActionName, null, false)) {
+            if (!permissionEvaluator.isAllowed(attributeDefinition, AttributeActions.READ)) {
                 Object attribute = attributes.get(attributeDefinition.getName());
                 List<AttributeDefinition> subAttributeDefinitions = attributeDefinition.getSubAttributeDefinitions();
 
@@ -71,14 +67,14 @@ public class FilterUnAllowedOnReadAttributeProcessor implements AttributesProces
                     Map<String, Object> subAttributes = (Map<String, Object>) attribute;
 
                     for (AttributeDefinition subAttributeDefinition : subAttributeDefinitions) {
-                        filterIfNotAllowed(application, subAttributeDefinition, subAttributes);
+                        filterIfNotAllowed(subAttributeDefinition, subAttributes);
                     }
                 }
             } else {
                 attributes.remove(attributeDefinition.getName());
             }
         } catch (PermissionException e) {
-            throw new AttributeProcessorException("Error while checking permissions for attribute '" +
+            throw new AttributeFilterException("Error while checking permissions for attribute '" +
                     attributeDefinition.getName() + "'", e);
         }
     }

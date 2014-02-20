@@ -16,31 +16,32 @@
  */
 package org.craftercms.profile.v2.attributes.impl;
 
-import org.craftercms.profile.v2.attributes.AttributesProcessor;
-import org.craftercms.profile.v2.exceptions.AttributeProcessorException;
+import org.craftercms.profile.api.Tenant;
+import org.craftercms.profile.v2.attributes.AttributeFilter;
+import org.craftercms.profile.v2.exceptions.AttributeFilterException;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Composite pattern of {@link org.craftercms.profile.v2.attributes.AttributesProcessor}.
+ * Composite pattern of {@link org.craftercms.profile.v2.attributes.AttributeFilter}.
  *
  * @author avasquez
  */
-public class CompositeAttributeProcessor implements AttributesProcessor {
+public class CompositeAttributeFilter implements AttributeFilter {
 
-    private List<AttributesProcessor> processors;
+    private List<AttributeFilter> filters;
 
     @Required
-    public void setProcessors(List<AttributesProcessor> processors) {
-        this.processors = processors;
+    public void setFilters(List<AttributeFilter> filters) {
+        this.filters = filters;
     }
 
     @Override
-    public Map<String, Object> process(Map<String, Object> attributes) throws AttributeProcessorException {
-        for (AttributesProcessor processor : processors) {
-            attributes = processor.process(attributes);
+    public Map<String, Object> filter(Tenant tenant, Map<String, Object> attributes) throws AttributeFilterException {
+        for (AttributeFilter filter : filters) {
+            attributes = filter.filter(tenant, attributes);
         }
 
         return attributes;

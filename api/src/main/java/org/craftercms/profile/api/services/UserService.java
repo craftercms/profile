@@ -1,4 +1,4 @@
-package org.craftercms.profile.api.service;
+package org.craftercms.profile.api.services;
 
 import org.craftercms.profile.api.User;
 import org.craftercms.profile.api.utils.SortOrder;
@@ -34,6 +34,7 @@ public interface UserService {
     /**
      * Update the user's info.
      *
+     * @param tenant    the tenant's name
      * @param userId    the user's ID
      * @param password  the new password for the user, or null if the password shouldn't be updated
      * @param email     the new email for the user, or null if the email shouldn't be updated
@@ -43,103 +44,93 @@ public interface UserService {
      *
      * @return the updated user
      */
-    User updateUser(String userId, String password, String email, boolean enabled, List<String> roles,
+    User updateUser(String tenant, String userId, String password, String email, boolean enabled, List<String> roles,
                     List<String> groups);
 
     /**
      * Enables a user.
      *
-     * @param userId  the user's ID
+     * @param tenant    the tenant's name
+     * @param userId    the user's ID
      *
      * @return the enabled user
      */
-    User enableUser(String userId);
+    User enableUser(String tenant, String userId);
 
     /**
      * Disables a user.
      *
-     * @param userId  the user's ID
+     * @param tenant    the tenant's name
+     * @param userId    the user's ID
      *
      * @return the disabled user
      */
-    User disableUser(String userId);
+    User disableUser(String tenant, String userId);
 
     /**
      * Assigns roles to the user.
      *
+     * @param tenant    the tenant's name
      * @param userId    the user's ID
      * @param roles     the roles to assign
      *
      * @return the updated user
      */
-    User addRoles(String userId, List<String> roles);
+    User addRoles(String tenant, String userId, List<String> roles);
 
     /**
      * Removes assigned roles from a user.
      *
+     * @param tenant    the tenant's name
      * @param userId    the user's ID
      * @param roles     the roles to remove
      *
      * @return the updated user
      */
-    User removeRoles(String userId, List<String> roles);
-
-    /**
-     * Assigns groups to the user.
-     *
-     * @param userId    the user's ID
-     * @param groups    the groups to assign
-     *
-     * @return the updated user
-     */
-    User addGroups(String userId, List<String> groups);
-
-    /**
-     * Removes assigned groups from a user.
-     *
-     * @param userId    the user's id
-     * @param groups    the groups to remove
-     *
-     * @return the updated user
-     */
-    User removeGroups(String userId, List<String> groups);
+    User removeRoles(String tenant, String userId, List<String> roles);
 
     /**
      * Returns the attributes of a user.
      *
-     * @param userId        the user's ID
+     * @param tenant    the tenant's name
+     * @param userId    the user's ID
      *
      * @return  the user's attributes
      */
-    Map<String, Object> getAttributes(String userId);
+    Map<String, Object> getAttributes(String tenant, String userId);
 
     /**
-     * Updates the attributes of a user. Normally, the new attributes are merged with the existing attributes,
-     * unless the {@code replace} flag is set, which will replace the existing attributes with the new attributes.
+     * Updates the attributes of a user, by merging the specified attributes with the existing attributes.
      *
-     * @param userId        the user's id
+     * @param tenant        the tenant's name
+     * @param userId        the user's ID
      * @param attributes    the new attributes
-     * @param replace       if the existing attributes should be replaced with the new ones instead of merged
      *
      * @return the updated attributes
      */
-    Map<String, Object> updateAttributes(String userId, Map<String, Object> attributes, boolean replace);
+    Map<String, Object> updateAttributes(String tenant, String userId, Map<String, Object> attributes);
+
+    // TODO: Delete attributes (pass a string with a dot notation for sub-attributes, like a.b.c?)"
 
     /**
      * Deletes a user.
      *
-     * @param userId  the user's id
+     * @param tenant    the tenant's name
+     * @param userId    the user's ID
+     *                  
+     * @return the deleted user
      */
-    void deleteUser(String userId);
+    User deleteUser(String tenant, String userId);
 
     /**
      * Returns the user for the specified id.
      *
-     * @param userId    the user's id
+     * @param tenant    the tenant's name
+     * @param userId    the user's ID
      *
      * @return  the user, or null if not found
      */
-    User getUser(String userId);
+    User getUser(String tenant, String userId);
 
     /**
      * Returns the user for the specified tenant and username
@@ -154,11 +145,12 @@ public interface UserService {
     /**
      * Returns the user for the specified ticket.
      *
-     * @param ticket        the ticket of the authenticated user
+     * @param tenant    the tenant's name
+     * @param ticket    the ticket of the authenticated user
      *
      * @return  the user, or null if not found
      */
-    User getUserByTicket(String ticket);
+    User getUserByTicket(String tenant, String ticket);
 
     /**
      * Returns the number of users of the specified tenant.
@@ -172,13 +164,14 @@ public interface UserService {
     /**
      * Returns a list of users for the specified list of ids.
      *
+     * @param tenant    the tenant's name
      * @param userIds   the ids of the users to look for
      * @param sortBy    user attribute to sort the list by (optional)
      * @param sortOrder the sort order (either ASC or DESC) (optional)
      *
      * @return the list of users (can be smaller than the list of ids if some where not found)
      */
-    List<User> getUsers(List<String> userIds, String sortBy, SortOrder sortOrder);
+    List<User> getUsers(String tenant, List<String> userIds, String sortBy, SortOrder sortOrder);
 
     /**
      * Returns a list of all users for the specified tenant.
@@ -229,18 +222,20 @@ public interface UserService {
     /**
      * Common forgot password functionality: sends the user an email with an URL to reset their password.
      *
+     * @param tenant    the tenant's name
      * @param userId            the user's ID
      * @param changePasswordUrl the base URL to use to build the final URL the user will use to reset their password.
      */
-    void forgotPassword(String userId, String changePasswordUrl);
+    void forgotPassword(String tenant, String userId, String changePasswordUrl);
 
     /**
      * Resets a user's password.
      *
+     * @param tenant    the tenant's name
      * @param resetToken    the encrypted token used to identify the user and the time the password reset was
      *                      initiated
      * @param newPassword   the new password
      */
-    void resetPassword(String resetToken, String newPassword);
+    void resetPassword(String tenant, String resetToken, String newPassword);
 
 }

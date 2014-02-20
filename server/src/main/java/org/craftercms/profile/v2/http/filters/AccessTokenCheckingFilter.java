@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.v2.filters;
+package org.craftercms.profile.v2.http.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
@@ -22,13 +22,12 @@ import org.apache.commons.lang.StringUtils;
 import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.crypto.SimpleCipher;
 import org.craftercms.profile.api.AccessToken;
-import org.craftercms.profile.api.Tenant;
-import org.craftercms.profile.api.service.TenantService;
+import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.v2.exceptions.ExpiredAccessTokenException;
 import org.craftercms.profile.v2.exceptions.InvalidAccessTokenParamException;
 import org.craftercms.profile.v2.exceptions.MissingRequiredParameterException;
 import org.craftercms.profile.v2.exceptions.NoSuchTenantException;
-import org.craftercms.profile.v2.utils.ApplicationContext;
+import org.craftercms.profile.v2.permissions.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -47,9 +46,9 @@ import java.security.Key;
 import java.util.Date;
 
 /**
- * Filters that check that in every call the {@link org.craftercms.profile.api.AccessToken} is specified as a
+ * Filter that checks that in every call the {@link org.craftercms.profile.api.AccessToken} is specified as a
  * parameter. If no access token is specified, a 401 is returned to the caller. If a token is found, a new
- * {@link org.craftercms.profile.v2.utils.ApplicationContext} is created and set as the context of the current
+ * {@link org.craftercms.profile.v2.permissions.Application} is created and set as the context of the current
  * thread.
  *
  * @author avasquez
@@ -59,7 +58,7 @@ public class AccessTokenCheckingFilter extends GenericFilterBean {
     private static final Logger logger = LoggerFactory.getLogger(AccessTokenCheckingFilter.class);
 
     public static final String ACCESS_TOKEN_PARAM = "accessToken";
-    public static final String ACCESS_TOKEN_SEP =   "|";
+    public static final String ACCESS_TOKEN_PARAM_SEP =   "|";
 
     protected ObjectMapper jsonMapper;
     protected Key paramEncryptionKey;
@@ -84,54 +83,48 @@ public class AccessTokenCheckingFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-
-        try {
-            AccessToken token = getAccessToken(httpRequest);
-            ApplicationContext appContext = getApplicationContext(token);
-
-            ApplicationContext.setCurrent(appContext);
+        if (Application.getCurrent() == null) {
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
+            HttpServletResponse httpResponse = (HttpServletResponse) response;
 
             try {
-                chain.doFilter(request, response);
-            } finally {
-                ApplicationContext.clear();
+                AccessToken token = getAccessToken(httpRequest);
+                Application application = getApplication(token);
+
+                Application.setCurrent(application);
+
+                try {
+                    chain.doFilter(request, response);
+                } finally {
+                    Application.clear();
+                }
+            } catch (MissingRequiredParameterException e) {
+                handleAccessTokenParamNotFound(e, httpRequest, httpResponse);
+            } catch (InvalidAccessTokenParamException e) {
+                handleInvalidAccessTokenParam(e, httpRequest, httpResponse);
+            } catch (ExpiredAccessTokenException e) {
+                handleExpiredAccessToken(e, httpRequest, httpResponse);
             }
-        } catch (MissingRequiredParameterException e) {
-            handleAccessTokenParamNotFound(e, httpRequest, httpResponse);
-        } catch (InvalidAccessTokenParamException e) {
-            handleInvalidAccessTokenParam(e, httpRequest, httpResponse);
-        } catch (ExpiredAccessTokenException e) {
-            handleExpiredAccessToken(e, httpRequest, httpResponse);
-        } catch (NoSuchTenantException e) {
-            handleNoSuchTenant(e, httpRequest, httpResponse);
         }
     }
 
-    protected ApplicationContext getApplicationContext(AccessToken token) throws ExpiredAccessTokenException,
-            NoSuchTenantException {
+    protected Application getApplication(AccessToken token) throws ExpiredAccessTokenException {
         Date now = new Date();
 
-        if (now.before(token.getExpiresOn())) {
-            Tenant tenant = tenantService.getTenant(token.getTenant());
-            if (tenant != null) {
-                return new ApplicationContext(token.getApplication(), tenant);
-            } else {
-                throw new NoSuchTenantException(token.getTenant());
-            }
+        if (token.getExpiresOn() == null || now.before(token.getExpiresOn())) {
+            return new Application(token.getApplication(), token.getTenantPermissions());
         } else {
-            throw new ExpiredAccessTokenException(token.getApplication(), token.getTenant(), token.getExpiresOn());
+            throw new ExpiredAccessTokenException(token.getApplication(), token.getExpiresOn());
         }
     }
 
     protected AccessToken getAccessToken(HttpServletRequest request) throws MissingRequiredParameterException,
             InvalidAccessTokenParamException {
         String encryptedParam = getEncryptedAccessTokenParam(request);
-        String[] encryptedTokenAndIv = StringUtils.split(encryptedParam, ACCESS_TOKEN_SEP);
+        String[] encryptedTokenAndIv = StringUtils.split(encryptedParam, ACCESS_TOKEN_PARAM_SEP);
 
         if (encryptedTokenAndIv.length != 2) {
-            throw new InvalidAccessTokenParamException("Expected format is ENCRYPTED_TOKEN" + ACCESS_TOKEN_SEP + "IV");
+            throw new InvalidAccessTokenParamException("Expected format is ENCRYPTED_TOKEN" + ACCESS_TOKEN_PARAM_SEP + "IV");
         }
 
         SimpleCipher cipher = new SimpleCipher();

@@ -14,24 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.v2.exceptions;
+package org.craftercms.profile.api;
 
-import org.craftercms.profile.api.exceptions.ProfileException;
-
-import java.util.Arrays;
-import java.util.Date;
+import org.craftercms.commons.security.permissions.PermissionBase;
 
 /**
- * Thrown when the access token has already expired.
+ * {@link org.craftercms.commons.security.permissions.Permission} specific for tenants.
  *
  * @author avasquez
  */
-public class ExpiredAccessTokenException extends ProfileException {
+public class TenantPermission extends PermissionBase {
 
-    public static final String MESSAGE_FORMAT = "Access token for application '%s' expired on %tD";
+    public static final String ANY_TENANT = "*";
 
-    public ExpiredAccessTokenException(String application, Date expiredOn) {
-        super(String.format(MESSAGE_FORMAT, application, expiredOn));
+    protected String tenant;
+
+    public TenantPermission() {
+        tenant = ANY_TENANT;
+    }
+
+    public TenantPermission(String tenant) {
+        this.tenant = tenant;
+    }
+
+    public String getTenant() {
+        return tenant;
     }
 
 }

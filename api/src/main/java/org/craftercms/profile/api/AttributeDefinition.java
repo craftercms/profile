@@ -1,6 +1,7 @@
 package org.craftercms.profile.api;
 
-import org.craftercms.commons.security.permissions.impl.SecuredObjectBase;
+
+import org.craftercms.commons.security.permissions.SecuredObjectBase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  *
  * @author avasquez
  */
-public class AttributeDefinition extends SecuredObjectBase {
+public class AttributeDefinition extends SecuredObjectBase<AttributePermission> {
 
     private String name;
     private String label;

@@ -19,27 +19,25 @@ package org.craftercms.profile.v2.attributes.impl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Tenant;
-import org.craftercms.profile.v2.attributes.AttributesProcessor;
+import org.craftercms.profile.v2.attributes.AttributeFilter;
 import org.craftercms.profile.v2.exceptions.AttributeConstraintException;
-import org.craftercms.profile.v2.exceptions.AttributeProcessorException;
+import org.craftercms.profile.v2.exceptions.AttributeFilterException;
 import org.craftercms.profile.v2.exceptions.InvalidAttributeTypeException;
 import org.craftercms.profile.v2.exceptions.RequiredAttributeException;
-import org.craftercms.profile.v2.utils.ApplicationContext;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Implementation of {@link org.craftercms.profile.v2.attributes.AttributesProcessor} that validates attributes
+ * Implementation of {@link org.craftercms.profile.v2.attributes.AttributeFilter} that validates attributes
  * on write.
  *
  * @author avasquez
  */
-public class ValidatingAttributesProcessor implements AttributesProcessor {
+public class ValidatingAttributeFilter implements AttributeFilter {
 
     @Override
-    public Map<String, Object> process(Map<String, Object> attributes) throws AttributeProcessorException {
-        Tenant tenant = ApplicationContext.getCurrent().getTenant();
+    public Map<String, Object> filter(Tenant tenant, Map<String, Object> attributes) throws AttributeFilterException {
         List<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
 
         for (AttributeDefinition attributeDefinition : attributeDefinitions) {
@@ -49,7 +47,8 @@ public class ValidatingAttributesProcessor implements AttributesProcessor {
         return attributes;
     }
 
-    protected void validateAttribute(AttributeDefinition definition, Object attribute) throws AttributeProcessorException {
+    protected void validateAttribute(AttributeDefinition definition, Object attribute)
+            throws AttributeFilterException {
         String name = definition.getName();
         String type = definition.getType();
         String constraint = definition.getConstraint();
@@ -63,7 +62,7 @@ public class ValidatingAttributesProcessor implements AttributesProcessor {
         try {
             clazz = Class.forName(type);
         } catch (ClassNotFoundException e) {
-            throw new AttributeProcessorException("Can't find type " + type, e);
+            throw new AttributeFilterException("Can't find type " + type, e);
         }
 
         if (!clazz.isAssignableFrom(attribute.getClass())) {

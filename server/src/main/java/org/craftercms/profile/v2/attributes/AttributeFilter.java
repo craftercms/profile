@@ -16,24 +16,26 @@
  */
 package org.craftercms.profile.v2.attributes;
 
-import org.craftercms.profile.v2.exceptions.AttributeProcessorException;
+import org.craftercms.profile.api.Tenant;
+import org.craftercms.profile.v2.exceptions.AttributeFilterException;
 
 import java.util.Map;
 
 /**
- * Processor for attributes. Used on attribute read and write.
+ * Attributes filter interface. Used on attribute read and write to check attribute permissions and constraints.
  *
  * @author avasquez
  */
-public interface AttributesProcessor {
+public interface AttributeFilter {
 
     /**
-     * Process the attributes on read/write.
+     * Filters the attributes on read/write.
      *
-     * @param attributes    the attributes to process
+     * @param tenant        the tenant that contains the attribute definitions
+     * @param attributes    the attributes to filter
      *
      * @return the modified attributes
      */
-    Map<String, Object> process(Map<String, Object> attributes) throws AttributeProcessorException;
+    Map<String, Object> filter(Tenant tenant, Map<String, Object> attributes) throws AttributeFilterException;
 
 }

@@ -14,30 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.v2.exceptions;
-
-import org.craftercms.profile.api.exceptions.ProfileException;
+package org.craftercms.profile.api;
 
 /**
- * Thrown when processing attributes fails for some reason.
+ * Actions that can be executed on tenants and their user profiles by applications.
  *
  * @author avasquez
  */
-public class AttributeProcessorException extends ProfileException {
+public class TenantActions {
 
-    public AttributeProcessorException() {
-    }
+    public static final String CREATE =         "create";
+    public static final String READ =           "read";
+    public static final String READ_ALL =       "readAll";
+    public static final String COUNT =          "count";
+    public static final String UPDATE =         "update";
+    public static final String DELETE =         "delete";
+    public static final String MANAGE_USERS =   "manageUsers";
 
-    public AttributeProcessorException(String message) {
-        super(message);
-    }
-
-    public AttributeProcessorException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public AttributeProcessorException(Throwable cause) {
-        super(cause);
+    private TenantActions() {
     }
 
 }

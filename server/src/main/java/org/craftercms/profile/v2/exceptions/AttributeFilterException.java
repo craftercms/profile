@@ -18,20 +18,26 @@ package org.craftercms.profile.v2.exceptions;
 
 import org.craftercms.profile.api.exceptions.ProfileException;
 
-import java.util.Arrays;
-import java.util.Date;
-
 /**
- * Thrown when the access token has already expired.
+ * Thrown when attribute filtering fails for some reason.
  *
  * @author avasquez
  */
-public class ExpiredAccessTokenException extends ProfileException {
+public class AttributeFilterException extends ProfileException {
 
-    public static final String MESSAGE_FORMAT = "Access token for application '%s' expired on %tD";
+    public AttributeFilterException() {
+    }
 
-    public ExpiredAccessTokenException(String application, Date expiredOn) {
-        super(String.format(MESSAGE_FORMAT, application, expiredOn));
+    public AttributeFilterException(String message) {
+        super(message);
+    }
+
+    public AttributeFilterException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public AttributeFilterException(Throwable cause) {
+        super(cause);
     }
 
 }

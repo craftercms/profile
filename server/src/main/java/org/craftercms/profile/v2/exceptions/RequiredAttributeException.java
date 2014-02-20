@@ -5,7 +5,7 @@ package org.craftercms.profile.v2.exceptions;
  *
  * @author avasquez
  */
-public class RequiredAttributeException extends AttributeProcessorException {
+public class RequiredAttributeException extends AttributeFilterException {
 
     public static final String MESSAGE_FORMAT = "Attribute '%s' must not be null or empty";
 

@@ -21,7 +21,7 @@ package org.craftercms.profile.v2.exceptions;
  *
  * @author avasquez
  */
-public class InvalidAttributeTypeException extends AttributeProcessorException {
+public class InvalidAttributeTypeException extends AttributeFilterException {
 
     public static final String MESSAGE_FORMAT = "Attribute '%s' is of type %s. Expected type is %s";
 

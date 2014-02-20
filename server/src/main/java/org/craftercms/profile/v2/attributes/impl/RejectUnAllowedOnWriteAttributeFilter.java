@@ -19,59 +19,55 @@ package org.craftercms.profile.v2.attributes.impl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.craftercms.commons.security.exception.PermissionException;
-import org.craftercms.commons.security.permissions.PermissionService;
+import org.craftercms.commons.security.permissions.PermissionEvaluator;
+import org.craftercms.profile.api.AttributeActions;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Tenant;
-import org.craftercms.profile.v2.attributes.AttributesProcessor;
-import org.craftercms.profile.v2.exceptions.AttributeProcessorException;
+import org.craftercms.profile.v2.attributes.AttributeFilter;
+import org.craftercms.profile.v2.exceptions.AttributeFilterException;
 import org.craftercms.profile.v2.exceptions.AttributeWriteNotAllowedException;
 import org.craftercms.profile.v2.exceptions.UndefinedAttributeException;
-import org.craftercms.profile.v2.utils.ApplicationContext;
+import org.craftercms.profile.v2.permissions.Application;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * {@link org.craftercms.profile.v2.attributes.AttributesProcessor} that rejects attributes to which the current
+ * {@link org.craftercms.profile.v2.attributes.AttributeFilter} that rejects attributes to which the current
  * application doesn't have permission to write (or that don't have a corresponding definition).
  *
  * @author avasquez
  */
-public class RejectUnAllowedOnWriteAttributeProcessor implements AttributesProcessor {
+public class RejectUnAllowedOnWriteAttributeFilter implements AttributeFilter {
 
-    protected PermissionService permissionService;
-    protected String writeActionName;
+    protected PermissionEvaluator<Application, AttributeDefinition> permissionEvaluator;
 
-    public void setPermissionService(PermissionService permissionService) {
-        this.permissionService = permissionService;
-    }
-
-    public void setWriteActionName(String writeActionName) {
-        this.writeActionName = writeActionName;
+    @Required
+    public void setPermissionEvaluator(PermissionEvaluator<Application, AttributeDefinition> permissionEvaluator) {
+        this.permissionEvaluator = permissionEvaluator;
     }
 
     @Override
-    public Map<String, Object> process(Map<String, Object> attributes) throws AttributeProcessorException {
-        String application = ApplicationContext.getCurrent().getApplication();
-        Tenant tenant = ApplicationContext.getCurrent().getTenant();
+    public Map<String, Object> filter(Tenant tenant, Map<String, Object> attributes) throws AttributeFilterException {
         List<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
 
         for (Map.Entry<String, Object> attribEntry : attributes.entrySet()) {
             String attributeName = attribEntry.getKey();
             Object attribute = attribEntry.getValue();
 
-            rejectIfNotAllowed(application, attributeDefinitions, attributeName, attribute);
+            rejectIfNotAllowed(attributeDefinitions, attributeName, attribute);
         }
 
         return attributes;
     }
 
-    protected void rejectIfNotAllowed(String application, List<AttributeDefinition> attributeDefinitions,
-                                      String attributeName, Object attribute) throws AttributeProcessorException {
+    protected void rejectIfNotAllowed(List<AttributeDefinition> attributeDefinitions, String attributeName,
+                                      Object attribute) throws AttributeFilterException {
         AttributeDefinition definition = getAttributeDefinitionByName(attributeDefinitions, attributeName);
         if (definition != null) {
             try {
-                if (permissionService.allow(application, definition, writeActionName, null, false)) {
+                if (permissionEvaluator.isAllowed(definition, AttributeActions.WRITE)) {
                     List<AttributeDefinition> subAttributeDefinitions = definition.getSubAttributeDefinitions();
 
                     if (attribute instanceof Map && CollectionUtils.isNotEmpty(subAttributeDefinitions)) {
@@ -81,14 +77,14 @@ public class RejectUnAllowedOnWriteAttributeProcessor implements AttributesProce
                             String subAttribName = subAttribEntry.getKey();
                             Object subAttrib = subAttribEntry.getValue();
 
-                            rejectIfNotAllowed(application, subAttributeDefinitions, subAttribName, subAttrib);
+                            rejectIfNotAllowed(subAttributeDefinitions, subAttribName, subAttrib);
                         }
                     }
                 } else {
                     throw new AttributeWriteNotAllowedException(attributeName);
                 }
             } catch (PermissionException e) {
-                throw new AttributeProcessorException("Error while checking permissions for attribute '" +
+                throw new AttributeFilterException("Error while checking permissions for attribute '" +
                         attributeName + "'", e);
             }
         } else {

@@ -21,7 +21,7 @@ package org.craftercms.profile.v2.exceptions;
  *
  * @author avasquez
  */
-public class AttributeConstraintException extends AttributeProcessorException {
+public class AttributeConstraintException extends AttributeFilterException {
 
     public static final String MESSAGE_FORMAT = "Attribute '%s' doesn't match the constraint '%s'";
 

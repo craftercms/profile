@@ -21,7 +21,7 @@ package org.craftercms.profile.v2.exceptions;
  *
  * @author avasquez
  */
-public class UndefinedAttributeException extends AttributeProcessorException {
+public class UndefinedAttributeException extends AttributeFilterException {
 
     public static final String MESSAGE_FORMAT = "No definition for attribute '%s' found";
 

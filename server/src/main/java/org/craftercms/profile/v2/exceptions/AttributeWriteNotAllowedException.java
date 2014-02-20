@@ -5,7 +5,7 @@ package org.craftercms.profile.v2.exceptions;
  *
  * @author avasquez
  */
-public class AttributeWriteNotAllowedException extends AttributeProcessorException {
+public class AttributeWriteNotAllowedException extends AttributeFilterException {
 
     public static final String MESSAGE_FORMAT = "The application is not allowed to write attribute '%s'";
 
