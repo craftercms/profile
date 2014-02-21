@@ -21,6 +21,7 @@ import java.util.Arrays;
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.domain.Tenant;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
+import org.craftercms.profile.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.TenantException;
 import org.craftercms.profile.exceptions.TicketException;
 import org.craftercms.profile.services.MultiTenantService;
@@ -70,7 +71,7 @@ public class MultiTenantRestController {
 
     @RequestMapping(value = "delete/{tenantName}", method = RequestMethod.GET)
     @ModelAttribute
-    public void deleteTenant(@PathVariable final String tenantName) throws TenantException {
+    public void deleteTenant(@PathVariable final String tenantName) throws TenantException, ProfileException {
         multiTenantService.deleteTenant(tenantName);
     }
 
@@ -94,7 +95,8 @@ public class MultiTenantRestController {
 
     @RequestMapping(value = "ticket/{ticket}", method = RequestMethod.GET)
     @ModelAttribute
-    public Tenant getTenantByTicket(@PathVariable final String ticket) throws NoSuchProfileException, TenantException, TicketException {
+    public Tenant getTenantByTicket(@PathVariable final String ticket) throws NoSuchProfileException,
+        TenantException, TicketException, ProfileException {
 
         Tenant tenant = multiTenantService.getTenantByTicket(ticket);
         if (tenant == null) {
@@ -111,7 +113,7 @@ public class MultiTenantRestController {
 
     @RequestMapping(value = "exists/{tenantName}", method = RequestMethod.GET)
     @ModelAttribute
-    public boolean exists(@PathVariable String tenantName) throws TenantException {
+    public boolean exists(@PathVariable final String tenantName) throws TenantException {
         return multiTenantService.exists(tenantName);
     }
 
@@ -120,7 +122,7 @@ public class MultiTenantRestController {
     public Iterable<Tenant> getTenantRange(@RequestParam(required = false, value = ProfileConstants.SORT_BY)
                                            final String sortBy, @RequestParam(required = false,
         value = ProfileConstants.SORT_ORDER) final String sortOrder, @RequestParam(ProfileConstants.START) final int
-        start, @RequestParam(ProfileConstants.END) final int end) {
+        start, @RequestParam(ProfileConstants.END) final int end) throws TenantException {
         return multiTenantService.getTenantRange(sortBy, sortOrder, start, end);
     }
 

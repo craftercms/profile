@@ -18,8 +18,10 @@ package org.craftercms.profile.impl.domain;
 
 import java.io.Serializable;
 
-public class Role implements Serializable {
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+public class Role implements Serializable {
+    @JsonProperty("_id")
     private String id;
 
     private String roleName;

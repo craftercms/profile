@@ -27,6 +27,7 @@ import org.craftercms.profile.domain.Attribute;
 import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.domain.Schema;
 import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.TenantException;
 import org.craftercms.profile.exceptions.TicketException;
 import org.craftercms.profile.repositories.TenantRepository;
@@ -152,7 +153,7 @@ public class MultiTenantServiceImpl implements MultiTenantService {
      * @see org.craftercms.profile.services.MultiTenantService#deleteTenant(java.lang.String)
      */
     @Override
-    public void deleteTenant(final String tenantName) throws TenantException {
+    public void deleteTenant(final String tenantName) throws TenantException, ProfileException {
         Tenant t = tenantRepository.getTenantByName(tenantName);
         profileService.deleteProfiles(tenantName);
         if (t != null) {
@@ -182,7 +183,7 @@ public class MultiTenantServiceImpl implements MultiTenantService {
      * @see org.craftercms.profile.services.MultiTenantService#getTenantByTicket(java.lang.String)
      */
     @Override
-    public Tenant getTenantByTicket(final String ticket) throws TenantException, TicketException {
+    public Tenant getTenantByTicket(final String ticket) throws TenantException, TicketException, ProfileException {
         Profile profile = this.profileService.getProfileByTicket(ticket);
         return getTenantByName(profile.getTenantName());
 
@@ -201,7 +202,8 @@ public class MultiTenantServiceImpl implements MultiTenantService {
      * int, int)
      */
     @Override
-    public Iterable<Tenant> getTenantRange(final String sortBy, String sortOrder, int start, int end) {
+    public Iterable<Tenant> getTenantRange(final String sortBy, final String sortOrder, final int start,
+                                           final int end) throws TenantException {
         return tenantRepository.getTenantRange(sortBy, sortOrder, start, end);
     }
 

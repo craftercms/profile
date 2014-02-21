@@ -44,9 +44,9 @@
         <jetty.version>8.1.2.v20120308</jetty.version>
 
         <java.version>1.7</java.version>
-        <org.springframework.version>3.1.1.RELEASE</org.springframework.version>
-        <org.spring-security.version>3.1.0.RELEASE</org.spring-security.version>
-        <org.aspectj.version>1.6.9</org.aspectj.version>
+        <org.springframework.version>4.0.1.RELEASE</org.springframework.version>
+        <org.spring-security.version>3.2.0.RELEASE</org.spring-security.version>
+        <org.aspectj.version>1.7.2</org.aspectj.version>
         <cglib.version>2.2</cglib.version>
         <org.slf4j.version>1.7.5</org.slf4j.version>
         <javax.inject.version>1</javax.inject.version>
@@ -56,15 +56,14 @@
         <junit.version>4.11</junit.version>
         <ehcache.version>1.2.3</ehcache.version>
         <org.hibernate.version>4.2.0.Final</org.hibernate.version>
-        <org.quartz-scheduler>2.1.7</org.quartz-scheduler>
-        <!-- Spring 3 is not compatible with newer versions. -->
+        <org.quartz-scheduler>2.2.1</org.quartz-scheduler>
         <org.apache.commons.fileupload.version>1.3</org.apache.commons.fileupload.version>
         <org.apache.commons.io.version>2.4</org.apache.commons.io.version>
         <org.apache.commons.codec.version>1.9</org.apache.commons.codec.version>
-        <com.fasterxml.jackson.version>2.2.3</com.fasterxml.jackson.version>
+        <com.fasterxml.jackson.version>2.3.0</com.fasterxml.jackson.version>
         <com.thoughtworks.xstream.version>1.4.2</com.thoughtworks.xstream.version>
         <org.mongodb.java-driver.version>2.11.3</org.mongodb.java-driver.version>
-        <org.spring-data.mongodb.version>1.0.1.RELEASE</org.spring-data.mongodb.version>
+
         <org.bouncycastle.crypto.version>1.46</org.bouncycastle.crypto.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -76,9 +75,9 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.cenqua.clover</groupId>
-            <artifactId>clover</artifactId>
-            <version>${clover.version}</version>
+            <groupId>org.craftercms</groupId>
+            <artifactId>crafter-commons-utilities</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.jersey</groupId>
@@ -99,6 +98,18 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
+            <version>${org.springframework.version}</version>
+            <exclusions>
+                <!-- Exclude Commons Logging in favor of SLF4j -->
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
             <version>${org.springframework.version}</version>
             <exclusions>
                 <!-- Exclude Commons Logging in favor of SLF4j -->
@@ -247,7 +258,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${org.slf4j.version}</version>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -272,6 +282,11 @@
             <artifactId>mockito-all</artifactId>
             <version>1.9.5</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${org.springframework.version}</version>
+        </dependency>
         <!-- END Test -->
 
         <dependency>
@@ -279,12 +294,6 @@
             <artifactId>ehcache</artifactId>
             <version>${ehcache.version}</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-mongodb</artifactId>
-            <version>${org.spring-data.mongodb.version}</version>
         </dependency>
 
         <!-- JSON & XML marshallers -->
@@ -296,6 +305,11 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
+            <version>${com.fasterxml.jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
             <version>${com.fasterxml.jackson.version}</version>
         </dependency>
         <dependency>
@@ -325,6 +339,7 @@
     <build>
         <outputDirectory>target/classes</outputDirectory>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -452,8 +467,7 @@
                 </executions>
             </plugin>
 
-          
-         
+
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>maven-clover2-plugin</artifactId>
@@ -527,6 +541,34 @@
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>JDK8</id>
+            <activation>
+                <jdk>
+                    1.8
+                </jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

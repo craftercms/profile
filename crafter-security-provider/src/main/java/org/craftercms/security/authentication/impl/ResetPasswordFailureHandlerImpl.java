@@ -4,7 +4,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
 import org.craftercms.security.authentication.BaseHandler;
@@ -19,9 +19,9 @@ public class ResetPasswordFailureHandlerImpl extends BaseHandler implements Rese
     private static final Logger logger = LoggerFactory.getLogger(LoginFailureHandlerImpl.class);
 
     protected String targetUrl;
-    
+
     public ResetPasswordFailureHandlerImpl() {
-    	super();
+        super();
     }
 
     /**
@@ -36,7 +36,7 @@ public class ResetPasswordFailureHandlerImpl extends BaseHandler implements Rese
                                        String token) throws CrafterSecurityException, IOException {
         saveException(e, context);
         if (isRedirectRequired && StringUtils.isNotEmpty(targetUrl)) {
-        	updateTargetUrl(token);
+            updateTargetUrl(token);
             redirectToTargetUrl(context);
         } else {
             sendError(e, context);
@@ -46,7 +46,6 @@ public class ResetPasswordFailureHandlerImpl extends BaseHandler implements Rese
     /**
      * Saves the authentication exception in the session,
      * under the {@link SecurityConstants#RESET_PASSWORD_EXCEPTION}
-     * 
      */
     protected void saveException(Exception e, RequestContext context) {
         if (logger.isDebugEnabled()) {
@@ -84,7 +83,7 @@ public class ResetPasswordFailureHandlerImpl extends BaseHandler implements Rese
     }
 
     private void updateTargetUrl(String token) {
-    	
+
         if (token != null && !token.equals("") && targetUrl.contains("?")) {
             targetUrl = targetUrl + "&token=" + token;
         } else if (token != null && !token.equals("") && !targetUrl.contains("?")) {

@@ -48,6 +48,7 @@
         <module>admin-console</module>
     </modules>
     <profiles>
+
         <profile>
             <id>Sonar</id>
             <properties>

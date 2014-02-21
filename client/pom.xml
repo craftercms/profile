@@ -38,37 +38,24 @@
     </scm>
     <properties>
         <java.version>1.7</java.version>
-        <org.apache.commons.io.version>2.1</org.apache.commons.io.version>
-        <org.apache.commons.codec.version>1.6</org.apache.commons.codec.version>
+        <org.apache.commons.io.version>2.4</org.apache.commons.io.version>
+        <org.apache.commons.codec.version>1.9</org.apache.commons.codec.version>
         <org.apache.httpcomponents.version>4.1.3</org.apache.httpcomponents.version>
         <org.codehaus.jackson.version>1.9.5</org.codehaus.jackson.version>
         <com.thoughtworks.xstream.version>1.4.2</com.thoughtworks.xstream.version>
         <junit.version>4.8.1</junit.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <repositories>
-        <repository>
-            <id>spring-release</id>
-            <name>Spring Maven Release Repository</name>
-            <url>http://repo.springsource.org/libs-release</url>
-        </repository>
-    </repositories>
 
     <dependencies>
 
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
-            <version>3.2.0.RELEASE</version>
+            <version>3.1.0.RELEASE</version>
+            <scope>provided</scope>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.springframework</groupId>-->
-            <!--<artifactId>spring-web</artifactId>-->
-            <!--<version>3.2.5.RELEASE</version>-->
-        <!--</dependency>-->
-
-        <!-- Apache Commons -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -87,14 +74,24 @@
 
         <!-- JSON & XML marshallers -->
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-            <version>${org.codehaus.jackson.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>${org.codehaus.jackson.version}</version>
+            <artifactId>jackson-asl</artifactId>
+            <version>0.9.5</version>
         </dependency>
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
@@ -257,6 +254,34 @@
                                     <goal>aggregate</goal>
                                     <goal>clover</goal>
                                 </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>JDK8</id>
+            <activation>
+                <jdk>
+                    1.8
+                </jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

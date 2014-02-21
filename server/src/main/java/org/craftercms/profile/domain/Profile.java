@@ -18,64 +18,40 @@ package org.craftercms.profile.domain;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-
-import org.bson.types.ObjectId;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.craftercms.profile.constants.ProfileConstants;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.bson.types.ObjectId;
+import org.jongo.marshall.jackson.oid.Id;
 
 @XStreamAlias("profile")
 @XmlRootElement
-@CompoundIndexes({
-        @CompoundIndex(name = "tenantName_userName_idx", def = "{'tenantName': 1, 'userName': 1}", unique = true)
-})
-@JsonIgnoreProperties({ "password" })
 public class Profile implements Serializable {
     private static final long serialVersionUID = 3370284215738389717L;
-
-    @Field(ProfileConstants.FIELD_ID)
+    @Id
     private ObjectId id;
 
-    @Field(ProfileConstants.USER_NAME)
     private String userName;
-    
-    @Field(ProfileConstants.PASSWORD)
-    @XmlTransient
+
     private String password;
 
-    @Field(ProfileConstants.ACTIVE)
     private Boolean active;
 
-    @Field(ProfileConstants.CREATED)
     private Date created;
 
-    @Field(ProfileConstants.MODIFIED)
     private Date modified;
 
-    @Field(ProfileConstants.TENANT_NAME)
     private String tenantName;
 
-    @Field(ProfileConstants.EMAIL)
     private String email;
-    
-    @Field(ProfileConstants.VERIFY)
+
     private Boolean verify;
 
-    @Field(ProfileConstants.ROLES)
     private List<String> roles;
 
-    @Field(ProfileConstants.ATTRIBUTES)
-    private Map<String, Serializable> attributes;
+    private Map<String, Object> attributes;
 
     public ObjectId getId() {
         return id;
@@ -93,7 +69,6 @@ public class Profile implements Serializable {
         this.userName = userName;
     }
 
-    @XmlTransient
     public String getPassword() {
         return password;
     }
@@ -109,7 +84,7 @@ public class Profile implements Serializable {
     public void setActive(Boolean active) {
         this.active = active;
     }
-    
+
     public Boolean getVerify() {
         return verify;
     }
@@ -134,11 +109,11 @@ public class Profile implements Serializable {
         this.modified = modified;
     }
 
-    public Map<String, Serializable> getAttributes() {
+    public Map<String, Object> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(Map<String, Serializable> attributes) {
+    public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
 
@@ -151,12 +126,12 @@ public class Profile implements Serializable {
         return tenantName;
     }
 
-    public List<String> getRoles() {
-        return roles;
-    }
-
     public void setTenantName(String tenantName) {
         this.tenantName = tenantName;
+    }
+
+    public List<String> getRoles() {
+        return roles;
     }
 
     public void setRoles(List<String> roles) {

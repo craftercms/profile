@@ -19,6 +19,7 @@ package org.craftercms.profile.services;
 import java.util.List;
 
 import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.TenantException;
 import org.craftercms.profile.exceptions.TicketException;
 
@@ -57,11 +58,11 @@ public interface MultiTenantService {
      */
     Tenant updateTenant(String id, String tenantName, List<String> roles, List<String> domains) throws TenantException;
 
-    void deleteTenant(String tenantName) throws TenantException;
+    void deleteTenant(String tenantName) throws TenantException, ProfileException;
 
     Tenant getTenantByName(String tenantName) throws TenantException;
 
-    Tenant getTenantByTicket(String ticket) throws TenantException, TicketException;
+    Tenant getTenantByTicket(String ticket) throws TenantException, TicketException, ProfileException;
 
     Tenant getTenantById(String tenantName) throws TenantException;
 
@@ -69,7 +70,7 @@ public interface MultiTenantService {
 
     boolean exists(String tenantName) throws TenantException;
 
-    Iterable<Tenant> getTenantRange(String sortBy, String sortOrder, int start, int end);
+    Iterable<Tenant> getTenantRange(String sortBy, String sortOrder, int start, int end) throws TenantException;
 
     Iterable<Tenant> getAllTenants() throws TenantException;
 

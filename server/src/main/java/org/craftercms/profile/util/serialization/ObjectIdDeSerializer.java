@@ -18,17 +18,16 @@ package org.craftercms.profile.util.serialization;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.JsonDeserializer;
+
 
 public class ObjectIdDeSerializer extends JsonDeserializer<ObjectId> {
 
     @Override
-    public ObjectId deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException,
-        JsonProcessingException {
+    public ObjectId deserialize(final JsonParser jsonParser, final DeserializationContext context) throws IOException {
         return new ObjectId(jsonParser.getText());
     }
 

@@ -3,9 +3,8 @@ package org.craftercms.security.authentication.impl;
 import java.io.IOException;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
 import org.craftercms.security.api.UserProfile;
@@ -21,9 +20,9 @@ public class ResetPasswordSuccessHandlerImpl extends BaseHandler implements Rese
     private static final Logger logger = LoggerFactory.getLogger(ResetPasswordSuccessHandlerImpl.class);
 
     protected String defaultTargetUrl;
-    
+
     public ResetPasswordSuccessHandlerImpl() {
-    	super();
+        super();
     }
 
     @Override
@@ -32,13 +31,13 @@ public class ResetPasswordSuccessHandlerImpl extends BaseHandler implements Rese
         HttpSession session = context.getRequest().getSession();
         session.setAttribute(SecurityConstants.PROFILE_RESET_PASSWORD, profile);
         if (isRedirectRequired && StringUtils.isNotEmpty(defaultTargetUrl)) {
-	        String redirectUrl = context.getRequest().getContextPath() + defaultTargetUrl;
-	        if (logger.isDebugEnabled()) {
-	            logger.debug("Redirecting to URL: " + redirectUrl);
-	        }
-	        context.getResponse().sendRedirect(redirectUrl);
+            String redirectUrl = context.getRequest().getContextPath() + defaultTargetUrl;
+            if (logger.isDebugEnabled()) {
+                logger.debug("Redirecting to URL: " + redirectUrl);
+            }
+            context.getResponse().sendRedirect(redirectUrl);
         } else {
-        	sendResponse(context);
+            sendResponse(context);
         }
     }
 
@@ -50,11 +49,11 @@ public class ResetPasswordSuccessHandlerImpl extends BaseHandler implements Rese
     public void setDefaultTargetUrl(String defaultTargetUrl) {
         this.defaultTargetUrl = defaultTargetUrl;
     }
-    
+
     private void sendResponse(RequestContext context) {
-		 context.getResponse().setContentType("application/json");
-    	 context.getResponse().setStatus(HttpStatus.SC_OK);
-	}
+        context.getResponse().setContentType("application/json");
+        context.getResponse().setStatus(HttpStatus.SC_OK);
+    }
 
 
 }

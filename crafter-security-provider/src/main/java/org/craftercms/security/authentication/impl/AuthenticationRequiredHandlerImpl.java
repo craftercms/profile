@@ -17,10 +17,9 @@
 package org.craftercms.security.authentication.impl;
 
 import java.io.IOException;
-
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.authentication.AuthenticationRequiredHandler;
 import org.craftercms.security.authentication.BaseHandler;
@@ -48,12 +47,12 @@ public class AuthenticationRequiredHandlerImpl extends BaseHandler implements Au
 
     protected String loginFormUrl;
     protected RequestCache requestCache;
-    
+
     /**
      * Default constructor
      */
     public AuthenticationRequiredHandlerImpl() {
-    	super();
+        super();
         requestCache = new HttpSessionRequestCache();
     }
 
@@ -85,9 +84,9 @@ public class AuthenticationRequiredHandlerImpl extends BaseHandler implements Au
         saveRequest(context);
         //response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Permission not granted
         if (isRedirectRequired && StringUtils.isNotEmpty(this.loginFormUrl)) {
-        	redirectToLoginForm(context);
+            redirectToLoginForm(context);
         } else {
-        	sendError(e, context);
+            sendError(e, context);
         }
     }
 
@@ -114,7 +113,7 @@ public class AuthenticationRequiredHandlerImpl extends BaseHandler implements Au
 
         context.getResponse().sendRedirect(redirectUrl);
     }
-    
+
     /**
      * Sends a 401 UNAUTHORIZED error.
      */

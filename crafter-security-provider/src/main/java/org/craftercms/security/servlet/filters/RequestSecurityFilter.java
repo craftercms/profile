@@ -16,7 +16,17 @@
  */
 package org.craftercms.security.servlet.filters;
 
-import org.apache.commons.lang.ArrayUtils;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.ArrayUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.RequestSecurityProcessor;
 import org.craftercms.security.api.RequestSecurityProcessorChain;
@@ -26,16 +36,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.filter.GenericFilterBean;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Filter for running security. Uses a list of {@link RequestSecurityProcessor}. The last processor should basically

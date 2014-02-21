@@ -18,11 +18,12 @@ package org.craftercms.profile.management.services.impl;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.impl.domain.Role;
 import org.craftercms.profile.management.services.RoleDAOService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -31,7 +32,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RoleDAOServiceImpl implements RoleDAOService {
 
-    private static final Logger log = Logger.getLogger(RoleDAOServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(RoleDAOServiceImpl.class);
 
     @Override
     public List<Role> getAllRoles() throws AppAuthenticationFailedException {

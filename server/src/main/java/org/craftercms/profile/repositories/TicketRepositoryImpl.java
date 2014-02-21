@@ -9,12 +9,11 @@ import org.craftercms.profile.exceptions.TicketException;
 import org.craftercms.profile.security.util.TicketUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * Basic Ticket Repository Implementation.
  */
-@Component("ticketRepositoryImpl")
+
 public class TicketRepositoryImpl extends JongoRepository<Ticket> implements TicketRepository {
 
     public static final String PROFILE_TICKET_BY_USERNAME = "profile.ticket.ByUsername";

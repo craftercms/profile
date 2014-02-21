@@ -2,10 +2,9 @@ package org.craftercms.security.impl.processors;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.security.api.AuthenticationService;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.RequestSecurityProcessor;
@@ -80,7 +79,8 @@ public class ForgotPasswordProcessor implements RequestSecurityProcessor {
 
     /*
      * (non-Javadoc)
-     * @see org.craftercms.security.api.RequestSecurityProcessor#processRequest(org.craftercms.security.api.RequestContext, org.craftercms.security.api.RequestSecurityProcessorChain)
+     * @see org.craftercms.security.api.RequestSecurityProcessor#processRequest(org.craftercms.security.api
+     * .RequestContext, org.craftercms.security.api.RequestSecurityProcessorChain)
      */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         HttpServletRequest request = context.getRequest();
@@ -112,9 +112,9 @@ public class ForgotPasswordProcessor implements RequestSecurityProcessor {
                 }
 
                 UserProfile profile = authenticationService.forgotPassword(changePassworUrl, username, tenant);
-                
+
                 if (profile == null) {
-                	throw new PasswordException("Username " + username + " was not found"); 
+                    throw new PasswordException("Username " + username + " was not found");
                 }
 
                 forgotPasswordSuccessHandler.onForgotPasswordSuccess(profile, context);
@@ -142,43 +142,42 @@ public class ForgotPasswordProcessor implements RequestSecurityProcessor {
      * Returns the value of the forgotPassUrlParameter parameter from the request.
      */
     protected String getChangePasswordUrl(HttpServletRequest request, RequestContext context) {
-    	String uriResetPassword = request.getParameter(this.forgotPassUrlParameter);
+        String uriResetPassword = request.getParameter(this.forgotPassUrlParameter);
         String url = uriResetPassword;
         try {
-	        if (!isAbsolute(uriResetPassword)) {
-	        	url = createUrlResetPassword(context, uriResetPassword);
-	        } 
+            if (!isAbsolute(uriResetPassword)) {
+                url = createUrlResetPassword(context, uriResetPassword);
+            }
         } catch (URISyntaxException e) {
-        	logger.warn("Reset Password URI Syntax Exception");
+            logger.warn("Reset Password URI Syntax Exception");
         }
-        
+
         return url;
     }
 
-    private String createUrlResetPassword(RequestContext context,
-			String uriResetPassword) {
-    	String url = uriResetPassword;
-    	try {
-	    	int index = context.getRequest().getRequestURL().indexOf(context.getRequest().getRequestURI());
-	    	if (index >= 0) {
-	    		String baseUri = context.getRequest().getRequestURL().substring(0, index);
-	    		if (baseUri.endsWith("/") && uriResetPassword.startsWith("/")) {
-	    			url = baseUri + uriResetPassword.substring(1);
-	    		} else if (baseUri.endsWith("/")) {
-	    			url = baseUri + uriResetPassword;
-	    		} else if (uriResetPassword.startsWith("/")) {
-		    		url = baseUri + uriResetPassword;
-		    	} else {
-		    		url = baseUri + "/" + uriResetPassword;
-		    	}
-	    	}
-    	} catch(Exception e) {
-    		this.logger.error("Error generating the reset password url: " + e.getMessage());
-    	}
-    	return url;
-	}
+    private String createUrlResetPassword(RequestContext context, String uriResetPassword) {
+        String url = uriResetPassword;
+        try {
+            int index = context.getRequest().getRequestURL().indexOf(context.getRequest().getRequestURI());
+            if (index >= 0) {
+                String baseUri = context.getRequest().getRequestURL().substring(0, index);
+                if (baseUri.endsWith("/") && uriResetPassword.startsWith("/")) {
+                    url = baseUri + uriResetPassword.substring(1);
+                } else if (baseUri.endsWith("/")) {
+                    url = baseUri + uriResetPassword;
+                } else if (uriResetPassword.startsWith("/")) {
+                    url = baseUri + uriResetPassword;
+                } else {
+                    url = baseUri + "/" + uriResetPassword;
+                }
+            }
+        } catch (Exception e) {
+            this.logger.error("Error generating the reset password url: " + e.getMessage());
+        }
+        return url;
+    }
 
-	protected boolean isForgotPasswordRequest(HttpServletRequest request) {
+    protected boolean isForgotPasswordRequest(HttpServletRequest request) {
         return request.getRequestURI().equals(request.getContextPath() + forgotPasswordUrl) && request.getMethod()
             .equals(forgotPasswordMethod);
     }
@@ -206,14 +205,14 @@ public class ForgotPasswordProcessor implements RequestSecurityProcessor {
     public void setForgotPasswordFailureHandler(ForgotPasswordFailureHandler forgotPasswordFailureHandler) {
         this.forgotPasswordFailureHandler = forgotPasswordFailureHandler;
     }
-    
+
     private boolean isAbsolute(String uri) throws URISyntaxException {
-    	URI u = new URI(uri);
-    	boolean result = false;
-    	if (u.isAbsolute()) {
-    		return true;
-    	} 
-    	return result;
+        URI u = new URI(uri);
+        boolean result = false;
+        if (u.isAbsolute()) {
+            return true;
+        }
+        return result;
     }
 
 }

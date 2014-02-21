@@ -16,8 +16,6 @@
  */
 package org.craftercms.profile.repositories;
 
-import java.util.List;
-
 import com.mongodb.MongoException;
 import com.mongodb.WriteResult;
 import org.apache.commons.lang3.StringUtils;
@@ -69,8 +67,17 @@ public class TenantRepositoryImpl extends JongoRepository<Tenant> implements Ten
     }
 
     @Override
-    public List<Tenant> getTenantRange(final String sortBy, final String sortOrder, final int start, final int end) {
-        throw new UnsupportedOperationException();
+    public Iterable<Tenant> getTenantRange(final String sortBy, final String sortOrder, final int start,
+                                           final int end) throws TenantException {
+        log.debug("Getting tenants sorted by {} and order by {} starting at {} ending at {}", sortBy, sortOrder,
+            start, end);
+        try {
+            return getCollection().find().skip(start).limit(end).sort("{" + sortBy + ":1}").as(Tenant.class);
+        } catch (MongoException ex) {
+            log.error("Getting tenants sorted by {} and order by {} starting at {} ending at {}", sortBy, sortOrder,
+                start, end);
+            throw new TenantException("Unable to find tenants and sorting them", ex);
+        }
     }
 
     @Override
@@ -88,8 +95,16 @@ public class TenantRepositoryImpl extends JongoRepository<Tenant> implements Ten
     }
 
     @Override
-    public void setAttribute(final String tenantName, final Attribute attribute) {
-        throw new UnsupportedOperationException();
+    public void setAttribute(final String tenantName, final Attribute attribute) throws TenantException {
+        log.debug("Setting tenant {} attribute {}", tenantName, attribute);
+        try {
+            Tenant tenant = getTenantByName(tenantName);
+            tenant.getSchema().getAttributes().add(attribute);
+            save(tenant);
+        } catch (MongoDataException ex) {
+            log.error("Unable to save attribute " + attribute + " to tenant " + tenantName, ex);
+            throw new TenantException("Unable to set tenant Attribute", ex);
+        }
     }
 
     @Override

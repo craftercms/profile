@@ -16,7 +16,6 @@
  */
 package org.craftercms.profile.repositories;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -48,8 +47,8 @@ public interface ProfileRepository extends CrudRepository<Profile> {
      */
     Iterable<Profile> findByRolesAndTenantName(String role, String tenantName) throws ProfileException;
 
-    List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder, List<String> attributesList,
-                                  int start, int end);
+    Iterable<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder,
+                                      List<String> attributesList, int start, int end) throws ProfileException;
 
     /**
      * Counts the profiles for a given tenant.
@@ -75,29 +74,27 @@ public interface ProfileRepository extends CrudRepository<Profile> {
 
     Iterable<Profile> getProfilesWithAttributes(List<String> profileIdList) throws ProfileException;
 
-    void setAttributes(String profileId, Map<String, Serializable> attributes) throws ProfileException;
+    void setAttributes(String profileId, Map<String, Object> attributes) throws ProfileException;
 
-    Map<String, Serializable> getAllAttributes(String profileId);
+    Map<String, Object> getAllAttributes(String profileId) throws ProfileException;
 
-    Map<String, Serializable> getAttributes(String profileId, List<String> attributes);
+    Map<String, Object> getAttributes(String profileId, List<String> attributes) throws ProfileException;
 
-    Map<String, Serializable> getAttribute(String profileId, String attributeKey);
+    Map<String, Object> getAttribute(String profileId, String attributeKey) throws ProfileException;
 
-    void deleteAllAttributes(String profileId);
+    void deleteAllAttributes(String profileId) throws ProfileException;
 
-    void deleteAttributes(String profileId, List<String> attributesMap);
+    void deleteAttributes(String profileId, List<String> attributesMap) throws ProfileException;
 
-    Profile getProfileByUserName(String userName, String tenantName);
+    Profile getProfileByUserName(String userName, String tenantName) throws ProfileException;
 
-    Profile getProfileByUserName(String userName, String tenantName, List<String> attributes);
+    Profile getProfileByUserName(String userName, String tenantName, List<String> attributes) throws ProfileException;
 
-    Profile getProfileByUserNameWithAllAttributes(String userName, String tenantName);
+    Iterable<Profile> getProfilesByTenantName(String tenantName) throws ProfileException;
 
-    List<Profile> getProfilesByTenantName(String tenantName);
+    void deleteRole(String profileId, String roleName) throws ProfileException;
 
-    void deleteRole(String profileId, String roleName);
+    Iterable<Profile> findByAttributeAndValue(String attribute, String attributeValue) throws ProfileException;
 
-    List<Profile> findByAttributeAndValue(String attribute, String attributeValue);
-
-    void delete(List<Profile> profilesByTenant);
+    void delete(Iterable<Profile> profilesByTenant) throws ProfileException;
 }

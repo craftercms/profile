@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.impl.domain.Attribute;
@@ -31,6 +30,8 @@ import org.craftercms.profile.management.model.TenantFilterForm;
 import org.craftercms.profile.management.services.TenantDAOService;
 import org.craftercms.profile.management.util.AttributeFieldsComparator;
 import org.craftercms.profile.management.util.TenantPaging;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,7 @@ public class TenantDAOServiceImpl implements TenantDAOService {
 
     private TenantPaging tenantPaging;
 
-    private static final Logger log = Logger.getLogger(TenantDAOServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(TenantDAOServiceImpl.class);
 
     @Override
     public Tenant createEmptyTenant() {
@@ -227,7 +228,8 @@ public class TenantDAOServiceImpl implements TenantDAOService {
         }
         try {
             return ProfileServiceManager.getProfileClient().updateTenant(ProfileServiceManager.getAppToken(),
-                tenant.getId(), tenant.getTenantName(), tenant.getRoles(), tenant.getDomains(), tenant.isEmailNewProfile());
+                tenant.getId(), tenant.getTenantName(), tenant.getRoles(), tenant.getDomains(),
+                tenant.isEmailNewProfile());
         } catch (AppAuthenticationException e) {
             try {
 
@@ -237,7 +239,8 @@ public class TenantDAOServiceImpl implements TenantDAOService {
                 log.error("could not get an AppToken", e);
             }
             return ProfileServiceManager.getProfileClient().updateTenant(ProfileServiceManager.getAppToken(),
-                tenant.getId(), tenant.getTenantName(), tenant.getRoles(), tenant.getDomains(), tenant.isEmailNewProfile());
+                tenant.getId(), tenant.getTenantName(), tenant.getRoles(), tenant.getDomains(),
+                tenant.isEmailNewProfile());
         }
     }
 
@@ -342,7 +345,8 @@ public class TenantDAOServiceImpl implements TenantDAOService {
             } catch (AppAuthenticationFailedException e1) {
                 log.error("could not get an AppToken", e);
             }
-            return ProfileServiceManager.getProfileClient().getTenantRange(ProfileServiceManager.getAppToken(), sortBy, sortOrder, start, end);
+            return ProfileServiceManager.getProfileClient().getTenantRange(ProfileServiceManager.getAppToken(),
+                sortBy, sortOrder, start, end);
         }
     }
 

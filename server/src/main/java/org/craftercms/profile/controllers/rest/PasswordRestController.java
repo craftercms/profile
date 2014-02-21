@@ -44,17 +44,17 @@ public class PasswordRestController {
      */
     @RequestMapping(value = "/forgot-password", method = RequestMethod.POST)
     @ModelAttribute
-    public Profile forgotPassword(@RequestParam(required = true) final String changePasswordUrl, final String username,
-                                  final String tenantName) throws AuthenticationException, CipherException,
-        MailException, NoSuchProfileException {
+    public Profile forgotPassword(@RequestParam(required = true) final String changePasswordUrl,
+                                  final String username, final String tenantName) throws AuthenticationException,
+        CipherException, MailException, NoSuchProfileException, ProfileException {
         return passwordService.forgotPassword(changePasswordUrl, username, tenantName);
     }
 
     /**
      * Updates the password with the new value sent by argument.
      *
-     * @param token    Security token sent to the email account of the profile account. This token contain username,
-     *                 tenantName and Date that was generated
+     * @param token       Security token sent to the email account of the profile account. This token contain username,
+     *                    tenantName and Date that was generated
      * @param newPassword Clear text new password value
      * @return the profile instance that the password was reset
      * @throws AuthenticationException If authentication error occurred
@@ -66,8 +66,7 @@ public class PasswordRestController {
     @RequestMapping(value = "/reset-password", method = RequestMethod.POST)
     @ModelAttribute
     public Profile changePassword(final String token, final String newPassword) throws AuthenticationException,
-        CipherException, MailException,
-        NoSuchProfileException, ParseException, ExpiryDateException, ProfileException {
+        CipherException, MailException, NoSuchProfileException, ParseException, ExpiryDateException, ProfileException {
         return passwordService.resetPassword(newPassword, token);
     }
 

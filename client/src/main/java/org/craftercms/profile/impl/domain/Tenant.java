@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Tenant implements Serializable {
 
     public Tenant() {
@@ -29,12 +31,13 @@ public class Tenant implements Serializable {
         this.emailNewProfile = true;
     }
 
+    @JsonProperty("_id")
     private String id;
 
     private String tenantName;
 
     private Schema schema;
-    
+
     private boolean emailNewProfile;
 
     private List<String> roles;
@@ -81,11 +84,11 @@ public class Tenant implements Serializable {
         this.roles = roles;
     }
 
-	public boolean isEmailNewProfile() {
-		return emailNewProfile;
-	}
+    public boolean isEmailNewProfile() {
+        return emailNewProfile;
+    }
 
-	public void setEmailNewProfile(boolean emailNewProfile) {
-		this.emailNewProfile = emailNewProfile;
-	}
+    public void setEmailNewProfile(boolean emailNewProfile) {
+        this.emailNewProfile = emailNewProfile;
+    }
 }

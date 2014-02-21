@@ -24,8 +24,8 @@
     </comment>
 
 
-        <!--This entry "profile.profiles.defaultFields" is used to "filter" the retrieve only-->
-        <!--the basic files this is done due Attributes could be large.-->
+    <!--This entry "profile.profiles.defaultFields" is used to "filter" the retrieve only-->
+    <!--the basic files this is done due Attributes could be large.-->
     <entry key="profile.profiles.defaultFields">
         {
         "_id" :1,
@@ -83,5 +83,17 @@
     </entry>
     <entry key="profile.profile.byIds">
         {_id:{$in:#}}
+    </entry>
+    <entry key="profile.profile.ByUsername">
+        {userName:#,tenantName:#}
+    </entry>
+    <entry key="profile.profile.byTenant">
+        {tenantName:#}
+    </entry>
+    <entry key="profile.profile.removeRole">
+        { $pull: { roles: # } }
+    </entry>
+    <entry key="profile.profile.byAttributeValue">
+        {attributes.#:#}
     </entry>
 </properties>

@@ -16,12 +16,12 @@
  */
 package org.craftercms.profile.services;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.InvalidEmailException;
@@ -48,7 +48,7 @@ public interface ProfileService {
      * @param email                  Valid email account for this profile account
      * @param attributes             a map (name, value) of addition information of this profile account
      * @param roles                  list of roles of the profile account
-     * @param verificationAccountUrl verification account url
+     * @param verifyAccountUrl        verification account url
      * @param response               current HttpServletResponse instance
      * @param request                current HttpServletRequest instance
      * @return new Profile instance has just been created
@@ -57,11 +57,8 @@ public interface ProfileService {
      * @throws MailException
      * @throws CipherException
      */
-    Profile createProfile(final String userName, final String password, final boolean active,
-                          final String tenantName, final String email, final Map<String, Serializable> attributes,
-                          final List<String> roles, final String verifyAccountUrl,
-                          final HttpServletResponse response, final HttpServletRequest request) throws
-        InvalidEmailException, CipherException, MailException, NoSuchProfileException, TenantException;
+    Profile createProfile(final String userName, final String password, final boolean active, final String
+        tenantName, final String email, final Map<String, Object> attributes, final List<String> roles, final String verifyAccountUrl, final HttpServletResponse response, final HttpServletRequest request) throws InvalidEmailException, CipherException, MailException, NoSuchProfileException, TenantException, MongoDataException;
 
     /**
      * Updates a profile account with the information passed as a parameter
@@ -73,12 +70,9 @@ public interface ProfileService {
      * @param tenantName The tenant name
      * @param email      Valid email account for this profile account
      * @param attributes a map (name, value) of addition information of this profile account
-     * @param roles      list of roles of the profile account
      * @return a profile instance updated
      */
-    Profile updateProfile(final String profileId, final String userName, final String password, final boolean active,
-                          final String tenantName, final String email, final Map<String, Serializable> attributes,
-                          final List<String> role) throws ProfileException;
+    Profile updateProfile(final String profileId, final String userName, final String password, final boolean active, final String tenantName, final String email, final Map<String, Object> attributes, final List<String> role) throws ProfileException;
 
     /**
      * Updates a profile account with the profile instance passes as parameter
@@ -93,7 +87,7 @@ public interface ProfileService {
      * @param ticket a valid ticket used to query the profile
      * @return the profile account found
      */
-    Profile getProfileByTicket(String ticket) throws TicketException;
+    Profile getProfileByTicket(String ticket) throws TicketException, ProfileException;
 
     /**
      * Gets a profile account based on the ticket passed as a parameter. The profile instance will have the
@@ -103,7 +97,7 @@ public interface ProfileService {
      * @param attributes the list of attributes will have the profile account returned
      * @return a profile account instance
      */
-    Profile getProfileByTicket(String ticket, List<String> attributes) throws TicketException;
+    Profile getProfileByTicket(String ticket, List<String> attributes) throws TicketException, ProfileException;
 
     /**
      * Gets a profile account based on the ticket passed as a parameter.
@@ -111,7 +105,7 @@ public interface ProfileService {
      * @param ticket a valid ticket used to query the profile
      * @return a profile account instance that includes all the attributes
      */
-    Profile getProfileByTicketWithAllAttributes(String ticket) throws TicketException;
+    Profile getProfileByTicketWithAllAttributes(String ticket) throws TicketException, ProfileException;
 
     /**
      * Get Profile using the unique identifier passed as a parameter
@@ -141,6 +135,7 @@ public interface ProfileService {
     /**
      * Gets a list of profile using pagination
      *
+     *
      * @param tenantName     the profiles returned belongs to the tenant name passed as a parameter
      * @param sortBy         the profile property will be used to sort the profiles
      * @param sortOrder      valid values DESC or ASC
@@ -149,24 +144,25 @@ public interface ProfileService {
      * @param end            marks the index where the pagination will end
      * @return
      */
-    List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder, List<String> attributesList,
-                                  int start, int end);
+    Iterable<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder, List<String> attributesList, int start, int end) throws ProfileException;
 
     /**
      * Get a profile list
+     *
      *
      * @param profileIdList The profile unique identifiers list used to get the profiles
      * @return a profile list found in the repository
      */
-    List<Profile> getProfiles(List<String> profileIdList);
+    Iterable<Profile> getProfiles(List<String> profileIdList) throws ProfileException;
 
     /**
      * Get a profile list
      *
+     *
      * @param profileIdList The profile unique identifiers list used to get the profiles
      * @return a profile list found in the repository which all include the attributes
      */
-    List<Profile> getProfilesWithAttributes(List<String> profileIdList);
+    Iterable<Profile> getProfilesWithAttributes(List<String> profileIdList) throws ProfileException;
 
     /**
      * Get Total Number of Profiles Count for a tenant
@@ -198,42 +194,45 @@ public interface ProfileService {
      * @param profileId  The unique profile identifier used to set the attributes
      * @param attributes the list of attributes to be set
      */
-    void setAttributes(String profileId, Map<String, Serializable> attributes);
+    void setAttributes(String profileId, Map<String, Object> attributes) throws ProfileException;
 
     /**
      * Gets the attributes mapping (name - value) for a profile account based on the unique profile identifier
+     *
      *
      * @param profileId  The unique profile identifier used to get the attributes
      * @param attributes the attributes names are going to be returned
      * @return the attributes values
      */
-    Map<String, Serializable> getAttributes(String profileId, List<String> attributes);
+    Map<String, Object> getAttributes(String profileId, List<String> attributes) throws ProfileException;
 
     /**
      * Gets the all attributes mapping (name - value) for a profile account based on the unique profile identifier
      * passed as argument
      *
+     *
      * @param profileId The unique profile identifier used to get the attributes
      * @return all attributes values for the profile
      */
-    Map<String, Serializable> getAllAttributes(String profileId);
+    Map<String, Object> getAllAttributes(String profileId) throws ProfileException;
 
     /**
      * Gets a attribute value (name - value) for a profile account based on the unique profile identifier and the
      * attribute key passed as argument
      *
+     *
      * @param profileId    The unique profile identifier used to get the attributes
      * @param attributeKey the attribute key name
      * @return the attribute key-value
      */
-    Map<String, Serializable> getAttribute(String profileId, String attributeKey);
+    Map<String, Object> getAttribute(String profileId, String attributeKey) throws ProfileException;
 
     /**
      * Delete All Attributes for a profile account based on the unique profile identifier passed as parameter
      *
      * @param profileId The profile identifier will be updated
      */
-    void deleteAllAttributes(String profileId);
+    void deleteAllAttributes(String profileId) throws ProfileException;
 
     /**
      * Delete the Attributes passed as parameter for a profile account also passed in the parameter
@@ -241,7 +240,7 @@ public interface ProfileService {
      * @param profileId  The profile identifier will be updated
      * @param attributes the attributes keys that are going to be deleted
      */
-    void deleteAttributes(String profileId, List<String> attributes);
+    void deleteAttributes(String profileId, List<String> attributes) throws ProfileException;
 
     /**
      * Gets a Profile instance based on the username and the tenant name passed as parameter
@@ -250,7 +249,7 @@ public interface ProfileService {
      * @param tenantName the tenant name is going to be used to get the profile account
      * @return a profile instance
      */
-    Profile getProfileByUserName(String userName, String tenantName);
+    Profile getProfileByUserName(String userName, String tenantName) throws ProfileException;
 
     /**
      * Gets a Profile instance based on the username and the tenant name passed as parameter. The profile returned
@@ -261,7 +260,7 @@ public interface ProfileService {
      * @param attributes the attributes keys that are going to be returned
      * @return a profile account
      */
-    Profile getProfileByUserName(String userName, String tenantName, List<String> attributes);
+    Profile getProfileByUserName(String userName, String tenantName, List<String> attributes) throws ProfileException;
 
     /**
      * Gets a Profile instance based on the username and the tenant name passed as parameter
@@ -270,14 +269,14 @@ public interface ProfileService {
      * @param tenantName the tenant name is going to be used to get the profile account
      * @return a profile account which includes all the profile attributes
      */
-    Profile getProfileByUserNameWithAllAttributes(String userName, String tenantName);
+    Profile getProfileByUserNameWithAllAttributes(String userName, String tenantName) throws ProfileException;
 
     /**
      * Deletes all the profiles for a tenant name
      *
      * @param tenantName name used to delete all the profiles
      */
-    void deleteProfiles(String tenantName);
+    void deleteProfiles(String tenantName) throws ProfileException;
 
     /**
      * Get profile list based on the role and tenant name passed argument
@@ -292,9 +291,10 @@ public interface ProfileService {
     /**
      * Get profile by an attribute name/value.
      *
+     *
      * @param attribute      Attribute name .
      * @param attributeValue Attribute Value .
      * @return A list of Profiles where have a attribute with the given value, empty list if nothing is found.
      */
-    List<Profile> getProfilesByAttributeValue(String attribute, String attributeValue);
+    Iterable<Profile> getProfilesByAttributeValue(String attribute, String attributeValue) throws ProfileException;
 }

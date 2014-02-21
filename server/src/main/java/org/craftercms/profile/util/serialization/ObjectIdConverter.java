@@ -23,15 +23,15 @@ import org.bson.types.ObjectId;
 public class ObjectIdConverter implements ConverterMatcher, SingleValueConverter {
 
     @SuppressWarnings("rawtypes")
-    public boolean canConvert(Class clazz) {
+    public boolean canConvert(final Class clazz) {
         return clazz.equals(ObjectId.class);
     }
 
-    public Object fromString(String str) {
+    public Object fromString(final String str) {
         return new ObjectId(str);
     }
 
-    public String toString(Object obj) {
+    public String toString(final Object obj) {
         return ((ObjectId)obj).toString();
     }
 }

@@ -1,11 +1,10 @@
 package org.craftercms.security.authentication.impl;
 
 import java.io.IOException;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
 import org.craftercms.security.authentication.BaseHandler;
@@ -19,9 +18,9 @@ public class VerifyAccountFailureHandlerImpl extends BaseHandler implements Veri
     private static final Logger logger = LoggerFactory.getLogger(LoginFailureHandlerImpl.class);
 
     protected String targetUrl;
-    
+
     public VerifyAccountFailureHandlerImpl() {
-    	super();
+        super();
     }
 
     /**
@@ -35,9 +34,9 @@ public class VerifyAccountFailureHandlerImpl extends BaseHandler implements Veri
     public void onVerifyAccountFailure(Exception e, RequestContext context,
                                        String token) throws CrafterSecurityException, IOException {
         saveException(e, context);
-        
+
         if (isRedirectRequired && StringUtils.isNotEmpty(targetUrl)) {
-        	updateTargetUrl(token);
+            updateTargetUrl(token);
             redirectToTargetUrl(context);
         } else {
             sendError(e, context);
@@ -47,7 +46,6 @@ public class VerifyAccountFailureHandlerImpl extends BaseHandler implements Veri
     /**
      * Saves the exception in the session,
      * under the {@link SecurityConstants#VERIFY_ACCOUNT_EXCEPTION}
-     * 
      */
     protected void saveException(Exception e, RequestContext context) {
         if (logger.isDebugEnabled()) {

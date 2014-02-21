@@ -25,7 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 public class ApplicationContextListener implements ApplicationListener<ContextRefreshedEvent> {
 
     @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
+    public void onApplicationEvent(final ContextRefreshedEvent event) {
         WebApplicationContext webAppContext = ContextLoader.getCurrentWebApplicationContext();
         AutowireCapableBeanFactory autoWireCapableBeanFactory = webAppContext.getAutowireCapableBeanFactory();
 

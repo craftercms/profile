@@ -47,10 +47,10 @@
         <property name="mongoClient" ref="profile.mongodb.mongoClient"/>
         <property name="username" value="${studio.profile.mongodb.connection.dbUser}"/>
         <property name="password" value="${studio.profile.mongodb.connection.dbPassword}"/>
-        <property name="dbName" value="${studio.profile.mongodb.connection.db}" />
+        <property name="dbName" value="${studio.profile.mongodb.connection.db}"/>
     </bean>
 
-    <bean id="profile.mongodb.queries" class="org.craftercms.commons.mongo.JongoQueries">
+    <bean id="profile.mongodb.queries" class="org.craftercms.commons.mongo.JongoQueries" init-method="init">
         <property name="queryFiles">
             <list>
                 <value>classpath:/crafter/profile/profile-queries.xml</value>
@@ -65,11 +65,19 @@
         <property name="jongo" ref="profile.mongodb.jongoFactory"/>
     </bean>
 
-    <bean id="profile.mongodb.ticketRepository" class="org.craftercms.profile.repositories.TicketRepositoryImpl"
+    <bean id="ticketRepository" class="org.craftercms.profile.repositories.TicketRepositoryImpl"
           parent="profile.mongodb.jongoRepository"/>
 
+    <bean id="groupRoleRepository" class="org.craftercms.profile.repositories.GroupRoleRepositoryImpl"
+          parent="profile.mongodb.jongoRepository"/>
 
+    <bean id="tenantRepository" class="org.craftercms.profile.repositories.TenantRepositoryImpl"
+          parent="profile.mongodb.jongoRepository"/>
 
+    <bean id="profileRepository" class="org.craftercms.profile.repositories.ProfileRepositoryImpl"
+          parent="profile.mongodb.jongoRepository"/>
 
+    <bean id="roleRepository" class="org.craftercms.profile.repositories.RoleRepositoryImpl"
+          parent="profile.mongodb.jongoRepository"/>
 
 </beans>

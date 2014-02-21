@@ -32,7 +32,7 @@ public interface SchemaService {
      * @param tenantName is going to be updated
      * @param attribute  new attribute data
      */
-    void setAttribute(String tenantName, Attribute attribute);
+    void setAttribute(String tenantName, Attribute attribute) throws TenantException;
 
     /**
      * Deletes an attribute
@@ -40,7 +40,7 @@ public interface SchemaService {
      * @param tenantName    used to delete the attribute
      * @param attributeName attribute is going to be deleted
      */
-    void deleteAttribute(String tenantName, String attributeName);
+    void deleteAttribute(String tenantName, String attributeName) throws TenantException;
 
     /**
      * Gets a schema based on a tenant name

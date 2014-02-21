@@ -16,7 +16,10 @@
  */
 package org.craftercms.profile.repositories;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -24,11 +27,13 @@ import java.util.Map;
 import com.mongodb.MongoException;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
+import org.craftercms.commons.collections.MapUtils;
 import org.craftercms.commons.mongo.JongoRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.domain.Profile;
 import org.craftercms.profile.exceptions.ProfileException;
+import org.jongo.Find;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +61,10 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
      */
     public static final String PROFILE_PROFILES_BY_ID = "profile.profiles.byId";
     public static final String PROFILE_PROFILE_BY_IDS = "profile.profile.byIds";
+    public static final String PROFILE_PROFILE_BY_USERNAME = "profile.profile.ByUsername";
+    public static final String PROFILE_PROFILE_BY_TENANT = "profile.profile.byTenant";
+    public static final String PROFILE_PROFILE_REMOVE_ROLE = "profile.profile.removeRole";
+    public static final String PROFILE_PROFILE_BY_ATTRIBUTE_VALUE = "profile.profile.byAttributeValue";
     /**
      * Das Logger.
      */
@@ -70,6 +79,7 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
 
     @Override
     public Profile findById(final ObjectId id) throws ProfileException {
+        log.debug("Finding profile with id {}", id);
         try {
             return super.findById(id.toString());
         } catch (MongoDataException ex) {
@@ -81,6 +91,7 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
     @Override
     public Iterable<Profile> findByRolesAndTenantName(final String role, final String tenantName) throws
         ProfileException {
+        log.debug("Finding profiles with role {} and tenant {}", role, tenantName);
         try {
             log.debug("Finding Tenants with Roles {} and Tenant {}", role, tenantName);
             String query = getQueryFor(PROFILE_PROFILES_GET_BY_ROLES_AND_TENANT);
@@ -92,14 +103,30 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
     }
 
     @Override
-    public List<Profile> getProfileRange(final String tenantName, final String sortBy, final String sortOrder,
-                                         final List<String> attributesList, final int start, final int end) {
+    public Iterable<Profile> getProfileRange(final String tenantName, final String sortBy, final String sortOrder,
+                                             final List<String> attributesList, final int start,
+                                             final int end) throws ProfileException {
+        log.debug("Getting profiles for tenant {} ,sorted by {},ordering by {} start {} end {} with attributes {}",
+            tenantName, sortBy, sortOrder, start, end, attributesList);
+        try {
+            String query = getQueryFor(PROFILE_PROFILES_BY_TENANT_NAME);
+            String baseQuery = prepareProfileQuery(query, attributesList);
+            Find mongoQuery = getCollection().find(baseQuery, tenantName).sort("{" + sortBy + ":1}").skip(start)
+                .limit(end);
+            return mongoQuery.as(Profile.class);
+        } catch (MongoException ex) {
+            log.debug("Getting profiles for tenant {} ,sorted by {},ordering by {} start {} end {} with attributes " +
+                "{}", tenantName, sortBy, sortOrder, start, end, attributesList);
+            log.error("Unable to find by range profiles", ex);
+            throw new ProfileException("Unable to find profiles by range", ex);
+        }
 
-        throw new UnsupportedOperationException();
+
     }
 
     @Override
     public long getProfilesCount(final String tenantName) throws ProfileException {
+        log.debug("Counting profiles for tenant {}", tenantName);
         try {
             String query = getQueryFor(PROFILE_PROFILES_BY_TENANT_NAME);
             return getCollection().count(query, tenantName);
@@ -116,6 +143,7 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
 
     @Override
     public Profile getProfile(final String profileId, final List<String> attributes) throws ProfileException {
+        log.debug("Getting tenant with profile id {} and attributes {} (*null for all)", profileId, attributes);
         try {
             String query = getQueryFor(PROFILE_PROFILES_BY_ID);
             return findOne(prepareProfileQuery(query, attributes), profileId);
@@ -128,6 +156,7 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
 
     @Override
     public Iterable<Profile> getProfiles(final List<String> profileIdList) throws ProfileException {
+        log.debug("Getting profiles using id list {}", profileIdList);
         try {
             return findAll();
         } catch (MongoDataException ex) {
@@ -138,6 +167,7 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
 
     @Override
     public Iterable<Profile> getProfilesWithAttributes(final List<String> profileIdList) throws ProfileException {
+        log.debug("Getting profiles from list {} and all attributes", profileIdList);
         try {
             String query = getQueryFor(PROFILE_PROFILE_BY_IDS);
             return find(query, profileIdList);
@@ -148,73 +178,164 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
     }
 
     @Override
-    public void setAttributes(final String profileId, final Map<String, Serializable> attributes) throws ProfileException {
-        try{
-
-        }catch (MongoDataException ex){
-            log.error("Unable save attributes for profile "+profileId+" attribute "+attributes,ex);
-            throw new ProfileException("Unable to save profile attributes",ex);
+    public void setAttributes(final String profileId, final Map<String, Object> attributes) throws ProfileException {
+        log.debug("Setting attributes {} for profile Id {}", attributes, profileId);
+        try {
+            Profile profile = getProfile(profileId);
+            profile.setAttributes(MapUtils.deepMerge(profile.getAttributes(), attributes));
+            save(profile);
+        } catch (MongoDataException ex) {
+            log.error("Unable save attributes for profile " + profileId + " attribute " + attributes, ex);
+            throw new ProfileException("Unable to save profile attributes", ex);
         }
     }
 
     @Override
-    public Map<String, Serializable> getAllAttributes(final String profileId) {
-        return null;
+    public Map<String, Object> getAllAttributes(final String profileId) throws ProfileException {
+        log.debug("Getting attributes for profile ID {}", profileId);
+        return org.apache.commons.collections4.MapUtils.unmodifiableMap(getProfile(profileId).getAttributes());
+    }
+
+    //TODO make filtering as a mongo query
+    @Override
+    public Map<String, Object> getAttributes(final String profileId, final List<String> attributes) throws
+        ProfileException {
+        log.debug("Getting attributes {} for profile {}", attributes, profileId);
+        Map<String, Object> filteredAttr = new HashMap<>(attributes.size());
+        Map<String, Object> originalAttr = getProfile(profileId).getAttributes();
+        for (String attribute : attributes) {
+            filteredAttr.put(attribute, originalAttr.get(attribute));
+        }
+        return org.apache.commons.collections4.MapUtils.unmodifiableMap(filteredAttr);
     }
 
     @Override
-    public Map<String, Serializable> getAttributes(final String profileId, final List<String> attributes) {
-        return null;
+    public Map<String, Object> getAttribute(final String profileId, final String attributeKey) throws ProfileException {
+        return getAttributes(profileId, Arrays.asList(attributeKey));
     }
 
     @Override
-    public Map<String, Serializable> getAttribute(final String profileId, final String attributeKey) {
-        return null;
+    public void deleteAllAttributes(final String profileId) throws ProfileException {
+        log.debug("Removing all profile's {} attributes", profileId);
+        try {
+            Profile profile = getProfile(profileId);
+            profile.getAttributes().clear();
+            save(profile);
+        } catch (MongoDataException ex) {
+            log.debug("Unable to delete profile " + profileId + " attributes", ex);
+            throw new ProfileException("Unable to delete profile Attributes", ex);
+        }
     }
 
     @Override
-    public void deleteAllAttributes(final String profileId) {
-
+    public void deleteAttributes(final String profileId, final List<String> attributesName) throws ProfileException {
+        log.debug("Deleting profile's {} attribute {}", profileId, attributesName);
+        try {
+            String query = deleteAttributesQuery(attributesName);
+            update(profileId, query, false, false);
+        } catch (MongoDataException ex) {
+            log.error("Unable to delete profile " + profileId + " attributes " + StringUtils.join(attributesName), ex);
+            throw new ProfileException("Unable to delete profile Attributes", ex);
+        }
     }
 
     @Override
-    public void deleteAttributes(final String profileId, final List<String> attributesMap) {
-
+    public Profile getProfileByUserName(final String userName, final String tenantName) throws ProfileException {
+        return getProfileByUserName(userName, tenantName, null);
     }
 
     @Override
-    public Profile getProfileByUserName(final String userName, final String tenantName) {
-        return null;
+    public Profile getProfileByUserName(final String userName, final String tenantName,
+                                        final List<String> attributes) throws ProfileException {
+        log.debug("Getting Profile by username {} and tenant {} with attributes {} (null for all)", userName,
+            tenantName, attributes);
+        try {
+            String query = getQueryFor(PROFILE_PROFILE_BY_USERNAME);
+            return findOne(prepareProfileQuery(query, attributes), userName, tenantName);
+        } catch (MongoDataException ex) {
+            log.error("Unable to find profile by username " + userName + " and tenant " + tenantName, ex);
+            throw new ProfileException("Unable to find profile by username and tenant", ex);
+        }
     }
 
     @Override
-    public Profile getProfileByUserName(final String userName, final String tenantName, final List<String> attributes) {
-        return null;
+    public Iterable<Profile> getProfilesByTenantName(final String tenantName) throws ProfileException {
+        try {
+            String query = getQueryFor(PROFILE_PROFILE_BY_TENANT);
+            return find(query, tenantName);
+        } catch (MongoDataException ex) {
+            log.error("Unable to find tenant " + tenantName + " profiles", ex);
+            throw new ProfileException("Unable to find profiles by tenant", ex);
+        }
     }
 
     @Override
-    public Profile getProfileByUserNameWithAllAttributes(final String userName, final String tenantName) {
-        return null;
+    public void deleteRole(final String profileId, final String roleName) throws ProfileException {
+        log.debug("Removing role {} for profile {}", roleName, profileId);
+        try {
+            String query = getQueryFor(PROFILE_PROFILE_REMOVE_ROLE);
+            update(profileId, false, false, query, profileId, roleName);
+        } catch (MongoDataException ex) {
+            log.error("Unable to delete role " + roleName + " from profile " + profileId, ex);
+            throw new ProfileException("Unable to remove role from profile", ex);
+        }
     }
 
     @Override
-    public List<Profile> getProfilesByTenantName(final String tenantName) {
-        return null;
+
+    public Iterable<Profile> findByAttributeAndValue(final String attribute, final String attributeValue) throws
+        ProfileException {
+        log.debug("Getting list of Profiles that have attribute {} = {}", attribute, attributeValue);
+        try {
+            String query = getQueryFor(PROFILE_PROFILE_BY_ATTRIBUTE_VALUE);
+
+            return find(query, attribute, attributeValue);
+        } catch (MongoDataException ex) {
+            log.error("Unable to find profiles with attribute " + attribute + " and value " + attributeValue, ex);
+            throw new ProfileException("Unable to find profiles with attribute and value", ex);
+        }
     }
 
     @Override
-    public void deleteRole(final String profileId, final String roleName) {
-
+    public void delete(final Iterable<Profile> profiles) throws ProfileException {
+        log.debug("Deleting profiles {}", profiles);
+        try {
+            log.debug("Getting profile id's to delete");
+            ArrayList<ObjectId> toDelete = new ArrayList<>();
+            for (Profile profile : profiles) {
+                toDelete.add(profile.getId());
+            }
+            String query = getQueryFor(PROFILE_PROFILE_BY_IDS);
+            remove(query, toDelete);
+        } catch (MongoDataException ex) {
+            log.debug("Unable to delete profiles " + StringUtils.join(profiles), ex);
+            throw new ProfileException("Unable to delete profiles in list", ex);
+        }
     }
 
-    @Override
-    public List<Profile> findByAttributeAndValue(final String attribute, final String attributeValue) {
-        return null;
-    }
-
-    @Override
-    public void delete(final List<Profile> profilesByTenant) {
-
+    /**
+     * Generates a unset using . annotation.
+     *
+     * @param attributesToDelete name of the attributes to be deleted, if a value is a nested document the sould
+     *                           include the parent and child.
+     * @return A string
+     */
+    private String deleteAttributesQuery(final List<String> attributesToDelete) {
+        log.debug("Creating query for unset attributes {}", attributesToDelete);
+        StringBuilder builder = new StringBuilder("{$unset:{");
+        Iterator<String> iter = attributesToDelete.iterator();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            builder.append(ProfileConstants.ATTRIBUTES_DOT);
+            builder.append(key);
+            builder.append(":1");
+            if (iter.hasNext()) {
+                builder.append(",");
+            }
+        }
+        builder.append("}}");
+        log.debug("Generated query {}", builder.toString());
+        return builder.toString();
     }
 
     /**
@@ -227,7 +348,7 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
     private String prepareProfileQuery(final String query, final List<String> attributes) {
         StringBuilder builder = new StringBuilder(query);
         String defaultFields = getQueryFor(PROFILE_DEFAULT_RETURN_FIELDS);
-        if (attributes == null && attributes.isEmpty()) {
+        if (attributes == null || attributes.isEmpty()) {
             builder.append(",");
             builder.append(defaultFields);
             return builder.toString();

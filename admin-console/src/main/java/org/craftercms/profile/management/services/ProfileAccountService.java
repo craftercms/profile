@@ -20,10 +20,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.RestException;
@@ -38,17 +36,19 @@ import org.craftercms.profile.management.util.ProfileAccountPaging;
 import org.craftercms.profile.management.util.ProfileUserAccountUtil;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.UserProfile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ProfileAccountService {
-	
-	private static final String DEFAULT_VERIFICATION_ACCOUNT_URL = "/crafter-profile-admin-console/verify-account";
-	private static final String VERIFICATION_ACCOUNT = "${crafter.profile.verification.account.url}";
-    private static final Logger log = Logger.getLogger(ProfileAccountService.class);
-	private String verificationAccountUrl;
+
+    private static final String DEFAULT_VERIFICATION_ACCOUNT_URL = "/crafter-profile-admin-console/verify-account";
+    private static final String VERIFICATION_ACCOUNT = "${crafter.profile.verification.account.url}";
+    private static final Logger log = LoggerFactory.getLogger(ProfileAccountService.class);
+    private String verificationAccountUrl;
 
     private ProfileDAOServiceImpl profileDao;
 
@@ -57,9 +57,9 @@ public class ProfileAccountService {
     private TenantDAOService tenantDAOService;
 
     private String appToken;
-    
+
     public ProfileAccountService() {
-    	verificationAccountUrl = DEFAULT_VERIFICATION_ACCOUNT_URL;
+        verificationAccountUrl = DEFAULT_VERIFICATION_ACCOUNT_URL;
     }
 
     public List<ProfileUserAccountForm> getProfileUsers(String tenantName) throws AppAuthenticationFailedException {
@@ -103,9 +103,10 @@ public class ProfileAccountService {
         return accountForm;
     }
 
-    public void createUserAccount(ProfileUserAccountForm account, HttpServletRequest request) throws AppAuthenticationFailedException {
-    	Map<String, Serializable> data = ProfileUserAccountUtil.getUpdateUserData(account);
-    	addVerificationAccountUrl(data, request);
+    public void createUserAccount(ProfileUserAccountForm account, HttpServletRequest request) throws
+        AppAuthenticationFailedException {
+        Map<String, Serializable> data = ProfileUserAccountUtil.getUpdateUserData(account);
+        addVerificationAccountUrl(data, request);
         profileDao.createUser(data);
     }
 
@@ -131,7 +132,7 @@ public class ProfileAccountService {
     public void activeUsers(ArrayList<String> userIds, boolean active) throws AppAuthenticationFailedException {
         profileDao.activeUsers(userIds, active);
     }
-    
+
     public Profile verifyAccount(String token) throws AppAuthenticationFailedException {
         return profileDao.verifyAccount(token);
     }
@@ -176,7 +177,7 @@ public class ProfileAccountService {
         UserProfile currentUser = context.getAuthenticationToken().getProfile();
         List<Profile> newList = new ArrayList<Profile>();
         for (Profile profile : profiles) {
-        	
+
             if (isDisplayableUser(profile, currentUser)) {
                 newList.add(profile);
             }
@@ -186,16 +187,16 @@ public class ProfileAccountService {
 
     private boolean isDisplayableUser(Profile profile, UserProfile currentUser) {
         boolean isDisplayable = true;
-        if (profile.getUserName() == null 
-        		// Profile should have username but this is a validation only
-        		// Profile is user log-in
-            || (profile.getUserName().equals(currentUser.getUserName()) 
-            && profile.getTenantName().equals(currentUser.getTenantName()))) { //
+        if (profile.getUserName() == null
+            // Profile should have username but this is a validation only
+            // Profile is user log-in
+            || (profile.getUserName().equals(currentUser.getUserName()) && profile.getTenantName().equals(currentUser
+            .getTenantName()))) { //
             isDisplayable = false;
         }
         return isDisplayable;
     }
-    
+
     /**
      * Url to the form confirm the verification of the new account
      *
@@ -203,33 +204,32 @@ public class ProfileAccountService {
      */
     @Value("${crafter.profile.verification.account.url}")
     public void setCrafterProfileConfirmAccountUrl(String url) {
-    	if (url !=null && !url.equals("") && !url.equals(VERIFICATION_ACCOUNT)) {
-    		this.verificationAccountUrl = url;
-    	}
+        if (url != null && !url.equals("") && !url.equals(VERIFICATION_ACCOUNT)) {
+            this.verificationAccountUrl = url;
+        }
     }
-    
+
     public String getVerificationAccount(HttpServletRequest request) {
-    	String url = this.verificationAccountUrl;
-    	int index = request.getRequestURL().indexOf(request.getRequestURI());
-    	if (index >= 0) {
-    		String baseUri = request.getRequestURL().substring(0, index);
-    		if (baseUri.endsWith("/") && verificationAccountUrl.startsWith("/")) {
-    			url = baseUri + verificationAccountUrl.substring(1);
-    		} else if (baseUri.endsWith("/")) {
-    			url = baseUri + verificationAccountUrl;
-    		} else if (verificationAccountUrl.startsWith("/")) {
-	    		url = baseUri + verificationAccountUrl;
-	    	} else {
-	    		url = baseUri + "/" + verificationAccountUrl;
-	    	}
-    	}
-    	return url;
+        String url = this.verificationAccountUrl;
+        int index = request.getRequestURL().indexOf(request.getRequestURI());
+        if (index >= 0) {
+            String baseUri = request.getRequestURL().substring(0, index);
+            if (baseUri.endsWith("/") && verificationAccountUrl.startsWith("/")) {
+                url = baseUri + verificationAccountUrl.substring(1);
+            } else if (baseUri.endsWith("/")) {
+                url = baseUri + verificationAccountUrl;
+            } else if (verificationAccountUrl.startsWith("/")) {
+                url = baseUri + verificationAccountUrl;
+            } else {
+                url = baseUri + "/" + verificationAccountUrl;
+            }
+        }
+        return url;
     }
-    
+
     private void addVerificationAccountUrl(Map<String, Serializable> data, HttpServletRequest request) {
-    	data.put(ProfileConstants.VERIFICATION_ACCOUNT_URL, getVerificationAccount(request));
+        data.put(ProfileConstants.VERIFICATION_ACCOUNT_URL, getVerificationAccount(request));
     }
-    
-    
+
 
 }

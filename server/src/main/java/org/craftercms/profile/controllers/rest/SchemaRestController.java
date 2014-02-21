@@ -55,7 +55,7 @@ public class SchemaRestController {
      */
     @RequestMapping(value = "set_attribute", method = RequestMethod.POST)
     @ModelAttribute
-    public void setAttributes(@RequestParam final String tenantName, final Attribute attribute) {
+    public void setAttributes(@RequestParam final String tenantName, final Attribute attribute) throws TenantException {
         schemaService.setAttribute(tenantName, attribute);
     }
 
@@ -68,7 +68,7 @@ public class SchemaRestController {
     @RequestMapping(value = "delete_attribute", method = RequestMethod.POST)
     @ModelAttribute
     public void deleteAttribute(@RequestParam final String tenantName, @RequestParam(required = false,
-        value = AttributeConstants.NAME) final String name) {
+        value = AttributeConstants.NAME) final String name) throws TenantException {
         schemaService.deleteAttribute(tenantName, name);
     }
 }
