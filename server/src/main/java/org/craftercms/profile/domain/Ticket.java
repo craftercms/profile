@@ -20,7 +20,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 import org.craftercms.profile.security.PersistentTenantRememberMeToken;
-import org.springframework.data.annotation.Id;
+
+import org.jongo.marshall.jackson.oid.Id;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 
 public class Ticket implements Serializable {

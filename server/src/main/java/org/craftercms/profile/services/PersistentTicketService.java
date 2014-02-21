@@ -31,7 +31,7 @@ public interface PersistentTicketService {
 	 * Creates a new ticket based on the information provides in the PersistentRememberMeToken instance
 	 * @param token It has the information will be used to persist the ticket data
 	 */
-    void createNewToken(PersistentRememberMeToken token);
+    void createNewToken(final PersistentRememberMeToken token);
 
     /**
      * Updates the ticket data using the series to find the ticket data and updates the tocken value and the last updated date

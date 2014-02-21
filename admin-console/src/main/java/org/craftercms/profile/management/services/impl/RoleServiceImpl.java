@@ -9,11 +9,14 @@ import org.craftercms.profile.exceptions.ConflictRequestException;
 import org.craftercms.profile.impl.domain.Role;
 import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.management.services.RoleService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 
 @Component
 public class RoleServiceImpl implements RoleService {
+    private Logger log = LoggerFactory.getLogger(RoleServiceImpl.class);
 
     @Override
     public List<Role> getAllRoles() throws AppAuthenticationFailedException {
@@ -26,7 +29,7 @@ public class RoleServiceImpl implements RoleService {
             try {
                 ProfileServiceManager.setAppToken();
             } catch (AppAuthenticationFailedException e1) {
-                ProfileServiceManager.getLogger().error("could not get an AppToken", e);
+                log.error("could not get an AppToken", e);
             }
             return ProfileServiceManager.getProfileClient().getAllRoles(ProfileServiceManager.getAppToken());
         }
@@ -44,7 +47,7 @@ public class RoleServiceImpl implements RoleService {
             try {
                 ProfileServiceManager.setAppToken();
             } catch (AppAuthenticationFailedException e1) {
-                ProfileServiceManager.getLogger().error("could not get an AppToken", e);
+                log.error("could not get an AppToken", e);
             }
             return convertToTenantNameCollection(ProfileServiceManager.getProfileClient().getTenantsByRoleName
                 (ProfileServiceManager.getAppToken(), roleName));
@@ -63,7 +66,7 @@ public class RoleServiceImpl implements RoleService {
             try {
                 ProfileServiceManager.setAppToken();
             } catch (AppAuthenticationFailedException e1) {
-                ProfileServiceManager.getLogger().error("could not get an AppToken", e);
+                log.error("could not get an AppToken", e);
             }
             return ProfileServiceManager.getProfileClient().createRole(ProfileServiceManager.getAppToken(),
                 role.getRoleName());
@@ -99,7 +102,7 @@ public class RoleServiceImpl implements RoleService {
             try {
                 ProfileServiceManager.setAppToken();
             } catch (AppAuthenticationFailedException e1) {
-                ProfileServiceManager.getLogger().error("could not get an AppToken", e);
+                log.error("could not get an AppToken", e);
             }
             ProfileServiceManager.getProfileClient().deleteRole(ProfileServiceManager.getAppToken(), roleName);
         }

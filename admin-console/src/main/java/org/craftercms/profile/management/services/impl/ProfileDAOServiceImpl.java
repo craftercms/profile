@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.exceptions.RestException;
@@ -32,14 +31,17 @@ import org.craftercms.profile.impl.domain.Tenant;
 import org.craftercms.profile.management.model.SchemaModel;
 import org.craftercms.profile.management.services.ProfileDAOService;
 import org.craftercms.profile.management.util.ProfileUserAccountConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ProfileDAOServiceImpl implements ProfileDAOService {
 
-	private static final Logger log = Logger.getLogger(ProfileDAOServiceImpl.class);
-	public ProfileDAOServiceImpl() {
-    
+    private static final Logger log = LoggerFactory.getLogger(ProfileDAOServiceImpl.class);
+
+    public ProfileDAOServiceImpl() {
+
     }
 
     public void activeUser(String profileId, boolean active) throws AppAuthenticationFailedException {
@@ -74,7 +76,7 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
             ProfileServiceManager.setAppToken();
         }
         try {
-        	return ProfileServiceManager.getProfileClient().createProfile(ProfileServiceManager.getAppToken(), data);
+            return ProfileServiceManager.getProfileClient().createProfile(ProfileServiceManager.getAppToken(), data);
         } catch (AppAuthenticationException e) {
             try {
                 ProfileServiceManager.setAppToken();
@@ -323,34 +325,34 @@ public class ProfileDAOServiceImpl implements ProfileDAOService {
 
         for (String attribute : attributes) {
             try {
-                ProfileServiceManager.getProfileClient().deleteAttributeForSchema(ProfileServiceManager.getAppToken(), schemaId, attribute);
+                ProfileServiceManager.getProfileClient().deleteAttributeForSchema(ProfileServiceManager.getAppToken()
+                    , schemaId, attribute);
             } catch (AppAuthenticationException e) {
                 try {
                     ProfileServiceManager.setAppToken();
                 } catch (AppAuthenticationFailedException e1) {
                     log.error("could not get an AppToken", e);
                 }
-                ProfileServiceManager.getProfileClient().deleteAttributeForSchema(ProfileServiceManager.getAppToken(), schemaId, attribute);
+                ProfileServiceManager.getProfileClient().deleteAttributeForSchema(ProfileServiceManager.getAppToken()
+                    , schemaId, attribute);
             }
         }
 
     }
-    
+
     public Profile verifyAccount(String token) throws AppAuthenticationFailedException {
         if (!ProfileServiceManager.isAppTokenInit()) {
             ProfileServiceManager.setAppToken();
         }
-        try {												
-            return ProfileServiceManager.getProfileClient().verifyProfile(ProfileServiceManager.getAppToken(),
-                token);
+        try {
+            return ProfileServiceManager.getProfileClient().verifyProfile(ProfileServiceManager.getAppToken(), token);
         } catch (AppAuthenticationException e) {
             try {
                 ProfileServiceManager.setAppToken();
             } catch (AppAuthenticationFailedException e1) {
                 log.error("could not get an AppToken", e);
             }
-            return ProfileServiceManager.getProfileClient().verifyProfile(ProfileServiceManager.getAppToken(),
-                    token);
+            return ProfileServiceManager.getProfileClient().verifyProfile(ProfileServiceManager.getAppToken(), token);
         }
     }
 }

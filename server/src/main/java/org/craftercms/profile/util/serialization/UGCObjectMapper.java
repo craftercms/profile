@@ -21,13 +21,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.JsonDeserializer;
-import org.codehaus.jackson.map.JsonSerializer;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig.Feature;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
-import org.codehaus.jackson.map.module.SimpleModule;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class UGCObjectMapper extends ObjectMapper {
@@ -35,19 +36,20 @@ public class UGCObjectMapper extends ObjectMapper {
     private Map<Class, JsonDeserializer> deserializerMap = new HashMap<Class, JsonDeserializer>();
 
 
-    public UGCObjectMapper(List<JsonSerializer> serializerList, Map<Class, JsonDeserializer> deserializerMap) {
+    public UGCObjectMapper(final List<JsonSerializer> serializerList, final Map<Class,
+        JsonDeserializer> deserializerMap) {
         super();
-        super.setSerializationInclusion(Inclusion.NON_EMPTY);
-        super.getSerializationConfig().without(Feature.FAIL_ON_EMPTY_BEANS);
-        super.getSerializationConfig().with(Feature.WRITE_NULL_MAP_VALUES);
-        super.getSerializationConfig().with(Feature.WRITE_EMPTY_JSON_ARRAYS);
+        super.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        super.getSerializationConfig().without(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+        super.getSerializationConfig().with(SerializationFeature.WRITE_NULL_MAP_VALUES);
+        super.getSerializationConfig().with(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS);
         this.serializerList = serializerList;
         this.deserializerMap = deserializerMap;
         registerSerializationModule();
     }
 
     protected void registerSerializationModule() {
-        SimpleModule module = new SimpleModule("UGCSerializationModule", new Version(1, 0, 0, null));
+        SimpleModule module = new SimpleModule("UGCSerializationModule", new Version(1, 0, 0, null, null, null));
 
         for (JsonSerializer ser : serializerList) {
             module.addSerializer(ser);
@@ -62,19 +64,5 @@ public class UGCObjectMapper extends ObjectMapper {
 
     }
 
-    public List<JsonSerializer> getSerializerList() {
-        return serializerList;
-    }
 
-    public void setSerializerList(List<JsonSerializer> serializerList) {
-        this.serializerList = serializerList;
-    }
-
-    public Map<Class, JsonDeserializer> getDeserializerMap() {
-        return deserializerMap;
-    }
-
-    public void setDeserializerMap(Map<Class, JsonDeserializer> deserializerMap) {
-        this.deserializerMap = deserializerMap;
-    }
 }

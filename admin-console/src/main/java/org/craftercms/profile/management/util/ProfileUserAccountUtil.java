@@ -25,15 +25,16 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
 import org.craftercms.profile.impl.domain.Attribute;
 import org.craftercms.profile.impl.domain.Profile;
 import org.craftercms.profile.management.model.ProfileUserAccountForm;
 import org.craftercms.profile.management.model.SchemaForm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProfileUserAccountUtil {
 
-    private static final Logger log = Logger.getLogger(ProfileUserAccountUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(ProfileUserAccountUtil.class);
 
     public static List<String> getAttributes(SchemaForm schema) {
         List<String> a = new ArrayList<String>();

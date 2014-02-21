@@ -20,16 +20,16 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("profile")
 @XmlRootElement
 public class Profile implements Serializable {
     private static final long serialVersionUID = 3370284215738389717L;
-
+    @JsonProperty("_id")
     private String id;
 
     private String userName;
@@ -45,7 +45,7 @@ public class Profile implements Serializable {
     private String tenantName;
 
     private String email;
-    
+
     private Boolean verify;
 
     private Map<String, Object> attributes;
@@ -62,7 +62,8 @@ public class Profile implements Serializable {
     }
 
     public Profile(String id, String userName, String password, Boolean active, Date created, Date modified,
-                   Map<String, Object> attributes, List<String> roles, String tenantName, String email, Boolean verify) {
+                   Map<String, Object> attributes, List<String> roles, String tenantName, String email,
+                   Boolean verify) {
         super();
 
         this.id = id;
@@ -109,7 +110,7 @@ public class Profile implements Serializable {
     public void setActive(Boolean active) {
         this.active = active;
     }
-    
+
     public Boolean getVerify() {
         return verify;
     }

@@ -19,8 +19,8 @@ package org.craftercms.security.authentication.impl;
 import java.io.IOException;
 import javax.servlet.http.HttpSession;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpStatus;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
 import org.craftercms.security.api.UserProfile;
@@ -55,11 +55,11 @@ public class LoginSuccessHandlerImpl extends BaseHandler implements LoginSuccess
     protected AuthenticationTokenCache authenticationTokenCache;
     protected RequestCache requestCache;
     protected String defaultTargetUrl;
-   
+
     public LoginSuccessHandlerImpl() {
-    	super();
+        super();
         requestCache = new HttpSessionRequestCache();
-        
+
     }
 
     /**
@@ -109,28 +109,28 @@ public class LoginSuccessHandlerImpl extends BaseHandler implements LoginSuccess
 
         clearException(context);
         cacheAuthenticationToken(token, context);
-        
+
         if (isRedirectRequired) {
-        	redirectToSavedUrl(context);
+            redirectToSavedUrl(context);
         } else {
-        	this.sendResponseLogin(context, profile);
+            this.sendResponseLogin(context, profile);
         }
     }
 
     private void sendResponseLogin(RequestContext context, UserProfile profile) {
-    	try {
-	    	 context.getResponse().setContentType("application/json");
-	    	 context.getResponse().setStatus(HttpStatus.SC_OK);
-	    	 ObjectMapper mapper = new ObjectMapper();
-	    	 context.getResponse().getWriter().write(mapper.writeValueAsString(profile));
-    	} catch(IOException e) {
-    		this.logger.error(e.getMessage());
-    		context.getResponse().setStatus(HttpStatus.SC_OK, "Unable to include profile data");
-    	}
-		
-	}
+        try {
+            context.getResponse().setContentType("application/json");
+            context.getResponse().setStatus(HttpStatus.SC_OK);
+            ObjectMapper mapper = new ObjectMapper();
+            context.getResponse().getWriter().write(mapper.writeValueAsString(profile));
+        } catch (IOException e) {
+            this.logger.error(e.getMessage());
+            context.getResponse().setStatus(HttpStatus.SC_OK, "Unable to include profile data");
+        }
 
-	/**
+    }
+
+    /**
      * Remove any previous saved authentication exception from the cache.
      */
     protected void clearException(RequestContext context) {

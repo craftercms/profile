@@ -7,11 +7,12 @@ import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.ExpiryDateException;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
+import org.craftercms.profile.exceptions.ProfileException;
 
 /**
  * Manage all the services related to profile password
- * @author Alvaro Gonzalez
  *
+ * @author Alvaro Gonzalez
  */
 public interface PasswordService {
     /**
@@ -27,7 +28,7 @@ public interface PasswordService {
      * @throws ExpiryDateException    If the token has already expired
      */
     Profile resetPassword(String password, String token) throws CipherException, NoSuchProfileException,
-        ParseException, ExpiryDateException;
+        ParseException, ExpiryDateException, ProfileException;
 
     /**
      * This service will send an email to the user profile owner so that the password could be changed.
@@ -42,6 +43,6 @@ public interface PasswordService {
      * @throws NoSuchProfileException If there is not a username registered with the value sent as argument.
      */
     Profile forgotPassword(String changePasswordUrl, String username, String tenantName) throws CipherException,
-        MailException, NoSuchProfileException;
+        MailException, NoSuchProfileException, ProfileException;
 
 }

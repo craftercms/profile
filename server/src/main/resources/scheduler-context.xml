@@ -6,7 +6,7 @@
     <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-                <bean class="org.springframework.scheduling.quartz.CronTriggerBean">
+                <bean class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
                     <property name="cronExpression" value="0 * * * * ?"/>
                     <property name="jobDetail">
                         <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">

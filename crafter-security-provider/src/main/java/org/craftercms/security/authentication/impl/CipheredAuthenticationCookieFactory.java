@@ -16,25 +16,25 @@
  */
 package org.craftercms.security.authentication.impl;
 
+import java.io.File;
+import java.io.IOException;
+import java.security.Key;
+import java.security.SecureRandom;
+import java.util.Date;
+import javax.annotation.PostConstruct;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.spec.IvParameterSpec;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.security.exception.CrafterSecurityException;
 import org.craftercms.security.utils.SecurityEnabledAware;
 import org.craftercms.security.utils.crypto.KeyFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-
-import javax.annotation.PostConstruct;
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.spec.IvParameterSpec;
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
-import java.security.Key;
-import java.security.SecureRandom;
-import java.util.Date;
 
 /**
  * Extends {@link AuthenticationCookieFactory} to decrypt the cookie before creating the object.
@@ -86,7 +86,7 @@ public class CipheredAuthenticationCookieFactory extends AuthenticationCookieFac
                     logger.info("Read encryption key for authentication cookies from file " + encryptionKeyFile);
                 } catch (IOException e) {
                     logger.warn("***** Encryption key couldn't be read from file " + encryptionKeyFile +
-                            ". PLEASE MAKE SURE THAT THIS FILE CAN BE READ ON STARTUP *****", e);
+                        ". PLEASE MAKE SURE THAT THIS FILE CAN BE READ ON STARTUP *****", e);
                 }
             } else {
                 encryptionKey = generateRandomKey();
@@ -97,10 +97,10 @@ public class CipheredAuthenticationCookieFactory extends AuthenticationCookieFac
                     keyFile.writeKey(encryptionKey);
 
                     logger.info("Stored encryption key for authentication cookies in file " + encryptionKeyFile +
-                            " for future use after reboots");
+                        " for future use after reboots");
                 } catch (IOException e) {
                     logger.warn("***** Encryption key couldn't be written to file " + encryptionKeyFile +
-                            ". PLEASE MAKE SURE THAT THIS FILE CAN BE WRITTEN ON STARTUP *****", e);
+                        ". PLEASE MAKE SURE THAT THIS FILE CAN BE WRITTEN ON STARTUP *****", e);
                 }
             }
         }

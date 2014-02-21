@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.RequestSecurityProcessor;
 import org.craftercms.security.api.RequestSecurityProcessorChain;
@@ -132,8 +132,8 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
                 throw new IllegalArgumentException("Request context doesn't contain an authentication token");
             }
             if (context.getAuthenticationToken().getProfile() == null) {
-                throw new IllegalArgumentException("Authentication token of request context doesn't contain a user " +
-                    "profile");
+                throw new IllegalArgumentException("Authentication token of request context doesn't contain a user "
+                    + "profile");
             }
 
             String requestUrl = getRequestUrl(context.getRequest());

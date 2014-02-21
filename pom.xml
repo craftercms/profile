@@ -49,6 +49,7 @@
         <module>api</module>
     </modules>
     <profiles>
+
         <profile>
             <id>Sonar</id>
             <properties>

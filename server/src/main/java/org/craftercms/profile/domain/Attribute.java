@@ -18,30 +18,20 @@ package org.craftercms.profile.domain;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.craftercms.profile.constants.AttributeConstants;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 @XmlRootElement
 public class Attribute {
 
-    @Field(AttributeConstants.NAME)
-    @Indexed(unique = true)
     private String name;
 
-    @Field(AttributeConstants.LABEL)
     private String label;
 
-    @Field(AttributeConstants.ORDER)
     private int order;
 
-    @Field(AttributeConstants.TYPE)
     private String type;
 
-    @Field(AttributeConstants.CONSTRAINT)
     private String constraint;
 
-    @Field(AttributeConstants.REQUIRED)
     private boolean required;
 
     public String getName() {

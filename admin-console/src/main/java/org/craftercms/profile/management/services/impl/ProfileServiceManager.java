@@ -3,9 +3,10 @@ package org.craftercms.profile.management.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.craftercms.profile.api.ProfileClient;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 
@@ -18,19 +19,16 @@ public class ProfileServiceManager {
 
     private static String crafterProfileAppTenantName;
 
-    private static final Logger log = Logger.getLogger(ProfileServiceManager.class);
+    private static final Logger log = LoggerFactory.getLogger(ProfileServiceManager.class);
 
     private static ProfileClient profileRestClient;
-    
+
     private static List<String> protectedActiveUsers;
 
     private ProfileServiceManager() {
 
     }
 
-    public static Logger getLogger() {
-        return log;
-    }
 
     public static ProfileClient getProfileClient() {
         return profileRestClient;
@@ -74,7 +72,7 @@ public class ProfileServiceManager {
     public static String getCrafterProfileAppTenantName() {
         return ProfileServiceManager.crafterProfileAppTenantName;
     }
-    
+
     private static List<String> convertLineToList(String list) {
         List<String> values = new ArrayList<String>();
         if (list == null || list.length() == 0) {
@@ -86,19 +84,19 @@ public class ProfileServiceManager {
         }
         return values;
     }
-    
+
     public static boolean isProtectedToKeepActive(String username) {
-    	boolean protectedUsername = false;
-    	if (protectedActiveUsers == null || protectedActiveUsers.size() == 0) {
-    		return protectedUsername;
-    	}
-    	for(String u: protectedActiveUsers) {
-    		if (u.equals(username)) {
-    			protectedUsername = true;
-    			break;
-    		}
-    	}
-    	return protectedUsername;
+        boolean protectedUsername = false;
+        if (protectedActiveUsers == null || protectedActiveUsers.size() == 0) {
+            return protectedUsername;
+        }
+        for (String u : protectedActiveUsers) {
+            if (u.equals(username)) {
+                protectedUsername = true;
+                break;
+            }
+        }
+        return protectedUsername;
     }
 
 }

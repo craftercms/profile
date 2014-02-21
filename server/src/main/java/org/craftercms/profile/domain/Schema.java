@@ -19,13 +19,9 @@ package org.craftercms.profile.domain;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.craftercms.profile.constants.SchemaConstants;
-import org.springframework.data.mongodb.core.mapping.Field;
-
 @XmlRootElement
 public class Schema {
 
-    @Field(SchemaConstants.ATTRIBUTES)
     private List<Attribute> attributes;
 
     public List<Attribute> getAttributes() {

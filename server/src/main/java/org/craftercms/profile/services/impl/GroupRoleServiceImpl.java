@@ -1,90 +1,108 @@
 package org.craftercms.profile.services.impl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.domain.GroupRole;
 import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.exceptions.GroupRoleException;
+import org.craftercms.profile.exceptions.ProfileException;
 import org.craftercms.profile.repositories.GroupRoleRepository;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.services.GroupRoleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
 /**
- * @author Alvaro Gonzalez
+ * Default GroupRoleService implementation.
  *
+ * @author Alvaro Gonzalez
  */
 @Component
 public class GroupRoleServiceImpl implements GroupRoleService {
 
     private final transient Logger log = LoggerFactory.getLogger(GroupRoleServiceImpl.class);
-
     @Autowired
     private GroupRoleRepository groupRepository;
-
     @Autowired
     private ProfileRepository profileRepository;
 
     /* (non-Javadoc)
-     * @see org.craftercms.profile.services.GroupRoleService#createGroupMapping(java.lang.String, java.lang.String, java.util.List, javax.servlet.http.HttpServletResponse)
+     * @see org.craftercms.profile.services.GroupRoleService#createGroupMapping(java.lang.String, java.lang.String,
+     * java.util.List, javax.servlet.http.HttpServletResponse)
      */
     @Override
-    public GroupRole createGroupMapping(String groupName, String tenant, List<String> roles,
-                                        HttpServletResponse response) {
+    public GroupRole createGroupMapping(final String groupName, final String tenant,
+                                        final List<String> roles) throws GroupRoleException {
         GroupRole newGroupMapping = new GroupRole();
         newGroupMapping.setName(groupName);
         newGroupMapping.setTenantName(tenant);
         newGroupMapping.setRoles(roles);
         try {
-            return groupRepository.save(newGroupMapping);
-        } catch (DuplicateKeyException e) {
-            try {
-                if (response != null) {
-                    response.sendError(HttpServletResponse.SC_CONFLICT);
-                }
-            } catch (IOException e1) {
-                log.error("Can't set error status after a DuplicateKey exception was received.");
-            }
+            groupRepository.save(newGroupMapping);
+            return newGroupMapping;
+        } catch (MongoDataException e) {
+            log.error("Unable to save new group role ", e);
+            throw new GroupRoleException("Unable to save group role", e);
         }
-        return null;
-
     }
 
     /* (non-Javadoc)
-     * @see org.craftercms.profile.services.GroupRoleService#updateGroupMapping(org.bson.types.ObjectId, java.lang.String, java.util.List)
+     * @see org.craftercms.profile.services.GroupRoleService#updateGroupMapping(org.bson.types.ObjectId,
+     * java.lang.String, java.util.List)
      */
     @Override
-    public GroupRole updateGroupMapping(ObjectId groupId, String tenantName, List<String> roles) {
-        GroupRole updateGroupMapping = groupRepository.findOne(groupId);
+    public GroupRole updateGroupMapping(final ObjectId groupId, final String tenantName,
+                                        final List<String> roles) throws GroupRoleException {
+        GroupRole updateGroupMapping;
+        try {
+            updateGroupMapping = groupRepository.findOne(groupId.toString());
+        } catch (MongoDataException ex) {
+            log.error("Unable to search for group role with id " + groupId.toString(), ex);
+            throw new GroupRoleException("Unable to search for group role id for update");
+        }
         updateGroupMapping.setTenantName(tenantName);
         updateGroupMapping.setRoles(roles);
-        groupRepository.save(updateGroupMapping);
-        return updateGroupMapping;
+        try {
+            groupRepository.save(updateGroupMapping);
+            return updateGroupMapping;
+        } catch (MongoDataException ex) {
+            log.error("Unable to update groupRole " + updateGroupMapping.toString(), ex);
+            throw new GroupRoleException("Unable to update group role", ex);
+        }
     }
 
     /* (non-Javadoc)
      * @see org.craftercms.profile.services.GroupRoleService#deleteGroupMapping(java.lang.String)
      */
     @Override
-    public void deleteGroupMapping(String groupId) {
-        groupRepository.delete(new ObjectId(groupId));
+    public void deleteGroupMapping(String groupId) throws GroupRoleException {
+
+        try {
+            groupRepository.removeById(groupId);
+        } catch (MongoDataException e) {
+            log.error("Unable to delete groupRole by id " + groupId);
+            throw new GroupRoleException("Unable to delete groupRole", e);
+        }
     }
 
     /* (non-Javadoc)
-     * @see org.craftercms.profile.services.GroupRoleService#getGroupRoleMapping(java.lang.String, java.lang.String, java.lang.String[])
+     * @see org.craftercms.profile.services.GroupRoleService#getGroupRoleMapping(java.lang.String, java.lang.String,
+     * java.lang.String[])
      */
     @Override
-    public List<String> getGroupRoleMapping(String profileId, String tenantName, String[] groups) {
+    public List<String> getGroupRoleMapping(final String profileId, final String tenantName,
 
-        Profile profile = profileRepository.findOne(new ObjectId(profileId));
-        List<GroupRole> groupRoles = groupRepository.findByNamesAndTenantName(groups, tenantName);
+                                            final String[] groups) throws GroupRoleException, ProfileException {
+        Profile profile;
+
+        profile = profileRepository.findById(new ObjectId(profileId));
+
+        List<GroupRole> groupRoles = (List<GroupRole>)groupRepository.findByNamesAndTenantName(groups, tenantName);
 
         return loadRolesFromGroups(profile.getRoles(), groupRoles);
     }
@@ -93,18 +111,18 @@ public class GroupRoleServiceImpl implements GroupRoleService {
      * @see org.craftercms.profile.services.GroupRoleService#getGroupRoleMapping(java.lang.String, java.lang.String)
      */
     @Override
-    public List<String> getGroupRoleMapping(String profileId, String tenantName) {
+    public List<String> getGroupRoleMapping(final String profileId, final String tenantName) throws GroupRoleException, ProfileException {
 
-        Profile profile = profileRepository.findOne(new ObjectId(profileId));
-        List<GroupRole> groupRoles = groupRepository.findByTenantName(tenantName);
+        Profile profile = profileRepository.findById(new ObjectId(profileId));
+        List<GroupRole> groupRoles = (List<GroupRole>)groupRepository.findByTenantName(tenantName);
 
         return loadRolesFromGroups(profile.getRoles(), groupRoles);
     }
 
-    private List<String> loadRolesFromGroups(List<String> profileRoles, List<GroupRole> groupRoles) {
-        List<String> result = new ArrayList<String>();
+    private List<String> loadRolesFromGroups(final List<String> profileRoles, final List<GroupRole> groupRoles) {
+        List<String> result = new ArrayList<>();
         if (groupRoles == null || profileRoles == null) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
         for (GroupRole gr : groupRoles) {
             if (gr.getRoles() != null) {
@@ -114,7 +132,8 @@ public class GroupRoleServiceImpl implements GroupRoleService {
         return result;
     }
 
-    private void loadRolesFromGroups(List<String> profileRoles, List<String> groupRoles, List<String> result) {
+    private void loadRolesFromGroups(final List<String> profileRoles, final List<String> groupRoles,
+                                     final List<String> result) {
         for (String role : groupRoles) {
             if (profileRoles.contains(role) && !result.contains(role)) {
                 result.add(role);
@@ -126,7 +145,7 @@ public class GroupRoleServiceImpl implements GroupRoleService {
      * @see org.craftercms.profile.services.GroupRoleService#getGroupRoleMapping(java.lang.String)
      */
     @Override
-    public List<GroupRole> getGroupRoleMapping(String tenantName) {
+    public Iterable<GroupRole> getGroupRoleMapping(final String tenantName) throws GroupRoleException {
         return groupRepository.findByTenantName(tenantName);
     }
 
@@ -134,8 +153,13 @@ public class GroupRoleServiceImpl implements GroupRoleService {
      * @see org.craftercms.profile.services.GroupRoleService#getGroupItem(java.lang.String)
      */
     @Override
-    public GroupRole getGroupItem(String groupId) {
-        return groupRepository.findOne(new ObjectId(groupId));
+    public GroupRole getGroupItem(final String groupId) throws GroupRoleException {
+        try {
+            return groupRepository.findById(groupId);
+        } catch (MongoDataException e) {
+            log.error("Unable to search tenant by id " + groupId);
+            throw new GroupRoleException("Unable to search for group role ", e);
+        }
     }
 
 }

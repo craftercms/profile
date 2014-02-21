@@ -20,9 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.craftercms.profile.domain.Profile;
+import org.craftercms.profile.exceptions.ProfileException;
 import org.craftercms.profile.services.ProfileService;
 import org.craftercms.profile.services.ProfileUserDetailsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,6 +36,7 @@ import org.springframework.stereotype.Service;
 @Service("profileUserDetailsService")
 public class ProfileUserDetailsServiceImpl implements ProfileUserDetailsService {
 
+    private static final Logger log = LoggerFactory.getLogger(ProfileUserDetailsServiceImpl.class);
     @Autowired
     private ProfileService profileService;
 
@@ -48,7 +53,7 @@ public class ProfileUserDetailsServiceImpl implements ProfileUserDetailsService 
      * @see org.springframework.security.core.userdetails.UserDetailsService#loadUserByUsername(java.lang.String)
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
         String tenantName = null;
         String newUsername = username;
         if (username.lastIndexOf('@') > 0) {
@@ -58,11 +63,17 @@ public class ProfileUserDetailsServiceImpl implements ProfileUserDetailsService 
             tenantName = username.substring(idx + 1);
         }
 
-        Profile profile = profileService.getProfileByUserName(newUsername, tenantName, null);
-        
+        Profile profile = null;
+        try {
+            profile = profileService.getProfileByUserName(newUsername, tenantName, null);
+        } catch (ProfileException e) {
+            log.debug("Unable to find profile by username " + username, e);
+            throw new AuthenticationServiceException("Unable to find profile with username", e);
+        }
+
         // Mapping  org.springframework.security.core.userdetails.User.enable TO 
         //												org.craftercms.profile.domain.Profile.active
         return new User(profile.getUserName(), profile.getPassword(), profile.getActive(), true, true, true,
-            defaultGrantedAuthorities);  
+            defaultGrantedAuthorities);
     }
 }

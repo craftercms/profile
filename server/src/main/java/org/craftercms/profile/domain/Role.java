@@ -21,21 +21,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.bson.types.ObjectId;
-import org.craftercms.profile.constants.ProfileConstants;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Field;
+import org.jongo.marshall.jackson.oid.Id;
 
 @XStreamAlias("role")
 @XmlRootElement
 public class Role implements Serializable {
-    @Field(ProfileConstants.FIELD_ID)
+
+    @Id
     private ObjectId id;
-
-    //	@Field(ProfileConstants.TENANT_NAME)
-    //	private String tenantName;
-
-    @Indexed(unique = true)
-    @Field(ProfileConstants.ROLE_NAME)
     private String roleName;
 
     public ObjectId getId() {

@@ -1,59 +1,88 @@
-/*
- * Copyright (C) 2007-2013 Crafter Software Corporation.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package org.craftercms.profile.repositories;
 
-import java.sql.Date;
+import java.util.Date;
 
+import org.craftercms.commons.mongo.JongoRepository;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.domain.Ticket;
+import org.craftercms.profile.exceptions.TicketException;
 import org.craftercms.profile.security.util.TicketUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Component("ticketRepositoryImpl")
-public class TicketRepositoryImpl implements TicketRepositoryCustom {
+/**
+ * Basic Ticket Repository Implementation.
+ */
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+public class TicketRepositoryImpl extends JongoRepository<Ticket> implements TicketRepository {
+
+    public static final String PROFILE_TICKET_BY_USERNAME = "profile.ticket.ByUsername";
+    public static final String PROFILE_TICKET_EXPIRATION_DATE_OLDER = "profile.ticket.expirationDateOlder";
+    public static final String PROFILE_TICKET_GET_BY_ID = "profile.ticket.getById";
+    private Logger log = LoggerFactory.getLogger(TicketRepositoryImpl.class);
+
+    /**
+     * Creates A instance of a Jongo Repository.
+     */
+    public TicketRepositoryImpl() throws MongoDataException {
+        super();
+    }
 
     @Override
-    public Ticket getByTicket(String ticketStr) {
-        String series = TicketUtils.getTicketSeries(ticketStr);
-        Ticket ticket = null;
-        if (series != null) {
-            Query q = new Query(Criteria.where("_id").is(series));
-            q.fields().include("username");
-            q.fields().include("tenantName");
-            ticket = (Ticket)mongoTemplate.findOne(q, Ticket.class);
-
+    public void removeUserTickets(final String username) throws TicketException {
+        log.debug("Removing Tickets for {}", username);
+        String query = getQueryFor(PROFILE_TICKET_BY_USERNAME);
+        try {
+            remove(query, username);
+        } catch (MongoDataException e) {
+            log.error("Unable to delete tickets for user " + username, e);
+            throw new TicketException("Unable to delete tickets for user", e);
         }
-        return ticket;
     }
 
     @Override
-    public void removeUserTickets(String username) {
-        mongoTemplate.remove(Query.query(Criteria.where("username").is(username)), Ticket.class);
-    }
-
-    @Override
-    public void removeTicketsOlderThan(long expirationSeconds) {
+    public void removeTicketsOlderThan(final long expirationSeconds) throws TicketException {
         Date expireBefore = new Date(System.currentTimeMillis() - (expirationSeconds * 1000));
-        mongoTemplate.remove(Query.query(Criteria.where("date").lt(expireBefore)), Ticket.class);
+        log.debug("About to remove tickets older than {}", expireBefore);
+        String query = getQueryFor(PROFILE_TICKET_EXPIRATION_DATE_OLDER);
+        try {
+            remove(query, expireBefore);
+        } catch (MongoDataException ex) {
+            log.error("Unable to Delete tickets older than " + expireBefore, ex);
+            throw new TicketException("Unable to delete tickets ", ex);
+        }
+    }
+
+    @Override
+    public Ticket findByTicket(final String ticketStr) throws TicketException {
+        String series = TicketUtils.getTicketSeries(ticketStr);
+        return findBySeries(series);
+    }
+
+    @Override
+    public Ticket findByUsername(final String username) throws TicketException {
+        log.debug("Finding tickets for user {}", username);
+        try {
+            return findOne(getQueryFor(PROFILE_TICKET_BY_USERNAME), username);
+        } catch (MongoDataException ex) {
+            log.error("Unable to find tickets for user", ex);
+            throw new TicketException("Unable to find ");
+        }
+    }
+
+    @Override
+    public Ticket findBySeries(final String series) throws TicketException {
+        log.debug("Finding tickets for series {}", series);
+        if (series != null) {
+            try {
+                return super.findOne(getQueryFor(PROFILE_TICKET_GET_BY_ID), series);
+            } catch (MongoDataException e) {
+                log.debug("Error finding ticket by id", e);
+                throw new TicketException("Unable to find ticket", e);
+            }
+        } else {
+            log.error("Unable to get series from ticket {}", series);
+            return null;
+        }
     }
 }

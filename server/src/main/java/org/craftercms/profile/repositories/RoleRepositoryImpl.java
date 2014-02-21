@@ -16,21 +16,59 @@
  */
 package org.craftercms.profile.repositories;
 
-import org.craftercms.profile.constants.ProfileConstants;
+
+import com.mongodb.MongoException;
+import org.craftercms.commons.mongo.JongoRepository;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.domain.Role;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
+import org.craftercms.profile.exceptions.RoleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class RoleRepositoryImpl implements RoleRepositoryCustom {
-    @Autowired
-    private MongoTemplate mongoTemplate;
+/**
+ * Definition of Role Repository Services.
+ */
+public class RoleRepositoryImpl extends JongoRepository<Role> implements RoleRepository {
+    /**
+     * Find Role by name Query.
+     */
+    public static final String PROFILE_ROLE_BY_NAME = "profile.role.byName";
+    /**
+     * le logger.
+     */
+    private Logger log = LoggerFactory.getLogger(RoleRepositoryImpl.class);
 
-    public Role getRoleByName(String roleName) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(ProfileConstants.ROLE_NAME).is(roleName));
-        return mongoTemplate.findOne(query, Role.class);
+    /**
+     * Default Ctr.
+     *
+     * @throws MongoDataException, If parent couldn't get information of the Role class.
+     */
+    public RoleRepositoryImpl() throws MongoDataException {
+
     }
 
+    @Override
+    public Role findByRoleName(final String roleName) throws RoleException {
+        log.debug("Finding Role named {}", roleName);
+        try {
+            String query = getQueryFor(PROFILE_ROLE_BY_NAME);
+            Role role = findOne(query, roleName);
+            log.debug("Role found {}", role);
+            return role;
+        } catch (MongoDataException ex) {
+            log.error("Unable to find role with name " + roleName, ex);
+            throw new RoleException("Unable to find role by name", ex);
+        }
+    }
+
+    @Override
+    public void removeAll() throws RoleException {
+        log.info("About to delete all Roles !!!");
+        try {
+            getCollection().remove();
+        } catch (MongoException ex) {
+            log.error("Unable to delete all roles", ex);
+            throw new RoleException("Unable to delete all roles", ex);
+        }
+    }
 }

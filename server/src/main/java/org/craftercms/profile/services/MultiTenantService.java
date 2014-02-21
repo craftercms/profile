@@ -17,9 +17,11 @@
 package org.craftercms.profile.services;
 
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.exceptions.ProfileException;
+import org.craftercms.profile.exceptions.TenantException;
+import org.craftercms.profile.exceptions.TicketException;
 
 public interface MultiTenantService {
 
@@ -28,46 +30,50 @@ public interface MultiTenantService {
      *
      * @param tenantName
      * @param createDefaults
-     * @param roles          roles that can be assigned to profiles created in this tenant
-     * @param domains        domains that can access content in this tenant
-     * @param emailNewProfile <code>true</code> New profiles will send a verification email, otherwise it will just create the account
+     * @param roles           roles that can be assigned to profiles created in this tenant
+     * @param domains         domains that can access content in this tenant
+     * @param emailNewProfile <code>true</code> New profiles will send a verification email,
+     *                        otherwise it will just create the account
      * @return
      */
-    Tenant createTenant(String tenantName, boolean createDefaults, List<String> roles, List<String> domains, boolean emailNewProfile,
-                        HttpServletResponse response);
-    
     Tenant createTenant(String tenantName, boolean createDefaults, List<String> roles, List<String> domains,
-    		HttpServletResponse response);
+                        boolean emailNewProfile) throws TenantException;
 
-    Tenant updateTenant(String id, String tenantName, List<String> roles, List<String> domains, boolean emailNewProfile);
-    
+    Tenant createTenant(String tenantName, boolean createDefaults, List<String> roles,
+                        List<String> domains) throws TenantException;
+
+    Tenant updateTenant(String id, String tenantName, List<String> roles, List<String> domains,
+                        boolean emailNewProfile) throws TenantException;
+
     /**
      * Updates a tenant
-     * @param id valid id value
-     * @param tenantName the tenantName
-     * @param roles          roles that can be assigned to profiles created in this tenant
-     * @param domains        domains that can access content in this tenant
-     * @param emailNewProfile <code>true</code> New profiles will send a verification email, otherwise it will just create the account
+     *
+     * @param id              valid id value
+     * @param tenantName      the tenantName
+     * @param roles           roles that can be assigned to profiles created in this tenant
+     * @param domains         domains that can access content in this tenant
+     * @param emailNewProfile <code>true</code> New profiles will send a verification email,
+     *                        otherwise it will just create the account
      * @return
      */
-    Tenant updateTenant(String id, String tenantName, List<String> roles, List<String> domains);
+    Tenant updateTenant(String id, String tenantName, List<String> roles, List<String> domains) throws TenantException;
 
-    void deleteTenant(String tenantName);
+    void deleteTenant(String tenantName) throws TenantException, ProfileException;
 
-    Tenant getTenantByName(String tenantName);
+    Tenant getTenantByName(String tenantName) throws TenantException;
 
-    Tenant getTenantByTicket(String ticket);
+    Tenant getTenantByTicket(String ticket) throws TenantException, TicketException, ProfileException;
 
-    Tenant getTenantById(String tenantName);
+    Tenant getTenantById(String tenantName) throws TenantException;
 
-    long getTenantsCount();
+    long getTenantsCount() throws TenantException;
 
-    boolean exists(String tenantName);
+    boolean exists(String tenantName) throws TenantException;
 
-    List<Tenant> getTenantRange(String sortBy, String sortOrder, int start, int end);
+    Iterable<Tenant> getTenantRange(String sortBy, String sortOrder, int start, int end) throws TenantException;
 
-    List<Tenant> getAllTenants();
+    Iterable<Tenant> getAllTenants() throws TenantException;
 
-    List<Tenant> getTenantsByRoleName(String roleName);
+    Iterable<Tenant> getTenantsByRoleName(String roleName) throws TenantException;
 
 }

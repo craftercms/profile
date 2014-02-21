@@ -16,54 +16,48 @@
  */
 package org.craftercms.profile.services;
 
-import java.util.List;
-import javax.servlet.http.HttpServletResponse;
-
 import org.craftercms.profile.domain.Role;
+import org.craftercms.profile.exceptions.RoleException;
+import org.craftercms.profile.exceptions.TenantException;
 
 /**
  * Manage services for the Roles
- * @author Alvaro Gonzalez
  *
+ * @author Alvaro Gonzalez
  */
 public interface RoleService {
-	/**
-	 * Creates new Role
-	 * 
-	 * @param roleName The new role name
-	 * @param response The current HttpServletResponse instance
-	 * 
-	 * @return new Role instance
-	 */
-    Role createRole(String roleName, HttpServletResponse response);
+    /**
+     * Creates new Role
+     *
+     * @param roleName The new role name
+     * @return new Role instance
+     */
+    Role createRole(String roleName) throws RoleException;
 
     /**
      * Deletes a Role from the repository
-     * 
+     *
      * @param roleName is going to be removed
-     * 
-     * @param response The current HttpServletResponse instance
      */
-    void deleteRole(String roleName, HttpServletResponse response);
+    void deleteRole(String roleName) throws TenantException, RoleException;
 
     /**
      * Gets the list of all the roles
-     * 
+     *
      * @return a list of roles in the repository
      */
-    List<Role> getAllRoles();
+    Iterable<Role> getAllRoles() throws RoleException;
 
     /**
      * Deletes all the roles in the repository
      */
-    void deleteAllRoles();
+    void deleteAllRoles() throws RoleException;
 
     /**
      * Gets a role from the repo based on the role name
-     * 
+     *
      * @param roleName is going to be used to get the role
-     * 
      * @return role instance
      */
-    Role getRole(String roleName);
+    Role getRole(String roleName) throws RoleException;
 }
