@@ -17,6 +17,7 @@ import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.ExpiryDateException;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
+import org.craftercms.profile.exceptions.ProfileException;
 import org.craftercms.profile.security.util.crypto.CipherPasswordChangeToken;
 import org.craftercms.profile.services.MailService;
 import org.craftercms.profile.services.PasswordService;
@@ -58,8 +59,9 @@ public class PasswordServiceImpl implements PasswordService {
      * java.lang.String)
      */
     @Override
-    public Profile forgotPassword(String changePasswordUrl, String username,
-                                  String tenantName) throws CipherException, MailException, NoSuchProfileException {
+    public Profile forgotPassword(final String changePasswordUrl, final String username,
+                                  final String tenantName) throws CipherException, MailException,
+        NoSuchProfileException, ProfileException {
         if (log.isDebugEnabled()) {
             log.debug("Starting forget process");
         }
@@ -78,7 +80,7 @@ public class PasswordServiceImpl implements PasswordService {
         try {
             encryptedToken = URLEncoder.encode(encryptedToken, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-        	log.warn("Unsupported Ending error");
+            log.warn("Unsupported Ending error");
             throw new CipherException("Unsupported Ending error");
         }
         if (log.isDebugEnabled()) {
@@ -107,11 +109,11 @@ public class PasswordServiceImpl implements PasswordService {
      */
     @Override
     public Profile resetPassword(String password, String token) throws CipherException, NoSuchProfileException,
-        ParseException, ExpiryDateException {
+        ParseException, ExpiryDateException, ProfileException {
         try {
             token = URLDecoder.decode(token, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-        	log.warn("Unsupported decode error UTF-8");
+            log.warn("Unsupported decode error UTF-8");
             throw new CipherException("Unsupported decode error");
         }
         if (log.isDebugEnabled()) {
@@ -143,7 +145,7 @@ public class PasswordServiceImpl implements PasswordService {
 
     /**
      * Sets the reset email template that will be used to email the url.
-     * 
+     *
      * @param resetEmailTemplate
      */
     @Value("#{ssrSettings['crafter.profile.password.reset.mail.ftl']}")
@@ -153,7 +155,7 @@ public class PasswordServiceImpl implements PasswordService {
 
     /**
      * Sets the email subject to be sent whenever an email for resenting the password is sent.
-     * 
+     *
      * @param resetEmailSubject Subject of the reset email
      */
     @Value("#{ssrSettings['crafter.profile.password.reset.mail.subject']}")
@@ -163,7 +165,7 @@ public class PasswordServiceImpl implements PasswordService {
 
     /**
      * Sets the mail account will be used to email the url to reset the password
-     * 
+     *
      * @param mailFrom Email account used to email the url to reset the password.
      */
     @Value("#{ssrSettings['crafter.profile.mail.from.address']}")
@@ -173,10 +175,10 @@ public class PasswordServiceImpl implements PasswordService {
 
     /**
      * Sets the expiration time (minutes) for the token. Default value is 60 minutes
-     * 
+     *
      * @param value New expiry token in minutes
      */
-    @Value("#{ssrSettings['crafter.profile.password.change.token.expiry']}") 
+    @Value("#{ssrSettings['crafter.profile.password.change.token.expiry']}")
     public void setPasswordChangeTokenExpiry(String value) {
         if (value != null && value.equals("")) {
             this.expiryMinutes = Integer.parseInt(value);
@@ -185,11 +187,10 @@ public class PasswordServiceImpl implements PasswordService {
 
     /**
      * Checks is the token has not expired.
-     * 
+     *
      * @param dateStr creation date of this token. It shouldn't be older than the expiry time(minutes)
-     * 
-     * @return <code>true</code> if the dateStr is not older than the expiry value in minutes, <code>false</code> otherwise
-     * 
+     * @return <code>true</code> if the dateStr is not older than the expiry value in minutes,
+     * <code>false</code> otherwise
      * @throws ParseException If an error occurs when the date is parsed.
      */
     private boolean isValidTokenDate(String dateStr) throws ParseException {
@@ -198,11 +199,11 @@ public class PasswordServiceImpl implements PasswordService {
         Calendar currentDate = Calendar.getInstance();
 
         expiryDate.setTime(tokenDate);
-        expiryDate.add(Calendar.MINUTE, this.expiryMinutes); 
+        expiryDate.add(Calendar.MINUTE, this.expiryMinutes);
 
         return currentDate.before(expiryDate);
     }
-    
+
     private String getRawValue(String tenantName, String username) {
         return tenantName + CipherPasswordChangeToken.SEP + username + CipherPasswordChangeToken.SEP + DateFormat
             .getDateTimeInstance().format(new Date());
@@ -210,9 +211,8 @@ public class PasswordServiceImpl implements PasswordService {
 
     /**
      * Split token using | character to split them
-     * 
+     *
      * @param tokens Token value
-     * 
      * @return the array containing each value of the token
      */
     private String[] splitTokens(String tokens) {

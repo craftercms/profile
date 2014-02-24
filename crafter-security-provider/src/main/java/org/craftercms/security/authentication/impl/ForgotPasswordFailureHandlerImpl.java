@@ -4,7 +4,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
 import org.craftercms.security.authentication.BaseHandler;
@@ -19,9 +19,9 @@ public class ForgotPasswordFailureHandlerImpl extends BaseHandler implements For
     private static final Logger logger = LoggerFactory.getLogger(LoginFailureHandlerImpl.class);
 
     protected String targetUrl;
-    
+
     public ForgotPasswordFailureHandlerImpl() {
-    	super();
+        super();
     }
 
     /**
@@ -48,7 +48,6 @@ public class ForgotPasswordFailureHandlerImpl extends BaseHandler implements For
     /**
      * Saves the exception in the session,
      * under the {@link SecurityConstants#FORGOT_PASSWORD_EXCEPTION}
-     * 
      */
     protected void saveException(Exception e, RequestContext context) {
         if (logger.isDebugEnabled()) {

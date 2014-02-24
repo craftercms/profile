@@ -16,14 +16,99 @@
  */
 package org.craftercms.profile.repositories;
 
-import java.util.List;
-
 import org.bson.types.ObjectId;
+import org.craftercms.commons.mongo.CrudRepository;
+import org.craftercms.profile.domain.Attribute;
 import org.craftercms.profile.domain.Tenant;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.craftercms.profile.exceptions.TenantException;
 
-public interface TenantRepository extends MongoRepository<Tenant, ObjectId>, TenantRepositoryCustom {
-    List<Tenant> findAll();
+/**
+ * Definition of Tenant Repository Services.
+ */
+public interface TenantRepository extends CrudRepository<Tenant> {
+    /**
+     * Finds a tenant by its Object Id.
+     *
+     * @param id Object Id of the tenant.
+     * @return The Tenant with that id, null if not found.
+     * @throws org.craftercms.profile.exceptions.TenantException If tenant can't be search for.
+     */
+    Tenant findTenantById(ObjectId id) throws TenantException;
 
-    Tenant findTenantById(ObjectId id);
+    /**
+     * All tenants uses pagination.
+     *
+     * @param sortBy    Field used by the sorting.
+     * @param sortOrder Order of the sorting.
+     * @param start     Start of the Range.
+     * @param end       End of the Range.
+     * @return A iterator of with the tenants ordered by the given sort field and sort order.<br/>
+     * empty if nothing is found.
+     */
+    Iterable<Tenant> getTenantRange(String sortBy, String sortOrder, int start, int end) throws TenantException;
+
+    /**
+     * Finds the a Tenant with the given name.
+     *
+     * @param tenantName Name of the tenant looking for.
+     * @return Tenant with the given name <br/> <b>null</b> if nothing is found.
+     * @throws org.craftercms.profile.exceptions.TenantException If tenant can't be search for.
+     */
+    Tenant getTenantByName(String tenantName) throws TenantException;
+
+    /**
+     * Sets a Tenant Attribute.<b/>
+     * <i>If the tenant does not exist or is not found with the given name <b>Nothing is done</b></></i>
+     *
+     * @param tenantName Name of the tenant to set Attribute.
+     * @param attribute  Attribute to set.
+     * @throws org.craftercms.profile.exceptions.TenantException If tenant can't be search for or Attribute can be
+     * written.
+     */
+    void setAttribute(String tenantName, Attribute attribute) throws TenantException;
+
+    /**
+     * Deletes a the given attribute form the tenant.
+     * <i>If the tenant does not exist or is not found with the given name <b>Nothing is done</b></></i>
+     *
+     * @param tenantName    Name of the tenant to delete Attribute.
+     * @param attributeName Name of the Attribute to delete.
+     * @throws org.craftercms.profile.exceptions.TenantException If tenant can't be search for or Attribute can be
+     * written.
+     */
+    void deleteAttribute(String tenantName, String attributeName) throws TenantException;
+
+    /**
+     * Gets a complete list of all tenants. by its assigned roles.
+     *
+     * @param roles Roles that tenant should have.
+     * @return A list of the tenants with the given roles.
+     * @throws org.craftercms.profile.exceptions.TenantException If tenants can't be search for.
+     */
+    Iterable<Tenant> getTenants(String[] roles) throws TenantException;
+
+    /**
+     * Counts how many tenants are with a given set of roles.
+     *
+     * @param roles Roles that tenant should have
+     * @return number of Tenants with given roles.
+     * @throws org.craftercms.profile.exceptions.TenantException If unable to count tenants
+     */
+    long countTenantsWithRoles(String[] roles) throws TenantException;
+
+    /**
+     * Deletes a Tenant by its tenantId.
+     *
+     * @param tenantId ObjectId that represent the tenant Id.
+     * @throws org.craftercms.profile.exceptions.TenantException if tenant can't be deleted.
+     */
+    void deleteTenant(final ObjectId tenantId) throws TenantException;
+
+    /**
+     * Counts all the tenants.
+     *
+     * @return number of tenants store.
+     * @throws org.craftercms.profile.exceptions.TenantException If tenant can't be counted.
+     */
+    long count() throws TenantException;
 }

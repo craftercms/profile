@@ -21,38 +21,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.bson.types.ObjectId;
-import org.craftercms.profile.constants.ProfileConstants;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Field;
+import org.craftercms.commons.mongo.Document;
+import org.jongo.marshall.jackson.oid.Id;
 
 @XStreamAlias("tenant")
 @XmlRootElement
+@Document(collectionName = "tenant")
 public class Tenant {
 
-    @Field(ProfileConstants.FIELD_ID)
+    @Id
     private ObjectId id;
-
-    @Field(ProfileConstants.TENANT_NAME)
-    @Indexed(unique = true)
     private String tenantName;
-    
-    @Field("emailNewProfile")
     private Boolean emailNewProfile;
-
-    @Field(ProfileConstants.DOMAINS)
     private List<String> domains;
-
-    @Field(ProfileConstants.ROLES)
     private List<String> roles;
-
-    @Field(ProfileConstants.SCHEMA)
     private Schema schema;
 
     public ObjectId getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(final ObjectId id) {
         this.id = id;
     }
 
@@ -60,7 +49,7 @@ public class Tenant {
         return tenantName;
     }
 
-    public void setTenantName(String tenantName) {
+    public void setTenantName(final String tenantName) {
         this.tenantName = tenantName;
     }
 
@@ -68,7 +57,7 @@ public class Tenant {
         return schema;
     }
 
-    public void setSchema(Schema schema) {
+    public void setSchema(final Schema schema) {
         this.schema = schema;
     }
 
@@ -76,7 +65,7 @@ public class Tenant {
         return domains;
     }
 
-    public void setDomains(List<String> domains) {
+    public void setDomains(final List<String> domains) {
         this.domains = domains;
     }
 
@@ -84,17 +73,17 @@ public class Tenant {
         return roles;
     }
 
-    public void setRoles(List<String> roles) {
+    public void setRoles(final List<String> roles) {
         this.roles = roles;
     }
 
-	public Boolean getEmailNewProfile() {
-		return emailNewProfile;
-	}
+    public Boolean getEmailNewProfile() {
+        return emailNewProfile;
+    }
 
-	public void setEmailNewProfile(Boolean emailNewProfile) {
-		this.emailNewProfile = emailNewProfile;
-	}
+    public void setEmailNewProfile(final boolean emailNewProfile) {
+        this.emailNewProfile = emailNewProfile;
+    }
 
 
 }

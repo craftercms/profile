@@ -19,6 +19,7 @@ package org.craftercms.profile.services.impl;
 import org.craftercms.profile.domain.Attribute;
 import org.craftercms.profile.domain.Schema;
 import org.craftercms.profile.domain.Tenant;
+import org.craftercms.profile.exceptions.TenantException;
 import org.craftercms.profile.repositories.TenantRepository;
 import org.craftercms.profile.services.SchemaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +32,11 @@ public class SchemaServiceImpl implements SchemaService {
     private TenantRepository tenantRepository;
 
     /* (non-Javadoc)
-     * @see org.craftercms.profile.services.SchemaService#setAttribute(java.lang.String, org.craftercms.profile.domain.Attribute)
+     * @see org.craftercms.profile.services.SchemaService#setAttribute(java.lang.String,
+     * org.craftercms.profile.domain.Attribute)
      */
     @Override
-    public void setAttribute(String tenantName, Attribute attribute) {
+    public void setAttribute(final String tenantName, final Attribute attribute) throws TenantException {
         tenantRepository.setAttribute(tenantName, attribute);
 
     }
@@ -43,7 +45,7 @@ public class SchemaServiceImpl implements SchemaService {
      * @see org.craftercms.profile.services.SchemaService#geSchemaByTenantName(java.lang.String)
      */
     @Override
-    public Schema geSchemaByTenantName(String tenantName) {
+    public Schema geSchemaByTenantName(String tenantName) throws TenantException {
         Tenant tenant = tenantRepository.getTenantByName(tenantName);
         Schema schema = null;
         if (tenant != null) {
@@ -56,7 +58,7 @@ public class SchemaServiceImpl implements SchemaService {
      * @see org.craftercms.profile.services.SchemaService#deleteAttribute(java.lang.String, java.lang.String)
      */
     @Override
-    public void deleteAttribute(String tenantName, String attributeName) {
+    public void deleteAttribute(String tenantName, String attributeName) throws TenantException {
         tenantRepository.deleteAttribute(tenantName, attributeName);
     }
 

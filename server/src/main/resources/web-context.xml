@@ -38,7 +38,7 @@
         </beans:property>
         <beans:property name="defaultViews">
             <beans:list>
-                <beans:bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
+                <beans:bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
                     <beans:property name="objectMapper">
                         <beans:bean class="org.craftercms.profile.util.serialization.UGCObjectMapper">
                             <beans:constructor-arg name="serializerList">
@@ -88,6 +88,6 @@
         </beans:property>
     </beans:bean>
 
-    <beans:bean id="applicationListener" class="org.craftercms.profile.security.ApplicationContextListener"/>
+    <!--<beans:bean id="applicationListener" class="org.craftercms.profile.security.ApplicationContextListener"/>-->
 
 </beans:beans>

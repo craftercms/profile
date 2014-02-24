@@ -4,7 +4,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpSession;
 
 import org.apache.http.HttpStatus;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
 import org.craftercms.security.api.UserProfile;
@@ -20,9 +19,9 @@ public class ForgotPasswordSuccessHandlerImpl extends BaseHandler implements For
     private static final Logger logger = LoggerFactory.getLogger(ForgotPasswordSuccessHandlerImpl.class);
 
     protected String defaultTargetUrl;
-    
+
     public ForgotPasswordSuccessHandlerImpl() {
-    	super();
+        super();
     }
 
     /**
@@ -40,22 +39,22 @@ public class ForgotPasswordSuccessHandlerImpl extends BaseHandler implements For
         HttpSession session = context.getRequest().getSession();
         session.setAttribute(SecurityConstants.PROFILE_FORGOT_PASSWORD, profile);
         if (this.isRedirectRequired) {
-	        String redirectUrl = context.getRequest().getContextPath() + defaultTargetUrl;
-	
-	        if (logger.isDebugEnabled()) {
-	            logger.debug("Redirecting to URL: " + redirectUrl);
-	        }
-	        context.getResponse().sendRedirect(redirectUrl);
+            String redirectUrl = context.getRequest().getContextPath() + defaultTargetUrl;
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Redirecting to URL: " + redirectUrl);
+            }
+            context.getResponse().sendRedirect(redirectUrl);
         } else {
-        	this.sendResponse(context);
+            this.sendResponse(context);
         }
-        
+
 
     }
-    
+
     private void sendResponse(RequestContext context) {
-    	context.getResponse().setContentType("application/json");
-	    context.getResponse().setStatus(HttpStatus.SC_OK);
-	}
+        context.getResponse().setContentType("application/json");
+        context.getResponse().setStatus(HttpStatus.SC_OK);
+    }
 
 }

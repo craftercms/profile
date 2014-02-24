@@ -23,7 +23,6 @@ import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
@@ -47,12 +48,9 @@ import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.craftercms.profile.ProfileClientException;
 import org.craftercms.profile.api.ProfileClient;
 import org.craftercms.profile.constants.AttributeConstants;
@@ -152,7 +150,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 count = (Long)objectMapper.readValue(entity.getContent(), Long.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -198,7 +196,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -221,7 +219,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 
     @Override
     /*
-	 * (non-Javadoc)
+     * (non-Javadoc)
 	 * 
 	 * @see
 	 * org.craftercms.profile.httpclient.ProfileRestClient#getProfileByTicket
@@ -246,7 +244,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -299,7 +297,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -346,7 +344,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -395,7 +393,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -452,7 +450,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -501,7 +499,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -555,7 +553,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -603,7 +601,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -673,7 +671,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -764,7 +762,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -820,7 +818,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             entity = response.getEntity();
 
             if (response.getStatusLine().getStatusCode() != 200) {
-                handleErrorStatus(response.getStatusLine(), response.getEntity());
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -862,7 +860,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             entity = response.getEntity();
 
             if (response.getStatusLine().getStatusCode() != 200) {
-                handleErrorStatus(response.getStatusLine(), response.getEntity());
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -908,9 +906,9 @@ public class ProfileRestClientImpl implements ProfileClient {
             entity = response.getEntity();
 
             if (response.getStatusLine().getStatusCode() != 200) {
-                handleErrorStatus(response.getStatusLine(), response.getEntity());
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1000,7 +998,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             entity = response.getEntity();
 
             if (response.getStatusLine().getStatusCode() != 200) {
-                handleErrorStatus(response.getStatusLine(), response.getEntity());
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1050,7 +1048,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 
             entity = response.getEntity();
             if (response.getStatusLine().getStatusCode() != 200) {
-                handleErrorStatus(response.getStatusLine(), response.getEntity());
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1105,7 +1103,7 @@ public class ProfileRestClientImpl implements ProfileClient {
                 result = (Map<String, Serializable>)objectMapper.readValue(entity.getContent(),
                     MAP_STRING_SERIALIZABLE_TYPE);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1159,7 +1157,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 
 
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1242,7 +1240,7 @@ public class ProfileRestClientImpl implements ProfileClient {
                 profiles = (List<Profile>)objectMapper.readValue(entity.getContent(), PROFILE_LIST_TYPE);
 
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1298,7 +1296,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 profiles = (List<Profile>)objectMapper.readValue(entity.getContent(), PROFILE_LIST_TYPE);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1353,7 +1351,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 profiles = (List<Profile>)objectMapper.readValue(entity.getContent(), PROFILE_LIST_TYPE);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1402,7 +1400,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 appToken = (String)objectMapper.readValue(entity.getContent(), String.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (AppAuthenticationFailedException e) {
             log.error("", e);
@@ -1459,7 +1457,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 ticket = (String)objectMapper.readValue(entity.getContent(), String.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1515,7 +1513,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 ticket = (String)objectMapper.readValue(entity.getContent(), String.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1570,7 +1568,7 @@ public class ProfileRestClientImpl implements ProfileClient {
                 // ticket format was wrong
                 log.debug(String.format("500 error : %s", response.getStatusLine().getReasonPhrase()));
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1619,7 +1617,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 
             response = clientService.getHttpClient().execute(httppost);
             entity = response.getEntity();
-            handleErrorStatus(response.getStatusLine(), entity);
+            handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
         } catch (ClientProtocolException e) {
@@ -1681,7 +1679,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 tenant = (Tenant)objectMapper.readValue(entity.getContent(), Tenant.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1743,7 +1741,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 tenant = (Tenant)objectMapper.readValue(entity.getContent(), Tenant.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1783,9 +1781,9 @@ public class ProfileRestClientImpl implements ProfileClient {
             entity = response.getEntity();
 
             if (response.getStatusLine().getStatusCode() != 200) {
-                handleErrorStatus(response.getStatusLine(), response.getEntity());
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1828,7 +1826,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 tenant = (Tenant)objectMapper.readValue(entity.getContent(), Tenant.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1873,7 +1871,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 tenant = (Tenant)objectMapper.readValue(entity.getContent(), Tenant.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1918,7 +1916,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 tenant = (Tenant)objectMapper.readValue(entity.getContent(), Tenant.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -1965,7 +1963,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 exist = (Boolean)objectMapper.readValue(entity.getContent(), Boolean.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2011,7 +2009,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 count = (Long)objectMapper.readValue(entity.getContent(), Long.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2065,7 +2063,7 @@ public class ProfileRestClientImpl implements ProfileClient {
                 tenants = (List<Tenant>)objectMapper.readValue(entity.getContent(), TENANT_LIST_TYPE);
 
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2110,7 +2108,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 tenantList = (List<Tenant>)objectMapper.readValue(entity.getContent(), TENANT_LIST_TYPE);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2155,7 +2153,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 tenantList = (List<Tenant>)objectMapper.readValue(entity.getContent(), TENANT_LIST_TYPE);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2212,7 +2210,7 @@ public class ProfileRestClientImpl implements ProfileClient {
 
             entity = response.getEntity();
             if (response.getStatusLine().getStatusCode() != 200) {
-                handleErrorStatus(response.getStatusLine(), response.getEntity());
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2264,7 +2262,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             entity = response.getEntity();
 
             if (response.getStatusLine().getStatusCode() != 200) {
-                handleErrorStatus(response.getStatusLine(), response.getEntity());
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2309,7 +2307,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 schema = (Schema)objectMapper.readValue(entity.getContent(), Schema.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2460,8 +2458,9 @@ public class ProfileRestClientImpl implements ProfileClient {
         this.profileAppPath = profileAppPath;
     }
 
-    private void handleErrorStatus(StatusLine statusLine, HttpEntity entity) throws RestException {
-        @SuppressWarnings("rawtypes") Map map = null;
+    private void handleErrorStatus(final StatusLine statusLine, final HttpEntity entity,
+                                   final String httpUrl) throws RestException {
+        @SuppressWarnings("rawtypes") Map map;
         String message = "";
 
         try {
@@ -2471,8 +2470,8 @@ public class ProfileRestClientImpl implements ProfileClient {
             // ignore the error
         }
 
-        String errorMsg = String.format("Received HTTP status code '%d' reason '%s' errorMsg : %s",
-            statusLine.getStatusCode(), statusLine.getReasonPhrase(), message);
+        String errorMsg = String.format("Received HTTP status code '%d' from %s reason '%s' errorMsg : %s",
+            statusLine.getStatusCode(), httpUrl, statusLine.getReasonPhrase(), message);
 
         switch (statusLine.getStatusCode()) {
             case HttpStatus.SC_OK:
@@ -2523,7 +2522,7 @@ public class ProfileRestClientImpl implements ProfileClient {
                 roles = (List<Role>)objectMapper.readValue(entity.getContent(), ROLE_LIST_TYPE);
 
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2566,7 +2565,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 role = (Role)objectMapper.readValue(entity.getContent(), Role.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2606,9 +2605,9 @@ public class ProfileRestClientImpl implements ProfileClient {
             HttpResponse response = clientService.getHttpClient().execute(httppost);
             entity = response.getEntity();
             if (response.getStatusLine().getStatusCode() != 200) {
-                handleErrorStatus(response.getStatusLine(), response.getEntity());
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
 
             }
         } catch (URISyntaxException e) {
@@ -2653,7 +2652,7 @@ public class ProfileRestClientImpl implements ProfileClient {
                 profiles = (List<Profile>)objectMapper.readValue(entity.getContent(), PROFILE_LIST_TYPE);
 
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2706,7 +2705,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 group = (GroupRole)objectMapper.readValue(entity.getContent(), GroupRole.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2753,7 +2752,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 group = (GroupRole)objectMapper.readValue(entity.getContent(), GroupRole.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2792,9 +2791,9 @@ public class ProfileRestClientImpl implements ProfileClient {
             HttpResponse response = clientService.getHttpClient().execute(httppost);
             entity = response.getEntity();
             if (response.getStatusLine().getStatusCode() != 200) {
-                handleErrorStatus(response.getStatusLine(), response.getEntity());
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2832,7 +2831,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 roles = (List<String>)objectMapper.readValue(entity.getContent(), ROLE_MAP_LIST_TYPE);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2868,7 +2867,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 roles = (List<String>)objectMapper.readValue(entity.getContent(), ROLE_MAP_LIST_TYPE);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2910,7 +2909,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 groupRole = (List<GroupRole>)objectMapper.readValue(entity.getContent(), GROUP_ROLE_LIST_TYPE);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2949,7 +2948,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 groupRole = (GroupRole)objectMapper.readValue(entity.getContent(), GroupRole.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -2992,7 +2991,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -3033,7 +3032,7 @@ public class ProfileRestClientImpl implements ProfileClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 profile = (Profile)objectMapper.readValue(entity.getContent(), Profile.class);
             } else {
-                handleErrorStatus(response.getStatusLine(), entity);
+                handleErrorStatus(response.getStatusLine(), entity, uri.toASCIIString());
             }
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
@@ -3068,7 +3067,7 @@ public class ProfileRestClientImpl implements ProfileClient {
         builder.setHost(host);
         builder.setPort(port);
         builder.setQuery(URLEncodedUtils.format(qparams, Charset.forName("UTF-8")));
-        builder.setPath(profileAppPath+"/api/2/profile/profiles/" + attribute + "/" + attributeName + ".json");
+        builder.setPath(profileAppPath + "/api/2/profile/profiles/" + attribute + "/" + attributeName + ".json");
         try {
             URI uri = builder.build();
             HttpGet request = new HttpGet(uri);

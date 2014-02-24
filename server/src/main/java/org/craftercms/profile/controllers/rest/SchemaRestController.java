@@ -16,13 +16,10 @@
  */
 package org.craftercms.profile.controllers.rest;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.craftercms.profile.constants.AttributeConstants;
-import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.domain.Attribute;
 import org.craftercms.profile.domain.Schema;
+import org.craftercms.profile.exceptions.TenantException;
 import org.craftercms.profile.services.SchemaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,46 +39,36 @@ public class SchemaRestController {
     /**
      * Get a schema based on a tenant id
      *
-     * @param appToken   The application token
      * @param tenantName
-     * @param response
      */
     @RequestMapping(value = "get_schema/{tenantName}", method = RequestMethod.GET)
     @ModelAttribute
-    public Schema getSchemaByTenantName(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String
-        appToken, @PathVariable String tenantName, HttpServletResponse response) {
+    public Schema getSchemaByTenantName(@PathVariable final String tenantName) throws TenantException {
         return schemaService.geSchemaByTenantName(tenantName);
     }
 
     /**
      * Set attributes to profile
      *
-     * @param appToken   The application token
      * @param tenantName
      * @param attribute
-     * @param response
      */
     @RequestMapping(value = "set_attribute", method = RequestMethod.POST)
     @ModelAttribute
-    public void setAttributes(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String appToken,
-                              @RequestParam String tenantName, Attribute attribute, HttpServletResponse response) {
+    public void setAttributes(@RequestParam final String tenantName, final Attribute attribute) throws TenantException {
         schemaService.setAttribute(tenantName, attribute);
     }
 
     /**
      * Delete Attributes
      *
-     * @param appToken   The application token
      * @param tenantName tenant name used to delete attributes of a schema
      * @param name       role name
-     * @param response   instance
      */
     @RequestMapping(value = "delete_attribute", method = RequestMethod.POST)
     @ModelAttribute
-    public void deleteAttribute(HttpServletRequest request, @RequestParam(ProfileConstants.APP_TOKEN) String
-        appToken, @RequestParam String tenantName, @RequestParam(required = false,
-        value = AttributeConstants.NAME) String name, HttpServletResponse response) {
+    public void deleteAttribute(@RequestParam final String tenantName, @RequestParam(required = false,
+        value = AttributeConstants.NAME) final String name) throws TenantException {
         schemaService.deleteAttribute(tenantName, name);
     }
-
 }

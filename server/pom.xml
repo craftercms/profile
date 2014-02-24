@@ -44,62 +44,40 @@
         <jetty.version>8.1.2.v20120308</jetty.version>
 
         <java.version>1.7</java.version>
-        <org.springframework.version>3.1.1.RELEASE</org.springframework.version>
-        <org.spring-security.version>3.1.0.RELEASE</org.spring-security.version>
-        <org.aspectj.version>1.6.9</org.aspectj.version>
+        <org.springframework.version>4.0.1.RELEASE</org.springframework.version>
+        <org.spring-security.version>3.2.0.RELEASE</org.spring-security.version>
+        <org.aspectj.version>1.7.2</org.aspectj.version>
         <cglib.version>2.2</cglib.version>
-        <org.slf4j.version>1.5.10</org.slf4j.version>
-        <log4j.version>1.2.15</log4j.version>
+        <org.slf4j.version>1.7.5</org.slf4j.version>
         <javax.inject.version>1</javax.inject.version>
-        <servlet.api.version>2.5</servlet.api.version>
-        <servlet.jsp.api.version>2.1</servlet.jsp.api.version>
+        <servlet.api.version>3.0.1</servlet.api.version>
+        <servlet.jsp.api.version>2.2</servlet.jsp.api.version>
         <servlet.jstl.version>1.2</servlet.jstl.version>
-        <junit.version>4.7</junit.version>
+        <junit.version>4.11</junit.version>
         <ehcache.version>1.2.3</ehcache.version>
         <org.hibernate.version>4.2.0.Final</org.hibernate.version>
-        <org.apache.tiles.version>2.2.2</org.apache.tiles.version>
-        <org.quartz-scheduler>1.8.6</org.quartz-scheduler>
-        <!-- Spring 3 is not compatible with newer versions. -->
-        <org.apache.commons.fileupload.version>1.2.2</org.apache.commons.fileupload.version>
-        <org.apache.commons.io.version>2.1</org.apache.commons.io.version>
-        <org.apache.commons.codec.version>1.6</org.apache.commons.codec.version>
-
-        <org.spring-data.mongodb.version>1.0.1.RELEASE</org.spring-data.mongodb.version>
-        <org.spring-social.version>1.0.1.RELEASE</org.spring-social.version>
-        <org.codehaus.jackson.version>1.9.5</org.codehaus.jackson.version>
+        <org.quartz-scheduler>2.2.1</org.quartz-scheduler>
+        <org.apache.commons.fileupload.version>1.3</org.apache.commons.fileupload.version>
+        <org.apache.commons.io.version>2.4</org.apache.commons.io.version>
+        <org.apache.commons.codec.version>1.9</org.apache.commons.codec.version>
+        <com.fasterxml.jackson.version>2.3.0</com.fasterxml.jackson.version>
         <com.thoughtworks.xstream.version>1.4.2</com.thoughtworks.xstream.version>
-        <org.mongodb.java-driver.version>2.7.3</org.mongodb.java-driver.version>
+        <org.mongodb.java-driver.version>2.11.3</org.mongodb.java-driver.version>
 
         <org.bouncycastle.crypto.version>1.46</org.bouncycastle.crypto.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <repositories>
-        <repository>
-            <id>spring-release</id>
-            <name>Spring Maven Release Repository</name>
-            <url>http://repo.springsource.org/libs-release</url>
-        </repository>
-        <repository>
-            <id>spring-milestone</id>
-            <name>Spring Maven MILESTONE Repository</name>
-            <url>http://maven.springframework.org/milestone</url>
-        </repository>
-        <repository>
-            <id>oss.sonatype.central</id>
-            <name>OSS Sonatype nexus central repository</name>
-            <url>https://oss.sonatype.org/content/repositories/central</url>
-        </repository>
-        <repository>
-            <id>codehaus-maven2</id>
-            <name>Codehaus maven2 repository</name>
-            <url>http://repository.codehaus.org</url>
-        </repository>
-    </repositories>
+
     <dependencies>
         <dependency>
-            <groupId>com.cenqua.clover</groupId>
-            <artifactId>clover</artifactId>
-            <version>${clover.version}</version>
+            <groupId>org.craftercms</groupId>
+            <artifactId>crafter-commons-mongo</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.craftercms</groupId>
+            <artifactId>crafter-commons-utilities</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.jersey</groupId>
@@ -116,11 +94,6 @@
             <artifactId>crafter-profile-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.craftercms</groupId>
-            <artifactId>crafter-commons-utilities</artifactId>
-            <version>2.5.0-SNAPSHOT</version>
-        </dependency>
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -130,6 +103,18 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
+            <version>${org.springframework.version}</version>
+            <exclusions>
+                <!-- Exclude Commons Logging in favor of SLF4j -->
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
             <version>${org.springframework.version}</version>
             <exclusions>
                 <!-- Exclude Commons Logging in favor of SLF4j -->
@@ -234,14 +219,21 @@
             <artifactId>commons-codec</artifactId>
             <version>${org.apache.commons.codec.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.2.1</version>
+        </dependency>
 
         <!-- Servlet -->
+        <!-- JSP -->
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <artifactId>javax.servlet-api</artifactId>
             <version>${servlet.api.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
@@ -249,9 +241,16 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
+            <groupId>javax.servlet.jsp.jstl</groupId>
+            <artifactId>jstl-api</artifactId>
             <version>${servlet.jstl.version}</version>
+            <exclusions>
+                <!-- Exclude Commons Logging in favor of SLF4j -->
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Logging -->
@@ -264,37 +263,16 @@
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${org.slf4j.version}</version>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${org.slf4j.version}</version>
-            <scope>runtime</scope>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.0.13</version>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4j.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.mail</groupId>
-                    <artifactId>mail</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.jms</groupId>
-                    <artifactId>jms</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.jdmk</groupId>
-                    <artifactId>jmxtools</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.jmx</groupId>
-                    <artifactId>jmxri</artifactId>
-                </exclusion>
-            </exclusions>
-            <scope>runtime</scope>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.0.13</version>
         </dependency>
 
         <!-- Test -->
@@ -309,6 +287,11 @@
             <artifactId>mockito-all</artifactId>
             <version>1.9.5</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${org.springframework.version}</version>
+        </dependency>
         <!-- END Test -->
 
         <dependency>
@@ -317,49 +300,22 @@
             <version>${ehcache.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.social</groupId>
-            <artifactId>spring-social-core</artifactId>
-            <version>${org.spring-social.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.social</groupId>
-            <artifactId>spring-social-web</artifactId>
-            <version>${org.spring-social.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.social</groupId>
-            <artifactId>spring-social-twitter</artifactId>
-            <version>${org.spring-social.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.social</groupId>
-            <artifactId>spring-social-facebook</artifactId>
-            <version>${org.spring-social.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.social</groupId>
-            <artifactId>spring-social-facebook-web</artifactId>
-            <version>${org.spring-social.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-mongodb</artifactId>
-            <version>${org.spring-data.mongodb.version}</version>
-        </dependency>
 
         <!-- JSON & XML marshallers -->
         <dependency>
-            <!-- TODO: Remove this version of Jackson. Newest Jackson starts with com.fasterxml.jackson -->
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-            <version>${org.codehaus.jackson.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${com.fasterxml.jackson.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>${org.codehaus.jackson.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${com.fasterxml.jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${com.fasterxml.jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
@@ -378,16 +334,17 @@
             <version>${org.bouncycastle.crypto.version}</version>
         </dependency>
         <dependency>
-        	<groupId>org.mindrot</groupId>
-        	<artifactId>jbcrypt</artifactId>
-        	<version>0.3m</version>
-      	</dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.3m</version>
+        </dependency>
 
 
     </dependencies>
     <build>
         <outputDirectory>target/classes</outputDirectory>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -407,6 +364,7 @@
                 <configuration>
                     <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                     <testFailureIgnore>false</testFailureIgnore>
+                    <skip>true</skip>
                     <includes>
                         <include>
                             **/integration/**/*.java
@@ -514,8 +472,7 @@
                 </executions>
             </plugin>
 
-          
-         
+
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>maven-clover2-plugin</artifactId>
@@ -589,6 +546,34 @@
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>JDK8</id>
+            <activation>
+                <jdk>
+                    1.8
+                </jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

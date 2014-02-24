@@ -16,13 +16,51 @@
  */
 package org.craftercms.profile.repositories;
 
+import org.craftercms.commons.mongo.CrudRepository;
 import org.craftercms.profile.domain.Ticket;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.craftercms.profile.exceptions.TicketException;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Defines all persistence operations for a Ticket.
+ */
 @Repository("ticketRepository")
-public interface TicketRepository extends MongoRepository<Ticket, String>, TicketRepositoryCustom {
-    public Ticket findByUsername(String username);
+public interface TicketRepository extends CrudRepository<Ticket> {
+    /**
+     * Finds the ticket for the given username.
+     *
+     * @param username Username which ticket will be search.
+     * @return Current valid ticket for the given user,<b>Null</b> if nothing is found.
+     */
+    Ticket findByUsername(final String username) throws TicketException;
 
-    public Ticket findBySeries(String series);
+    /**
+     * Finds the Ticket for the given series.
+     *
+     * @param series Series to search ticket.
+     * @return Current Valid Ticket for the given series ,<b>Null</b> if nothing is found.
+     */
+    Ticket findBySeries(final String series) throws TicketException;
+
+    /**
+     * Removes all tickets for the given username.
+     *
+     * @param username Username to delete all tickets.
+     */
+    void removeUserTickets(final String username) throws TicketException;
+
+    /**
+     * Removes all tickets older that the date calculated.
+     *
+     * @param expirationSeconds Time in milliseconds to calculate the expiration Date/time of a ticket.
+     */
+    void removeTicketsOlderThan(final long expirationSeconds) throws TicketException;
+
+    /**
+     * Gets the ticket by its string representation.
+     *
+     * @param ticketStr String representation of a Ticket.
+     * @return Ticket with the given representation,<b>Null</b> if ticket with given representation couldn't be found.§
+     */
+    Ticket findByTicket(final String ticketStr) throws TicketException;
 }

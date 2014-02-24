@@ -9,6 +9,7 @@ import org.craftercms.profile.exceptions.CipherException;
 import org.craftercms.profile.exceptions.ExpiryDateException;
 import org.craftercms.profile.exceptions.MailException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
+import org.craftercms.profile.exceptions.ProfileException;
 
 /**
  * Manage to verify a new profile account
@@ -48,6 +49,6 @@ public interface VerifyAccountService {
 	 * @throws ParseException 
 	 * 
 	 */
-	Profile verifyAccount(String token) throws CipherException, NoSuchProfileException, ParseException, ExpiryDateException;
+	Profile verifyAccount(String token) throws CipherException, NoSuchProfileException, ParseException, ExpiryDateException, ProfileException;
 
 }

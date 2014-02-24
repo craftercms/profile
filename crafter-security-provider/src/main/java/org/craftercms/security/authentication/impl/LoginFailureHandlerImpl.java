@@ -20,7 +20,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
 import org.craftercms.security.authentication.BaseHandler;
@@ -42,24 +42,22 @@ import org.slf4j.LoggerFactory;
  *
  * @author Alfonso Vásquez
  */
+
 /**
  * @author Alvaro Gonzalez
- *
  */
 public class LoginFailureHandlerImpl extends BaseHandler implements LoginFailureHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginFailureHandlerImpl.class);
 
     protected String targetUrl;
-    
+
     public LoginFailureHandlerImpl() {
-    	super();
+        super();
     }
-    
+
     /**
-     * 
      * Sets the URL to redirect to.
-     * 
      */
     public void setTargetUrl(String targetUrl) {
         this.targetUrl = targetUrl;
@@ -130,5 +128,5 @@ public class LoginFailureHandlerImpl extends BaseHandler implements LoginFailure
         context.getResponse().sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
     }
 
-    
+
 }

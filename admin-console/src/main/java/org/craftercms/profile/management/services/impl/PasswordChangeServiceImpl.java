@@ -1,9 +1,11 @@
 package org.craftercms.profile.management.services.impl;
 
-import org.apache.log4j.Logger;
+
 import org.craftercms.profile.exceptions.AppAuthenticationException;
 import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
 import org.craftercms.profile.management.services.PasswordChangeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PasswordChangeServiceImpl implements PasswordChangeService {
 
-    private static final Logger log = Logger.getLogger(PasswordChangeServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(PasswordChangeServiceImpl.class);
 
     private String changePasswordUrl;
 

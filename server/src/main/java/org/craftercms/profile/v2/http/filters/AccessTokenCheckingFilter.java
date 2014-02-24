@@ -18,7 +18,7 @@ package org.craftercms.profile.v2.http.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.crypto.SimpleCipher;
 import org.craftercms.profile.api.AccessToken;
@@ -26,7 +26,6 @@ import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.v2.exceptions.ExpiredAccessTokenException;
 import org.craftercms.profile.v2.exceptions.InvalidAccessTokenParamException;
 import org.craftercms.profile.v2.exceptions.MissingRequiredParameterException;
-import org.craftercms.profile.v2.exceptions.NoSuchTenantException;
 import org.craftercms.profile.v2.permissions.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

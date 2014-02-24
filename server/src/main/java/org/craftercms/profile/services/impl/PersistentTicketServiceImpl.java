@@ -18,55 +18,97 @@ package org.craftercms.profile.services.impl;
 
 import java.util.Date;
 
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.domain.Ticket;
+import org.craftercms.profile.exceptions.TicketException;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.craftercms.profile.security.PersistentTenantRememberMeToken;
-import org.craftercms.profile.services.PersistentTicketService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.stereotype.Service;
 
-
+/**
+ * Crafter Profile PersistentTokenRepository implementation.
+ */
 @Service("persistentTicketService")
-public class PersistentTicketServiceImpl implements PersistentTokenRepository, PersistentTicketService {
+public class PersistentTicketServiceImpl implements PersistentTokenRepository {
 
+    private Logger log = LoggerFactory.getLogger(PersistentTicketServiceImpl.class);
     @Autowired
     private TicketRepository ticketRepository;
 
     /* (non-Javadoc)
-     * @see org.springframework.security.web.authentication.rememberme.PersistentTokenRepository#createNewToken(org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken)
+     * @see org.springframework.security.web.authentication.rememberme.PersistentTokenRepository#createNewToken(org
+     * .springframework.security.web.authentication.rememberme.PersistentRememberMeToken)
      */
     @Override
-    public void createNewToken(PersistentRememberMeToken token) {
-        ticketRepository.save(new Ticket((PersistentTenantRememberMeToken)token));
+    public void createNewToken(final PersistentRememberMeToken token) {
+
+        try {
+            ticketRepository.save(new Ticket((PersistentTenantRememberMeToken)token));
+        } catch (MongoDataException e) {
+            log.error("Unable to save Ticket", e);
+            throw new SecurityException("Unable to create ticket for " + ((PersistentTenantRememberMeToken)token)
+                .getTenantName());
+        }
     }
 
     /* (non-Javadoc)
-     * @see org.springframework.security.web.authentication.rememberme.PersistentTokenRepository#updateToken(java.lang.String, java.lang.String, java.util.Date)
+     * @see org.springframework.security.web.authentication.rememberme.PersistentTokenRepository#updateToken(java
+     * .lang.String, java.lang.String, java.util.Date)
      */
     @Override
-    public void updateToken(String series, String tokenValue, Date lastUsed) {
-        Ticket ticket = ticketRepository.findBySeries(series);
-        ticket.setTokenValue(tokenValue);
-        ticket.setDate(lastUsed);
-        ticketRepository.save(ticket);
+    public void updateToken(final String series, final String tokenValue, final Date lastUsed) {
+        try {
+            Ticket ticket = ticketRepository.findBySeries(series);
+            if (ticket == null) {
+                throw new SecurityException("Ticket with for " + tokenValue + " does not exist");
+            }
+            ticket.setTokenValue(tokenValue);
+            ticket.setDate(lastUsed);
+            ticketRepository.save(ticket);
+        } catch (TicketException | MongoDataException e) {
+            log.error("Unable to update ticket ", e);
+            throw new SecurityException("Unable to update for " + series, e);
+        }
+
     }
 
     /* (non-Javadoc)
-     * @see org.springframework.security.web.authentication.rememberme.PersistentTokenRepository#getTokenForSeries(java.lang.String)
+     * @see org.springframework.security.web.authentication.rememberme.PersistentTokenRepository#getTokenForSeries
+     * (java.lang.String)
      */
     @Override
-    public PersistentRememberMeToken getTokenForSeries(String seriesId) {
-        Ticket ticket = ticketRepository.findBySeries(seriesId);
-        return (ticket != null)? ticket.toPersistentRememberMeToken(): null;
+    public PersistentRememberMeToken getTokenForSeries(final String seriesId) {
+        Ticket ticket;
+        try {
+            ticket = ticketRepository.findBySeries(seriesId);
+        } catch (TicketException e) {
+            log.error("Unable to find ticket ", e);
+            throw new SecurityException("Unable to find Ticket for " + seriesId, e);
+        }
+
+        if (ticket == null) {
+            log.debug("Ticket {} not found", seriesId);
+            return null;
+        } else {
+            return ticket.toPersistentRememberMeToken();
+        }
     }
 
     /* (non-Javadoc)
-     * @see org.springframework.security.web.authentication.rememberme.PersistentTokenRepository#removeUserTokens(java.lang.String)
+     * @see org.springframework.security.web.authentication.rememberme.PersistentTokenRepository#removeUserTokens
+     * (java.lang.String)
      */
     @Override
-    public void removeUserTokens(String username) {
-        ticketRepository.removeUserTickets(username);
+    public void removeUserTokens(final String username) {
+        try {
+            ticketRepository.removeUserTickets(username);
+        } catch (TicketException e) {
+            log.error("Unable to Remove Tokens for user " + username, e);
+        }
     }
 }

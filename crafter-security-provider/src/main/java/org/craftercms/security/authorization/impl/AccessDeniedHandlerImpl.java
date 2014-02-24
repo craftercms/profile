@@ -22,7 +22,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.SecurityConstants;
 import org.craftercms.security.authentication.BaseHandler;
@@ -44,11 +44,11 @@ public class AccessDeniedHandlerImpl extends BaseHandler implements AccessDenied
     private static final Logger logger = LoggerFactory.getLogger(AccessDeniedHandlerImpl.class);
 
     protected String errorPageUrl;
-    
+
     public AccessDeniedHandlerImpl() {
-    	super();
-    	
-    } 
+        super();
+
+    }
 
     /**
      * Sets the error page URL to forward to.
@@ -121,12 +121,12 @@ public class AccessDeniedHandlerImpl extends BaseHandler implements AccessDenied
         requestContext.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
     }
 
-	public boolean isRedirectRequired() {
-		return isRedirectRequired;
-	}
+    public boolean isRedirectRequired() {
+        return isRedirectRequired;
+    }
 
-	public void setRedirectRequired(boolean isRedirectRequired) {
-		this.isRedirectRequired = isRedirectRequired;
-	}
+    public void setRedirectRequired(boolean isRedirectRequired) {
+        this.isRedirectRequired = isRedirectRequired;
+    }
 
 }

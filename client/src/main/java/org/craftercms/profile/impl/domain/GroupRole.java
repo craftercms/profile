@@ -3,8 +3,10 @@ package org.craftercms.profile.impl.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroupRole {
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+public class GroupRole {
+    @JsonProperty("_id")
     private String id;
     private String name;
     private String tenantName;

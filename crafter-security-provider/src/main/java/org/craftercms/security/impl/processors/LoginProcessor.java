@@ -18,7 +18,7 @@ package org.craftercms.security.impl.processors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.security.api.AuthenticationService;
 import org.craftercms.security.api.RequestContext;
 import org.craftercms.security.api.RequestSecurityProcessor;
