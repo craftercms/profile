@@ -18,7 +18,6 @@ public class User {
     private Date modified;
     private String tenant;
     private List<String> roles;
-    private List<Group> groups;
     private Map<String, Object> attributes;
 
     public String getId() {
@@ -95,18 +94,6 @@ public class User {
 
     public void setRoles(List<String> roles) {
         this.roles = roles;
-    }
-
-    public List<Group> getGroups() {
-        if (groups == null) {
-            groups = new ArrayList<Group>();
-        }
-
-        return groups;
-    }
-
-    public void setGroups(List<Group> groups) {
-        this.groups = groups;
     }
 
     public Map<String, Object> getAttributes() {

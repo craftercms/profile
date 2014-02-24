@@ -14,19 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.exceptions;
+package org.craftercms.profile.v2.attributes;
+
+import org.craftercms.profile.api.Tenant;
+import org.craftercms.profile.v2.exceptions.AttributeFilterException;
+
+import java.util.Map;
 
 /**
- * Thrown when an attribute doesn't satisfy it's definition constraint.
+ * Attributes filter interface. Used on attribute read and write to check attribute permissions and constraints.
  *
  * @author avasquez
  */
-public class AttributeConstraintException extends AttributeValidationException {
+public interface AttributeFilter {
 
-    public static final String MESSAGE_FORMAT = "Attribute '%s' doesn't match the constraint '%s'";
-
-    public AttributeConstraintException(String attributeName, String constraint) {
-        super(String.format(MESSAGE_FORMAT, attributeName, constraint));
-    }
+    /**
+     * Filters the attributes on read/write.
+     *
+     * @param tenant        the tenant that contains the attribute definitions
+     * @param attributes    the attributes to filter
+     *
+     * @return the modified attributes
+     */
+    Map<String, Object> filter(Tenant tenant, Map<String, Object> attributes) throws AttributeFilterException;
 
 }

@@ -1,4 +1,4 @@
-package org.craftercms.profile.api.service;
+package org.craftercms.profile.api.services;
 
 /**
  * Service for handling authentication for users.
@@ -10,7 +10,7 @@ public interface AuthenticationService {
     /**
      * Authenticates the user, and returns a ticket identifying the authentication.
      *
-     * @param tenant    the user's tenant's name
+     * @param tenant    the tenant's name
      * @param username  the username
      * @param password  the password
      *
@@ -22,17 +22,19 @@ public interface AuthenticationService {
      * Returns if the ticket is still valid, basically that it corresponds to an authenticated user and that it
      * hasn't expired
      *
-     * @param ticket the ticket to validate
+     * @param tenant    the tenant's name
+     * @param ticket    the ticket to validate
      *
      * @return true if the ticket corresponds to an authenticated user and that it hasn't expired
      */
-    boolean isTicketValid(String ticket);
+    boolean isTicketValid(String tenant, String ticket);
 
     /**
      * Invalidates the ticket.
      *
+     * @param tenant    the tenant's name
      * @param ticket    the ticket to invalidate
      */
-    void invalidateTicket(String ticket);
+    void invalidateTicket(String tenant, String ticket);
 
 }

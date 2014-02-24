@@ -68,7 +68,7 @@
             <#list attributeList as attribute>
                 <#assign index=attributeList?seq_index_of(attribute)>
                 <p>
-                    <#assign attributePath = "account.attributes['"+ attribute.name + "']">
+                    <#assign attributePath = "account.attributeDefinitions['"+ attribute.name + "']">
                     <label id="${attribute.name+"Label"}" for="attribute.name" class='schemaAttribute'>
                         <#if attribute.required>
                             *${attribute.label}:
