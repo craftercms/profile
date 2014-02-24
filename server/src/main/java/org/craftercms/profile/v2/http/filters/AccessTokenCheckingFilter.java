@@ -47,9 +47,9 @@ import java.util.Date;
 
 /**
  * Filter that checks that in every call the {@link org.craftercms.profile.api.AccessToken} is specified as a
- * parameter. If no access token is specified, a 401 is returned to the caller. If a token is found, a new
- * {@link org.craftercms.profile.v2.permissions.Application} is created and set as the context of the current
- * thread.
+ * parameter. If no access token is specified, a 401 is returned to the caller. If a token is found, and its
+ * expiration date hasn't been reached, a new {@link org.craftercms.profile.v2.permissions.Application} is created
+ * and bound to the current thread.
  *
  * @author avasquez
  */
@@ -124,7 +124,8 @@ public class AccessTokenCheckingFilter extends GenericFilterBean {
         String[] encryptedTokenAndIv = StringUtils.split(encryptedParam, ACCESS_TOKEN_PARAM_SEP);
 
         if (encryptedTokenAndIv.length != 2) {
-            throw new InvalidAccessTokenParamException("Expected format is ENCRYPTED_TOKEN" + ACCESS_TOKEN_PARAM_SEP + "IV");
+            throw new InvalidAccessTokenParamException("Expected format is ENCRYPTED_TOKEN" + ACCESS_TOKEN_PARAM_SEP +
+                    "IV");
         }
 
         SimpleCipher cipher = new SimpleCipher();
@@ -176,13 +177,6 @@ public class AccessTokenCheckingFilter extends GenericFilterBean {
         logger.error(e.getMessage(), e);
 
         response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
-    }
-
-    protected void handleNoSuchTenant(NoSuchTenantException e, HttpServletRequest request,
-                                      HttpServletResponse response) throws IOException {
-        logger.error(e.getMessage(), e);
-
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
     }
 
 }
