@@ -4,11 +4,11 @@
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-profile-parent</artifactId>
-        <version>2.3.4-SNAPSHOT</version>
+        <version>2.3.4</version>
     </parent>
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-profile-client</artifactId>
-    <version>2.3.4-SNAPSHOT</version>
+    <version>2.3.4</version>
     <name>Crafter Profile Client</name>
     <description>Crafter Profile Client</description>
     <url>https://github.com/craftercms/profile/tree/master/client</url>
@@ -185,30 +185,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
-                    <testFailureIgnore>false</testFailureIgnore>
-                    <includes>
-                        <include>
-                            **/integration/**/*.java
-                        </include>
-                    </includes>
-                    <excludes>
-                        <exclude>**/*$__CLR*</exclude>
-                        <exclude>**/*$*</exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+            
         </plugins>
     </build>
     <profiles>
@@ -245,6 +222,34 @@
                                     <goal>aggregate</goal>
                                     <goal>clover</goal>
                                 </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>JDK8</id>
+            <activation>
+                <jdk>
+                    1.8
+                </jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
