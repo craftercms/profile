@@ -1,10 +1,10 @@
 package org.craftercms.profile.api;
 
 
-import org.craftercms.commons.security.permissions.SecuredObjectBase;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.craftercms.commons.security.permissions.SecuredObjectBase;
 
 /**
  * Represents the definition of an attribute in a tenant.
@@ -32,7 +32,7 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
     /**
      * Sets the attribute name.
      */
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -46,7 +46,7 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
     /**
      * Sets the label that's displayed for the attribute on applications like Admin Consoles.
      */
-    public void setLabel(String label) {
+    public void setLabel(final String label) {
         this.label = label;
     }
 
@@ -88,7 +88,7 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
     /**
      * Sets the constraint used to validate the field (regex).
      */
-    public void setConstraint(String constraint) {
+    public void setConstraint(final String constraint) {
         this.constraint = constraint;
     }
 
@@ -102,7 +102,7 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
     /**
      * Sets if the attribute is required or not.
      */
-    public void setRequired(boolean required) {
+    public void setRequired(final boolean required) {
         this.required = required;
     }
 
@@ -116,7 +116,7 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
     /**
      * Sets the owner (application) of the attribute
      */
-    public void setOwner(String owner) {
+    public void setOwner(final String owner) {
         this.owner = owner;
     }
 
@@ -125,7 +125,7 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
      */
     public List<AttributeDefinition> getSubAttributeDefinitions() {
         if (subAttributeDefinitions == null) {
-            subAttributeDefinitions = new ArrayList<AttributeDefinition>();
+            subAttributeDefinitions = new ArrayList<>();
         }
 
         return subAttributeDefinitions;
@@ -134,7 +134,7 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
     /**
      * Sets the sub-attributes of this attribute.
      */
-    public void setSubAttributeDefinitions(List<AttributeDefinition> subAttributeDefinitions) {
+    public void setSubAttributeDefinitions(final List<AttributeDefinition> subAttributeDefinitions) {
         this.subAttributeDefinitions = subAttributeDefinitions;
     }
 
