@@ -41,4 +41,41 @@ public class TenantPermission extends PermissionBase {
         return tenant;
     }
 
+
+    @Override
+    public String toString() {
+        return "TenantPermission{" +
+                "tenant='" + tenant + '\'' +
+                ", allowedActions=" + allowedActions +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        TenantPermission that = (TenantPermission) o;
+
+        if (!tenant.equals(that.tenant)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + tenant.hashCode();
+        return result;
+    }
+
 }

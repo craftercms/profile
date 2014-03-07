@@ -1,7 +1,5 @@
 package org.craftercms.profile.api;
 
-import org.jongo.marshall.jackson.oid.Id;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -4,16 +4,32 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Access token given to applications that need to access the REST API, acting for any tenant of a list. The
- * token will later be encrypted for secure transmission.
+ * Access token given to applications that need to access the REST API, acting for any tenant of a list.
  *
  * @author avasquez
  */
 public class AccessToken {
 
+    private String _id;
     private String application;
     private List<TenantPermission> tenantPermissions;
     private Date expiresOn;
+
+    /**
+     * Returns the ID of the access token.
+     */
+    public String getId() {
+        return _id;
+    }
+
+    /**
+     * Sets the ID of the access token.
+     *
+     * @param id    the token's ID
+     */
+    public void setId(String id) {
+        this._id = id;
+    }
 
     /**
      * Returns the name of the application accessing Crafter Profile.
@@ -62,5 +78,17 @@ public class AccessToken {
     public void setExpiresOn(Date expiresOn) {
         this.expiresOn = expiresOn;
     }
+
+    @Override
+    public String toString() {
+        return "AccessToken{" +
+                "id='" + _id + '\'' +
+                ", application='" + application + '\'' +
+                ", tenantPermissions=" + tenantPermissions +
+                ", expiresOn=" + expiresOn +
+                '}';
+    }
+
+
 
 }

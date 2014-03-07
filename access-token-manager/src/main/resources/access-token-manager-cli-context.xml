@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean name="properties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="locations">
+            <list>
+                <value>classpath:access-token-manager-cli.properties</value>
+                <value>classpath*:custom-access-token-manager-cli.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="optionsFactory" class="org.craftercms.commons.mongo.MongoClientOptionsFactory">
+        <property name="autoConnectRetry" value="${mongodb.connection.autoConnectRetry}"/>
+        <property name="connectionsPerHost" value="${mongodb.connection.connectionsPerHost}"/>
+        <property name="maxAutoConnectRetryTime" value="${mongodb.connection.maxWaitTime}"/>
+        <property name="socketKeepAlive" value="${mongodb.connection.socketKeepAlive}"/>
+        <property name="threadsAllowedToBlockForConnectionMultiplier"
+                  value="${mongodb.connection.threadsAllowedToBlockForConnectionMultiplier}"/>
+        <property name="connectTimeout" value="${mongodb.connection.connectTimeout}"/>
+        <property name="writeConcern" value="${mongodb.connection.writeConcern}"/>
+        <property name="readPreference" value="${mongodb.connection.readPreference}"/>
+    </bean>
+
+
+    <bean id="mongoClient" class="com.mongodb.MongoClient">
+        <constructor-arg>
+            <list>
+                <ref bean="serverAddress"/>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="optionsFactory"/>
+    </bean>
+
+    <bean id="serverAddress" class="com.mongodb.ServerAddress">
+        <constructor-arg value="${mongodb.connection.host}"/>
+        <constructor-arg value="${mongodb.connection.port}"/>
+    </bean>
+
+    <bean id="jongoFactory" class="org.craftercms.commons.mongo.JongoFactoryBean">
+        <property name="mongoClient" ref="mongoClient"/>
+        <property name="username" value="${mongodb.connection.dbUser}"/>
+        <property name="password" value="${mongodb.connection.dbPassword}"/>
+        <property name="dbName" value="${mongodb.connection.db}"/>
+    </bean>
+
+    <bean id="queries" class="org.craftercms.commons.mongo.JongoQueries" init-method="init">
+        <property name="queryFiles">
+            <list>
+                <value>classpath:access-token-manager-queries.xml</value>
+                <value>classpath:custom-access-token-manager-queries.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="accessTokenRepository" class="org.craftercms.profile.repositories.impl.AccessTokenRepositoryImpl">
+        <property name="jongo" ref="jongoFactory"/>
+        <property name="queries" ref="queries"/>
+    </bean>
+
+    <import resource="classpath*:custom-access-token-manager-cli-context.xml" />
+
+</beans>

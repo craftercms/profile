@@ -14,26 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.api;
+package org.craftercms.profile.repositories;
+
+import org.craftercms.commons.mongo.CrudRepository;
+import org.craftercms.profile.api.AccessToken;
 
 /**
- * Actions that can be executed on tenants and their user profiles by applications.
+ * Repository for storing {@link org.craftercms.profile.api.AccessToken}.
  *
  * @author avasquez
  */
-public class TenantActions {
-
-    public static final String CREATE =         "create";
-    public static final String READ =           "read";
-    public static final String READ_ALL =       "readAll";
-    public static final String COUNT =          "count";
-    public static final String UPDATE =         "update";
-    public static final String DELETE =         "delete";
-    public static final String MANAGE_USERS =   "manageUsers";
-
-    public static final String[] ALL_ACTIONS = { CREATE, READ, READ_ALL, COUNT, UPDATE, DELETE, MANAGE_USERS };
-
-    private TenantActions() {
-    }
-
+public interface AccessTokenRepository extends CrudRepository<AccessToken> {
 }
