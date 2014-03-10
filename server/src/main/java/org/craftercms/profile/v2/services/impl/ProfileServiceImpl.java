@@ -18,52 +18,52 @@ package org.craftercms.profile.v2.services.impl;
 
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
 import org.craftercms.commons.security.permissions.annotations.SecuredObject;
+import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.TenantActions;
 import org.craftercms.profile.api.TenantPermission;
-import org.craftercms.profile.api.User;
-import org.craftercms.profile.api.services.UserService;
+import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.api.utils.SortOrder;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Default implementation of {@link org.craftercms.profile.api.services.UserService}.
+ * Default implementation of {@link org.craftercms.profile.api.services.ProfileService}.
  *
  * @author avasquez
  */
 @HasPermission(type = TenantPermission.class, action = TenantActions.MANAGE_USERS)
-public class UserServiceImpl implements UserService {
+public class ProfileServiceImpl implements ProfileService {
 
     @Override
-    public User createUser(@SecuredObject String tenant, String userId, String password, String email, boolean enabled,
+    public Profile createUser(@SecuredObject String tenant, String userId, String password, String email, boolean enabled,
                            List<String> roles, List<String> groups, String verifyAccountUrl) {
         return null;
     }
 
     @Override
-    public User updateUser(@SecuredObject String tenant, String userId, String password, String email, boolean enabled,
+    public Profile updateUser(@SecuredObject String tenant, String userId, String password, String email, boolean enabled,
                            List<String> roles, List<String> groups) {
         return null;
     }
 
     @Override
-    public User enableUser(@SecuredObject String tenant, String userId) {
+    public Profile enableUser(@SecuredObject String tenant, String userId) {
         return null;
     }
 
     @Override
-    public User disableUser(@SecuredObject String tenant, String userId) {
+    public Profile disableUser(@SecuredObject String tenant, String userId) {
         return null;
     }
 
     @Override
-    public User addRoles(@SecuredObject String tenant, String userId, List<String> roles) {
+    public Profile addRoles(@SecuredObject String tenant, String userId, List<String> roles) {
         return null;
     }
 
     @Override
-    public User removeRoles(@SecuredObject String tenant, String userId, List<String> roles) {
+    public Profile removeRoles(@SecuredObject String tenant, String userId, List<String> roles) {
         return null;
     }
 
@@ -79,22 +79,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User deleteUser(@SecuredObject String tenant, String userId) {
+    public Profile deleteUser(@SecuredObject String tenant, String userId) {
         return null;
     }
 
     @Override
-    public User getUser(@SecuredObject String tenant, String userId) {
+    public Profile getUser(@SecuredObject String tenant, String userId) {
         return null;
     }
 
     @Override
-    public User getUserByTenantAndUsername(@SecuredObject String tenant, String username) {
+    public Profile getUserByTenantAndUsername(@SecuredObject String tenant, String username) {
         return null;
     }
 
     @Override
-    public User getUserByTicket(@SecuredObject String tenant, String ticket) {
+    public Profile getUserByTicket(@SecuredObject String tenant, String ticket) {
         return null;
     }
 
@@ -104,24 +104,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUsers(@SecuredObject String tenant, List<String> userIds, String sortBy, SortOrder sortOrder) {
+    public List<Profile> getUsers(@SecuredObject String tenant, List<String> userIds, String sortBy, SortOrder sortOrder) {
         return null;
     }
 
     @Override
-    public List<User> getAllUsers(@SecuredObject String tenant, String sortBy, String sortOrder, Integer start,
+    public List<Profile> getAllUsers(@SecuredObject String tenant, String sortBy, String sortOrder, Integer start,
                                   Integer count) {
         return null;
     }
 
     @Override
-    public List<User> getUsersByRole(@SecuredObject String tenant, String role, String sortBy, SortOrder sortOrder,
+    public List<Profile> getUsersByRole(@SecuredObject String tenant, String role, String sortBy, SortOrder sortOrder,
                                      Integer start, Integer count) {
         return null;
     }
 
     @Override
-    public List<User> getUsersByGroup(@SecuredObject String tenant, String group, String sortBy, SortOrder sortOrder,
+    public List<Profile> getUsersByGroup(@SecuredObject String tenant, String group, String sortBy, SortOrder sortOrder,
                                       Integer start, Integer count) {
         return null;
     }
