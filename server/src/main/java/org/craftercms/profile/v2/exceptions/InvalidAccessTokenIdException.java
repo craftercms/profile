@@ -17,16 +17,16 @@
 package org.craftercms.profile.v2.exceptions;
 
 /**
- * Thrown if no tenant with a specified name was found.
+ * Thrown when a specified access token ID doesn't correspond to any known access token.
  *
  * @author avasquez
  */
-public class NoSuchTenantException extends I10nProfileException {
+public class InvalidAccessTokenIdException extends I10nProfileException {
 
-    private static final String KEY = "profile.tenant.noSuchTenant";
+    private static final String KEY = "profile.accessToken.invalidAccessTokenId";
 
-    public NoSuchTenantException(String tenantName) {
-        super(KEY, tenantName);
+    public InvalidAccessTokenIdException(String accessTokenId) {
+        super(KEY, accessTokenId);
     }
 
 }

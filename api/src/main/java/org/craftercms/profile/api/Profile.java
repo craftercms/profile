@@ -1,12 +1,8 @@
 package org.craftercms.profile.api;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.bson.types.ObjectId;
+
+import java.util.*;
 
 /**
  * Representation of a user.
@@ -19,11 +15,12 @@ public class Profile {
     private String username;
     private String password;
     private String email;
-    private Boolean enabled;
+    private boolean verified;
+    private boolean enabled;
     private Date created;
     private Date modified;
     private String tenant;
-    private List<String> roles;
+    private Set<String> roles;
     private Map<String, Object> attributes;
 
     public ObjectId getId() {
@@ -58,11 +55,19 @@ public class Profile {
         this.email = email;
     }
 
-    public Boolean getEnabled() {
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
+
+    public boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(final boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
@@ -90,15 +95,15 @@ public class Profile {
         this.tenant = tenant;
     }
 
-    public List<String> getRoles() {
+    public Set<String> getRoles() {
         if (roles == null) {
-            roles = new ArrayList<>();
+            roles = new HashSet<>();
         }
 
         return roles;
     }
 
-    public void setRoles(final List<String> roles) {
+    public void setRoles(Set<String> roles) {
         this.roles = roles;
     }
 

@@ -1,9 +1,6 @@
 package org.craftercms.profile.api;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.craftercms.commons.security.permissions.SecuredObjectBase;
 
 /**
@@ -20,7 +17,6 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
     private String constraint;
     private boolean required;
     private String owner;
-    private List<AttributeDefinition> subAttributeDefinitions;
 
     /**
      * Returns the name of the attribute.
@@ -120,22 +116,40 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
         this.owner = owner;
     }
 
-    /**
-     * Returns the sub-attributes of this attribute.
-     */
-    public List<AttributeDefinition> getSubAttributeDefinitions() {
-        if (subAttributeDefinitions == null) {
-            subAttributeDefinitions = new ArrayList<>();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
         }
 
-        return subAttributeDefinitions;
+        AttributeDefinition that = (AttributeDefinition) o;
+
+        if (!name.equals(that.name)) {
+            return false;
+        }
+
+        return true;
     }
 
-    /**
-     * Sets the sub-attributes of this attribute.
-     */
-    public void setSubAttributeDefinitions(final List<AttributeDefinition> subAttributeDefinitions) {
-        this.subAttributeDefinitions = subAttributeDefinitions;
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "AttributeDefinition{" +
+                "name='" + name + '\'' +
+                ", label='" + label + '\'' +
+                ", order=" + order +
+                ", type='" + type + '\'' +
+                ", constraint='" + constraint + '\'' +
+                ", required=" + required +
+                ", owner='" + owner + '\'' +
+                '}';
     }
 
 }

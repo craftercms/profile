@@ -16,23 +16,19 @@
  */
 package org.craftercms.profile.v2.http.filters;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.craftercms.commons.crypto.CipherUtils;
-import org.craftercms.commons.crypto.SimpleCipher;
+import org.craftercms.commons.i10n.I10nLogger;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.services.TenantService;
+import org.craftercms.profile.repositories.AccessTokenRepository;
 import org.craftercms.profile.v2.exceptions.ExpiredAccessTokenException;
-import org.craftercms.profile.v2.exceptions.InvalidAccessTokenParamException;
+import org.craftercms.profile.v2.exceptions.InvalidAccessTokenIdException;
 import org.craftercms.profile.v2.exceptions.MissingRequiredParameterException;
 import org.craftercms.profile.v2.permissions.Application;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.filter.GenericFilterBean;
 
-import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -40,38 +36,32 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.security.Key;
 import java.util.Date;
 
 /**
- * Filter that checks that in every call the {@link org.craftercms.profile.api.AccessToken} is specified as a
- * parameter. If no access token is specified, a 401 is returned to the caller. If a token is found, and its
- * expiration date hasn't been reached, a new {@link org.craftercms.profile.v2.permissions.Application} is created
- * and bound to the current thread.
+ * Filter that checks that in every call the access token ID is specified. If no access token ID is specified, a 401
+ * is returned to the caller. If a token ID is found, and the token's expiration date hasn't been reached, a new
+ * {@link org.craftercms.profile.v2.permissions.Application} is created and bound to the current thread.
  *
  * @author avasquez
  */
 public class AccessTokenCheckingFilter extends GenericFilterBean {
 
-    private static final Logger logger = LoggerFactory.getLogger(AccessTokenCheckingFilter.class);
+    private static final I10nLogger logger = new I10nLogger(AccessTokenCheckingFilter.class,
+            "crafter.profile.messages.logging");
 
-    public static final String ACCESS_TOKEN_PARAM = "accessToken";
-    public static final String ACCESS_TOKEN_PARAM_SEP =   "|";
+    public static final String ACCESS_TOKEN_ID_PARAM = "accessTokenId";
 
-    protected ObjectMapper jsonMapper;
-    protected Key paramEncryptionKey;
+    private static final String LOG_KEY_ACCESS_TOKEN_FOUND =    "profile.accessToken.accessTokenFound";
+    private static final String LOG_KEY_APP_BINDING_APP =       "profile.app.bindingApp";
+    private static final String LOG_KEY_APP_UNBINDING_APP =     "profile.app.unbindingApp";
+
+    protected AccessTokenRepository tokenRepository;
     protected TenantService tenantService;
 
-    public AccessTokenCheckingFilter() {
-        jsonMapper = new ObjectMapper();
-    }
-
     @Required
-    public void setParamEncryptionKey(String paramEncryptionKey) {
-        byte[] keyBytes = Base64.decodeBase64(paramEncryptionKey);
-
-        this.paramEncryptionKey = new SecretKeySpec(keyBytes, CipherUtils.AES_CIPHER_ALGORITHM);
+    public void setTokenRepository(AccessTokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
     }
 
     @Required
@@ -89,20 +79,27 @@ public class AccessTokenCheckingFilter extends GenericFilterBean {
             try {
                 AccessToken token = getAccessToken(httpRequest);
                 Application application = getApplication(token);
+                String threadName = Thread.currentThread().getName();
+
+                logger.debug(LOG_KEY_APP_BINDING_APP, application, threadName);
 
                 Application.setCurrent(application);
 
                 try {
                     chain.doFilter(request, response);
                 } finally {
+                    logger.debug(LOG_KEY_APP_UNBINDING_APP, application, threadName);
+
                     Application.clear();
                 }
             } catch (MissingRequiredParameterException e) {
                 handleAccessTokenParamNotFound(e, httpRequest, httpResponse);
-            } catch (InvalidAccessTokenParamException e) {
-                handleInvalidAccessTokenParam(e, httpRequest, httpResponse);
+            } catch (InvalidAccessTokenIdException e) {
+                handleInvalidAccessTokenId(e, httpRequest, httpResponse);
             } catch (ExpiredAccessTokenException e) {
                 handleExpiredAccessToken(e, httpRequest, httpResponse);
+            } catch (MongoDataException e) {
+                handleGeneralError(e, httpRequest, httpResponse);
             }
         }
     }
@@ -118,64 +115,49 @@ public class AccessTokenCheckingFilter extends GenericFilterBean {
     }
 
     protected AccessToken getAccessToken(HttpServletRequest request) throws MissingRequiredParameterException,
-            InvalidAccessTokenParamException {
-        String encryptedParam = getEncryptedAccessTokenParam(request);
-        String[] encryptedTokenAndIv = StringUtils.split(encryptedParam, ACCESS_TOKEN_PARAM_SEP);
+            InvalidAccessTokenIdException, MongoDataException {
+        String tokenId = request.getParameter(ACCESS_TOKEN_ID_PARAM);
 
-        if (encryptedTokenAndIv.length != 2) {
-            throw new InvalidAccessTokenParamException("Expected format is ENCRYPTED_TOKEN" + ACCESS_TOKEN_PARAM_SEP +
-                    "IV");
-        }
+        if (StringUtils.isNotEmpty(tokenId)) {
+            AccessToken token = tokenRepository.findById(tokenId);
+            if (token != null) {
+                logger.debug(LOG_KEY_ACCESS_TOKEN_FOUND, tokenId, token);
 
-        SimpleCipher cipher = new SimpleCipher();
-        cipher.setKey(paramEncryptionKey);
-        cipher.setBase64Iv(encryptedTokenAndIv[1]);
-
-        String serializedToken;
-        try {
-            serializedToken = cipher.decryptBase64ToString(encryptedTokenAndIv[0]);
-        } catch (GeneralSecurityException e) {
-            throw new InvalidAccessTokenParamException("Unable to decrypt token: " + e.getMessage(), e);
-        }
-
-        AccessToken accessToken;
-        try {
-            accessToken = jsonMapper.readValue(serializedToken, AccessToken.class);
-        } catch (IOException e) {
-            throw new InvalidAccessTokenParamException("Unable to deserialize token: " + e.getMessage(), e);
-        }
-
-        return accessToken;
-    }
-
-    protected String getEncryptedAccessTokenParam(HttpServletRequest request) throws MissingRequiredParameterException {
-        String encryptedParam = request.getParameter(ACCESS_TOKEN_PARAM);
-        if (encryptedParam != null) {
-            return encryptedParam;
+                return token;
+            } else {
+                throw new InvalidAccessTokenIdException(tokenId);
+            }
         } else {
-            throw new MissingRequiredParameterException(ACCESS_TOKEN_PARAM);
+            throw new MissingRequiredParameterException(ACCESS_TOKEN_ID_PARAM);
         }
     }
 
     protected void handleAccessTokenParamNotFound(MissingRequiredParameterException e, HttpServletRequest request,
                                                   HttpServletResponse response) throws IOException {
-        logger.error(e.getMessage(), e);
+        logger.error(e.getLocalizedMessage(), e);
 
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
     }
 
-    protected void handleInvalidAccessTokenParam(InvalidAccessTokenParamException e, HttpServletRequest request,
-                                                 HttpServletResponse response) throws IOException {
-        logger.error(e.getMessage(), e);
+    protected void handleInvalidAccessTokenId(InvalidAccessTokenIdException e, HttpServletRequest request,
+                                              HttpServletResponse response) throws IOException {
+        logger.error(e.getLocalizedMessage(), e);
 
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
     }
 
     protected void handleExpiredAccessToken(ExpiredAccessTokenException e, HttpServletRequest request,
                                             HttpServletResponse response) throws IOException {
-        logger.error(e.getMessage(), e);
+        logger.error(e.getLocalizedMessage(), e);
 
         response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+    }
+
+    protected void handleGeneralError(Exception e, HttpServletRequest request,
+                                      HttpServletResponse response) throws IOException {
+        logger.error(e.getLocalizedMessage(), e);
+
+        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
 }

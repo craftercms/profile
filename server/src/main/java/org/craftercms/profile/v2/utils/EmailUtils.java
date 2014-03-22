@@ -14,19 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.v2.exceptions;
+package org.craftercms.profile.v2.utils;
+
+import java.util.regex.Pattern;
 
 /**
- * Thrown when an attribute's class doesn't match the attribute definition's class.
+ * Utility methods for email related stuff.
  *
  * @author avasquez
  */
-public class InvalidAttributeTypeException extends AttributeFilterException {
+public class EmailUtils {
 
-    public static final String MESSAGE_FORMAT = "Attribute '%s' is of type %s. Expected type is %s";
+    public static final Pattern EMAIL_PATTERN = Pattern.compile("^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@" +
+            "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
 
-    public InvalidAttributeTypeException(String attributeName, String expectedType, String actualType) {
-        super(String.format(MESSAGE_FORMAT, attributeName, expectedType, actualType));
+    private EmailUtils() {
+    }
+
+    public static final boolean validateEmail(String email) {
+        return EMAIL_PATTERN.matcher(email).matches();
     }
 
 }

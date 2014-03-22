@@ -17,16 +17,16 @@
 package org.craftercms.profile.v2.exceptions;
 
 /**
- * Thrown if no tenant with a specified name was found.
+ * Thrown if no profile with a specified ID was found.
  *
  * @author avasquez
  */
-public class NoSuchTenantException extends I10nProfileException {
+public class NoSuchProfileException extends I10nProfileException {
 
-    private static final String KEY = "profile.tenant.noSuchTenant";
+    public static final String KEY = "profile.profile.noSuchProfile";
 
-    public NoSuchTenantException(String tenantName) {
-        super(KEY, tenantName);
+    public NoSuchProfileException(String id) {
+        super(KEY, id);
     }
 
 }

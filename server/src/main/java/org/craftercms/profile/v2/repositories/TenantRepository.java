@@ -14,19 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.v2.exceptions;
+package org.craftercms.profile.v2.repositories;
+
+import org.craftercms.commons.mongo.CrudRepository;
+import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.profile.api.Tenant;
 
 /**
- * Thrown when an attribute doesn't satisfy it's definition constraint.
- *
- * @author avasquez
+ * DB repository for {@link org.craftercms.profile.api.Tenant}s
  */
-public class AttributeConstraintException extends AttributeFilterException {
+public interface TenantRepository extends CrudRepository<Tenant> {
 
-    public static final String MESSAGE_FORMAT = "Attribute '%s' doesn't match the constraint '%s'";
+    /**
+     * Returns the tenant for the given name.
+     *
+     * @param name the tenant's name
+     * @return the tenant, or null if not found.
+     */
+    Tenant findByName(String name) throws MongoDataException;
 
-    public AttributeConstraintException(String attributeName, String constraint) {
-        super(String.format(MESSAGE_FORMAT, attributeName, constraint));
-    }
+    /**
+     * Removes the tenant for the given name.
+     *
+     * @param name  the tenant's name
+     */
+    void removeByName(String name) throws MongoDataException;
 
 }

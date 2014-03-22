@@ -16,14 +16,6 @@
  */
 package org.craftercms.profile.repositories;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-
 import com.mongodb.MongoException;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -36,6 +28,8 @@ import org.craftercms.profile.exceptions.ProfileException;
 import org.jongo.Find;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * Default implementation of Profile Repository Impl.
@@ -274,7 +268,7 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
         log.debug("Removing role {} for profile {}", roleName, profileId);
         try {
             String query = getQueryFor(PROFILE_PROFILE_REMOVE_ROLE);
-            update(profileId, false, false, query, profileId, roleName);
+            update(profileId, query, false, false, roleName);
         } catch (MongoDataException ex) {
             log.error("Unable to delete role " + roleName + " from profile " + profileId, ex);
             throw new ProfileException("Unable to remove role from profile", ex);

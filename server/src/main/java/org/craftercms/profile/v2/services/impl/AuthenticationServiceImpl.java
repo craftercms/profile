@@ -27,7 +27,7 @@ import org.craftercms.profile.api.services.AuthenticationService;
  *
  * @author avasquez
  */
-@HasPermission(type = TenantPermission.class, action = TenantActions.MANAGE_USERS)
+@HasPermission(type = TenantPermission.class, action = TenantActions.MANAGE_PROFILES)
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override

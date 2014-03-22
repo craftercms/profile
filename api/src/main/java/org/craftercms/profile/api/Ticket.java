@@ -1,5 +1,7 @@
 package org.craftercms.profile.api;
 
+import org.bson.types.ObjectId;
+
 import java.util.Date;
 
 /**
@@ -9,8 +11,17 @@ import java.util.Date;
  */
 public class Ticket {
 
+    private ObjectId _id;
     private String userId;
     private Date expiresOn;
+
+    public ObjectId getId() {
+        return _id;
+    }
+
+    public void setId(ObjectId id) {
+        this._id = id;
+    }
 
     public String getUserId() {
         return userId;
@@ -26,6 +37,15 @@ public class Ticket {
 
     public void setExpiresOn(Date expiresOn) {
         this.expiresOn = expiresOn;
+    }
+
+    @Override
+    public String toString() {
+        return "Ticket{" +
+                "id=" + _id +
+                ", userId='" + userId + '\'' +
+                ", expiresOn=" + expiresOn +
+                '}';
     }
 
 }

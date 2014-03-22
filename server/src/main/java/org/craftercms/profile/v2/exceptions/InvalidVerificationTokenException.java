@@ -14,28 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.v2.attributes;
-
-import org.craftercms.profile.api.Tenant;
-import org.craftercms.profile.v2.exceptions.AttributeFilterException;
-
-import java.util.Map;
+package org.craftercms.profile.v2.exceptions;
 
 /**
- * Attributes filter interface. Used on attribute read and write to check attribute permissions and constraints.
+ * Thrown when a serialized verification token is in an invalid format.
  *
  * @author avasquez
  */
-public interface AttributeFilter {
+public class InvalidVerificationTokenException extends I10nProfileException {
 
-    /**
-     * Filters the attributes on read/write.
-     *
-     * @param tenant        the tenant that contains the attribute definitions
-     * @param attributes    the attributes to filter
-     *
-     * @return the modified attributes
-     */
-    Map<String, Object> filter(Tenant tenant, Map<String, Object> attributes) throws AttributeFilterException;
+    private static final String KEY = "profile.verification.invalidVerificationToken";
+
+    public InvalidVerificationTokenException() {
+        super(KEY);
+    }
 
 }

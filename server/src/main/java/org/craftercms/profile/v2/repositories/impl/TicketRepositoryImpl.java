@@ -14,30 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.v2.exceptions;
+package org.craftercms.profile.v2.repositories.impl;
 
-import org.craftercms.profile.api.exceptions.ProfileException;
+import org.craftercms.commons.mongo.JongoRepository;
+import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.profile.api.Ticket;
+import org.craftercms.profile.v2.repositories.TicketRepository;
 
 /**
- * Thrown when attribute filtering fails for some reason.
+ * Default implementation of {@link org.craftercms.profile.v2.repositories.TicketRepository}.
  *
  * @author avasquez
  */
-public class AttributeFilterException extends ProfileException {
+public class TicketRepositoryImpl extends JongoRepository<Ticket> implements TicketRepository {
 
-    public AttributeFilterException() {
-    }
-
-    public AttributeFilterException(String message) {
-        super(message);
-    }
-
-    public AttributeFilterException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public AttributeFilterException(Throwable cause) {
-        super(cause);
+    /**
+     * Creates a instance of a Jongo Repository.
+     */
+    public TicketRepositoryImpl() throws MongoDataException {
+        super();
     }
 
 }

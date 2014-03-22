@@ -14,19 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.v2.exceptions;
+package org.craftercms.profile.v2.repositories;
+
+import org.craftercms.commons.mongo.CrudRepository;
+import org.craftercms.profile.api.Ticket;
 
 /**
- * Thrown if no tenant with a specified name was found.
+ * DB repository for {@link org.craftercms.profile.api.Ticket}s.
  *
  * @author avasquez
  */
-public class NoSuchTenantException extends I10nProfileException {
-
-    private static final String KEY = "profile.tenant.noSuchTenant";
-
-    public NoSuchTenantException(String tenantName) {
-        super(KEY, tenantName);
-    }
-
+public interface TicketRepository extends CrudRepository<Ticket> {
 }

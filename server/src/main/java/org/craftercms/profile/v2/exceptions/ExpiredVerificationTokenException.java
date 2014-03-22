@@ -16,17 +16,19 @@
  */
 package org.craftercms.profile.v2.exceptions;
 
+import java.util.Date;
+
 /**
- * Thrown if no tenant with a specified name was found.
+ * Thrown when a verification token has already expired.
  *
  * @author avasquez
  */
-public class NoSuchTenantException extends I10nProfileException {
+public class ExpiredVerificationTokenException extends I10nProfileException {
 
-    private static final String KEY = "profile.tenant.noSuchTenant";
+    private static final String KEY = "profile.verification.expiredVerificationToken";
 
-    public NoSuchTenantException(String tenantName) {
-        super(KEY, tenantName);
+    public ExpiredVerificationTokenException(Date expiredOn) {
+        super(KEY, expiredOn);
     }
 
 }

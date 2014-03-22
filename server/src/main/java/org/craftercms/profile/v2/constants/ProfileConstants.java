@@ -14,19 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.v2.exceptions;
+package org.craftercms.profile.v2.constants;
 
 /**
- * Thrown if no tenant with a specified name was found.
+ * Common constants.
  *
  * @author avasquez
  */
-public class NoSuchTenantException extends I10nProfileException {
+public class ProfileConstants {
 
-    private static final String KEY = "profile.tenant.noSuchTenant";
+    public static final String LOGGING_BUNDLE_NAME =    "crafter.profile.messages.logging";
+    public static final String ERROR_BUNDLE_NAME =      "crafter.profile.messages.errors";
 
-    public NoSuchTenantException(String tenantName) {
-        super(KEY, tenantName);
+    private ProfileConstants() {
     }
 
 }

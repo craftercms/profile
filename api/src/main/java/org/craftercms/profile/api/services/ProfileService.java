@@ -1,224 +1,236 @@
 package org.craftercms.profile.api.services;
 
-import java.util.List;
-import java.util.Map;
-
 import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.utils.SortOrder;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
- * Service for handling users.
+ * Service for handling profiles.
  *
  * @author avasquez
  */
 public interface ProfileService {
 
     /**
-     * Creates a new user for a specific tenant.
+     * Creates a new profile for a specific tenantName.
      *
-     * @param tenant           the tenant to add the user to
-     * @param userId           the user's ID
-     * @param password         the user's password
-     * @param email            the user's email
-     * @param enabled          if the user is enabled or not
-     * @param roles            the user's roles
-     * @param groups           the user's groups
-     * @param verifyAccountUrl the url the user needs to go in case it needs to verify the created account
-     *                         (verification depends on tenant).
-     * @return the newly created user
+     * @param tenantName            the name of the tenant to add the profile to
+     * @param username              the profile's username
+     * @param password              the profile's password
+     * @param email                 the profile's email
+     * @param enabled               if the profile is enabled or not
+     * @param roles                 the profile's roles
+     * @param verificationBaseUrl   the base url the user needs to go in case it needs to verify the created profile
+     *                              (verification depends on tenant).
+     * @return the newly created profile
      */
-    Profile createUser(String tenant, String userId, String password, String email, boolean enabled,
-                       List<String> roles, List<String> groups, String verifyAccountUrl);
+    Profile createProfile(String tenantName, String username, String password, String email, boolean enabled,
+                          Set<String> roles, String verificationBaseUrl) throws ProfileException;
 
     /**
-     * Update the user's info.
+     * Update the profile's info.
      *
-     * @param tenant   the tenant's name
-     * @param userId   the user's ID
-     * @param password the new password for the user, or null if the password shouldn't be updated
-     * @param email    the new email for the user, or null if the email shouldn't be updated
-     * @param enabled  if the user should be enabled or not
-     * @param roles    the new roles for the user, or null if the roles shouldn't be updated
-     * @param groups   the new groups for the user, or null if the groups shouldn't be updated
-     * @return the updated user
+     * @param tenantName            the tenantName's name
+     * @param profileId             the profile's ID
+     * @param username              the profile's username
+     * @param password              the new password for the profile, or null if the password shouldn't be updated
+     * @param email                 the new email for the profile, or null if the email shouldn't be updated
+     * @param enabled               if the profile should be enabled or not
+     * @param roles                 the new roles for the profile, or null if the roles shouldn't be updated
+     *
+     * @return the updated profile
      */
-    Profile updateUser(String tenant, String userId, String password, String email, boolean enabled,
-                       List<String> roles, List<String> groups);
+    void updateProfile(String tenantName, String profileId, String username, String password, String email,
+                          Boolean enabled, Set<String> roles) throws ProfileException;
 
     /**
-     * Enables a user.
+     * Enables a profile.
      *
-     * @param tenant the tenant's name
-     * @param userId the user's ID
-     * @return the enabled user
+     * @param tenantName            the tenant's name
+     * @param profileId             the profile's ID
      */
-    Profile enableUser(String tenant, String userId);
+    void enableProfile(String tenantName, String profileId) throws ProfileException;
 
     /**
-     * Disables a user.
+     * Disables a profile.
      *
-     * @param tenant the tenant's name
-     * @param userId the user's ID
-     * @return the disabled user
+     * @param tenantName            the tenant's name
+     * @param profileId             the profile's ID
      */
-    Profile disableUser(String tenant, String userId);
+    void disableProfile(String tenantName, String profileId) throws ProfileException;
 
     /**
-     * Assigns roles to the user.
+     * Assigns roles to the profile.
      *
-     * @param tenant the tenant's name
-     * @param userId the user's ID
-     * @param roles  the roles to assign
-     * @return the updated user
+     * @param tenantName            the tenant's name
+     * @param profileId             the profile's ID
+     * @param roles                 the roles to assign
+     *
+     * @return the updated profile
      */
-    Profile addRoles(String tenant, String userId, List<String> roles);
+    void addRoles(String tenantName, String profileId, Set<String> roles) throws ProfileException;
 
     /**
-     * Removes assigned roles from a user.
+     * Removes assigned roles from a profile.
      *
-     * @param tenant the tenant's name
-     * @param userId the user's ID
-     * @param roles  the roles to remove
-     * @return the updated user
+     * @param tenantName            the tenant's name
+     * @param profileId             the profile's ID
+     * @param roles                 the roles to remove
      */
-    Profile removeRoles(String tenant, String userId, List<String> roles);
+    void removeRoles(String tenantName, String profileId, Set<String> roles) throws ProfileException;
 
     /**
-     * Returns the attributes of a user.
+     * Returns the attributes of a profile.
      *
-     * @param tenant the tenant's name
-     * @param userId the user's ID
-     * @return the user's attributes
+     * @param tenantName            the tenant's name
+     * @param profileId             the profile's ID
+     * @param attributesToReturn    the names of the attributes to return (null to return all attributes)
+     *
+     * @return the profile's attributes
      */
-    Map<String, Object> getAttributes(String tenant, String userId);
+    Map<String, Object> getAttributes(String tenantName, String profileId, String... attributesToReturn)
+            throws ProfileException;
 
     /**
-     * Updates the attributes of a user, by merging the specified attributes with the existing attributes.
+     * Updates the attributes of a profile, by merging the specified attributes with the existing attributes.
      *
-     * @param tenant     the tenant's name
-     * @param userId     the user's ID
-     * @param attributes the new attributes
-     * @return the updated attributes
+     * @param tenantName    the tenant's name
+     * @param profileId     the profile's ID
+     * @param attributes    the new attributes
      */
-    Map<String, Object> updateAttributes(String tenant, String userId, Map<String, Object> attributes);
-
-    // TODO: Delete attributes (pass a string with a dot notation for sub-attributes, like a.b.c?)"
+    void updateAttributes(String tenantName, String profileId, Map<String, Object> attributes) throws ProfileException;
 
     /**
-     * Deletes a user.
+     * Deletes a list of attributes of a profile.
      *
-     * @param tenant the tenant's name
-     * @param userId the user's ID
-     * @return the deleted user
+     * @param tenantName        the tenant's name
+     * @param profileId         the profile's ID
+     * @param attributeNames    the names of the attributes to delete
      */
-    Profile deleteUser(String tenant, String userId);
+    void deleteAttributes(String tenantName, String profileId, String... attributeNames) throws ProfileException;
 
     /**
-     * Returns the user for the specified id.
+     * Deletes a profile.
      *
-     * @param tenant the tenant's name
-     * @param userId the user's ID
-     * @return the user, or null if not found
+     * @param tenantName    the tenant's name
+     * @param profileId     the profile's ID
      */
-    Profile getUser(String tenant, String userId);
+    void deleteProfile(String tenantName, String profileId) throws ProfileException;
+
+    /**
+     * Returns the profile for the specified id.
+     *
+     * @param tenantName            the tenant's name
+     * @param profileId             the profile's ID
+     * @param attributesToReturn    the names of the attributes to return (null to return all attributes)
+     *
+     * @return the profile, or null if not found
+     */
+    Profile getProfile(String tenantName, String profileId, String... attributesToReturn) throws ProfileException;
 
     /**
      * Returns the user for the specified tenant and username
      *
-     * @param tenant   the tenant's name
-     * @param username the user's username
-     * @return the user, or null if not found
+     * @param tenantName            the tenant's name
+     * @param username              the profile's username
+     * @param attributesToReturn    the names of the attributes to return (null to return all attributes)
+     *
+     * @return the profile, or null if not found
      */
-    Profile getUserByTenantAndUsername(String tenant, String username);
+    Profile getProfileByUsername(String tenantName, String username, String... attributesToReturn)
+            throws ProfileException;
 
     /**
-     * Returns the user for the specified ticket.
+     * Returns the profile for the specified ticket.
      *
-     * @param tenant the tenant's name
-     * @param ticket the ticket of the authenticated user
-     * @return the user, or null if not found
+     * @param tenantName            the tenant's name
+     * @param ticket                the ticket of the authenticated profile
+     * @param attributesToReturn    the names of the attributes to return (null to return all attributes)
+     *
+     * @return the profile, or null if not found
      */
-    Profile getUserByTicket(String tenant, String ticket);
+    Profile getProfileByTicket(String tenantName, String ticket, String... attributesToReturn) throws ProfileException;
 
     /**
-     * Returns the number of users of the specified tenant.
+     * Returns the number of profiles of the specified tenant.
      *
-     * @param tenant the tenant's name
-     * @return the number of users of the specified tenant
+     * @param tenantName    the tenant's name
+     *
+     * @return the number of profiles of the specified tenant
      */
-    int getUserCount(String tenant);
+    long getProfileCount(String tenantName) throws ProfileException;
 
     /**
-     * Returns a list of users for the specified list of ids.
+     * Returns a list of profiles for the specified list of ids.
      *
-     * @param tenant    the tenant's name
-     * @param userIds   the ids of the users to look for
-     * @param sortBy    user attribute to sort the list by (optional)
-     * @param sortOrder the sort order (either ASC or DESC) (optional)
-     * @return the list of users (can be smaller than the list of ids if some where not found)
+     * @param tenantName            the tenant's name
+     * @param profileIds            the ids of the profiles to look for
+     * @param sortBy                profile attribute to sort the list by (optional)
+     * @param sortOrder             the sort order (either ASC or DESC) (optional)
+     * @param attributesToReturn    the names of the attributes to return for each profile (null to return all
+     *                              attributes)
+     *
+     * @return the list of profiles (can be smaller than the list of ids if some where not found)
      */
-    List<Profile> getUsers(String tenant, List<String> userIds, String sortBy, SortOrder sortOrder);
+    List<Profile> getProfiles(String tenantName, List<String> profileIds, String sortBy, SortOrder sortOrder,
+                              String... attributesToReturn) throws ProfileException;
 
     /**
-     * Returns a list of all users for the specified tenant.
+     * Returns a range of profiles for the specified tenant.
      *
-     * @param tenant    the tenant's name
-     * @param sortBy    user attribute to sort the list by (optional)
-     * @param sortOrder the sort order (either ASC or DESC) (optional)
-     * @param start     from the entire list of results, the position where the actual results should start
-     *                  (useful for pagination) (optional)
-     * @param count     the number of users to return (optional)
-     * @return the list of users
+     * @param tenantName            the tenant's name
+     * @param sortBy                profile attribute to sort the list by (optional)
+     * @param sortOrder             the sort order (either ASC or DESC) (optional)
+     * @param start                 from the entire list of results, the position where the actual results should start
+     *                              (useful for pagination) (optional)
+     * @param count                 the number of profiles to return (optional)
+     * @param attributesToReturn    the names of the attributes to return for each profile (null to return all
+     *                              attributes)
+     *
+     * @return the list of profiles
      */
-    List<Profile> getAllUsers(String tenant, String sortBy, String sortOrder, Integer start, Integer count);
+    List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder, Integer start, Integer count,
+                                  String... attributesToReturn) throws ProfileException;
 
     /**
-     * Returns a list of users for a specific role and tenant.
+     * Returns a list of profiles for a specific role and tenant.
      *
-     * @param tenant    the tenant's name
-     * @param role      the role's name
-     * @param sortBy    user attribute to sort the list by (optional)
-     * @param sortOrder the sort order (either ASC or DESC) (optional)
-     * @param start     from the entire list of results, the position where the actual results should start
-     *                  (useful for pagination) (optional)
-     * @param count     the number of users to return (optional)
-     * @return the list of users
+     * @param tenantName            the tenant's name
+     * @param role                  the role's name
+     * @param sortBy                profile attribute to sort the list by (optional)
+     * @param sortOrder             the sort order (either ASC or DESC) (optional)
+     * @param start                 from the entire list of results, the position where the actual results should start
+     *                              (useful for pagination) (optional)
+     * @param count                 the number of profiles to return (optional)
+     * @param attributesToReturn    the names of the attributes to return for each profile (null to return all
+     *                              attributes)
+     *
+     * @return the list of profiles
      */
-    List<Profile> getUsersByRole(String tenant, String role, String sortBy, SortOrder sortOrder, Integer start,
-                                 Integer count);
+    List<Profile> getProfilesByRole(String tenantName, String role, String sortBy, SortOrder sortOrder, Integer start,
+                                    Integer count, String... attributesToReturn) throws ProfileException;
 
     /**
-     * Returns a list of users for a specific group and tenant.
+     * Common forgot password functionality: sends the profile an email with an URL to reset their password.
      *
-     * @param tenant    the tenant's name
-     * @param group     the group's name
-     * @param sortBy    user attribute to sort the list by (optional)
-     * @param sortOrder the sort order (either ASC or DESC) (optional)
-     * @param start     from the entire list of results, the position where the actual results should start
-     *                  (useful for pagination) (optional)
-     * @param count     the number of users to return (optional)
-     * @return the list of users
+     * @param tenantName        the tenant's name
+     * @param profileId         the profile's ID
+     * @param changePasswordUrl the base URL to use to build the final URL the profile will use to reset their password.
      */
-    List<Profile> getUsersByGroup(String tenant, String group, String sortBy, SortOrder sortOrder, Integer start,
-                                  Integer count);
+    void forgotPassword(String tenantName, String profileId, String changePasswordUrl) throws ProfileException;
 
     /**
-     * Common forgot password functionality: sends the user an email with an URL to reset their password.
+     * Resets a profile's password.
      *
-     * @param tenant            the tenant's name
-     * @param userId            the user's ID
-     * @param changePasswordUrl the base URL to use to build the final URL the user will use to reset their password.
+     * @param tenantName    the tenant's name
+     * @param resetToken    the encrypted token used to identify the profile and the time the password reset was
+     *                      initiated
+     * @param newPassword   the new password
      */
-    void forgotPassword(String tenant, String userId, String changePasswordUrl);
-
-    /**
-     * Resets a user's password.
-     *
-     * @param tenant      the tenant's name
-     * @param resetToken  the encrypted token used to identify the user and the time the password reset was
-     *                    initiated
-     * @param newPassword the new password
-     */
-    void resetPassword(String tenant, String resetToken, String newPassword);
+    void resetPassword(String tenantName, String resetToken, String newPassword) throws ProfileException;
 
 }

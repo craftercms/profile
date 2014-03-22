@@ -16,19 +16,17 @@
  */
 package org.craftercms.profile.v2.exceptions;
 
-import org.craftercms.profile.api.exceptions.ProfileException;
-
 /**
  * Thrown when a required parameter is missing from the request.
  *
  * @author avasquez
  */
-public class MissingRequiredParameterException extends ProfileException {
+public class MissingRequiredParameterException extends I10nProfileException {
 
-    public static final String MESSAGE_FORMAT = "Required parameter '%s' is not present in request";
+    private static final String KEY = "profile.request.missingRequiredParam";
 
     public MissingRequiredParameterException(String parameterName) {
-        super(String.format(MESSAGE_FORMAT, parameterName));
+        super(KEY, parameterName);
     }
 
 }

@@ -17,16 +17,16 @@
 package org.craftercms.profile.v2.exceptions;
 
 /**
- * Thrown if no tenant with a specified name was found.
+ * Thrown if an attribute has already been defined.
  *
  * @author avasquez
  */
-public class NoSuchTenantException extends I10nProfileException {
+public class AttributeAlreadyDefinedException extends I10nProfileException {
 
-    private static final String KEY = "profile.tenant.noSuchTenant";
+    private static final String KEY = "profile.attribute.attributeAlreadyDefined";
 
-    public NoSuchTenantException(String tenantName) {
-        super(KEY, tenantName);
+    public AttributeAlreadyDefinedException(String attributeName, String tenant) {
+        super(KEY, attributeName, tenant);
     }
 
 }

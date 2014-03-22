@@ -16,9 +16,6 @@
  */
 package org.craftercms.profile.v2.exceptions;
 
-import org.craftercms.profile.api.exceptions.ProfileException;
-
-import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -26,12 +23,12 @@ import java.util.Date;
  *
  * @author avasquez
  */
-public class ExpiredAccessTokenException extends ProfileException {
+public class ExpiredAccessTokenException extends I10nProfileException {
 
-    public static final String MESSAGE_FORMAT = "Access token for application '%s' expired on %tD";
+    private static final String KEY = "profile.accessToken.expiredAccessToken";
 
     public ExpiredAccessTokenException(String application, Date expiredOn) {
-        super(String.format(MESSAGE_FORMAT, application, expiredOn));
+        super(KEY, application, expiredOn);
     }
 
 }

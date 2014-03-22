@@ -16,11 +16,15 @@
  */
 package org.craftercms.profile.v2.permissions;
 
+import org.craftercms.commons.i10n.I10nUtils;
 import org.craftercms.commons.security.exception.PermissionException;
 import org.craftercms.commons.security.permissions.Permission;
 import org.craftercms.commons.security.permissions.PermissionResolver;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.TenantPermission;
+import org.craftercms.profile.v2.constants.ProfileConstants;
+
+import java.util.ResourceBundle;
 
 /**
  * {@link org.craftercms.commons.security.permissions.PermissionResolver} for tenants.
@@ -29,22 +33,22 @@ import org.craftercms.profile.api.TenantPermission;
  */
 public class TenantPermissionResolver implements PermissionResolver<Application, Object> {
 
+    public static final String ERROR_KEY_UNEXPECTED_TENANT_ARG_TYPE = "profile.permission.unexpectedTenantArgType";
+
     @Override
     public Permission getGlobalPermission(Application app) throws IllegalArgumentException, PermissionException {
         return getPermission(app, TenantPermission.ANY_TENANT);
     }
 
     @Override
-    public Permission getPermission(Application app, Object tenant) throws IllegalArgumentException,
-            PermissionException {
+    public Permission getPermission(Application app, Object tenant) throws PermissionException {
         String tenantName;
         if (tenant instanceof String) {
             tenantName = (String) tenant;
         } else if (tenant instanceof Tenant) {
             tenantName = ((Tenant) tenant).getName();
         } else {
-            throw new IllegalArgumentException("Expected tenant type is String or " + Tenant.class.getName() +
-                    ". Actual type is " + tenant.getClass().getName());
+            throw new IllegalArgumentException(getUnexpectedTenantArgTypeErrorMsg(tenant.getClass()));
         }
 
         for (TenantPermission permission : app.getTenantPermissions()) {
@@ -56,6 +60,12 @@ public class TenantPermissionResolver implements PermissionResolver<Application,
         }
 
         return null;
+    }
+
+    protected String getUnexpectedTenantArgTypeErrorMsg(Class<?> argType) {
+        ResourceBundle bundle = ResourceBundle.getBundle(ProfileConstants.ERROR_BUNDLE_NAME);
+
+        return I10nUtils.getLocalizedMessage(bundle, ERROR_KEY_UNEXPECTED_TENANT_ARG_TYPE, argType.getName());
     }
 
 }

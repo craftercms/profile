@@ -17,16 +17,16 @@
 package org.craftercms.profile.v2.exceptions;
 
 /**
- * Thrown when no definition was found for a new attribute.
+ * Thrown when a new tenant is being created while a tenant with the same name already exists.
  *
  * @author avasquez
  */
-public class UndefinedAttributeException extends AttributeFilterException {
+public class TenantAlreadyExistsException extends I10nProfileException {
 
-    public static final String MESSAGE_FORMAT = "No definition for attribute '%s' found";
+    private static final String KEY = "profile.tenant.tenantAlreadyExists";
 
-    public UndefinedAttributeException(String attributeName) {
-        super(String.format(MESSAGE_FORMAT, attributeName));
+    public TenantAlreadyExistsException(String tenantName) {
+        super(KEY, tenantName);
     }
 
 }

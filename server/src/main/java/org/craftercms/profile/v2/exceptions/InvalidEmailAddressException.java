@@ -16,21 +16,17 @@
  */
 package org.craftercms.profile.v2.exceptions;
 
-import org.craftercms.profile.api.exceptions.ProfileException;
-
 /**
- * Thrown if an access token request parameter is invalid.
+ * Thrown when an email address is in an invalid format.
  *
  * @author avasquez
  */
-public class InvalidAccessTokenParamException extends ProfileException {
+public class InvalidEmailAddressException extends I10nProfileException {
 
-    public InvalidAccessTokenParamException(String message) {
-        super(message);
-    }
+    private static final String KEY = "profile.profile.invalidEmailAddress";
 
-    public InvalidAccessTokenParamException(String message, Throwable cause) {
-        super(message, cause);
+    public InvalidEmailAddressException(String emailAddress) {
+        super(KEY, emailAddress);
     }
 
 }
