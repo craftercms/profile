@@ -34,7 +34,7 @@ public interface ProfileRepository extends CrudRepository<Profile> {
      * Returns the profile with the given ID.
      *
      * @param id                    the profile's ID
-     * @param attributesToReturn    the name of the attributes to returns (null to return all)
+     * @param attributesToReturn    the name of the attributes to return (null to return all)
      * @return the profile found, or null if not found
      */
     Profile findById(String id, String... attributesToReturn) throws MongoDataException;
@@ -44,7 +44,7 @@ public interface ProfileRepository extends CrudRepository<Profile> {
      *
      * @param tenantName            the tenant's name
      * @param username              the profile's username
-     * @param attributesToReturn    the name of the attributes to returns (null to return all)
+     * @param attributesToReturn    the name of the attributes to return (null to return all)
      * @return the profile found, or null if not found
      */
     Profile findByTenantAndUsername(String tenantName, String username, String... attributesToReturn)
@@ -56,7 +56,7 @@ public interface ProfileRepository extends CrudRepository<Profile> {
      * @param ids                   the IDs of the profiles to return
      * @param sortBy                profile attribute to sort the list by (optional)
      * @param sortOrder             the sort order (either ASC or DESC) (optional)
-     * @param attributesToReturn    the name of the attributes to returns (null to return all)
+     * @param attributesToReturn    the name of the attributes to return (null to return all)
      * @return the profiles for the given IDs
      */
     Iterable<Profile> findByIds(List<String> ids, String sortBy, SortOrder sortOrder, String... attributesToReturn)
@@ -71,12 +71,39 @@ public interface ProfileRepository extends CrudRepository<Profile> {
      * @param start                 from the entire list of results, the position where the actual results should start
      *                              (useful for pagination) (optional)
      * @param count                 the number of profiles to return (optional)
-     * @param attributesToReturn    the names of the attributes to return for each profile (null to return all
-     *                              attributes)
+     * @param attributesToReturn    the names of the attributes to return for each profile (null to return all)
      * @return the range of profiles
      */
     Iterable<Profile> findRange(String tenantName, String sortBy, SortOrder sortOrder, Integer start, Integer count,
                                 String... attributesToReturn) throws MongoDataException;
+
+    /**
+     * Returns the profiles with the given roles for the given tenant.
+     *
+     * @param tenantName            the tenant's name
+     * @param role                  the role the profile's must have
+     * @param sortBy                profile attribute to sort the list by (optional)
+     * @param sortOrder             the sort order (either ASC or DESC) (optional)
+     * @param attributesToReturn    the names of the attributes to return for each profile (null to return all)
+     * @return the matching profiles
+     */
+    Iterable<Profile> findByTenantAndRole(String tenantName, String role, String sortBy, SortOrder sortOrder,
+                                          String... attributesToReturn) throws MongoDataException;
+
+    /**
+     * Returns the profiles that have the given attribute with the given value for the given tenant.
+     *
+     * @param tenantName            the tenant's name
+     * @param attributeName         the name of the attribute profiles must have
+     * @param attributeValue        the value of the attribute profiles must have
+     * @param sortBy                profile attribute to sort the list by (optional)
+     * @param sortOrder             the sort order (either ASC or DESC) (optional)
+     * @param attributesToReturn    the names of the attributes to return for each profile (null to return all)
+     * @return the matching profiles
+     */
+    Iterable<Profile> findByTenantAndAttribute(String tenantName, String attributeName, String attributeValue,
+                                               String sortBy, SortOrder sortOrder, String... attributesToReturn)
+            throws MongoDataException;
 
     /**
      * Returns the count of profiles for the given tenant.

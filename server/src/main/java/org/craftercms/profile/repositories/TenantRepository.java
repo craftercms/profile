@@ -104,11 +104,4 @@ public interface TenantRepository extends CrudRepository<Tenant> {
      */
     void deleteTenant(final ObjectId tenantId) throws TenantException;
 
-    /**
-     * Counts all the tenants.
-     *
-     * @return number of tenants store.
-     * @throws org.craftercms.profile.exceptions.TenantException If tenant can't be counted.
-     */
-    long count() throws TenantException;
 }

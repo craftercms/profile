@@ -47,6 +47,8 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
     public static final String KEY_REMOVE_BY_TENANT_QUERY =             "profile.profile.removeByTenant";
     public static final String KEY_FIND_BY_IDS_QUERY =                  "profile.profile.byIds";
     public static final String KEY_FIND_BY_TENANT_QUERY =               "profile.profile.byTenant";
+    public static final String KEY_FIND_BY_TENANT_AND_ROLE_QUERY =      "profile.profile.byTenantAndRole";
+    public static final String KEY_FIND_BY_TENANT_AND_ATTRIB_QUERY =    "profile.profile.byTenantAndAttributeValue";
 
     public static final String ATTRIBUTE_FIELD_PREFIX = "attributes.";
 
@@ -110,6 +112,44 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
             return find.as(Profile.class);
         } catch (MongoException ex) {
             String msg = "Unable to find range of profiles for tenant '" + tenantName + "'";
+            logger.error(msg, ex);
+            throw new MongoDataException(msg, ex);
+        }
+    }
+
+    @Override
+    public Iterable<Profile> findByTenantAndRole(String tenantName, String role, String sortBy, SortOrder sortOrder,
+                                                 String... attributesToReturn) throws MongoDataException {
+        try {
+            String query = getQueryFor(KEY_FIND_BY_TENANT_AND_ROLE_QUERY);
+            Find find = getCollection().find(query, tenantName, role);
+
+            addSort(find, sortBy, sortOrder);
+            addProjection(find, attributesToReturn);
+
+            return find.as(Profile.class);
+        } catch (MongoException ex) {
+            String msg = "Unable to find profiles for role '" + role + " and tenant '" + tenantName + "'";
+            logger.error(msg, ex);
+            throw new MongoDataException(msg, ex);
+        }
+    }
+
+    @Override
+    public Iterable<Profile> findByTenantAndAttribute(String tenantName, String attributeName, String attributeValue,
+                                                      String sortBy, SortOrder sortOrder, String... attributesToReturn)
+            throws MongoDataException {
+        try {
+            String query = getQueryFor(KEY_FIND_BY_TENANT_AND_ATTRIB_QUERY);
+            Find find = getCollection().find(query, tenantName, attributeName, attributeValue);
+
+            addSort(find, sortBy, sortOrder);
+            addProjection(find, attributesToReturn);
+
+            return find.as(Profile.class);
+        } catch (MongoException ex) {
+            String msg = "Unable to find profiles for attribute " + attributeName + " = " + attributeValue +
+                    " and tenant '" + tenantName + "'";
             logger.error(msg, ex);
             throw new MongoDataException(msg, ex);
         }

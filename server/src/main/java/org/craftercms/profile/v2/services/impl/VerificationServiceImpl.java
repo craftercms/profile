@@ -27,6 +27,7 @@ import org.craftercms.profile.v2.exceptions.I10nProfileException;
 import org.craftercms.profile.v2.exceptions.NoSuchVerificationTokenException;
 import org.craftercms.profile.v2.repositories.VerificationTokenRepository;
 import org.craftercms.profile.v2.services.VerificationService;
+import org.craftercms.profile.v2.services.VerificationSuccessCallback;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Calendar;
@@ -35,11 +36,11 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * Abstract base for email {@link org.craftercms.profile.v2.services.VerificationService}s.
+ * Default implementation of {@link org.craftercms.profile.v2.services.VerificationService}.
  *
  * @author avasquez
  */
-public abstract class VerificationServiceImpl implements VerificationService {
+public class VerificationServiceImpl implements VerificationService {
 
     private static final I10nLogger logger = new I10nLogger(VerificationServiceImpl.class,
             "crafter.profile.messages.logging");
@@ -54,7 +55,6 @@ public abstract class VerificationServiceImpl implements VerificationService {
     public static final String ERROR_KEY_CREATE_TOKEN_ERROR =   "profile.verification.createTokenError";
     public static final String ERROR_KEY_GET_TOKEN_ERROR =      "profile.verification.getTokenError";
     public static final String ERROR_KEY_EMAIL_ERROR =          "profile.verification.emailError";
-    public static final String ERROR_KEY_PROFILE_UPDATE_ERROR = "profile.verification.profileUpdateError";
 
     protected VerificationTokenRepository tokenRepository;
     protected EmailFactory emailFactory;
@@ -94,7 +94,7 @@ public abstract class VerificationServiceImpl implements VerificationService {
     }
 
     @Override
-    public void sendVerificationEmail(Profile profile, String verificationBaseUrl) throws ProfileException {
+    public void sendEmail(Profile profile, String verificationBaseUrl) throws ProfileException {
         VerificationToken token = new VerificationToken(profile.getId().toString(), new Date());
 
         try {
@@ -120,7 +120,7 @@ public abstract class VerificationServiceImpl implements VerificationService {
     }
 
     @Override
-    public void verifyToken(String tokenId) throws ProfileException  {
+    public void verifyToken(String tokenId, VerificationSuccessCallback callback) throws ProfileException  {
         VerificationToken token;
         try {
             token = tokenRepository.findById(tokenId);
@@ -137,7 +137,7 @@ public abstract class VerificationServiceImpl implements VerificationService {
         expirationTime.add(Calendar.SECOND, tokenMaxAge);
 
         if (Calendar.getInstance().before(token.getTimestamp())) {
-            afterVerification(token);
+            callback.doOnSuccess(token);
         } else {
             throw new ExpiredVerificationTokenException(expirationTime.getTime());
         }

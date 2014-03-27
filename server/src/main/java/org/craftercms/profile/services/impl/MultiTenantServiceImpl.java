@@ -16,10 +16,6 @@
  */
 package org.craftercms.profile.services.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.constants.ProfileConstants;
@@ -38,6 +34,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Default MultiTenantService implementation.
@@ -212,7 +212,12 @@ public class MultiTenantServiceImpl implements MultiTenantService {
      */
     @Override
     public long getTenantsCount() throws TenantException {
-        return tenantRepository.count();
+        try {
+            return tenantRepository.count();
+        } catch (MongoDataException e) {
+            log.debug("Unable to count tenants ", e);
+            throw new TenantException("Unable to count all tenants", e);
+        }
     }
 
     /* (non-Javadoc)

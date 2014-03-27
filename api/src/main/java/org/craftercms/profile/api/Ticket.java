@@ -13,7 +13,7 @@ public class Ticket {
 
     private ObjectId _id;
     private String userId;
-    private Date expiresOn;
+    private Date timestamp;
 
     public ObjectId getId() {
         return _id;
@@ -31,12 +31,12 @@ public class Ticket {
         this.userId = userId;
     }
 
-    public Date getExpiresOn() {
-        return expiresOn;
+    public Date getTimestamp() {
+        return timestamp;
     }
 
-    public void setExpiresOn(Date expiresOn) {
-        this.expiresOn = expiresOn;
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class Ticket {
         return "Ticket{" +
                 "id=" + _id +
                 ", userId='" + userId + '\'' +
-                ", expiresOn=" + expiresOn +
+                ", timestamp=" + timestamp +
                 '}';
     }
 

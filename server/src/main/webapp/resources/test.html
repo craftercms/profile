@@ -15,7 +15,7 @@
 </head>
 <body>
 <script type="text/javascript">
-    var restUrl, cleintId, outputType, target, userId, parentId, body;
+    var restUrl, cleintId, outputType, target, profileId, parentId, body;
     var responseDiv, responseCount = 0;
 
     jQuery(document).ready(function () {
@@ -34,7 +34,7 @@
         clientId = $('#clientId').val();
         outputType = $('input:radio[name=outputType]:checked').val();
         target = $('#target').val();
-        userId = $('#userId').val();
+        profileId = $('#profileId').val();
         parentId = $('#parentId').val();
     }
 
@@ -42,7 +42,7 @@
         setGeneralVars();
         var body = $('#body').val();
 
-        var url = restUrl + '/' + clientId + '/add/text/' + userId + '/' + parentId + '.' + outputType;
+        var url = restUrl + '/' + clientId + '/add/text/' + profileId + '/' + parentId + '.' + outputType;
         var data = {'target': target, 'body': body };
 
         $.ajax({
@@ -136,7 +136,7 @@
         </tr>
         <tr>
             <td><label>User Id:</label></td>
-            <td><input id="userId" value="4f20811afe1a981aeae3c18d" style="width:200px;"/></td>
+            <td><input id="profileId" value="4f20811afe1a981aeae3c18d" style="width:200px;"/></td>
         </tr>
         <tr>
             <td><label>Parent Id:</label></td>

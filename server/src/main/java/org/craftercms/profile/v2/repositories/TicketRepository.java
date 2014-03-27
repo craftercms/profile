@@ -17,6 +17,7 @@
 package org.craftercms.profile.v2.repositories;
 
 import org.craftercms.commons.mongo.CrudRepository;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.Ticket;
 
 /**
@@ -25,4 +26,12 @@ import org.craftercms.profile.api.Ticket;
  * @author avasquez
  */
 public interface TicketRepository extends CrudRepository<Ticket> {
+
+    /**
+     * Removes tickets older than the specified number of seconds.
+     *
+     * @param seconds   the number of seconds
+     */
+    void removeOlderThan(long seconds) throws MongoDataException;
+
 }

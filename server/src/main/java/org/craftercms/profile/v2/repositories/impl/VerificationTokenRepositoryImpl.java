@@ -16,8 +16,23 @@
  */
 package org.craftercms.profile.v2.repositories.impl;
 
+import org.craftercms.commons.mongo.JongoRepository;
+import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.profile.v2.repositories.VerificationTokenRepository;
+import org.craftercms.profile.v2.services.impl.VerificationToken;
+
 /**
- * Created by alfonsovasquez on 25/03/14.
+ * Default implementation of {@link org.craftercms.profile.v2.repositories.VerificationTokenRepository}.
+ *
+ * @author avasquez
  */
-public class VerificationTokenRepositoryImpl {
+public class VerificationTokenRepositoryImpl extends JongoRepository<VerificationToken> implements VerificationTokenRepository {
+
+    /**
+     * Creates a instance of a Jongo Repository.
+     */
+    public VerificationTokenRepositoryImpl() throws MongoDataException {
+        super();
+    }
+
 }

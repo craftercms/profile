@@ -27,12 +27,13 @@ import org.craftercms.commons.security.permissions.annotations.SecuredObject;
 import org.craftercms.profile.api.*;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
+import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.api.utils.SortOrder;
 import org.craftercms.profile.v2.exceptions.*;
 import org.craftercms.profile.v2.repositories.ProfileRepository;
-import org.craftercms.profile.v2.repositories.TenantRepository;
 import org.craftercms.profile.v2.repositories.TicketRepository;
 import org.craftercms.profile.v2.services.VerificationService;
+import org.craftercms.profile.v2.services.VerificationSuccessCallback;
 import org.craftercms.profile.v2.utils.EmailUtils;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -58,11 +59,18 @@ public class ProfileServiceImpl implements ProfileService {
     public static final String ERROR_KEY_GET_PROFILE_BY_USERNAME_ERROR =    "profile.profile.getProfileByUsernameError";
     public static final String ERROR_KEY_GET_PROFILE_BY_TICKET_ERROR =      "profile.profile.getProfileByTicketError";
     public static final String ERROR_KEY_GET_PROFILE_COUNT_ERROR =          "profile.profile.getProfileCountError";
+    public static final String ERROR_KEY_GET_PROFILES_ERROR =               "profile.profile.getProfilesError";
+    public static final String ERROR_KEY_GET_PROFILE_RANGE_ERROR =          "profile.profile.getProfileRangeError";
+    public static final String ERROR_KEY_GET_PROFILES_BY_ROLE_ERROR =       "profile.profile.getProfilesByRoleError";
+    public static final String ERROR_KEY_GET_PROFILES_BY_ATTRIB_ERROR =     "profile.profile.getProfilesByAttributeError";
+    public static final String ERROR_KEY_PROFILE_UPDATE_ERROR =             "profile.verification.profileUpdateError";
+    public static final String ERROR_KEY_RESET_PASSWORD_ERROR =             "profile.profile.resetPasswordError";
 
     protected ProfileRepository profileRepository;
-    protected TenantRepository tenantRepository;
+    protected TenantService tenantService;
     protected TicketRepository ticketRepository;
-    protected VerificationService verificationService;
+    protected VerificationService newProfileVerificationService;
+    protected VerificationService resetPasswordVerificationService;
 
     @Required
     public void setProfileRepository(ProfileRepository profileRepository) {
@@ -70,8 +78,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Required
-    public void setTenantRepository(TenantRepository tenantRepository) {
-        this.tenantRepository = tenantRepository;
+    public void setTenantService(TenantService tenantService) {
+        this.tenantService = tenantService;
     }
 
     @Required
@@ -80,8 +88,13 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Required
-    public void setVerificationService(VerificationService verificationService) {
-        this.verificationService = verificationService;
+    public void setNewProfileVerificationService(VerificationService newProfileVerificationService) {
+        this.newProfileVerificationService = newProfileVerificationService;
+    }
+
+    @Required
+    public void setResetPasswordVerificationService(VerificationService resetPasswordVerificationService) {
+        this.resetPasswordVerificationService = resetPasswordVerificationService;
     }
 
     @Override
@@ -92,38 +105,38 @@ public class ProfileServiceImpl implements ProfileService {
             throw new InvalidEmailAddressException(email);
         }
 
-        Date now = new Date();
-
-        Profile profile = new Profile();
-        profile.setTenant(tenantName);
-        profile.setUsername(username);
-        profile.setPassword(hashPassword(password));
-        profile.setEmail(email);
-        profile.setCreated(now);
-        profile.setModified(now);
-        profile.setRoles(roles);
-        profile.setVerified(false);
-
-        Tenant tenant = getTenant(tenantName);
-        boolean emailNewProfiles = tenant.isVerifyNewProfiles();
-
-        if (emailNewProfiles) {
-            profile.setEnabled(false);
-        } else {
-            profile.setEnabled(enabled);
-        }
-
         try {
+            Date now = new Date();
+
+            Profile profile = new Profile();
+            profile.setTenant(tenantName);
+            profile.setUsername(username);
+            profile.setPassword(hashPassword(password));
+            profile.setEmail(email);
+            profile.setCreated(now);
+            profile.setModified(now);
+            profile.setRoles(roles);
+            profile.setVerified(false);
+
+            Tenant tenant = getTenant(tenantName);
+            boolean emailNewProfiles = tenant.isVerifyNewProfiles();
+
+            if (emailNewProfiles) {
+                profile.setEnabled(false);
+            } else {
+                profile.setEnabled(enabled);
+            }
+
             profileRepository.save(profile);
+
+            if (emailNewProfiles) {
+                newProfileVerificationService.sendEmail(profile, verificationBaseUrl);
+            }
+
+            return profile;
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_CREATE_PROFILE_ERROR, e, username, tenantName);
         }
-
-        if (emailNewProfiles) {
-            verificationService.sendVerificationEmail(profile, verificationBaseUrl);
-        }
-
-        return profile;
     }
 
     @Override
@@ -159,6 +172,33 @@ public class ProfileServiceImpl implements ProfileService {
             }
 
         });
+    }
+
+    @Override
+    public void verifyProfile(String tenantName, String verificationTokenId) throws ProfileException {
+        VerificationSuccessCallback callback = new VerificationSuccessCallback() {
+
+            @Override
+            public void doOnSuccess(VerificationToken token) throws ProfileException {
+                try {
+                    Profile profile = profileRepository.findById(token.getProfileId());
+
+                    if (profile == null) {
+                        throw new NoSuchProfileException(token.getProfileId());
+                    }
+
+                    profile.setEnabled(true);
+                    profile.setVerified(true);
+
+                    profileRepository.save(profile);
+                } catch (MongoDataException e) {
+                    throw new I10nProfileException(ERROR_KEY_PROFILE_UPDATE_ERROR, e);
+                }
+            }
+
+        };
+
+        newProfileVerificationService.verifyToken(verificationTokenId, callback);
     }
 
     @Override
@@ -281,7 +321,7 @@ public class ProfileServiceImpl implements ProfileService {
         try {
             return profileRepository.findByTenantAndUsername(tenantName, username, attributesToReturn);
         } catch (MongoDataException e) {
-            throw new I10nProfileException(ERROR_KEY_GET_PROFILE_BY_USERNAME_ERROR, username, tenantName);
+            throw new I10nProfileException(ERROR_KEY_GET_PROFILE_BY_USERNAME_ERROR, e, username, tenantName);
         }
     }
 
@@ -296,7 +336,7 @@ public class ProfileServiceImpl implements ProfileService {
                 throw new NoSuchTicketException(ticket);
             }
         } catch (MongoDataException e) {
-            throw new I10nProfileException(ERROR_KEY_GET_PROFILE_BY_TICKET_ERROR, ticket, tenantName);
+            throw new I10nProfileException(ERROR_KEY_GET_PROFILE_BY_TICKET_ERROR, e, ticket, tenantName);
         }
     }
 
@@ -305,37 +345,88 @@ public class ProfileServiceImpl implements ProfileService {
         try {
             return profileRepository.countByTenant(tenantName);
         } catch (MongoDataException e) {
-            throw new I10nProfileException(ERROR_KEY_GET_PROFILE_COUNT_ERROR, tenantName);
+            throw new I10nProfileException(ERROR_KEY_GET_PROFILE_COUNT_ERROR, e, tenantName);
         }
     }
 
     @Override
-    public List<Profile> getProfiles(@SecuredObject String tenantName, List<String> profileIds, String sortBy,
-                                     SortOrder sortOrder, String... attributesToReturn) {
-        return null;
+    public Iterable<Profile> getProfiles(@SecuredObject String tenantName, List<String> profileIds, String sortBy,
+                                         SortOrder sortOrder, String... attributesToReturn) throws ProfileException {
+        try {
+            return profileRepository.findByIds(profileIds, sortBy, sortOrder, attributesToReturn);
+        } catch (MongoDataException e) {
+            throw new I10nProfileException(ERROR_KEY_GET_PROFILES_ERROR, e, profileIds, tenantName);
+        }
     }
 
     @Override
-    public List<Profile> getProfileRange(@SecuredObject String tenantName, String sortBy, String sortOrder,
-                                         Integer start, Integer count, String... attributesToReturn) {
-        return null;
+    public Iterable<Profile> getProfileRange(@SecuredObject String tenantName, String sortBy, SortOrder sortOrder,
+                                             Integer start, Integer count, String... attributesToReturn)
+            throws ProfileException {
+        try {
+            return profileRepository.findRange(tenantName, sortBy, sortOrder, start, count, attributesToReturn);
+        } catch (MongoDataException e) {
+            throw new I10nProfileException(ERROR_KEY_GET_PROFILE_RANGE_ERROR, e, start, count, tenantName);
+        }
     }
 
     @Override
-    public List<Profile> getProfilesByRole(@SecuredObject String tenantName, String role, String sortBy,
-                                           SortOrder sortOrder, Integer start, Integer count,
-                                           String... attributesToReturn) {
-        return null;
+    public Iterable<Profile> getProfilesByRole(@SecuredObject String tenantName, String role, String sortBy,
+                                               SortOrder sortOrder, String... attributesToReturn)
+            throws ProfileException {
+        try {
+            return profileRepository.findByTenantAndRole(tenantName, role, sortBy, sortOrder, attributesToReturn);
+        } catch (MongoDataException e) {
+            throw new I10nProfileException(ERROR_KEY_GET_PROFILES_BY_ROLE_ERROR, e, role, tenantName);
+        }
     }
 
     @Override
-    public void forgotPassword(@SecuredObject String tenantName, String profileId, String changePasswordUrl) {
-
+    public Iterable<Profile> getProfilesByAttribute(@SecuredObject String tenantName, String attributeName,
+                                                    String attributeValue, String sortBy, SortOrder sortOrder,
+                                                    String... attributesToReturn) throws ProfileException {
+        try {
+            return profileRepository.findByTenantAndAttribute(tenantName, attributeName, attributeValue, sortBy,
+                    sortOrder, attributesToReturn);
+        } catch (MongoDataException e) {
+            throw new I10nProfileException(ERROR_KEY_GET_PROFILES_BY_ATTRIB_ERROR, e, attributeName, attributeValue,
+                    tenantName);
+        }
     }
 
     @Override
-    public void resetPassword(@SecuredObject String tenantName, String resetToken, String newPassword) {
+    public void forgotPassword(@SecuredObject String tenantName, String profileId, String changePasswordBaseUrl)
+            throws ProfileException{
+        Profile profile = getNonNullProfile(tenantName, profileId);
 
+        resetPasswordVerificationService.sendEmail(profile, changePasswordBaseUrl);
+    }
+
+    @Override
+    public void resetPassword(@SecuredObject String tenantName, String resetTokenId, final String newPassword)
+            throws ProfileException {
+        VerificationSuccessCallback callback = new VerificationSuccessCallback() {
+
+            @Override
+            public void doOnSuccess(VerificationToken token) throws ProfileException {
+                try {
+                    Profile profile = profileRepository.findById(token.getProfileId());
+
+                    if (profile == null) {
+                        throw new NoSuchProfileException(token.getProfileId());
+                    }
+
+                    profile.setPassword(hashPassword(newPassword));
+
+                    profileRepository.save(profile);
+                } catch (MongoDataException e) {
+                    throw new I10nProfileException(ERROR_KEY_PROFILE_UPDATE_ERROR, e);
+                }
+            }
+
+        };
+
+        resetPasswordVerificationService.verifyToken(resetTokenId, callback);
     }
 
     protected Profile getNonNullProfile(String tenantName, String id) throws ProfileException {
@@ -347,16 +438,12 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
-    protected Tenant getTenant(String name) throws I10nProfileException {
-        try {
-            Tenant tenant = tenantRepository.findByName(name);
-            if (tenant != null) {
-                return tenant;
-            } else {
-                throw new NoSuchTenantException(name);
-            }
-        } catch (MongoDataException e) {
-            throw new I10nProfileException(TenantServiceImpl.ERROR_KEY_GET_TENANT_ERROR, name);
+    protected Tenant getTenant(String name) throws ProfileException {
+        Tenant tenant = tenantService.getTenant(name);
+        if (tenant != null) {
+            return tenant;
+        } else {
+            throw new NoSuchTenantException(name);
         }
     }
 

@@ -21,6 +21,9 @@ import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.v2.repositories.TicketRepository;
 
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Default implementation of {@link org.craftercms.profile.v2.repositories.TicketRepository}.
  *
@@ -28,11 +31,21 @@ import org.craftercms.profile.v2.repositories.TicketRepository;
  */
 public class TicketRepositoryImpl extends JongoRepository<Ticket> implements TicketRepository {
 
+    public static final String KEY_REMOVE_OLDER_THAN_QUERY = "profile.ticket.removeOlderThan";
+
     /**
      * Creates a instance of a Jongo Repository.
      */
     public TicketRepositoryImpl() throws MongoDataException {
         super();
+    }
+
+    @Override
+    public void removeOlderThan(long seconds) throws MongoDataException {
+        long millis = TimeUnit.SECONDS.toMillis(seconds);
+        Date limit = new Date(System.currentTimeMillis() - millis);
+
+        remove(getQueryFor(KEY_REMOVE_OLDER_THAN_QUERY), limit);
     }
 
 }

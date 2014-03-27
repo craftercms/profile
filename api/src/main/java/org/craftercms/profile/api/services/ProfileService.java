@@ -34,7 +34,7 @@ public interface ProfileService {
     /**
      * Update the profile's info.
      *
-     * @param tenantName            the tenantName's name
+     * @param tenantName            the tenant's name
      * @param profileId             the profile's ID
      * @param username              the profile's username
      * @param password              the new password for the profile, or null if the password shouldn't be updated
@@ -46,6 +46,14 @@ public interface ProfileService {
      */
     void updateProfile(String tenantName, String profileId, String username, String password, String email,
                           Boolean enabled, Set<String> roles) throws ProfileException;
+
+    /**
+     * Sets the profile as verified if the verification token is valid.
+     *
+     * @param tenantName            the tenant's name
+     * @param verificationTokenId   the ID of the verification token
+     */
+    void verifyProfile(String tenantName, String verificationTokenId) throws ProfileException;
 
     /**
      * Enables a profile.
@@ -176,8 +184,8 @@ public interface ProfileService {
      *
      * @return the list of profiles (can be smaller than the list of ids if some where not found)
      */
-    List<Profile> getProfiles(String tenantName, List<String> profileIds, String sortBy, SortOrder sortOrder,
-                              String... attributesToReturn) throws ProfileException;
+    Iterable<Profile> getProfiles(String tenantName, List<String> profileIds, String sortBy, SortOrder sortOrder,
+                                  String... attributesToReturn) throws ProfileException;
 
     /**
      * Returns a range of profiles for the specified tenant.
@@ -193,8 +201,8 @@ public interface ProfileService {
      *
      * @return the list of profiles
      */
-    List<Profile> getProfileRange(String tenantName, String sortBy, String sortOrder, Integer start, Integer count,
-                                  String... attributesToReturn) throws ProfileException;
+    Iterable<Profile> getProfileRange(String tenantName, String sortBy, SortOrder sortOrder, Integer start,
+                                      Integer count, String... attributesToReturn) throws ProfileException;
 
     /**
      * Returns a list of profiles for a specific role and tenant.
@@ -203,34 +211,48 @@ public interface ProfileService {
      * @param role                  the role's name
      * @param sortBy                profile attribute to sort the list by (optional)
      * @param sortOrder             the sort order (either ASC or DESC) (optional)
-     * @param start                 from the entire list of results, the position where the actual results should start
-     *                              (useful for pagination) (optional)
-     * @param count                 the number of profiles to return (optional)
      * @param attributesToReturn    the names of the attributes to return for each profile (null to return all
      *                              attributes)
      *
      * @return the list of profiles
      */
-    List<Profile> getProfilesByRole(String tenantName, String role, String sortBy, SortOrder sortOrder, Integer start,
-                                    Integer count, String... attributesToReturn) throws ProfileException;
+    Iterable<Profile> getProfilesByRole(String tenantName, String role, String sortBy, SortOrder sortOrder,
+                                        String... attributesToReturn) throws ProfileException;
+
+    /**
+     * Returns the list of profiles that have the given attribute with the given value.
+     *
+     * @param tenantName            the tenant's name
+     * @param attributeName         the name of the attribute profiles must have
+     * @param attributeValue        the value of the attribute profiles must have
+     * @param sortBy                profile attribute to sort the list by (optional)
+     * @param sortOrder             the sort order (either ASC or DESC) (optional)
+     * @param attributesToReturn    the names of the attributes to return for each profile (null to return all
+     *                              attributes)
+     *
+     * @return the list of profiles
+     */
+    Iterable<Profile> getProfilesByAttribute(String tenantName, String attributeName, String attributeValue,
+                                             String sortBy, SortOrder sortOrder, String... attributesToReturn)
+            throws ProfileException;
 
     /**
      * Common forgot password functionality: sends the profile an email with an URL to reset their password.
      *
-     * @param tenantName        the tenant's name
-     * @param profileId         the profile's ID
-     * @param changePasswordUrl the base URL to use to build the final URL the profile will use to reset their password.
+     * @param tenantName            the tenant's name
+     * @param profileId             the profile's ID
+     * @param changePasswordBaseUrl the base URL to use to build the final URL the profile will use to reset
+     *                              their password.
      */
-    void forgotPassword(String tenantName, String profileId, String changePasswordUrl) throws ProfileException;
+    void forgotPassword(String tenantName, String profileId, String changePasswordBaseUrl) throws ProfileException;
 
     /**
      * Resets a profile's password.
      *
      * @param tenantName    the tenant's name
-     * @param resetToken    the encrypted token used to identify the profile and the time the password reset was
-     *                      initiated
+     * @param resetTokenId  the ID of the reset token
      * @param newPassword   the new password
      */
-    void resetPassword(String tenantName, String resetToken, String newPassword) throws ProfileException;
+    void resetPassword(String tenantName, String resetTokenId, String newPassword) throws ProfileException;
 
 }

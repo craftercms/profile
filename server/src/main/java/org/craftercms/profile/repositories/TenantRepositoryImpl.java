@@ -153,19 +153,19 @@ public class TenantRepositoryImpl extends JongoRepository<Tenant> implements Ten
         }
     }
 
-    @Override
-    public long count() throws TenantException {
-        try {
-            log.debug("Counting tenants");
-            long total = getCollection().count();
-            log.debug("Found {} tenants", total);
-            return total;
-        } catch (MongoException ex) {
-            log.debug("Unable to count tenants");
-            throw new TenantException("Unable count tenants", ex);
-
-        }
-    }
+//    @Override
+//    public long count() throws TenantException {
+//        try {
+//            log.debug("Counting tenants");
+//            long total = getCollection().count();
+//            log.debug("Found {} tenants", total);
+//            return total;
+//        } catch (MongoException ex) {
+//            log.debug("Unable to count tenants");
+//            throw new TenantException("Unable count tenants", ex);
+//
+//        }
+//    }
 
 
     //    @Override

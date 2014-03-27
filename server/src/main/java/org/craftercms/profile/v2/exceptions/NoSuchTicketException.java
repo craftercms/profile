@@ -23,7 +23,7 @@ package org.craftercms.profile.v2.exceptions;
  */
 public class NoSuchTicketException extends I10nProfileException {
 
-    public static final String KEY = "profile.ticket.noSuchTicket";
+    public static final String KEY = "profile.auth.noSuchTicket";
 
     public NoSuchTicketException(String ticketId) {
         super(KEY, ticketId);

@@ -17,7 +17,16 @@
 package org.craftercms.profile.v2.exceptions;
 
 /**
- * Created by alfonsovasquez on 24/03/14.
+ * Thrown when a username/password pair is invalid.
+ *
+ * @author avasquez
  */
-public class BadCredentialsException {
+public class BadCredentialsException extends I10nProfileException {
+
+    public static final String KEY = "profile.auth.badCredentials";
+
+    public BadCredentialsException() {
+        super(KEY);
+    }
+
 }

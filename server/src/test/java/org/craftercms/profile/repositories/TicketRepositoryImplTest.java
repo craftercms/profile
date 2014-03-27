@@ -70,13 +70,13 @@ public class TicketRepositoryImplTest {
         cal.add(Calendar.YEAR, -1);
         //Adds to a list 2 dates, Now-1 year and Now
         final List<Date> dateList = Arrays.asList(new Date(cal.getTimeInMillis()), new Date());
-        // Most of the test is here, check that given date by the removeTicketsOlderThan is
+        // Most of the test is here, check that given date by the removeOlderThan is
         // correct and can "delete" older.
         when(collection.remove(Mockito.anyString(), Mockito.anyVararg())).then(new Answer<Object>() {
             @Override
             public Object answer(final InvocationOnMock invocation) throws Throwable {
                 // Get the date param send by Repository to Jongo
-                // This is the date calculated by removeTicketsOlderThan
+                // This is the date calculated by removeOlderThan
                 final Date d = (Date)invocation.getArguments()[1];
                 // Simple Filter the original list to get only dates After the calculated by the method.
                 List<Date> undeletedDates = ListUtils.select(dateList, new Predicate<Date>() {

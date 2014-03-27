@@ -23,15 +23,17 @@ package org.craftercms.profile.api;
  */
 public class TenantActions {
 
-    public static final String CREATE =         "create";
-    public static final String READ =           "read";
-    public static final String READ_ALL =       "readAll";
-    public static final String COUNT =          "count";
-    public static final String UPDATE =         "update";
-    public static final String DELETE =         "delete";
-    public static final String MANAGE_PROFILES =   "manageUsers";
+    public static final String CREATE =             "create";
+    public static final String READ =               "read";
+    public static final String READ_ALL =           "readAll";
+    public static final String COUNT =              "count";
+    public static final String UPDATE =             "update";
+    public static final String DELETE =             "delete";
+    public static final String MANAGE_PROFILES =    "manageProfiles";
+    public static final String AUTHENTICATE =       "authenticate";
 
-    public static final String[] ALL_ACTIONS = { CREATE, READ, READ_ALL, COUNT, UPDATE, DELETE, MANAGE_PROFILES};
+    public static final String[] ALL_ACTIONS = { CREATE, READ, READ_ALL, COUNT, UPDATE, DELETE, MANAGE_PROFILES,
+            AUTHENTICATE };
 
     private TenantActions() {
     }

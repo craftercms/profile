@@ -12,14 +12,14 @@ import java.util.Date;
 public class VerificationToken {
 
     private ObjectId _id;
-    private String userId;
+    private String profileId;
     private Date timestamp;
 
     public VerificationToken() {
     }
 
-    public VerificationToken(String userId, Date timestamp) {
-        this.userId = userId;
+    public VerificationToken(String profileId, Date timestamp) {
+        this.profileId = profileId;
         this.timestamp = timestamp;
     }
 
@@ -31,12 +31,12 @@ public class VerificationToken {
         this._id = id;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getProfileId() {
+        return profileId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
     }
 
     public Date getTimestamp() {
@@ -51,7 +51,7 @@ public class VerificationToken {
     public String toString() {
         return "VerificationToken{" +
                 ", id=" + _id +
-                ", userId='" + userId + '\'' +
+                ", profileId='" + profileId + '\'' +
                 ", timestamp=" + timestamp +
                 '}';
     }

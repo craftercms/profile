@@ -32,11 +32,12 @@ import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.v2.exceptions.I10nProfileException;
 import org.craftercms.profile.v2.exceptions.NoSuchTenantException;
 import org.craftercms.profile.v2.repositories.TenantRepository;
-import org.craftercms.profile.v2.services.impl.TenantServiceImpl;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Map;
 import java.util.Set;
+
+import static org.craftercms.profile.v2.services.impl.TenantServiceImpl.*;
 
 /**
  * Aspect that protects profile attributes on read/write/delete.
@@ -152,7 +153,7 @@ public class AttributeSecuringAspect {
                 throw new NoSuchTenantException(name);
             }
         } catch (MongoDataException e) {
-            throw new I10nProfileException(TenantServiceImpl.ERROR_KEY_GET_TENANT_ERROR, name);
+            throw new I10nProfileException(ERROR_KEY_GET_TENANT_ERROR, name);
         }
     }
 
