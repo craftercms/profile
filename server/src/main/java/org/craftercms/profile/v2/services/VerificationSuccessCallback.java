@@ -16,30 +16,16 @@
  */
 package org.craftercms.profile.v2.services;
 
-import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.exceptions.ProfileException;
+import org.craftercms.profile.v2.services.impl.VerificationToken;
 
 /**
- * Service used to verify a particular activity with the profile owner through email (like a recently created profile
- * or a reset password request).
+ * Callback used when a verification token has been correctly verified.
  *
  * @author avasquez
  */
-public interface VerificationService {
+public interface VerificationSuccessCallback {
 
-    /**
-     * Sends the user an email for verification.
-     *
-     * @param profile               the profile of the user
-     * @param verificationBaseUrl   the URL the user should click to verify the new profile
-     */
-    void sendVerificationEmail(Profile profile, String verificationBaseUrl) throws ProfileException;
-
-    /**
-     * Verify that the token received from the user is correct.
-     *
-     * @param tokenId the serialized token, sent in the verification email
-     */
-    void verifyToken(String tokenId) throws ProfileException;
+    void doOnSuccess(VerificationToken token) throws ProfileException;
 
 }

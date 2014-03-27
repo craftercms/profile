@@ -21,11 +21,11 @@ package org.craftercms.profile.v2.exceptions;
  *
  * @author avasquez
  */
-public class InvalidVerificationTokenException extends I10nProfileException {
+public class NoSuchVerificationTokenException extends I10nProfileException {
 
-    private static final String KEY = "profile.verification.invalidVerificationToken";
+    private static final String KEY = "profile.verification.noSuchVerificationToken";
 
-    public InvalidVerificationTokenException() {
+    public NoSuchVerificationTokenException() {
         super(KEY);
     }
 
