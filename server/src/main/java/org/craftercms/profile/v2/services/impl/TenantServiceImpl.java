@@ -36,6 +36,7 @@ import org.craftercms.profile.v2.repositories.ProfileRepository;
 import org.craftercms.profile.v2.repositories.TenantRepository;
 import org.springframework.beans.factory.annotation.Required;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -63,13 +64,11 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     @HasPermission(type = TenantPermission.class, action = TenantActions.CREATE)
-    public Tenant createTenant(String name, boolean verifyNewAccounts, Set<String> roles,
-                               Set<AttributeDefinition> attributeDefinitions) throws ProfileException {
+    public Tenant createTenant(String name, boolean verifyNewProfiles, Set<String> roles) throws ProfileException {
         Tenant tenant = new Tenant();
         tenant.setName(name);
-        tenant.setVerifyNewProfiles(verifyNewAccounts);
+        tenant.setVerifyNewProfiles(verifyNewProfiles);
         tenant.setRoles(roles);
-        tenant.setAttributeDefinitions(attributeDefinitions);
 
         try {
             tenantRepository.save(tenant);
@@ -106,17 +105,13 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     @HasPermission(type = TenantPermission.class, action = TenantActions.DELETE)
-    public Tenant deleteTenant(@SecuredObject String name) throws ProfileException {
-        Tenant tenant = getTenant(name);
-
+    public void deleteTenant(@SecuredObject String name) throws ProfileException {
         try {
             profileRepository.removeAllForTenant(name);
             tenantRepository.removeByName(name);
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_DELETE_TENANT_ERROR, e, name);
         }
-
-        return tenant;
     }
 
     @Override
@@ -141,107 +136,110 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     @HasPermission(type = TenantPermission.class, action = TenantActions.UPDATE)
-    public Tenant verifyNewAccounts(@SecuredObject String tenantName, boolean verify) throws ProfileException {
-        Tenant tenant = getTenant(tenantName);
-        if (tenant != null) {
-            tenant.setVerifyNewProfiles(verify);
-            updateTenant(tenant);
+    public Tenant verifyNewProfiles(@SecuredObject String tenantName, final boolean verify) throws ProfileException {
+        return updateTenant(tenantName, new UpdateCallback() {
 
-            return tenant;
-        } else {
-            throw new NoSuchTenantException(tenantName);
-        }
-    }
-
-    @Override
-    @HasPermission(type = TenantPermission.class, action = TenantActions.UPDATE)
-    public Tenant addRoles(@SecuredObject String tenantName, String... roles) throws ProfileException {
-        Tenant tenant = getTenant(tenantName);
-        if (tenant != null) {
-            Set<String> allRoles = tenant.getRoles();
-
-            for (String role : roles) {
-                allRoles.add(role);
+            @Override
+            public void doWithTenant(Tenant tenant) throws ProfileException {
+                tenant.setVerifyNewProfiles(verify);
             }
 
-            updateTenant(tenant);
-
-            return tenant;
-        } else {
-            throw new NoSuchTenantException(tenantName);
-        }
+        });
     }
 
     @Override
     @HasPermission(type = TenantPermission.class, action = TenantActions.UPDATE)
-    public Tenant removeRoles(@SecuredObject String tenantName, String... roles) throws ProfileException {
-        Tenant tenant = getTenant(tenantName);
-        if (tenant != null) {
-            Set<String> allRoles = tenant.getRoles();
+    public Tenant addRoles(@SecuredObject String tenantName, final Collection<String> roles) throws ProfileException {
+        return updateTenant(tenantName, new UpdateCallback() {
 
-            for (String role : roles) {
-                allRoles.remove(role);
+            @Override
+            public void doWithTenant(Tenant tenant) throws ProfileException {
+                tenant.getRoles().addAll(roles);
             }
 
-            updateTenant(tenant);
-
-            return tenant;
-        } else {
-            throw new NoSuchTenantException(tenantName);
-        }
+        });
     }
 
     @Override
     @HasPermission(type = TenantPermission.class, action = TenantActions.UPDATE)
-    public Tenant addAttributeDefinitions(@SecuredObject String tenantName,
-                                          AttributeDefinition... attributeDefinitions) throws ProfileException {
-        Tenant tenant = getTenant(tenantName);
-        if (tenant != null) {
-            Set<AttributeDefinition> allDefinitions = tenant.getAttributeDefinitions();
+    public Tenant removeRoles(@SecuredObject String tenantName, final Collection<String> roles) throws ProfileException {
+        return updateTenant(tenantName, new UpdateCallback() {
 
-            for (AttributeDefinition definition : attributeDefinitions) {
-                if (!allDefinitions.add(definition)) {
-                    throw new AttributeAlreadyDefinedException(definition.getName(), tenantName);
-                }
+            @Override
+            public void doWithTenant(Tenant tenant) throws ProfileException {
+                tenant.getRoles().removeAll(roles);
             }
 
-            updateTenant(tenant);
-
-            return tenant;
-        } else {
-            throw new NoSuchTenantException(tenantName);
-        }
+        });
     }
 
     @Override
     @HasPermission(type = TenantPermission.class, action = TenantActions.UPDATE)
-    public Tenant removeAttributeDefinitions(@SecuredObject String tenantName, String... attributeNames)
+    public Tenant addAttributeDefinitions(@SecuredObject final String tenantName,
+                                          final Collection<AttributeDefinition> attributeDefinitions)
             throws ProfileException {
-        Tenant tenant = getTenant(tenantName);
-        if (tenant != null) {
-            Set<AttributeDefinition> allDefinitions = tenant.getAttributeDefinitions();
-            String currentApp = Application.getCurrent().getName();
+        return updateTenant(tenantName, new UpdateCallback() {
 
-            for (String attributeName : attributeNames) {
-                for (Iterator<AttributeDefinition> iter = allDefinitions.iterator(); iter.hasNext();) {
-                    AttributeDefinition definition = iter.next();
-                    if (definition.getName().equals(attributeName)) {
-                        if (!definition.getOwner().equals(currentApp)) {
-                            throw new ActionDeniedException("remove", definition);
-                        }
+            @Override
+            public void doWithTenant(Tenant tenant) throws ProfileException {
+                Set<AttributeDefinition> allDefinitions = tenant.getAttributeDefinitions();
 
-                        iter.remove();
-                        break;
+                for (AttributeDefinition definition : attributeDefinitions) {
+                    if (!allDefinitions.add(definition)) {
+                        throw new AttributeAlreadyDefinedException(definition.getName(), tenantName);
                     }
                 }
             }
 
-            updateTenant(tenant);
+        });
+    }
 
-            return tenant;
+    @Override
+    @HasPermission(type = TenantPermission.class, action = TenantActions.UPDATE)
+    public Tenant removeAttributeDefinitions(@SecuredObject String tenantName,
+                                             final Collection<String> attributeNames) throws ProfileException {
+        return updateTenant(tenantName, new UpdateCallback() {
+
+            @Override
+            public void doWithTenant(Tenant tenant) throws ProfileException {
+                Set<AttributeDefinition> allDefinitions = tenant.getAttributeDefinitions();
+                String currentApp = Application.getCurrent().getName();
+
+                for (String attributeName : attributeNames) {
+                    for (Iterator<AttributeDefinition> iter = allDefinitions.iterator(); iter.hasNext();) {
+                        AttributeDefinition attributeDefinition = iter.next();
+                        if (attributeDefinition.getName().equals(attributeName)) {
+                            if (!attributeDefinition.getOwner().equals(currentApp)) {
+                                throw new ActionDeniedException("remove", attributeDefinition);
+                            }
+
+                            iter.remove();
+                            break;
+                        }
+                    }
+                }
+            }
+
+        });
+    }
+
+    protected Tenant updateTenant(String tenantName, UpdateCallback callback) throws ProfileException {
+        Tenant tenant = getTenant(tenantName);
+        if (tenant != null) {
+            callback.doWithTenant(tenant);
+
+            updateTenant(tenant);
         } else {
             throw new NoSuchTenantException(tenantName);
         }
+
+        return tenant;
+    }
+
+    protected interface UpdateCallback {
+
+        void doWithTenant(Tenant tenant) throws ProfileException;
+
     }
 
 }

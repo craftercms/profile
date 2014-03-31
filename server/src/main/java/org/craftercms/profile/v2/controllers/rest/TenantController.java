@@ -1,0 +1,116 @@
+/*
+ * Copyright (C) 2007-2014 Crafter Software Corporation.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.craftercms.profile.v2.controllers.rest;
+
+import org.craftercms.profile.api.AttributeDefinition;
+import org.craftercms.profile.api.Tenant;
+import org.craftercms.profile.api.exceptions.ProfileException;
+import org.craftercms.profile.api.services.TenantService;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Collection;
+import java.util.Set;
+
+import static org.craftercms.profile.api.RestConstants.*;
+
+/**
+ * REST controller for the tenant service.
+ *
+ * @author avasquez
+ */
+@Controller
+@RequestMapping(BASE_URL_TENANT)
+public class TenantController {
+
+    private TenantService tenantService;
+
+    @Required
+    public void setTenantService(TenantService tenantService) {
+        this.tenantService = tenantService;
+    }
+
+    @RequestMapping(value = URL_TENANT_CREATE, method = RequestMethod.POST)
+    public Tenant createTenant(@RequestParam(PARAM_TENANT_NAME) String name,
+                               @RequestParam(PARAM_VERIFY_NEW_PROFILES) boolean verifyNewProfiles,
+                               @RequestParam(PARAM_ROLE) Set<String> roles)
+            throws ProfileException {
+        return tenantService.createTenant(name, verifyNewProfiles, roles);
+    }
+
+    @RequestMapping(value = URL_TENANT_GET, method = RequestMethod.GET)
+    public Tenant getTenant(@RequestParam(PARAM_TENANT_NAME) String name) throws ProfileException {
+        return tenantService.getTenant(name);
+    }
+
+    @RequestMapping(value = URL_TENANT_UPDATE, method = RequestMethod.POST)
+    public Tenant updateTenant(@RequestBody Tenant tenant) throws ProfileException {
+        return tenantService.updateTenant(tenant);
+    }
+
+    @RequestMapping(value = URL_TENANT_DELETE, method = RequestMethod.POST)
+    public void deleteTenant(@RequestParam(PARAM_TENANT_NAME) String name) throws ProfileException {
+        tenantService.deleteTenant(name);
+    }
+
+    @RequestMapping(value = URL_TENANT_COUNT, method = RequestMethod.GET)
+    public long getTenantCount() throws ProfileException {
+        return tenantService.getTenantCount();
+    }
+
+    @RequestMapping(value = URL_TENANT_GET_ALL, method = RequestMethod.GET)
+    public Iterable<Tenant> getAllTenants() throws ProfileException {
+        return tenantService.getAllTenants();
+    }
+
+    @RequestMapping(value = URL_TENANT_VERIFY_NEW_PROFILES, method = RequestMethod.POST)
+    public Tenant verifyNewProfiles(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                    @RequestParam(PARAM_VERIFY) boolean verify) throws ProfileException {
+        return tenantService.verifyNewProfiles(tenantName, verify);
+    }
+
+    @RequestMapping(value = URL_TENANT_ADD_ROLES, method = RequestMethod.POST)
+    public Tenant addRoles(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+                           @RequestParam(PARAM_ROLE) Collection<String> roles) throws ProfileException {
+        return tenantService.addRoles(tenantName, roles);
+    }
+
+    @RequestMapping(value = URL_TENANT_REMOVE_ROLES, method = RequestMethod.POST)
+    public Tenant removeRoles(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+                              @RequestParam(PARAM_ROLE) Collection<String> roles) throws ProfileException {
+        return tenantService.removeRoles(tenantName, roles);
+    }
+
+    @RequestMapping(value = URL_TENANT_ADD_ATTRIBUTE_DEFINITIONS, method = RequestMethod.POST)
+    public Tenant addAttributeDefinitions(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                          @RequestBody Collection<AttributeDefinition> attributeDefinitions)
+            throws ProfileException {
+        return tenantService.addAttributeDefinitions(tenantName, attributeDefinitions);
+    }
+
+    @RequestMapping(value = URL_TENANT_REMOVE_ATTRIBUTE_DEFINITIONS, method = RequestMethod.POST)
+    public Tenant removeAttributeDefinitions(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                             @RequestParam(PARAM_ATTRIBUTE_NAME) Collection<String> attributeNames)
+            throws ProfileException {
+        return tenantService.removeAttributeDefinitions(tenantName, attributeNames);
+    }
+
+}

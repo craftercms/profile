@@ -68,16 +68,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Ticket authenticate(@SecuredObject String tenant, String username, String password) throws ProfileException {
+    public Ticket authenticate(@SecuredObject String tenantName, String username, String password)
+            throws ProfileException {
         try {
-            Profile profile = profileService.getProfileByUsername(tenant, username);
+            Profile profile = profileService.getProfileByUsername(tenantName, username);
 
             if (profile == null) {
                 // Invalid username
                 throw new BadCredentialsException();
             }
             if (!profile.isEnabled()) {
-                throw new DisabledProfileException(profile.getId().toString(), tenant);
+                throw new DisabledProfileException(profile.getId().toString(), tenantName);
             }
             if (!comparePasswords(profile.getPassword(), password)) {
                 // Invalid password
@@ -92,12 +93,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             return ticket;
         } catch (MongoDataException e) {
-            throw new I10nProfileException(ERROR_KEY_AUTHENTICATE_ERROR, username, tenant);
+            throw new I10nProfileException(ERROR_KEY_AUTHENTICATE_ERROR, username, tenantName);
         }
     }
 
     @Override
-    public Ticket getTicket(String ticketId) throws ProfileException {
+    public Ticket getTicket(@SecuredObject String tenantName, String ticketId) throws ProfileException {
         try {
             Ticket ticket = ticketRepository.findById(ticketId);
             if (ticket != null) {
@@ -115,11 +116,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void invalidateTicket(@SecuredObject String tenant, String ticket) throws ProfileException {
+    public void invalidateTicket(@SecuredObject String tenantName, String ticketId) throws ProfileException {
         try {
-            ticketRepository.removeById(ticket);
+            ticketRepository.removeById(ticketId);
         } catch (MongoDataException e) {
-            throw new I10nProfileException(ERROR_KEY_INVALIDATE_TICKET_ERROR, ticket);
+            throw new I10nProfileException(ERROR_KEY_INVALIDATE_TICKET_ERROR, ticketId);
         }
     }
 

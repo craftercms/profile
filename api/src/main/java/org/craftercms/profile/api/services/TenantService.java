@@ -4,6 +4,7 @@ import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ProfileException;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -17,14 +18,12 @@ public interface TenantService {
      * Creates the given tenant, failing it already has been created.
      *
      * @param name                  the tenant's name
-     * @param verifyNewAccounts     if new accounts should be verified through email by the user
+     * @param verifyNewProfiles     if new profiles should be verified through email by the user
      * @param roles                 the usable roles by the tenant's profiles
-     * @param attributeDefinitions  the tenant's attribute definitions
      *
      * @return the created tenant
      */
-    Tenant createTenant(String name, boolean verifyNewAccounts, Set<String> roles,
-                        Set<AttributeDefinition> attributeDefinitions) throws ProfileException;
+    Tenant createTenant(String name, boolean verifyNewProfiles, Set<String> roles) throws ProfileException;
 
     /**
      * Returns a tenant.
@@ -39,8 +38,6 @@ public interface TenantService {
      * Updates a tenant.
      *
      * @param tenant the updated tenant
-     *
-     * @return the tenant
      */
     Tenant updateTenant(Tenant tenant) throws ProfileException;
 
@@ -48,10 +45,8 @@ public interface TenantService {
      * Deletes a tenant.
      *
      * @param name  the tenant's name
-     *
-     * @return the tenant
      */
-    Tenant deleteTenant(String name) throws ProfileException;
+    void deleteTenant(String name) throws ProfileException;
 
     /**
      * Returns the total number of tenants.
@@ -68,14 +63,14 @@ public interface TenantService {
     Iterable<Tenant> getAllTenants() throws ProfileException;
 
     /**
-     * Sets verify new accounts for specified tenant.
+     * Sets verify new profiles for specified tenant.
      *
      * @param tenantName    the tenant's name
-     * @param verify        true to verify new accounts through email, false otherwise
+     * @param verify        true to verify new profiles through email, false otherwise
      *
      * @return the tenant
      */
-    Tenant verifyNewAccounts(String tenantName, boolean verify) throws ProfileException;
+    Tenant verifyNewProfiles(String tenantName, boolean verify) throws ProfileException;
 
     /**
      * Adds the given roles to the specified tenant.
@@ -85,7 +80,7 @@ public interface TenantService {
      *
      * @return the tenant
      */
-    Tenant addRoles(String tenantName, String... roles) throws ProfileException;
+    Tenant addRoles(String tenantName, Collection<String> roles) throws ProfileException;
 
     /**
      * Removes the given roles from the specified tenant.
@@ -95,7 +90,7 @@ public interface TenantService {
      *
      * @return the tenant
      */
-    Tenant removeRoles(String tenantName, String... roles) throws ProfileException;
+    Tenant removeRoles(String tenantName, Collection<String> roles) throws ProfileException;
 
     /**
      * Adds the given attribute definitions to the current tenant.
@@ -105,7 +100,7 @@ public interface TenantService {
      *
      * @return the tenant
      */
-    Tenant addAttributeDefinitions(String tenantName, AttributeDefinition... attributeDefinitions)
+    Tenant addAttributeDefinitions(String tenantName, Collection<AttributeDefinition> attributeDefinitions)
             throws ProfileException;
 
     /**
@@ -116,6 +111,6 @@ public interface TenantService {
      *
      * @return the tenant
      */
-    Tenant removeAttributeDefinitions(String tenantName, String... attributeNames) throws ProfileException;
+    Tenant removeAttributeDefinitions(String tenantName, Collection<String> attributeNames) throws ProfileException;
 
 }

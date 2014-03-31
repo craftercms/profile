@@ -30,17 +30,19 @@ public interface VerificationService {
     /**
      * Sends the user an email for verification.
      *
-     * @param profile               the profile of the user
-     * @param verificationBaseUrl   the URL the user should click to verify the new profile
+     * @param profile           the profile of the user
+     * @param verificationUrl   the URL the user should click to verify the new profile
      */
-    void sendEmail(Profile profile, String verificationBaseUrl) throws ProfileException;
+    void sendEmail(Profile profile, String verificationUrl) throws ProfileException;
 
     /**
      * Verify that the token received from the user is correct.
      *
      * @param tokenId   the serialized token, sent in the verification email
      * @param callback  callback used on verification success
+     *
+     * @return the profile associated to the token
      */
-    void verifyToken(String tokenId, VerificationSuccessCallback callback) throws ProfileException;
+    Profile verifyToken(String tokenId, VerificationSuccessCallback callback) throws ProfileException;
 
 }

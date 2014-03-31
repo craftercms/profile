@@ -34,10 +34,11 @@ import org.craftercms.profile.v2.exceptions.NoSuchTenantException;
 import org.craftercms.profile.v2.repositories.TenantRepository;
 import org.springframework.beans.factory.annotation.Required;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import static org.craftercms.profile.v2.services.impl.TenantServiceImpl.*;
+import static org.craftercms.profile.v2.services.impl.TenantServiceImpl.ERROR_KEY_GET_TENANT_ERROR;
 
 /**
  * Aspect that protects profile attributes on read/write/delete.
@@ -68,9 +69,9 @@ public class AttributeSecuringAspect {
     }
 
     @AfterReturning(value = "execution(* org.craftercms.profile.api.services.ProfileService.getAttributes()) && " +
-                            "args(tenantName, profileId, attributeNames)", returning = "attributes",
-                    argNames = "tenantName, profileId, attributeNames, attributes")
-    public void filterNonReadableAttributes(String tenantName, String profileId, String[] attributeNames,
+                            "args(tenantName, profileId, attributesToReturn)", returning = "attributes",
+                    argNames = "tenantName, profileId, attributesToReturn, attributes")
+    public void filterNonReadableAttributes(String tenantName, String profileId, String[] attributesToReturn,
                                             Map<String, Object> attributes) throws I10nProfileException {
         Tenant tenant = getTenant(tenantName);
         Set<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
@@ -81,9 +82,10 @@ public class AttributeSecuringAspect {
     }
 
     @Before(value = "execution(* org.craftercms.profile.api.services.ProfileService.updateAttributes()) && " +
-                    "args(tenantName, profileId, attributes)", argNames = "tenantName, profileId, attributes")
-    public void removeNonWritableAttributes(String tenantName, String profileId, Map<String, Object> attributes)
-            throws I10nProfileException {
+                    "args(tenantName, profileId, attributes, attributesToReturn)",
+            argNames = "tenantName, profileId, attributes, attributesToReturn")
+    public void removeNonWritableAttributes(String tenantName, String profileId, Map<String, Object> attributes,
+                                            String[] attributesToReturn) throws I10nProfileException {
         Tenant tenant = getTenant(tenantName);
         Set<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
 
@@ -92,10 +94,11 @@ public class AttributeSecuringAspect {
         }
     }
 
-    @Before(value = "execution(* org.craftercms.profile.api.services.ProfileService.deleteAttributes()) && " +
-            "args(tenantName, profileId, attributeNames)", argNames = "tenantName, profileId, attributeNames")
-    public void removeNonDeletableAttributes(String tenantName, String profileId, String[] attributeNames)
-            throws I10nProfileException {
+    @Before(value = "execution(* org.craftercms.profile.api.services.ProfileService.removeAttributes()) && " +
+                    "args(tenantName, profileId, attributeNames, attributesToReturn)",
+            argNames = "tenantName, profileId, attributeNames, attributesToReturn")
+    public void removeNonDeletableAttributes(String tenantName, String profileId, Collection<String> attributeNames,
+                                             String[] attributesToReturn) throws I10nProfileException {
         Tenant tenant = getTenant(tenantName);
         Set<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
 

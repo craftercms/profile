@@ -16,6 +16,7 @@
  */
 package org.craftercms.profile.v2.services;
 
+import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.v2.services.impl.VerificationToken;
 
@@ -26,6 +27,13 @@ import org.craftercms.profile.v2.services.impl.VerificationToken;
  */
 public interface VerificationSuccessCallback {
 
-    void doOnSuccess(VerificationToken token) throws ProfileException;
+    /**
+     * Does some logic after successful verification
+     *
+     * @param token the token just verified
+     *
+     * @return the profile associated to the token
+     */
+    Profile doOnSuccess(VerificationToken token) throws ProfileException;
 
 }

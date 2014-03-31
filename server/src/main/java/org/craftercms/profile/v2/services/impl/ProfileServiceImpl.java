@@ -37,10 +37,7 @@ import org.craftercms.profile.v2.services.VerificationSuccessCallback;
 import org.craftercms.profile.v2.utils.EmailUtils;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Default implementation of {@link org.craftercms.profile.api.services.ProfileService}.
@@ -99,7 +96,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Profile createProfile(@SecuredObject String tenantName, String username, String password, String email,
-                                 boolean enabled, Set<String> roles, String verificationBaseUrl)
+                                 boolean enabled, Set<String> roles, String verificationUrl)
             throws ProfileException {
         if (!EmailUtils.validateEmail(email)) {
             throw new InvalidEmailAddressException(email);
@@ -130,7 +127,7 @@ public class ProfileServiceImpl implements ProfileService {
             profileRepository.save(profile);
 
             if (emailNewProfiles) {
-                newProfileVerificationService.sendEmail(profile, verificationBaseUrl);
+                newProfileVerificationService.sendEmail(profile, verificationUrl);
             }
 
             return profile;
@@ -140,14 +137,14 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void updateProfile(@SecuredObject final String tenantName, final String username, final String profileId,
+    public Profile updateProfile(@SecuredObject final String tenantName, final String username, final String profileId,
                                  final String password, final String email, final Boolean enabled,
-                                 final Set<String> roles) throws ProfileException {
+                                 final Set<String> roles, String... attributesToReturn) throws ProfileException {
         if (StringUtils.isNotEmpty(email) && !EmailUtils.validateEmail(email)) {
             throw new InvalidEmailAddressException(email);
         }
 
-        updateProfile(tenantName, profileId, new UpdateCallback() {
+        return updateProfile(tenantName, profileId, new UpdateCallback() {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
@@ -171,26 +168,24 @@ public class ProfileServiceImpl implements ProfileService {
                 }
             }
 
-        });
+        }, attributesToReturn);
     }
 
     @Override
-    public void verifyProfile(String tenantName, String verificationTokenId) throws ProfileException {
+    public Profile verifyProfile(final String tenantName, String verificationTokenId,
+                                 final String... attributesToReturn) throws ProfileException {
         VerificationSuccessCallback callback = new VerificationSuccessCallback() {
 
             @Override
-            public void doOnSuccess(VerificationToken token) throws ProfileException {
+            public Profile doOnSuccess(VerificationToken token) throws ProfileException {
                 try {
-                    Profile profile = profileRepository.findById(token.getProfileId());
-
-                    if (profile == null) {
-                        throw new NoSuchProfileException(token.getProfileId());
-                    }
-
+                    Profile profile = getNonNullProfile(tenantName, token.getProfileId(), attributesToReturn);
                     profile.setEnabled(true);
                     profile.setVerified(true);
 
                     profileRepository.save(profile);
+
+                    return profile;
                 } catch (MongoDataException e) {
                     throw new I10nProfileException(ERROR_KEY_PROFILE_UPDATE_ERROR, e);
                 }
@@ -198,57 +193,59 @@ public class ProfileServiceImpl implements ProfileService {
 
         };
 
-        newProfileVerificationService.verifyToken(verificationTokenId, callback);
+        return newProfileVerificationService.verifyToken(verificationTokenId, callback);
     }
 
     @Override
-    public void enableProfile(@SecuredObject String tenantName, String profileId) throws ProfileException {
-        updateProfile(tenantName, profileId, new UpdateCallback() {
+    public Profile enableProfile(@SecuredObject String tenantName, String profileId, String... attributesToReturn)
+            throws ProfileException {
+        return updateProfile(tenantName, profileId, new UpdateCallback() {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
                 profile.setEnabled(true);
             }
 
-        });
+        }, attributesToReturn);
     }
 
     @Override
-    public void disableProfile(@SecuredObject String tenantName, String profileId) throws ProfileException {
-        updateProfile(tenantName, profileId, new UpdateCallback() {
+    public Profile disableProfile(@SecuredObject String tenantName, String profileId, String... attributesToReturn)
+            throws ProfileException {
+        return updateProfile(tenantName, profileId, new UpdateCallback() {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
                 profile.setEnabled(false);
             }
 
-        });
+        }, attributesToReturn);
     }
 
     @Override
-    public void addRoles(@SecuredObject String tenantName, String profileId, final Set<String> roles)
-            throws ProfileException {
-        updateProfile(tenantName, profileId, new UpdateCallback() {
+    public Profile addRoles(@SecuredObject String tenantName, String profileId, final Collection<String> roles,
+                            String... attributesToReturn) throws ProfileException {
+        return updateProfile(tenantName, profileId, new UpdateCallback() {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
                 profile.getRoles().addAll(roles);
             }
 
-        });
+        }, attributesToReturn);
     }
 
     @Override
-    public void removeRoles(@SecuredObject String tenantName, String profileId, final Set<String> roles)
-            throws ProfileException {
-        updateProfile(tenantName, profileId, new UpdateCallback() {
+    public Profile removeRoles(@SecuredObject String tenantName, String profileId, final Collection<String> roles,
+                               String... attributesToReturn) throws ProfileException {
+        return updateProfile(tenantName, profileId, new UpdateCallback() {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
                 profile.getRoles().removeAll(roles);
             }
 
-        });
+        }, attributesToReturn);
     }
 
     @Override
@@ -265,9 +262,10 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void updateAttributes(@SecuredObject String tenantName, String profileId,
-                                 final Map<String, Object> attributes) throws ProfileException {
-        updateProfile(tenantName, profileId, new UpdateCallback() {
+    public Profile updateAttributes(@SecuredObject String tenantName, String profileId,
+                                    final Map<String, Object> attributes, String... attributesToReturn)
+            throws ProfileException {
+        return updateProfile(tenantName, profileId, new UpdateCallback() {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
@@ -275,25 +273,25 @@ public class ProfileServiceImpl implements ProfileService {
                         profile.getAttributes(), attributes));
             }
 
-        });
+        }, attributesToReturn);
     }
 
     @Override
-    public void deleteAttributes(@SecuredObject String tenantName, String profileId,
-                                 final String... attributeNames) throws ProfileException {
-        updateProfile(tenantName, profileId, new UpdateCallback() {
+    public Profile removeAttributes(@SecuredObject String tenantName, String profileId,
+                                    final Collection<String> attributeNames, String... attributesToReturn)
+            throws ProfileException {
+        return updateProfile(tenantName, profileId, new UpdateCallback() {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
                 Map<String, Object> attributes = profile.getAttributes();
-                if (MapUtils.isNotEmpty(attributes) && ArrayUtils.isNotEmpty(attributeNames)) {
-                    for (String attributeName : attributeNames) {
-                        attributes.remove(attributeName);
-                    }
+
+                for (String attributeName : attributeNames) {
+                    attributes.remove(attributeName);
                 }
             }
 
-        });
+        }, attributesToReturn);
     }
 
     @Override
@@ -326,17 +324,17 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Profile getProfileByTicket(@SecuredObject String tenantName, String ticket,
+    public Profile getProfileByTicket(@SecuredObject String tenantName, String ticketId,
                                       String... attributesToReturn) throws ProfileException {
         try {
-            Ticket ticketObj = ticketRepository.findById(ticket);
-            if (ticketObj != null) {
-                return profileRepository.findById(ticketObj.getUserId(), attributesToReturn);
+            Ticket ticket = ticketRepository.findById(ticketId);
+            if (ticket != null) {
+                return profileRepository.findById(ticket.getUserId(), attributesToReturn);
             } else {
-                throw new NoSuchTicketException(ticket);
+                throw new NoSuchTicketException(ticketId);
             }
         } catch (MongoDataException e) {
-            throw new I10nProfileException(ERROR_KEY_GET_PROFILE_BY_TICKET_ERROR, e, ticket, tenantName);
+            throw new I10nProfileException(ERROR_KEY_GET_PROFILE_BY_TICKET_ERROR, e, ticketId, tenantName);
         }
     }
 
@@ -350,8 +348,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Iterable<Profile> getProfiles(@SecuredObject String tenantName, List<String> profileIds, String sortBy,
-                                         SortOrder sortOrder, String... attributesToReturn) throws ProfileException {
+    public Iterable<Profile> getProfilesByIds(@SecuredObject String tenantName, List<String> profileIds, String sortBy,
+                                              SortOrder sortOrder, String... attributesToReturn) throws ProfileException {
         try {
             return profileRepository.findByIds(profileIds, sortBy, sortOrder, attributesToReturn);
         } catch (MongoDataException e) {
@@ -395,42 +393,42 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void forgotPassword(@SecuredObject String tenantName, String profileId, String changePasswordBaseUrl)
-            throws ProfileException{
-        Profile profile = getNonNullProfile(tenantName, profileId);
+    public Profile forgotPassword(@SecuredObject String tenantName, String profileId, String resetPasswordUrl,
+                                  String... attributesToReturn) throws ProfileException {
+        Profile profile = getNonNullProfile(tenantName, profileId, attributesToReturn);
 
-        resetPasswordVerificationService.sendEmail(profile, changePasswordBaseUrl);
+        resetPasswordVerificationService.sendEmail(profile, resetPasswordUrl);
+
+        return profile;
     }
 
     @Override
-    public void resetPassword(@SecuredObject String tenantName, String resetTokenId, final String newPassword)
-            throws ProfileException {
+    public Profile resetPassword(@SecuredObject final String tenantName, String resetTokenId, final String newPassword,
+                                 final String... attributesToReturn) throws ProfileException {
         VerificationSuccessCallback callback = new VerificationSuccessCallback() {
 
             @Override
-            public void doOnSuccess(VerificationToken token) throws ProfileException {
+            public Profile doOnSuccess(VerificationToken token) throws ProfileException {
                 try {
-                    Profile profile = profileRepository.findById(token.getProfileId());
-
-                    if (profile == null) {
-                        throw new NoSuchProfileException(token.getProfileId());
-                    }
-
+                    Profile profile = getNonNullProfile(tenantName, token.getProfileId(), attributesToReturn);
                     profile.setPassword(hashPassword(newPassword));
 
                     profileRepository.save(profile);
+
+                    return profile;
                 } catch (MongoDataException e) {
-                    throw new I10nProfileException(ERROR_KEY_PROFILE_UPDATE_ERROR, e);
+                    throw new I10nProfileException(ERROR_KEY_RESET_PASSWORD_ERROR, e);
                 }
             }
 
         };
 
-        resetPasswordVerificationService.verifyToken(resetTokenId, callback);
+        return resetPasswordVerificationService.verifyToken(resetTokenId, callback);
     }
 
-    protected Profile getNonNullProfile(String tenantName, String id) throws ProfileException {
-        Profile profile = getProfile(tenantName, id);
+    protected Profile getNonNullProfile(String tenantName, String id, String... attributesToReturn)
+            throws ProfileException {
+        Profile profile = getProfile(tenantName, id, attributesToReturn);
         if (profile != null) {
             return profile;
         } else {
@@ -454,8 +452,10 @@ public class ProfileServiceImpl implements ProfileService {
         return hashedPswd + PASSWORD_SEP + digest.getBase64Salt();
     }
 
-    protected void updateProfile(String tenantName, String profileId, UpdateCallback callback) throws ProfileException {
-        Profile profile = getNonNullProfile(tenantName, profileId);
+    protected Profile updateProfile(String tenantName, String profileId, UpdateCallback callback,
+                                    String... attributesToReturn)
+            throws ProfileException {
+        Profile profile = getNonNullProfile(tenantName, profileId, attributesToReturn);
 
         callback.doWithProfile(profile);
 
@@ -464,6 +464,8 @@ public class ProfileServiceImpl implements ProfileService {
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_UPDATE_PROFILE_ERROR, e, profileId, tenantName);
         }
+
+        return profile;
     }
 
     protected interface UpdateCallback {

@@ -120,7 +120,7 @@ public class VerificationServiceImpl implements VerificationService {
     }
 
     @Override
-    public void verifyToken(String tokenId, VerificationSuccessCallback callback) throws ProfileException  {
+    public Profile verifyToken(String tokenId, VerificationSuccessCallback callback) throws ProfileException  {
         VerificationToken token;
         try {
             token = tokenRepository.findById(tokenId);
@@ -137,7 +137,7 @@ public class VerificationServiceImpl implements VerificationService {
         expirationTime.add(Calendar.SECOND, tokenMaxAge);
 
         if (Calendar.getInstance().before(token.getTimestamp())) {
-            callback.doOnSuccess(token);
+            return callback.doOnSuccess(token);
         } else {
             throw new ExpiredVerificationTokenException(expirationTime.getTime());
         }

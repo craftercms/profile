@@ -13,29 +13,30 @@ public interface AuthenticationService {
     /**
      * Authenticates the user, and returns a ticket identifying the authentication.
      *
-     * @param tenant    the tenant's name
-     * @param username  the username
-     * @param password  the password
+     * @param tenantName    the tenant's name
+     * @param username      the username
+     * @param password      the password
      *
      * @return the ticket
      */
-    Ticket authenticate(String tenant, String username, String password) throws ProfileException;
+    Ticket authenticate(String tenantName, String username, String password) throws ProfileException;
 
     /**
      * Returns the ticket object for the given ticket ID.
      *
-     * @param ticketId the ID of the ticket
+     * @param tenantName    the tenant's name
+     * @param ticketId      the ID of the ticket
      *
      * @return the ticket object, or null if no ticket found or ticket has expired
      */
-    Ticket getTicket(String ticketId) throws ProfileException;
+    Ticket getTicket(String tenantName, String ticketId) throws ProfileException;
 
     /**
      * Invalidates the ticket.
      *
-     * @param tenant    the tenant's name
-     * @param ticket    the ticket to invalidate
+     * @param tenantName    the tenant's name
+     * @param ticketId      the ID of the ticket to invalidate
      */
-    void invalidateTicket(String tenant, String ticket) throws ProfileException;
+    void invalidateTicket(String tenantName, String ticketId) throws ProfileException;
 
 }
