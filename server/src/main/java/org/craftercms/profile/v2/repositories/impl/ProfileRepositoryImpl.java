@@ -23,7 +23,7 @@ import org.bson.types.ObjectId;
 import org.craftercms.commons.mongo.JongoRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.Profile;
-import org.craftercms.profile.api.utils.SortOrder;
+import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.v2.repositories.ProfileRepository;
 import org.jongo.Find;
 import org.jongo.FindOne;
@@ -48,7 +48,7 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
     public static final String KEY_FIND_BY_IDS_QUERY =                  "profile.profile.byIds";
     public static final String KEY_FIND_BY_TENANT_QUERY =               "profile.profile.byTenant";
     public static final String KEY_FIND_BY_TENANT_AND_ROLE_QUERY =      "profile.profile.byTenantAndRole";
-    public static final String KEY_FIND_BY_TENANT_AND_ATTRIB_QUERY =    "profile.profile.byTenantAndAttributeValue";
+    public static final String KEY_FIND_BY_TENANT_AND_ATTRIB_QUERY =    "profile.profile.byTenantAndAttribute";
 
     public static final String ATTRIBUTE_FIELD_PREFIX = "attributes.";
 

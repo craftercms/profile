@@ -29,71 +29,66 @@
     <entry key="profile.profiles.defaultFields">
         {
         "_id" :1,
-        "userName" : 1,
+        "username" : 1,
         "password" : 1,
-        "active" : 1,
-        "created" : 1,
-        "modified" : 1,
-        "tenantName" : 1,
-        "email" : 1,
-        "verify" :1,
-        "roles":1
+        "email": 1,
+        "verified": 1,
+        "enabled": 1,
+        "created": 1,
+        "modified": 1,
+        "tenant": 1,
+        "roles": 1
         }
     </entry>
 
-    <entry key="profile.ticket.ByUsername">
-        {username:#}
-    </entry>
-    <entry key="profile.ticket.expirationDateOlder">
-        {date:{"$lt": #}}
+    <!-- Profile Queries -->
+
+    <entry key="profile.profile.byTenantAndUsername">
+        {tenant: #, username: #}
     </entry>
 
-    <entry key="profile.ticket.getById">
-        {_id:#}
+    <entry key="profile.profile.countByTenant">
+        {tenant: #}
     </entry>
 
-    <entry key="profile.tenant.byRoles">
-        {roles : {$in:#} }
+    <entry key="profile.profile.removeByTenant">
+        {tenant: #}
+    </entry>
+
+    <entry key="profile.profile.byIds">
+        {_id: {"$in": #}}
+    </entry>
+
+    <entry key="profile.profile.byTenant">
+        {tenant: #}
+    </entry>
+
+    <entry key="profile.profile.byTenantAndRole">
+        {tenant: #, roles: #}
+    </entry>
+
+    <entry key="profile.profile.byTenantAndAttribute">
+        {tenant: #, attributes.#: #}
+    </entry>
+
+    <!-- Tenant Queries -->
+
+    <entry key="profile.tenant.nameIndex">
+        {name: 1}
     </entry>
 
     <entry key="profile.tenant.byName">
-        {tenantName : #}
+        {name: #}
     </entry>
 
-    <entry key="profile.role.byName">
-        {roleName :#}
+    <entry key="profile.tenant.removeByName">
+        {name: #}
     </entry>
 
-    <entry key="profile.grouproles.byNameAndTenantName">
-        {name:{$in:#},tenantName:#}
+    <!-- Ticket Queries -->
+
+    <entry key="profile.ticket.removeOlderThan">
+        {timestamp: {"$lt": #}}
     </entry>
 
-    <entry key="profile.grouproles.byTenantName">
-        {tenantName:#}
-    </entry>
-
-    <entry key="profile.profiles.getByRolesAndTenant">
-        {tenantName:#,roles:{$in:{#}}
-    </entry>
-    <entry key="profile.profiles.byTenantName">
-        {tenantName:#}
-    </entry>
-    <entry key="profile.profiles.byId">
-        {_id:#}
-    </entry>
-    <entry key="profile.profile.byIds">
-        {_id:{$in:#}}
-    </entry>
-    <entry key="profile.profile.ByUsername">
-        {userName:#,tenantName:#}
-    </entry>
-    <entry key="profile.profile.byTenant">
-        {tenantName:#}
-    </entry>
-    <entry key="profile.profile.removeRole">
-        { $pull: { roles: # } }
-    </entry>
-    <entry key="profile.profile.byAttributeValue">
-        {attributes.#:#}
-    </entry>
 </properties>

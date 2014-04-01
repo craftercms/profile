@@ -16,7 +16,6 @@
  */
 package org.craftercms.profile.v2.services.impl;
 
-import org.craftercms.commons.mongo.DuplicateKeyException;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.annotations.HasPermission;
@@ -30,7 +29,6 @@ import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.v2.exceptions.AttributeAlreadyDefinedException;
 import org.craftercms.profile.v2.exceptions.I10nProfileException;
 import org.craftercms.profile.v2.exceptions.NoSuchTenantException;
-import org.craftercms.profile.v2.exceptions.TenantAlreadyExistsException;
 import org.craftercms.profile.v2.permissions.Application;
 import org.craftercms.profile.v2.repositories.ProfileRepository;
 import org.craftercms.profile.v2.repositories.TenantRepository;
@@ -62,6 +60,11 @@ public class TenantServiceImpl implements TenantService {
         this.tenantRepository = tenantRepository;
     }
 
+    @Required
+    public void setProfileRepository(ProfileRepository profileRepository) {
+        this.profileRepository = profileRepository;
+    }
+
     @Override
     @HasPermission(type = TenantPermission.class, action = TenantActions.CREATE)
     public Tenant createTenant(String name, boolean verifyNewProfiles, Set<String> roles) throws ProfileException {
@@ -72,8 +75,6 @@ public class TenantServiceImpl implements TenantService {
 
         try {
             tenantRepository.save(tenant);
-        } catch (DuplicateKeyException e) {
-            throw new TenantAlreadyExistsException(name);
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_CREATE_TENANT_ERROR, e, name);
         }

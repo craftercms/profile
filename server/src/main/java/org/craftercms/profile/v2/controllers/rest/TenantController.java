@@ -22,10 +22,7 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.TenantService;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.Set;
@@ -49,6 +46,7 @@ public class TenantController {
     }
 
     @RequestMapping(value = URL_TENANT_CREATE, method = RequestMethod.POST)
+    @ResponseBody
     public Tenant createTenant(@RequestParam(PARAM_TENANT_NAME) String name,
                                @RequestParam(PARAM_VERIFY_NEW_PROFILES) boolean verifyNewProfiles,
                                @RequestParam(PARAM_ROLE) Set<String> roles)
@@ -57,49 +55,58 @@ public class TenantController {
     }
 
     @RequestMapping(value = URL_TENANT_GET, method = RequestMethod.GET)
+    @ResponseBody
     public Tenant getTenant(@RequestParam(PARAM_TENANT_NAME) String name) throws ProfileException {
         return tenantService.getTenant(name);
     }
 
     @RequestMapping(value = URL_TENANT_UPDATE, method = RequestMethod.POST)
+    @ResponseBody
     public Tenant updateTenant(@RequestBody Tenant tenant) throws ProfileException {
         return tenantService.updateTenant(tenant);
     }
 
     @RequestMapping(value = URL_TENANT_DELETE, method = RequestMethod.POST)
+    @ResponseBody
     public void deleteTenant(@RequestParam(PARAM_TENANT_NAME) String name) throws ProfileException {
         tenantService.deleteTenant(name);
     }
 
     @RequestMapping(value = URL_TENANT_COUNT, method = RequestMethod.GET)
+    @ResponseBody
     public long getTenantCount() throws ProfileException {
         return tenantService.getTenantCount();
     }
 
     @RequestMapping(value = URL_TENANT_GET_ALL, method = RequestMethod.GET)
+    @ResponseBody
     public Iterable<Tenant> getAllTenants() throws ProfileException {
         return tenantService.getAllTenants();
     }
 
     @RequestMapping(value = URL_TENANT_VERIFY_NEW_PROFILES, method = RequestMethod.POST)
+    @ResponseBody
     public Tenant verifyNewProfiles(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                     @RequestParam(PARAM_VERIFY) boolean verify) throws ProfileException {
         return tenantService.verifyNewProfiles(tenantName, verify);
     }
 
     @RequestMapping(value = URL_TENANT_ADD_ROLES, method = RequestMethod.POST)
+    @ResponseBody
     public Tenant addRoles(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                            @RequestParam(PARAM_ROLE) Collection<String> roles) throws ProfileException {
         return tenantService.addRoles(tenantName, roles);
     }
 
     @RequestMapping(value = URL_TENANT_REMOVE_ROLES, method = RequestMethod.POST)
+    @ResponseBody
     public Tenant removeRoles(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                               @RequestParam(PARAM_ROLE) Collection<String> roles) throws ProfileException {
         return tenantService.removeRoles(tenantName, roles);
     }
 
     @RequestMapping(value = URL_TENANT_ADD_ATTRIBUTE_DEFINITIONS, method = RequestMethod.POST)
+    @ResponseBody
     public Tenant addAttributeDefinitions(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                           @RequestBody Collection<AttributeDefinition> attributeDefinitions)
             throws ProfileException {
@@ -107,6 +114,7 @@ public class TenantController {
     }
 
     @RequestMapping(value = URL_TENANT_REMOVE_ATTRIBUTE_DEFINITIONS, method = RequestMethod.POST)
+    @ResponseBody
     public Tenant removeAttributeDefinitions(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                              @RequestParam(PARAM_ATTRIBUTE_NAME) Collection<String> attributeNames)
             throws ProfileException {

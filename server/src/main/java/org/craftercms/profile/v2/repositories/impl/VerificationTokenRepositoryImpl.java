@@ -26,7 +26,8 @@ import org.craftercms.profile.v2.services.impl.VerificationToken;
  *
  * @author avasquez
  */
-public class VerificationTokenRepositoryImpl extends JongoRepository<VerificationToken> implements VerificationTokenRepository {
+public class VerificationTokenRepositoryImpl extends JongoRepository<VerificationToken> implements
+        VerificationTokenRepository {
 
     /**
      * Creates a instance of a Jongo Repository.

@@ -19,13 +19,10 @@ package org.craftercms.profile.v2.controllers.rest;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
-import org.craftercms.profile.api.utils.SortOrder;
+import org.craftercms.profile.api.SortOrder;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -51,6 +48,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_CREATE, method = RequestMethod.POST)
+    @ResponseBody
     public Profile createProfile(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                  @RequestParam(PARAM_USERNAME) String username,
                                  @RequestParam(PARAM_PASSWORD) String password,
@@ -63,6 +61,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_UPDATE, method = RequestMethod.POST)
+    @ResponseBody
     public Profile updateProfile(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                  @RequestParam(PARAM_PROFILE_ID) String profileId,
                                  @RequestParam(value = PARAM_USERNAME, required = false) String username,
@@ -78,6 +77,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_ENABLE, method = RequestMethod.POST)
+    @ResponseBody
     public Profile enableProfile(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                  @RequestParam(PARAM_PROFILE_ID) String profileId,
                                  @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
@@ -87,6 +87,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_DISABLE, method = RequestMethod.POST)
+    @ResponseBody
     public Profile disableProfile(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                   @RequestParam(PARAM_PROFILE_ID) String profileId,
                                   @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
@@ -95,6 +96,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_ADD_ROLES, method = RequestMethod.POST)
+    @ResponseBody
     public Profile addRoles(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                             @RequestParam(PARAM_PROFILE_ID) String profileId,
                             @RequestParam(PARAM_ROLE) Collection<String> roles,
@@ -104,6 +106,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_REMOVE_ROLES, method = RequestMethod.POST)
+    @ResponseBody
     public Profile removeRoles(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                @RequestParam(PARAM_PROFILE_ID) String profileId,
                                @RequestParam(PARAM_ROLE) Collection<String> roles,
@@ -113,6 +116,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_VERIFY, method = RequestMethod.POST)
+    @ResponseBody
     public Profile verifyProfile(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                  @RequestParam(PARAM_VERIFICATION_TOKEN_ID) String verificationTokenId,
                                  @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
@@ -122,6 +126,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_GET_ATTRIBUTES, method = RequestMethod.GET)
+    @ResponseBody
     public Map<String, Object> getAttributes(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                              @RequestParam(PARAM_PROFILE_ID) String profileId,
                                              @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
@@ -131,6 +136,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_UPDATE_ATTRIBUTES, method = RequestMethod.POST)
+    @ResponseBody
     public Profile updateAttributes(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                     @RequestParam(PARAM_PROFILE_ID) String profileId,
                                     @RequestBody Map<String, Object> attributes,
@@ -140,6 +146,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_REMOVE_ATTRIBUTES, method = RequestMethod.POST)
+    @ResponseBody
     public Profile removeAttributes(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                     @RequestParam(PARAM_PROFILE_ID) String profileId,
                                     @RequestParam(PARAM_ATTRIBUTES_TO_RETURN) Collection<String> attributeNames,
@@ -150,12 +157,14 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_DELETE_PROFILE, method = RequestMethod.POST)
+    @ResponseBody
     public void deleteProfile(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                               @RequestParam(PARAM_PROFILE_ID) String profileId) throws ProfileException {
         profileService.deleteProfile(tenantName, profileId);
     }
 
     @RequestMapping(value = URL_PROFILE_GET, method = RequestMethod.GET)
+    @ResponseBody
     public Profile getProfile(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                               @RequestParam(PARAM_PROFILE_ID) String profileId,
                               @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
@@ -164,6 +173,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_GET_BY_TICKET, method = RequestMethod.GET)
+    @ResponseBody
     public Profile getProfileByUsername(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                         @RequestParam(PARAM_USERNAME) String username,
                                         @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
@@ -172,6 +182,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_GET_BY_USERNAME, method = RequestMethod.GET)
+    @ResponseBody
     public Profile getProfileByTicket(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                       @RequestParam(PARAM_TICKET_ID) String ticketId,
                                       @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
@@ -180,11 +191,13 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_GET_COUNT, method = RequestMethod.GET)
+    @ResponseBody
     public long getProfileCount(@RequestParam(PARAM_TENANT_NAME) String tenantName) throws ProfileException {
         return profileService.getProfileCount(tenantName);
     }
 
     @RequestMapping(value = URL_PROFILE_GET_BY_IDS, method = RequestMethod.GET)
+    @ResponseBody
     public Iterable<Profile> getProfileByIds(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                              @RequestParam(PARAM_PROFILE_ID) List<String> profileIds,
                                              @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
@@ -196,6 +209,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_GET_RANGE, method = RequestMethod.GET)
+    @ResponseBody
     public Iterable<Profile> getProfileRange(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                              @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
                                              @RequestParam(value = PARAM_SORT_ORDER, required = false)
@@ -208,6 +222,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_GET_BY_ROLE, method = RequestMethod.GET)
+    @ResponseBody
     public Iterable<Profile> getProfileByRole(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                               @RequestParam(PARAM_ROLE) String role,
                                               @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
@@ -219,6 +234,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_GET_BY_ATTRIBUTE, method = RequestMethod.GET)
+    @ResponseBody
     public Iterable<Profile> getProfileByAttribute(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                                    @RequestParam(PARAM_ATTRIBUTE_NAME) String attributeName,
                                                    @RequestParam(PARAM_ATTRIBUTE_VALUE) String attributeValue,
@@ -232,6 +248,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_FORGOT_PASSWORD, method = RequestMethod.POST)
+    @ResponseBody
     public Profile forgotPassword(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                   @RequestParam(PARAM_PROFILE_ID) String profileId,
                                   @RequestParam(PARAM_RESET_PASSWORD_URL) String resetPasswordUrl,
@@ -241,6 +258,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_RESET_PASSWORD, method = RequestMethod.POST)
+    @ResponseBody
     public Profile resetPassword(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                  @RequestParam(PARAM_RESET_TOKEN_ID) String resetTokenId,
                                  @RequestParam(PARAM_NEW_PASSWORD) String newPassword,

@@ -30,7 +30,7 @@ import org.craftercms.profile.api.AttributePermission;
 public class AttributePermissionResolver implements PermissionResolver<Application, AttributeDefinition> {
 
     @Override
-    public Permission getGlobalPermission(Application subject) throws IllegalArgumentException, PermissionException {
+    public Permission getGlobalPermission(Application subject) throws PermissionException {
         throw new UnsupportedOperationException();
     }
 

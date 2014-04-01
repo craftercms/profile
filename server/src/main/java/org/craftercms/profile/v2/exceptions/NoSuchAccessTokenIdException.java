@@ -17,16 +17,16 @@
 package org.craftercms.profile.v2.exceptions;
 
 /**
- * Thrown when a new tenant is being created while a tenant with the same name already exists.
+ * Thrown when a specified access token ID doesn't correspond to any known access token.
  *
  * @author avasquez
  */
-public class TenantAlreadyExistsException extends I10nProfileException {
+public class NoSuchAccessTokenIdException extends I10nProfileException {
 
-    private static final String KEY = "profile.tenant.tenantAlreadyExists";
+    private static final String KEY = "profile.accessToken.invalidAccessTokenId";
 
-    public TenantAlreadyExistsException(String tenantName) {
-        super(KEY, tenantName);
+    public NoSuchAccessTokenIdException(String accessTokenId) {
+        super(KEY, accessTokenId);
     }
 
 }

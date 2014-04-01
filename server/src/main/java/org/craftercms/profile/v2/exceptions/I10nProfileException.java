@@ -3,7 +3,6 @@ package org.craftercms.profile.v2.exceptions;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.i10n.I10nUtils;
 import org.craftercms.profile.api.exceptions.ProfileException;
-import org.craftercms.profile.v2.constants.ProfileConstants;
 
 import java.util.ResourceBundle;
 
@@ -14,6 +13,8 @@ import java.util.ResourceBundle;
  * @author avasquez
  */
 public class I10nProfileException extends ProfileException {
+
+    public static final String ERROR_BUNDLE_NAME = "crafter.profile.messages.errors";
 
     protected Object[] args;
 
@@ -54,7 +55,7 @@ public class I10nProfileException extends ProfileException {
     }
 
     protected ResourceBundle getResourceBundle() {
-        return ResourceBundle.getBundle(ProfileConstants.ERROR_BUNDLE_NAME);
+        return ResourceBundle.getBundle(ERROR_BUNDLE_NAME);
     }
 
 }

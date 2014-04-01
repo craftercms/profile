@@ -24,6 +24,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import static org.craftercms.profile.api.RestConstants.*;
 
@@ -44,6 +45,7 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = URL_AUTH_AUTHENTICATE, method = RequestMethod.POST)
+    @ResponseBody
     public Ticket authenticate(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                @RequestParam(PARAM_USERNAME) String username,
                                @RequestParam(PARAM_PASSWORD) String password) throws ProfileException {
@@ -51,6 +53,7 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = URL_AUTH_GET_TICKET, method = RequestMethod.GET)
+    @ResponseBody
     public Ticket getTicket(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                             @RequestParam(PARAM_TICKET_ID) String ticketId) throws ProfileException {
         return authenticationService.getTicket(tenantName, ticketId);

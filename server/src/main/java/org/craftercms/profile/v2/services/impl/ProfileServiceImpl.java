@@ -26,12 +26,12 @@ import org.craftercms.commons.security.permissions.annotations.HasPermission;
 import org.craftercms.commons.security.permissions.annotations.SecuredObject;
 import org.craftercms.profile.api.*;
 import org.craftercms.profile.api.exceptions.ProfileException;
+import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.api.services.TenantService;
-import org.craftercms.profile.api.utils.SortOrder;
+import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.v2.exceptions.*;
 import org.craftercms.profile.v2.repositories.ProfileRepository;
-import org.craftercms.profile.v2.repositories.TicketRepository;
 import org.craftercms.profile.v2.services.VerificationService;
 import org.craftercms.profile.v2.services.VerificationSuccessCallback;
 import org.craftercms.profile.v2.utils.EmailUtils;
@@ -60,12 +60,11 @@ public class ProfileServiceImpl implements ProfileService {
     public static final String ERROR_KEY_GET_PROFILE_RANGE_ERROR =          "profile.profile.getProfileRangeError";
     public static final String ERROR_KEY_GET_PROFILES_BY_ROLE_ERROR =       "profile.profile.getProfilesByRoleError";
     public static final String ERROR_KEY_GET_PROFILES_BY_ATTRIB_ERROR =     "profile.profile.getProfilesByAttributeError";
-    public static final String ERROR_KEY_PROFILE_UPDATE_ERROR =             "profile.verification.profileUpdateError";
     public static final String ERROR_KEY_RESET_PASSWORD_ERROR =             "profile.profile.resetPasswordError";
 
     protected ProfileRepository profileRepository;
     protected TenantService tenantService;
-    protected TicketRepository ticketRepository;
+    protected AuthenticationService authenticationService;
     protected VerificationService newProfileVerificationService;
     protected VerificationService resetPasswordVerificationService;
 
@@ -80,8 +79,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Required
-    public void setTicketRepository(TicketRepository ticketRepository) {
-        this.ticketRepository = ticketRepository;
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 
     @Required
@@ -187,7 +186,7 @@ public class ProfileServiceImpl implements ProfileService {
 
                     return profile;
                 } catch (MongoDataException e) {
-                    throw new I10nProfileException(ERROR_KEY_PROFILE_UPDATE_ERROR, e);
+                    throw new I10nProfileException(ERROR_KEY_UPDATE_PROFILE_ERROR, e, token.getProfileId(), tenantName);
                 }
             }
 
@@ -327,7 +326,7 @@ public class ProfileServiceImpl implements ProfileService {
     public Profile getProfileByTicket(@SecuredObject String tenantName, String ticketId,
                                       String... attributesToReturn) throws ProfileException {
         try {
-            Ticket ticket = ticketRepository.findById(ticketId);
+            Ticket ticket = authenticationService.getTicket(tenantName, ticketId);
             if (ticket != null) {
                 return profileRepository.findById(ticket.getUserId(), attributesToReturn);
             } else {

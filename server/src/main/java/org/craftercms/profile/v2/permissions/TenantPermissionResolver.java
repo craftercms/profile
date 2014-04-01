@@ -16,15 +16,11 @@
  */
 package org.craftercms.profile.v2.permissions;
 
-import org.craftercms.commons.i10n.I10nUtils;
 import org.craftercms.commons.security.exception.PermissionException;
 import org.craftercms.commons.security.permissions.Permission;
 import org.craftercms.commons.security.permissions.PermissionResolver;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.TenantPermission;
-import org.craftercms.profile.v2.constants.ProfileConstants;
-
-import java.util.ResourceBundle;
 
 /**
  * {@link org.craftercms.commons.security.permissions.PermissionResolver} for tenants.
@@ -48,7 +44,7 @@ public class TenantPermissionResolver implements PermissionResolver<Application,
         } else if (tenant instanceof Tenant) {
             tenantName = ((Tenant) tenant).getName();
         } else {
-            throw new IllegalArgumentException(getUnexpectedTenantArgTypeErrorMsg(tenant.getClass()));
+            throw new PermissionException(ERROR_KEY_UNEXPECTED_TENANT_ARG_TYPE, tenant.getClass().getName());
         }
 
         for (TenantPermission permission : app.getTenantPermissions()) {
@@ -60,12 +56,6 @@ public class TenantPermissionResolver implements PermissionResolver<Application,
         }
 
         return null;
-    }
-
-    protected String getUnexpectedTenantArgTypeErrorMsg(Class<?> argType) {
-        ResourceBundle bundle = ResourceBundle.getBundle(ProfileConstants.ERROR_BUNDLE_NAME);
-
-        return I10nUtils.getLocalizedMessage(bundle, ERROR_KEY_UNEXPECTED_TENANT_ARG_TYPE, argType.getName());
     }
 
 }

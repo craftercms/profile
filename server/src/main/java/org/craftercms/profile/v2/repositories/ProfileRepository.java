@@ -19,7 +19,7 @@ package org.craftercms.profile.v2.repositories;
 import org.craftercms.commons.mongo.CrudRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.Profile;
-import org.craftercms.profile.api.utils.SortOrder;
+import org.craftercms.profile.api.SortOrder;
 
 import java.util.List;
 

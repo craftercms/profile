@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--
+    Activates various annotations to be detected in bean classes: Spring's @Required and @Autowired, as well as JSR
+    250's @PostConstruct, @PreDestroy and @Resource (if available), JAX-WS's @WebServiceRef (if available), EJB3's @EJB
+    (if available), and JPA's @PersistenceContext and @PersistenceUnit (if available).
+    -->
+    <context:annotation-config/>
+
+    <bean name="crafter.properties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <!-- <property name="ignoreResourceNotFound" value="true"/> -->
+        <property name="locations">
+            <list>
+                <value>classpath:crafter/profile/server-config.properties</value>
+                <value>classpath*:crafter/profile/extension/server-config.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Mongo -->
+
+    <bean id="crafter.mongoClientOptionsFactory" class="org.craftercms.commons.mongo.MongoClientOptionsFactory">
+        <property name="autoConnectRetry" value="${crafter.profile.mongodb.connection.autoConnectRetry}"/>
+        <property name="connectionsPerHost" value="${crafter.profile.mongodb.connection.connectionsPerHost}"/>
+        <property name="maxAutoConnectRetryTime" value="${crafter.profile.mongodb.connection.maxWaitTime}"/>
+        <property name="socketKeepAlive" value="${crafter.profile.mongodb.connection.socketKeepAlive}"/>
+        <property name="threadsAllowedToBlockForConnectionMultiplier"
+                  value="${crafter.profile.mongodb.connection.threadsAllowedToBlockForConnectionMultiplier}"/>
+        <property name="connectTimeout" value="${crafter.profile.mongodb.connection.connectTimeout}"/>
+        <property name="writeConcern" value="${crafter.profile.mongodb.connection.writeConcern}"/>
+        <property name="readPreference" value="${crafter.profile.mongodb.connection.readPreference}"/>
+    </bean>
+
+
+    <bean id="crafter.mongoClient" class="com.mongodb.MongoClient">
+        <constructor-arg>
+            <list>
+                <bean class="com.mongodb.ServerAddress">
+                    <constructor-arg value="${crafter.profile.mongodb.connection.host}"/>
+                    <constructor-arg value="${crafter.profile.mongodb.connection.port}"/>
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="crafter.mongoClientOptionsFactory"/>
+    </bean>
+
+    <bean id="crafter.jongo" class="org.craftercms.commons.mongo.JongoFactoryBean">
+        <property name="mongoClient" ref="crafter.mongoClient"/>
+        <property name="username" value="${crafter.profile.mongodb.connection.dbUser}"/>
+        <property name="password" value="${crafter.profile.mongodb.connection.dbPassword}"/>
+        <property name="dbName" value="${crafter.profile.mongodb.connection.dbName}"/>
+    </bean>
+
+    <bean id="crafter.jongoQueries" class="org.craftercms.commons.mongo.JongoQueries" init-method="init">
+        <property name="queryFiles">
+            <list>
+                <value>classpath:/crafter/profile/profile-queries.xml</value>
+                <value>classpath:/crafter/profile/extension/profile-queries.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="crafter.jongoRepositoryBase" class="org.craftercms.commons.mongo.JongoRepository" abstract="true">
+        <property name="jongo" ref="crafter.jongo"/>
+        <property name="queries" ref="crafter.jongoQueries"/>
+    </bean>
+
+    <bean id="crafter.profileRepository" class="org.craftercms.profile.v2.repositories.impl.ProfileRepositoryImpl"
+          parent="crafter.jongoRepositoryBase"/>
+
+    <bean id="crafter.tenantRepository" class="org.craftercms.profile.v2.repositories.impl.TenantRepositoryImpl"
+          parent="crafter.jongoRepositoryBase"/>
+
+    <bean id="crafter.ticketRepository" class="org.craftercms.profile.v2.repositories.impl.TicketRepositoryImpl"
+          parent="crafter.jongoRepositoryBase"/>
+
+    <bean id="crafter.verificationTokenRepository"
+          class="org.craftercms.profile.v2.repositories.impl.VerificationTokenRepositoryImpl"
+          parent="crafter.jongoRepositoryBase"/>
+
+    <!-- Mail -->
+
+    <bean id="crafter.mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="${crafter.profile.mail.host}"/>
+        <property name="port" value="${crafter.profile.mail.port}"/>
+        <property name="protocol" value="${crafter.profile.mail.protocol}"/>
+        <property name="username" value="${crafter.profile.mail.username}"/>
+        <property name="password" value="${crafter.profile.mail.password}"/>
+        <property name="defaultEncoding" value="${crafter.profile.mail.encoding}"/>
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.auth">${crafter.profile.mail.smtp.auth}</prop>
+                <prop key="mail.smtp.starttls.enable">${crafter.profile.mail.smtp.starttls.enable}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="crafter.mailFreeMarkerConfig" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
+        <property name="templateLoaderPaths" value="${crafter.profile.mail.templates.path}" />
+        <property name="defaultEncoding" value="UTF-8" />
+    </bean>
+
+    <bean id="crafter.emailFactory" class="org.craftercms.commons.mail.impl.EmailFactoryImpl">
+        <property name="mailSender" ref="crafter.mailSender"/>
+        <property name="freeMarkerConfig" ref="crafter.mailFreeMarkerConfig"/>
+    </bean>
+
+    <!-- Services -->
+
+    <bean id="crafter.verificationServiceBase"
+          class="org.craftercms.profile.v2.services.impl.VerificationServiceImpl" abstract="true">
+        <property name="emailFactory" ref="crafter.emailFactory"/>
+        <property name="tokenRepository" ref="crafter.verificationTokenRepository"/>
+        <property name="tokenMaxAge" value="${crafter.profile.verification.token.maxAge}"/>
+    </bean>
+
+    <bean id="crafter.newProfileVerificationService" parent="crafter.verificationServiceBase">
+        <property name="from" value="${crafter.profile.verification.newProfile.mail.from}"/>
+        <property name="subject" value="${crafter.profile.verification.newProfile.mail.subject}"/>
+        <property name="templateName" value="${crafter.profile.verification.newProfile.mail.templateName}"/>
+    </bean>
+
+
+    <bean id="crafter.resetPasswordVerificationService" parent="crafter.verificationServiceBase">
+        <property name="from" value="${crafter.profile.verification.resetPassword.mail.from}"/>
+        <property name="subject" value="${crafter.profile.verification.resetPassword.mail.subject}"/>
+        <property name="templateName" value="${crafter.profile.verification.resetPassword.mail.templateName}"/>
+    </bean>
+
+    <bean id="crafter.tenantService" class="org.craftercms.profile.v2.services.impl.TenantServiceImpl">
+        <property name="tenantRepository" ref="crafter.tenantRepository"/>
+        <property name="profileRepository" ref="crafter.profileRepository"/>
+    </bean>
+
+    <bean id="crafter.profileService" class="org.craftercms.profile.v2.services.impl.ProfileServiceImpl">
+        <property name="profileRepository" ref="crafter.profileRepository"/>
+        <property name="tenantService" ref="crafter.tenantService"/>
+        <property name="authenticationService" ref="crafter.authenticationService"/>
+        <property name="newProfileVerificationService" ref="crafter.newProfileVerificationService"/>
+        <property name="resetPasswordVerificationService" ref="crafter.resetPasswordVerificationService"/>
+    </bean>
+
+    <bean id="crafter.authenticationService" class="org.craftercms.profile.v2.services.impl.AuthenticationServiceImpl">
+        <property name="ticketMaxAge" value="${crafter.profile.auth.ticket.maxAge}"/>
+        <property name="ticketRepository" ref="crafter.ticketRepository"/>
+        <property name="profileService" ref="crafter.profileService"/>
+    </bean>
+
+</beans>
