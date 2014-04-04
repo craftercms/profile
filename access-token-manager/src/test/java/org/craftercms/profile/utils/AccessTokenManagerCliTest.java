@@ -16,14 +16,18 @@
  */
 package org.craftercms.profile.utils;
 
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
+import org.craftercms.commons.jackson.CustomSerializationObjectMapper;
+import org.craftercms.commons.jackson.ObjectIdDeserializer;
+import org.craftercms.commons.jackson.ObjectIdSerializer;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.AccessToken;
-import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.TenantActions;
 import org.craftercms.profile.api.TenantPermission;
 import org.craftercms.profile.repositories.AccessTokenRepository;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -37,10 +41,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 /**
@@ -49,6 +54,7 @@ import static org.mockito.Mockito.*;
 public class AccessTokenManagerCliTest {
 
     private AccessTokenRepository tokenRepository;
+    private CustomSerializationObjectMapper objectMapper;
     private List<AccessToken> tokens;
 
     public AccessTokenManagerCliTest() {
@@ -58,6 +64,7 @@ public class AccessTokenManagerCliTest {
     @Before
     public void setUp() throws Exception {
         createTestAccessTokenRepository();
+        createTestObjectMapper();
 
         tokens.clear();
     }
@@ -76,13 +83,13 @@ public class AccessTokenManagerCliTest {
         BufferedReader stdIn = new BufferedReader(new StringReader(inputWriter.toString()));
         PrintWriter stdOut = new PrintWriter(System.out);
 
-        AccessTokenManagerCli cli = new AccessTokenManagerCli(stdIn, stdOut, tokenRepository);
+        AccessTokenManagerCli cli = new AccessTokenManagerCli(stdIn, stdOut, tokenRepository, objectMapper);
         cli.run("-add");
 
         assertNotNull(tokens);
         assertEquals(1, tokens.size());
 
-        AccessToken expectedToken = createTestToken(null);
+        AccessToken expectedToken = createTestToken();
 
         assertEquals(expectedToken.getApplication(), tokens.get(0).getApplication());
         assertEquals(expectedToken.getExpiresOn(), tokens.get(0).getExpiresOn());
@@ -91,14 +98,14 @@ public class AccessTokenManagerCliTest {
 
     @Test
     public void testRemove() throws Exception {
-        String id = UUID.randomUUID().toString();
+        String id = "507c7f79bcf86cd7994f6c0e";
 
-        tokens.add(createTestToken(id));
+        tokens.add(createTestToken());
 
         BufferedReader stdIn = new BufferedReader(new StringReader(""));
         PrintWriter stdOut = new PrintWriter(System.out);
 
-        AccessTokenManagerCli cli = new AccessTokenManagerCli(stdIn, stdOut, tokenRepository);
+        AccessTokenManagerCli cli = new AccessTokenManagerCli(stdIn, stdOut, tokenRepository, objectMapper);
         cli.run("-remove", id);
 
         assertNotNull(tokens);
@@ -107,19 +114,20 @@ public class AccessTokenManagerCliTest {
 
     @Test
     public void testList() throws Exception {
-        tokens.add(createTestToken("15a8aeba-d0c2-4252-a131-4d24396ca3c4"));
+        tokens.add(createTestToken());
 
         StringWriter outputWriter = new StringWriter();
 
         BufferedReader stdIn = new BufferedReader(new StringReader(""));
         PrintWriter stdOut = new PrintWriter(outputWriter);
 
-        AccessTokenManagerCli cli = new AccessTokenManagerCli(stdIn, stdOut, tokenRepository);
+        AccessTokenManagerCli cli = new AccessTokenManagerCli(stdIn, stdOut, tokenRepository, objectMapper);
         cli.run("-list");
 
-        assertEquals("[{\"application\":\"crafterengine\",\"tenantPermissions\":[{\"allowedActions\":[\"update\"," +
-                "\"count\",\"manageUsers\",\"delete\",\"read\",\"readAll\",\"create\"],\"tenant\":\"corporate\"}]," +
-                "\"expiresOn\":\"2014-03-05T06:00:00.000+0000\",\"id\":\"15a8aeba-d0c2-4252-a131-4d24396ca3c4\"}]",
+        assertEquals("[{\"application\":\"crafterengine\",\"tenantPermissions\":[{\"allowedActions\":" +
+                        "[\"authenticate\",\"update\",\"count\",\"manageProfiles\",\"delete\",\"read\",\"readAll\"," +
+                        "\"create\"],\"tenant\":\"corporate\"}],\"expiresOn\":\"2014-03-05T06:00:00.000+0000\"," +
+                        "\"id\":\"507c7f79bcf86cd7994f6c0e\"}]",
                 outputWriter.toString().trim());
     }
 
@@ -160,12 +168,20 @@ public class AccessTokenManagerCliTest {
         }).when(tokenRepository).removeById(any(String.class));
     }
 
-    private AccessToken createTestToken(String id) throws ParseException {
+    private void createTestObjectMapper() {
+        objectMapper = new CustomSerializationObjectMapper();
+        objectMapper.setSerializers(Arrays.<JsonSerializer>asList(new ObjectIdSerializer()));
+        objectMapper.setDeserializers(Collections.<Class, JsonDeserializer>singletonMap(ObjectId.class,
+                new ObjectIdDeserializer()));
+        objectMapper.init();
+    }
+
+    private AccessToken createTestToken() throws ParseException {
         TenantPermission permission = new TenantPermission("corporate");
         permission.allow(TenantActions.ALL_ACTIONS);
 
         AccessToken token = new AccessToken();
-        token.setId(id);
+        token.setId(new ObjectId("507c7f79bcf86cd7994f6c0e"));
         token.setApplication("crafterengine");
         token.setExpiresOn(new SimpleDateFormat("MM/dd/yyyy").parse("03/05/2014"));
         token.setTenantPermissions(Arrays.asList(permission));

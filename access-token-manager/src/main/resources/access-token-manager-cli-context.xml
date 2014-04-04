@@ -61,6 +61,21 @@
         <property name="queries" ref="queries"/>
     </bean>
 
+    <bean id="objectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper">
+        <property name="serializers">
+            <list>
+                <bean class="org.jongo.marshall.jackson.oid.ObjectIdSerializer"/>
+            </list>
+        </property>
+        <property name="deserializers">
+            <map>
+                <entry key="org.bson.types.ObjectId">
+                    <bean class="org.jongo.marshall.jackson.oid.ObjectIdDeserializer"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
     <import resource="classpath*:custom-access-token-manager-cli-context.xml" />
 
 </beans>

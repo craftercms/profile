@@ -30,10 +30,10 @@ public class TenantActions {
     public static final String UPDATE =             "update";
     public static final String DELETE =             "delete";
     public static final String MANAGE_PROFILES =    "manageProfiles";
-    public static final String AUTHENTICATE =       "authenticate";
+    public static final String MANAGE_TICKETS =     "manageTickets";
 
     public static final String[] ALL_ACTIONS = { CREATE, READ, READ_ALL, COUNT, UPDATE, DELETE, MANAGE_PROFILES,
-            AUTHENTICATE };
+            MANAGE_TICKETS};
 
     private TenantActions() {
     }

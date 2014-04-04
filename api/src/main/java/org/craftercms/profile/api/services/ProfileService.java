@@ -35,7 +35,6 @@ public interface ProfileService {
     /**
      * Update the profile's info.
      *
-     * @param tenantName            the tenant's name
      * @param profileId             the profile's ID
      * @param username              the profile's username
      * @param password              the new password for the profile, or null if the password shouldn't be updated
@@ -46,50 +45,45 @@ public interface ProfileService {
      *
      * @return the updated profile
      */
-    Profile updateProfile(String tenantName, String profileId, String username, String password, String email,
-                          Boolean enabled, Set<String> roles, String... attributesToReturn) throws ProfileException;
+    Profile updateProfile(String profileId, String username, String password, String email, Boolean enabled,
+                          Set<String> roles, String... attributesToReturn) throws ProfileException;
 
     /**
      * Sets the profile as verified if the verification token is valid.
      *
-     * @param tenantName            the tenant's name
      * @param verificationTokenId   the ID of the verification token
      * @param attributesToReturn    the names of the attributes to return with the profile (null to return
      *                              all attributes)
      *
      * @return the updated profile associated to the token
      */
-    Profile verifyProfile(String tenantName, String verificationTokenId, String... attributesToReturn)
-            throws ProfileException;
+    Profile verifyProfile(String verificationTokenId, String... attributesToReturn) throws ProfileException;
 
     /**
      * Enables a profile.
      *
-     * @param tenantName            the tenant's name
      * @param profileId             the profile's ID
      * @param attributesToReturn    the names of the attributes to return with the profile (null to return
      *                              all attributes)
      *
      * @return the updated profile
      */
-    Profile enableProfile(String tenantName, String profileId, String... attributesToReturn) throws ProfileException;
+    Profile enableProfile(String profileId, String... attributesToReturn) throws ProfileException;
 
     /**
      * Disables a profile.
      *
-     * @param tenantName            the tenant's name
      * @param profileId             the profile's ID
      * @param attributesToReturn    the names of the attributes to return with the profile (null to return
      *                              all attributes)
      *
      * @return the updated profile
      */
-    Profile disableProfile(String tenantName, String profileId, String... attributesToReturn) throws ProfileException;
+    Profile disableProfile(String profileId, String... attributesToReturn) throws ProfileException;
 
     /**
      * Assigns roles to the profile.
      *
-     * @param tenantName            the tenant's name
      * @param profileId             the profile's ID
      * @param roles                 the roles to assign
      * @param attributesToReturn    the names of the attributes to return with the profile (null to return
@@ -97,13 +91,11 @@ public interface ProfileService {
      *
      * @return the updated profile
      */
-    Profile addRoles(String tenantName, String profileId, Collection<String> roles, String... attributesToReturn)
-            throws ProfileException;
+    Profile addRoles(String profileId, Collection<String> roles, String... attributesToReturn) throws ProfileException;
 
     /**
      * Removes assigned roles from a profile.
      *
-     * @param tenantName            the tenant's name
      * @param profileId             the profile's ID
      * @param roles                 the roles to remove
      * @param attributesToReturn    the names of the attributes to return with the profile (null to return
@@ -111,25 +103,22 @@ public interface ProfileService {
      *
      * @return the updated profile
      */
-    Profile removeRoles(String tenantName, String profileId, Collection<String> roles, String... attributesToReturn)
+    Profile removeRoles(String profileId, Collection<String> roles, String... attributesToReturn)
             throws ProfileException;
 
     /**
      * Returns the attributes of a profile.
      *
-     * @param tenantName            the tenant's name
      * @param profileId             the profile's ID
      * @param attributesToReturn    the names of the attributes to return (null to return all attributes)
      *
      * @return the profile's attributes
      */
-    Map<String, Object> getAttributes(String tenantName, String profileId, String... attributesToReturn)
-            throws ProfileException;
+    Map<String, Object> getAttributes(String profileId, String... attributesToReturn) throws ProfileException;
 
     /**
      * Updates the attributes of a profile, by merging the specified attributes with the existing attributes.
      *
-     * @param tenantName            the tenant's name
      * @param profileId             the profile's ID
      * @param attributes            the new attributes
      * @param attributesToReturn    the names of the attributes to return withe the profile (null to return all
@@ -137,13 +126,12 @@ public interface ProfileService {
      *
      * @return the updated profile
      */
-    Profile updateAttributes(String tenantName, String profileId, Map<String, Object> attributes,
-                             String... attributesToReturn) throws ProfileException;
+    Profile updateAttributes(String profileId, Map<String, Object> attributes, String... attributesToReturn)
+            throws ProfileException;
 
     /**
      * Removes a list of attributes of a profile.
      *
-     * @param tenantName            the tenant's name
      * @param profileId             the profile's ID
      * @param attributeNames        the names of the attributes to remove
      * @param attributesToReturn    the names of the attributes to return withe the profile (null to return all
@@ -151,28 +139,26 @@ public interface ProfileService {
      *
      * @return the updated profile
      */
-    Profile removeAttributes(String tenantName, String profileId, Collection<String> attributeNames,
-                             String... attributesToReturn) throws ProfileException;
+    Profile removeAttributes(String profileId, Collection<String> attributeNames, String... attributesToReturn)
+            throws ProfileException;
 
     /**
      * Deletes a profile.
      *
-     * @param tenantName    the tenant's name
      * @param profileId     the profile's ID
      */
-    void deleteProfile(String tenantName, String profileId) throws ProfileException;
+    void deleteProfile(String profileId) throws ProfileException;
 
     /**
      * Returns the profile for the specified id.
      *
-     * @param tenantName            the tenant's name
      * @param profileId             the profile's ID
      * @param attributesToReturn    the names of the attributes to return with the profile (null to return all
      *                              attributes)
      *
      * @return the profile, or null if not found
      */
-    Profile getProfile(String tenantName, String profileId, String... attributesToReturn) throws ProfileException;
+    Profile getProfile(String profileId, String... attributesToReturn) throws ProfileException;
 
     /**
      * Returns the user for the specified tenant and username
@@ -190,14 +176,13 @@ public interface ProfileService {
     /**
      * Returns the profile for the specified ticket.
      *
-     * @param tenantName            the tenant's name
      * @param ticketId              the ID ticket of the authenticated profile
      * @param attributesToReturn    the names of the attributes to return with the profile (null to return all
      *                              attributes)
      *
      * @return the profile, or null if not found
      */
-    Profile getProfileByTicket(String tenantName, String ticketId, String... attributesToReturn) throws ProfileException;
+    Profile getProfileByTicket(String ticketId, String... attributesToReturn) throws ProfileException;
 
     /**
      * Returns the number of profiles of the specified tenant.
@@ -211,7 +196,6 @@ public interface ProfileService {
     /**
      * Returns a list of profiles for the specified list of ids.
      *
-     * @param tenantName            the tenant's name
      * @param profileIds            the ids of the profiles to look for
      * @param sortBy                profile attribute to sort the list by (optional)
      * @param sortOrder             the sort order (either ASC or DESC) (optional)
@@ -220,7 +204,7 @@ public interface ProfileService {
      *
      * @return the list of profiles (can be smaller than the list of ids if some where not found)
      */
-    Iterable<Profile> getProfilesByIds(String tenantName, List<String> profileIds, String sortBy, SortOrder sortOrder,
+    Iterable<Profile> getProfilesByIds(List<String> profileIds, String sortBy, SortOrder sortOrder,
                                        String... attributesToReturn) throws ProfileException;
 
     /**
@@ -275,7 +259,6 @@ public interface ProfileService {
     /**
      * Common forgot password functionality: sends the profile an email with an URL to reset their password.
      *
-     * @param tenantName            the tenant's name
      * @param profileId             the profile's ID
      * @param resetPasswordUrl      the base URL to use to build the final URL the profile will use to reset
      *                              their password.
@@ -284,13 +267,12 @@ public interface ProfileService {
      *
      * @return the updated profile
      */
-    Profile forgotPassword(String tenantName, String profileId, String resetPasswordUrl, String... attributesToReturn)
+    Profile forgotPassword(String profileId, String resetPasswordUrl, String... attributesToReturn)
             throws ProfileException;
 
     /**
      * Resets a profile's password.
      *
-     * @param tenantName            the tenant's name
      * @param resetTokenId          the ID of the reset token
      * @param newPassword           the new password
      * @param attributesToReturn    the names of the attributes to return with the profile (null to return all
@@ -298,7 +280,7 @@ public interface ProfileService {
      *
      * @return the updated profile
      */
-    Profile resetPassword(String tenantName, String resetTokenId, String newPassword, String... attributesToReturn)
+    Profile resetPassword(String resetTokenId, String newPassword, String... attributesToReturn)
             throws ProfileException;
 
 }

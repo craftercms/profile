@@ -1,5 +1,7 @@
 package org.craftercms.profile.api;
 
+import org.bson.types.ObjectId;
+
 import java.util.Date;
 import java.util.List;
 
@@ -10,7 +12,7 @@ import java.util.List;
  */
 public class AccessToken {
 
-    private String _id;
+    private ObjectId _id;
     private String application;
     private List<TenantPermission> tenantPermissions;
     private Date expiresOn;
@@ -18,7 +20,7 @@ public class AccessToken {
     /**
      * Returns the ID of the access token.
      */
-    public String getId() {
+    public ObjectId getId() {
         return _id;
     }
 
@@ -27,7 +29,7 @@ public class AccessToken {
      *
      * @param id    the token's ID
      */
-    public void setId(String id) {
+    public void setId(ObjectId id) {
         this._id = id;
     }
 

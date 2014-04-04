@@ -106,4 +106,38 @@ public class Tenant {
         this.attributeDefinitions = attributeDefinitions;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Tenant tenant = (Tenant) o;
+
+        if (!_id.equals(tenant._id)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return _id.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Tenant{" +
+                "id=" + _id +
+                ", name='" + name + '\'' +
+                ", verifyNewProfiles=" + verifyNewProfiles +
+                ", roles=" + roles +
+                ", attributeDefinitions=" + attributeDefinitions +
+                '}';
+    }
+
 }

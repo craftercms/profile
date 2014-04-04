@@ -48,13 +48,16 @@ public class AccessTokenManagerCli {
     private BufferedReader stdIn;
     private PrintWriter stdOut;
     private AccessTokenRepository repository;
+    private ObjectMapper objectMapper;
     private Options options;
     private CommandLineParser cmdLineParser;
 
-    public AccessTokenManagerCli(BufferedReader stdIn, PrintWriter stdOut, AccessTokenRepository repository) {
+    public AccessTokenManagerCli(BufferedReader stdIn, PrintWriter stdOut, AccessTokenRepository repository,
+                                 ObjectMapper objectMapper) {
         this.stdIn = stdIn;
         this.stdOut = stdOut;
         this.repository = repository;
+        this.objectMapper = objectMapper;
 
         options = new Options();
         options.addOption("help", false, "Prints this message");
@@ -134,15 +137,14 @@ public class AccessTokenManagerCli {
     private void printTokensAsJson(boolean pretty) {
         try {
             Iterable<AccessToken> tokens = repository.findAll();
-            ObjectMapper mapper = new ObjectMapper();
             String serializedTokens;
 
-            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
             if (pretty) {
-                serializedTokens = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(tokens);
+                serializedTokens = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(tokens);
             } else {
-                serializedTokens = mapper.writeValueAsString(tokens);
+                serializedTokens = objectMapper.writeValueAsString(tokens);
             }
 
             stdOut.println(serializedTokens);
@@ -160,7 +162,6 @@ public class AccessTokenManagerCli {
         List<TenantPermission> permissions = readTenantPermissions();
 
         AccessToken token = new AccessToken();
-        token.setId(UUID.randomUUID().toString());
         token.setApplication(application);
         token.setExpiresOn(expirationDate);
         token.setTenantPermissions(permissions);
@@ -275,9 +276,10 @@ public class AccessTokenManagerCli {
     public static void main(String... args) {
         ApplicationContext context = getApplicationContext();
         AccessTokenRepository repository = context.getBean(AccessTokenRepository.class);
+        ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
         BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter stdOut = new PrintWriter(System.out);
-        AccessTokenManagerCli cli = new AccessTokenManagerCli(stdIn, stdOut, repository);
+        AccessTokenManagerCli cli = new AccessTokenManagerCli(stdIn, stdOut, repository, objectMapper);
 
         cli.run(args);
     }

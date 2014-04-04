@@ -112,6 +112,18 @@
         <property name="freeMarkerConfig" ref="crafter.mailFreeMarkerConfig"/>
     </bean>
 
+    <!-- Permissions -->
+
+    <bean id="crafter.appSubjectResolver" class="org.craftercms.profile.v2.permissions.ApplicationSubjectResolver"/>
+
+    <bean id="crafter.tenantPermissionResolver" class="org.craftercms.profile.v2.permissions.TenantPermissionResolver"/>
+
+    <bean id="crafter.tenantPermissionEvaluator"
+          class="org.craftercms.commons.security.permissions.impl.PermissionEvaluatorImpl">
+        <property name="subjectResolver" ref="crafter.appSubjectResolver"/>
+        <property name="permissionResolver" ref="crafter.tenantPermissionResolver"/>
+    </bean>
+
     <!-- Services -->
 
     <bean id="crafter.verificationServiceBase"
@@ -137,6 +149,7 @@
     <bean id="crafter.tenantService" class="org.craftercms.profile.v2.services.impl.TenantServiceImpl">
         <property name="tenantRepository" ref="crafter.tenantRepository"/>
         <property name="profileRepository" ref="crafter.profileRepository"/>
+        <property name="permissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
     </bean>
 
     <bean id="crafter.profileService" class="org.craftercms.profile.v2.services.impl.ProfileServiceImpl">
@@ -145,12 +158,42 @@
         <property name="authenticationService" ref="crafter.authenticationService"/>
         <property name="newProfileVerificationService" ref="crafter.newProfileVerificationService"/>
         <property name="resetPasswordVerificationService" ref="crafter.resetPasswordVerificationService"/>
+        <property name="permissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
     </bean>
 
     <bean id="crafter.authenticationService" class="org.craftercms.profile.v2.services.impl.AuthenticationServiceImpl">
         <property name="ticketMaxAge" value="${crafter.profile.auth.ticket.maxAge}"/>
         <property name="ticketRepository" ref="crafter.ticketRepository"/>
         <property name="profileService" ref="crafter.profileService"/>
+        <property name="permissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
     </bean>
+
+    <!-- Quartz -->
+
+    <!--bean id="crafter.ticketCleanerJobDetail"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetBeanName" value="crafter.ticketRepository"/>
+        <property name="targetMethod" value="removeOlderThan"/>
+        <property name="arguments">
+            <array>
+                <value>${crafter.profile.auth.ticket.maxAge}</value>
+            </array>
+        </property>
+        <property name="concurrent" value="false"/>
+    </bean>
+
+    <bean id="crafter.ticketCleanerTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+        <property name="startDelay" value="${crafter.profile.auth.ticket.cleaner.startDelay}"/>
+        <property name="repeatInterval" value="${crafter.profile.auth.ticket.cleaner.repeatInterval}"/>
+        <property name="jobDetail" ref="crafter.ticketCleanerJobDetail"/>
+    </bean>
+
+    <bean id="crafter.schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="crafter.ticketCleanerTrigger"/>
+            </list>
+        </property>
+    </bean-->
 
 </beans>

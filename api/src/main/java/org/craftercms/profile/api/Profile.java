@@ -115,8 +115,50 @@ public class Profile {
         return attributes;
     }
 
+    public Object getAttribute(String name) {
+        return getAttributes().get(name);
+    }
+
     public void setAttributes(final Map<String, Object> attributes) {
         this.attributes = attributes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Profile profile = (Profile) o;
+
+        if (!_id.equals(profile._id)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return _id.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Profile{" +
+                "id=" + _id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", verified=" + verified +
+                ", enabled=" + enabled +
+                ", created=" + created +
+                ", modified=" + modified +
+                ", tenant='" + tenant + '\'' +
+                ", roles=" + roles +
+                ", attributes=" + attributes +
+                '}';
     }
 
 }

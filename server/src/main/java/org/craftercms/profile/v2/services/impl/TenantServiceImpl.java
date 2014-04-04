@@ -18,12 +18,10 @@ package org.craftercms.profile.v2.services.impl;
 
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
-import org.craftercms.commons.security.permissions.annotations.HasPermission;
-import org.craftercms.commons.security.permissions.annotations.SecuredObject;
+import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.TenantActions;
-import org.craftercms.profile.api.TenantPermission;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.v2.exceptions.AttributeAlreadyDefinedException;
@@ -52,8 +50,14 @@ public class TenantServiceImpl implements TenantService {
     public static final String ERROR_KEY_GET_TENANT_COUNT_ERROR =  "profile.tenant.getTenantCountError";
     public static final String ERROR_KEY_GET_ALL_TENANTS_ERROR =   "profile.tenant.getAllTenantsError";
 
+    protected PermissionEvaluator<Application, String> permissionEvaluator;
     protected TenantRepository tenantRepository;
     protected ProfileRepository profileRepository;
+
+    @Required
+    public void setPermissionEvaluator(PermissionEvaluator<Application, String> permissionEvaluator) {
+        this.permissionEvaluator = permissionEvaluator;
+    }
 
     @Required
     public void setTenantRepository(TenantRepository tenantRepository) {
@@ -66,8 +70,9 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    @HasPermission(type = TenantPermission.class, action = TenantActions.CREATE)
     public Tenant createTenant(String name, boolean verifyNewProfiles, Set<String> roles) throws ProfileException {
+        checkTenantPermission(null, TenantActions.CREATE);
+
         Tenant tenant = new Tenant();
         tenant.setName(name);
         tenant.setVerifyNewProfiles(verifyNewProfiles);
@@ -83,8 +88,9 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    @HasPermission(type = TenantPermission.class, action = TenantActions.READ)
-    public Tenant getTenant(@SecuredObject String name) throws ProfileException {
+    public Tenant getTenant(String name) throws ProfileException {
+        checkTenantPermission(name, TenantActions.READ);
+
         try {
             return tenantRepository.findByName(name);
         } catch (MongoDataException e) {
@@ -93,8 +99,9 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    @HasPermission(type = TenantPermission.class, action = TenantActions.UPDATE)
-    public Tenant updateTenant(@SecuredObject Tenant tenant) throws ProfileException {
+    public Tenant updateTenant(Tenant tenant) throws ProfileException {
+        checkTenantPermission(tenant.getName(), TenantActions.UPDATE);
+
         try {
             tenantRepository.save(tenant);
         } catch (MongoDataException e) {
@@ -105,8 +112,9 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    @HasPermission(type = TenantPermission.class, action = TenantActions.DELETE)
-    public void deleteTenant(@SecuredObject String name) throws ProfileException {
+    public void deleteTenant(String name) throws ProfileException {
+        checkTenantPermission(name, TenantActions.DELETE);
+
         try {
             profileRepository.removeAllForTenant(name);
             tenantRepository.removeByName(name);
@@ -116,8 +124,9 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    @HasPermission(type = TenantPermission.class, action = TenantActions.COUNT)
     public long getTenantCount() throws ProfileException  {
+        checkTenantPermission(null, TenantActions.COUNT);
+
         try {
             return tenantRepository.count();
         } catch (MongoDataException e) {
@@ -126,8 +135,9 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    @HasPermission(type = TenantPermission.class, action = TenantActions.READ_ALL)
     public Iterable<Tenant> getAllTenants() throws ProfileException {
+        checkTenantPermission(null, TenantActions.READ_ALL);
+
         try {
             return tenantRepository.findAll();
         } catch (MongoDataException e) {
@@ -136,8 +146,7 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    @HasPermission(type = TenantPermission.class, action = TenantActions.UPDATE)
-    public Tenant verifyNewProfiles(@SecuredObject String tenantName, final boolean verify) throws ProfileException {
+    public Tenant verifyNewProfiles(String tenantName, final boolean verify) throws ProfileException {
         return updateTenant(tenantName, new UpdateCallback() {
 
             @Override
@@ -149,8 +158,7 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    @HasPermission(type = TenantPermission.class, action = TenantActions.UPDATE)
-    public Tenant addRoles(@SecuredObject String tenantName, final Collection<String> roles) throws ProfileException {
+    public Tenant addRoles(String tenantName, final Collection<String> roles) throws ProfileException {
         return updateTenant(tenantName, new UpdateCallback() {
 
             @Override
@@ -162,8 +170,7 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    @HasPermission(type = TenantPermission.class, action = TenantActions.UPDATE)
-    public Tenant removeRoles(@SecuredObject String tenantName, final Collection<String> roles) throws ProfileException {
+    public Tenant removeRoles(String tenantName, final Collection<String> roles) throws ProfileException {
         return updateTenant(tenantName, new UpdateCallback() {
 
             @Override
@@ -175,8 +182,7 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    @HasPermission(type = TenantPermission.class, action = TenantActions.UPDATE)
-    public Tenant addAttributeDefinitions(@SecuredObject final String tenantName,
+    public Tenant addAttributeDefinitions(final String tenantName,
                                           final Collection<AttributeDefinition> attributeDefinitions)
             throws ProfileException {
         return updateTenant(tenantName, new UpdateCallback() {
@@ -196,8 +202,7 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    @HasPermission(type = TenantPermission.class, action = TenantActions.UPDATE)
-    public Tenant removeAttributeDefinitions(@SecuredObject String tenantName,
+    public Tenant removeAttributeDefinitions(String tenantName,
                                              final Collection<String> attributeNames) throws ProfileException {
         return updateTenant(tenantName, new UpdateCallback() {
 
@@ -224,9 +229,21 @@ public class TenantServiceImpl implements TenantService {
         });
     }
 
+    protected void checkTenantPermission(String tenantName, String action) {
+        if (!permissionEvaluator.isAllowed(tenantName, action)) {
+            if (tenantName != null) {
+                throw new ActionDeniedException(action, tenantName);
+            } else {
+                throw new ActionDeniedException(action);
+            }
+        }
+    }
+
     protected Tenant updateTenant(String tenantName, UpdateCallback callback) throws ProfileException {
         Tenant tenant = getTenant(tenantName);
         if (tenant != null) {
+            checkTenantPermission(tenantName, TenantActions.UPDATE);
+
             callback.doWithTenant(tenant);
 
             updateTenant(tenant);

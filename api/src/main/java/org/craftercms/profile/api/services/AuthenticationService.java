@@ -24,19 +24,17 @@ public interface AuthenticationService {
     /**
      * Returns the ticket object for the given ticket ID.
      *
-     * @param tenantName    the tenant's name
      * @param ticketId      the ID of the ticket
      *
      * @return the ticket object, or null if no ticket found or ticket has expired
      */
-    Ticket getTicket(String tenantName, String ticketId) throws ProfileException;
+    Ticket getTicket(String ticketId) throws ProfileException;
 
     /**
      * Invalidates the ticket.
      *
-     * @param tenantName    the tenant's name
      * @param ticketId      the ID of the ticket to invalidate
      */
-    void invalidateTicket(String tenantName, String ticketId) throws ProfileException;
+    void invalidateTicket(String ticketId) throws ProfileException;
 
 }

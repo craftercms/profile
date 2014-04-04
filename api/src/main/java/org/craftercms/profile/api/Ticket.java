@@ -12,7 +12,8 @@ import java.util.Date;
 public class Ticket {
 
     private ObjectId _id;
-    private String userId;
+    private String tenant;
+    private String profileId;
     private Date timestamp;
 
     public ObjectId getId() {
@@ -23,12 +24,20 @@ public class Ticket {
         this._id = id;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getTenant() {
+        return tenant;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setTenant(String tenant) {
+        this.tenant = tenant;
+    }
+
+    public String getProfileId() {
+        return profileId;
+    }
+
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
     }
 
     public Date getTimestamp() {
@@ -43,7 +52,8 @@ public class Ticket {
     public String toString() {
         return "Ticket{" +
                 "id=" + _id +
-                ", userId='" + userId + '\'' +
+                ", tenant='" + tenant + '\'' +
+                ", profileId='" + profileId + '\'' +
                 ", timestamp=" + timestamp +
                 '}';
     }

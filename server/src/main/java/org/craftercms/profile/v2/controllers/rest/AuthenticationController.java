@@ -54,15 +54,13 @@ public class AuthenticationController {
 
     @RequestMapping(value = URL_AUTH_GET_TICKET, method = RequestMethod.GET)
     @ResponseBody
-    public Ticket getTicket(@RequestParam(PARAM_TENANT_NAME) String tenantName,
-                            @RequestParam(PARAM_TICKET_ID) String ticketId) throws ProfileException {
-        return authenticationService.getTicket(tenantName, ticketId);
+    public Ticket getTicket(@RequestParam(PARAM_TICKET_ID) String ticketId) throws ProfileException {
+        return authenticationService.getTicket(ticketId);
     }
 
     @RequestMapping(value = URL_AUTH_INVALIDATE_TICKET, method = RequestMethod.GET)
-    public void invalidateTicket(@RequestParam(PARAM_TENANT_NAME) String tenantName,
-                                 @RequestParam(PARAM_TICKET_ID) String ticketId) throws ProfileException {
-        authenticationService.invalidateTicket(tenantName, ticketId);
+    public void invalidateTicket(@RequestParam(PARAM_TICKET_ID) String ticketId) throws ProfileException {
+        authenticationService.invalidateTicket(ticketId);
     }
 
 }
