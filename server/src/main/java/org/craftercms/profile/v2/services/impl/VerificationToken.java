@@ -1,6 +1,6 @@
 package org.craftercms.profile.v2.services.impl;
 
-import org.jongo.marshall.jackson.oid.ObjectId;
+import org.bson.types.ObjectId;
 
 import java.util.Date;
 
@@ -54,6 +54,29 @@ public class VerificationToken {
                 ", profileId='" + profileId + '\'' +
                 ", timestamp=" + timestamp +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        VerificationToken token = (VerificationToken) o;
+
+        if (!_id.equals(token._id)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return _id.hashCode();
     }
 
 }

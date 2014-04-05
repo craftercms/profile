@@ -69,8 +69,8 @@ public class AuthenticationServiceImplTest {
 
         when(permissionEvaluator.isAllowed(anyString(), anyString())).thenReturn(true);
 
-        when(ticketRepository.findById(NORMAL_TICKET_ID.toString())).thenReturn(createNormalTestTicket());
-        when(ticketRepository.findById(EXPIRED_TICKET_ID.toString())).thenReturn(createExpiredTestTicket());
+        when(ticketRepository.findById(NORMAL_TICKET_ID.toString())).thenReturn(getNormalTicket());
+        when(ticketRepository.findById(EXPIRED_TICKET_ID.toString())).thenReturn(getExpiredTicket());
 
         when(profileService.getProfileByUsername(TENANT_NAME, USERNAME1)).thenReturn(getProfile1());
         when(profileService.getProfileByUsername(TENANT_NAME, USERNAME2)).thenReturn(getProfile2());
@@ -153,7 +153,7 @@ public class AuthenticationServiceImplTest {
         return profile;
     }
 
-    private Ticket createNormalTestTicket() {
+    private Ticket getNormalTicket() {
         Ticket ticket = new Ticket();
         ticket.setId(NORMAL_TICKET_ID);
         ticket.setProfileId(PROFILE_ID.toString());
@@ -162,7 +162,7 @@ public class AuthenticationServiceImplTest {
         return ticket;
     }
 
-    private Ticket createExpiredTestTicket() {
+    private Ticket getExpiredTicket() {
         Ticket ticket = new Ticket();
         ticket.setId(EXPIRED_TICKET_ID);
         ticket.setProfileId(PROFILE_ID.toString());

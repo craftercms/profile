@@ -27,6 +27,8 @@ import org.craftercms.profile.api.exceptions.ProfileException;
  */
 public interface VerificationService {
 
+    String TOKEN_ID_PARAM =    "tokenId";
+
     /**
      * Sends the user an email for verification.
      *

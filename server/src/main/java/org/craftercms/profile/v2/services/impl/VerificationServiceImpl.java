@@ -45,8 +45,6 @@ public class VerificationServiceImpl implements VerificationService {
     private static final I10nLogger logger = new I10nLogger(VerificationServiceImpl.class,
             "crafter.profile.messages.logging");
 
-    public static final String TOKEN_PARAM =    "token";
-
     public static final String VERIFICATION_LINK_TEMPLATE_ARG = "verificationLink";
 
     public static final String LOG_KEY_VER_URL_CREATED =    "profile.verification.verificationUrlCreated";
@@ -136,7 +134,7 @@ public class VerificationServiceImpl implements VerificationService {
         expirationTime.setTime(token.getTimestamp());
         expirationTime.add(Calendar.SECOND, tokenMaxAge);
 
-        if (Calendar.getInstance().before(token.getTimestamp())) {
+        if (Calendar.getInstance().before(expirationTime)) {
             return callback.doOnSuccess(token);
         } else {
             throw new ExpiredVerificationTokenException(expirationTime.getTime());
@@ -152,7 +150,7 @@ public class VerificationServiceImpl implements VerificationService {
             verificationUrl.append("?");
         }
 
-        verificationUrl.append(TOKEN_PARAM).append("=").append(tokenId);
+        verificationUrl.append(TOKEN_ID_PARAM).append("=").append(tokenId);
 
         return verificationUrl.toString();
     }
