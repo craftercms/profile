@@ -83,7 +83,9 @@ public class ProfileServiceImplTest {
 
     private ProfileServiceImpl profileService;
     @Mock
-    private PermissionEvaluator<Application, String> permissionEvaluator;
+    private PermissionEvaluator<Application, String> tenantPermissionEvaluator;
+    @Mock
+    private PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator;
     @Mock
     private ProfileRepository profileRepository;
     @Mock
@@ -99,7 +101,8 @@ public class ProfileServiceImplTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        when(permissionEvaluator.isAllowed(anyString(), anyString())).thenReturn(true);
+        when(tenantPermissionEvaluator.isAllowed(anyString(), anyString())).thenReturn(true);
+        when(attributePermissionEvaluator.isAllowed(any(AttributeDefinition.class), anyString())).thenReturn(true);
 
         Profile profileNoLastName = getTenant1Profile();
         profileNoLastName.getAttributes().remove(ATTRIB_NAME_LAST_NAME);
@@ -133,7 +136,8 @@ public class ProfileServiceImplTest {
                 VerificationSuccessCallback.class))).then(new VerifyTokenAnswer(PROFILE1_ID.toString()));
 
         profileService = new ProfileServiceImpl();
-        profileService.setPermissionEvaluator(permissionEvaluator);
+        profileService.setTenantPermissionEvaluator(tenantPermissionEvaluator);
+        profileService.setAttributePermissionEvaluator(attributePermissionEvaluator);
         profileService.setProfileRepository(profileRepository);
         profileService.setTenantService(tenantService);
         profileService.setAuthenticationService(authenticationService);
@@ -154,7 +158,7 @@ public class ProfileServiceImplTest {
         assertNotNull(actual.getCreated());
         assertNotNull(actual.getModified());
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(tenantService).getTenant(TENANT1_NAME);
         verify(profileRepository).save(actual);
         verify(newProfileVerificationService).sendEmail(actual, VERIFICATION_URL);
@@ -173,7 +177,7 @@ public class ProfileServiceImplTest {
         assertNotNull(actual.getCreated());
         assertNotNull(actual.getModified());
 
-        verify(permissionEvaluator).isAllowed(TENANT2_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT2_NAME, TenantActions.MANAGE_PROFILES);
         verify(tenantService).getTenant(TENANT2_NAME);
         verify(profileRepository).save(actual);
         verify(newProfileVerificationService, never()).sendEmail(actual, VERIFICATION_URL);
@@ -198,7 +202,7 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
     }
@@ -213,7 +217,7 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
 
-        verify(permissionEvaluator).isAllowed(TENANT2_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT2_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findById(PROFILE2_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
     }
@@ -227,7 +231,7 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
 
-        verify(permissionEvaluator).isAllowed(TENANT2_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT2_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findById(PROFILE2_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
     }
@@ -241,7 +245,7 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
     }
@@ -255,7 +259,7 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
     }
@@ -269,7 +273,7 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
     }
@@ -284,7 +288,7 @@ public class ProfileServiceImplTest {
         assertEquals(FIRST_NAME, attributes.get(ATTRIB_NAME_FIRST_NAME));
         assertEquals(LAST_NAME, attributes.get(ATTRIB_NAME_LAST_NAME));
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
     }
 
@@ -296,7 +300,7 @@ public class ProfileServiceImplTest {
         assertEquals(1, attributes.size());
         assertEquals(FIRST_NAME, attributes.get(ATTRIB_NAME_FIRST_NAME));
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findById(PROFILE1_ID.toString(), ATTRIB_NAME_FIRST_NAME);
     }
 
@@ -310,7 +314,7 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
     }
@@ -324,7 +328,7 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
     }
@@ -333,7 +337,7 @@ public class ProfileServiceImplTest {
     public void testDeleteProfile() throws Exception {
         profileService.deleteProfile(PROFILE1_ID.toString());
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).removeById(PROFILE1_ID.toString());
     }
 
@@ -344,7 +348,7 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
     }
 
@@ -355,7 +359,7 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findByTenantAndUsername(TENANT1_NAME, USERNAME1, new String[0]);
     }
 
@@ -366,7 +370,7 @@ public class ProfileServiceImplTest {
 
         assertEquals(expected, actual);
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).countByTenant(TENANT1_NAME);
     }
 
@@ -378,7 +382,7 @@ public class ProfileServiceImplTest {
 
         assertEqualProfileLists(expected, actual);
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findByIds(TENANT1_PROFILE_IDS, "username", SortOrder.ASC);
     }
 
@@ -390,7 +394,7 @@ public class ProfileServiceImplTest {
 
         assertEqualProfileLists(expected, actual);
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findRange(TENANT1_NAME, SORT_BY, SortOrder.ASC, START, COUNT);
     }
 
@@ -402,7 +406,7 @@ public class ProfileServiceImplTest {
 
         assertEqualProfileLists(expected, actual);
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findByTenantAndRole(TENANT1_NAME, ROLE1, SORT_BY, SortOrder.ASC);
     }
 
@@ -414,7 +418,7 @@ public class ProfileServiceImplTest {
 
         assertEqualProfileLists(expected, actual);
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findByTenantAndAttribute(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME, FIRST_NAME, SORT_BY,
                 SortOrder.ASC);
     }
@@ -426,7 +430,7 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
         verify(resetPasswordVerificationService).sendEmail(actual, RESET_PASSWORD_URL);
     }
@@ -439,7 +443,7 @@ public class ProfileServiceImplTest {
         assertEqualProfiles(expected, actual);
         assertTrue(CipherUtils.matchPassword(actual.getPassword(), PASSWORD2));
 
-        verify(permissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
     }

@@ -17,10 +17,13 @@
 package org.craftercms.profile.v2.services.impl;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.crypto.CipherUtils;
+import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
+import org.craftercms.commons.security.exception.PermissionException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.*;
 import org.craftercms.profile.api.exceptions.ProfileException;
@@ -44,6 +47,13 @@ import java.util.*;
  */
 public class ProfileServiceImpl implements ProfileService {
 
+    private static final I10nLogger logger = new I10nLogger(ProfileServiceImpl.class,
+            "crafter.profile.messages.logging");
+
+    private static final String LOG_KEY_EVALUATING_ATTRIB_ACTION =      "profile.attribute.evaluatingAttributeAction";
+    private static final String LOG_KEY_REMOVING_UNREADABLE_ATTRIB =    "profile.attribute.removingUnreadableAttribute";
+    private static final String LOG_KEY_NO_ATTRIB_DEF_FOUND =           "profile.attribute.noAttributeDefFound";
+
     public static final String ERROR_KEY_CREATE_PROFILE_ERROR =             "profile.profile.createProfileError";
     public static final String ERROR_KEY_GET_PROFILE_ERROR =                "profile.profile.getProfileError";
     public static final String ERROR_KEY_UPDATE_PROFILE_ERROR =             "profile.profile.updateProfileError";
@@ -56,7 +66,8 @@ public class ProfileServiceImpl implements ProfileService {
     public static final String ERROR_KEY_GET_PROFILES_BY_ATTRIB_ERROR =     "profile.profile.getProfilesByAttributeError";
     public static final String ERROR_KEY_RESET_PASSWORD_ERROR =             "profile.profile.resetPasswordError";
 
-    protected PermissionEvaluator<Application, String> permissionEvaluator;
+    protected PermissionEvaluator<Application, String> tenantPermissionEvaluator;
+    protected PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator;
     protected ProfileRepository profileRepository;
     protected TenantService tenantService;
     protected AuthenticationService authenticationService;
@@ -64,8 +75,14 @@ public class ProfileServiceImpl implements ProfileService {
     protected VerificationService resetPasswordVerificationService;
 
     @Required
-    public void setPermissionEvaluator(PermissionEvaluator<Application, String> permissionEvaluator) {
-        this.permissionEvaluator = permissionEvaluator;
+    public void setTenantPermissionEvaluator(PermissionEvaluator<Application, String> tenantPermissionEvaluator) {
+        this.tenantPermissionEvaluator = tenantPermissionEvaluator;
+    }
+
+    @Required
+    public void setAttributePermissionEvaluator(
+            PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator) {
+        this.attributePermissionEvaluator = attributePermissionEvaluator;
     }
 
     @Required
@@ -258,6 +275,8 @@ public class ProfileServiceImpl implements ProfileService {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
+                rejectAttributesIfActionNotAllowed(profile, attributes.keySet(), AttributeActions.WRITE);
+
                 profile.getAttributes().putAll(attributes);
             }
 
@@ -271,6 +290,8 @@ public class ProfileServiceImpl implements ProfileService {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
+                rejectAttributesIfActionNotAllowed(profile, attributeNames, AttributeActions.DELETE);
+
                 Map<String, Object> attributes = profile.getAttributes();
 
                 for (String attributeName : attributeNames) {
@@ -299,6 +320,7 @@ public class ProfileServiceImpl implements ProfileService {
             Profile profile = profileRepository.findById(profileId, attributesToReturn);
             if (profile != null) {
                 checkManageProfilesPermission(profile.getTenant());
+                filterNonReadableAttributes(profile);
             }
 
             return profile;
@@ -313,7 +335,10 @@ public class ProfileServiceImpl implements ProfileService {
         checkManageProfilesPermission(tenantName);
 
         try {
-            return profileRepository.findByTenantAndUsername(tenantName, username, attributesToReturn);
+            Profile profile = profileRepository.findByTenantAndUsername(tenantName, username, attributesToReturn);
+            filterNonReadableAttributes(profile);
+
+            return profile;
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_GET_PROFILE_BY_USERNAME_ERROR, e, username, tenantName);
         }
@@ -348,6 +373,7 @@ public class ProfileServiceImpl implements ProfileService {
             if (profiles != null) {
                 for (Profile profile : profiles) {
                     checkManageProfilesPermission(profile.getTenant());
+                    filterNonReadableAttributes(profile);
                 }
             }
 
@@ -363,7 +389,11 @@ public class ProfileServiceImpl implements ProfileService {
         checkManageProfilesPermission(tenantName);
 
         try {
-            return profileRepository.findRange(tenantName, sortBy, sortOrder, start, count, attributesToReturn);
+            Iterable<Profile> profiles = profileRepository.findRange(tenantName, sortBy, sortOrder, start, count,
+                    attributesToReturn);
+            filterNonReadableAttributes(profiles);
+
+            return profiles;
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_GET_PROFILE_RANGE_ERROR, e, start, count, tenantName);
         }
@@ -375,7 +405,11 @@ public class ProfileServiceImpl implements ProfileService {
         checkManageProfilesPermission(tenantName);
 
         try {
-            return profileRepository.findByTenantAndRole(tenantName, role, sortBy, sortOrder, attributesToReturn);
+            Iterable<Profile> profiles = profileRepository.findByTenantAndRole(tenantName, role, sortBy, sortOrder,
+                    attributesToReturn);
+            filterNonReadableAttributes(profiles);
+
+            return profiles;
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_GET_PROFILES_BY_ROLE_ERROR, e, role, tenantName);
         }
@@ -388,8 +422,11 @@ public class ProfileServiceImpl implements ProfileService {
         checkManageProfilesPermission(tenantName);
 
         try {
-            return profileRepository.findByTenantAndAttribute(tenantName, attributeName, attributeValue, sortBy,
-                    sortOrder, attributesToReturn);
+            Iterable<Profile> profiles = profileRepository.findByTenantAndAttribute(tenantName, attributeName,
+                    attributeValue, sortBy, sortOrder, attributesToReturn);
+            filterNonReadableAttributes(profiles);
+
+            return profiles;
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_GET_PROFILES_BY_ATTRIB_ERROR, e, attributeName, attributeValue,
                     tenantName);
@@ -431,7 +468,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     protected void checkManageProfilesPermission(String tenantName) {
-        if (!permissionEvaluator.isAllowed(tenantName, TenantActions.MANAGE_PROFILES)) {
+        if (!tenantPermissionEvaluator.isAllowed(tenantName, TenantActions.MANAGE_PROFILES)) {
             throw new ActionDeniedException(TenantActions.MANAGE_PROFILES, tenantName);
         }
     }
@@ -467,6 +504,71 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         return profile;
+    }
+
+    public void filterNonReadableAttributes(Profile profile) throws ProfileException {
+        Tenant tenant = getTenant(profile.getTenant());
+        Set<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
+
+        for (AttributeDefinition attributeDefinition : attributeDefinitions) {
+            filterAttributeIfReadNotAllowed(tenant, attributeDefinition, profile.getAttributes());
+        }
+    }
+
+    public void filterNonReadableAttributes(Iterable<Profile> profiles) throws ProfileException {
+        for (Profile profile : profiles) {
+            filterNonReadableAttributes(profile);
+        }
+    }
+
+    public void rejectAttributesIfActionNotAllowed(Profile profile, Collection<String> attributeNames, String action)
+            throws ProfileException {
+        Tenant tenant = getTenant(profile.getTenant());
+        Set<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
+
+        for (String attributeName : attributeNames) {
+            rejectAttributeIfActionNotAllowed(tenant, attributeName, action, attributeDefinitions);
+        }
+    }
+
+    protected void filterAttributeIfReadNotAllowed(Tenant tenant, AttributeDefinition attributeDefinition,
+                                                   Map<String, Object> attributes) throws PermissionException {
+        String attributeName = attributeDefinition.getName();
+
+        logger.debug(LOG_KEY_EVALUATING_ATTRIB_ACTION, AttributeActions.READ, attributeName, tenant.getName());
+
+        if (!attributePermissionEvaluator.isAllowed(attributeDefinition, AttributeActions.READ)) {
+            logger.debug(LOG_KEY_REMOVING_UNREADABLE_ATTRIB, attributeName);
+
+            attributes.remove(attributeName);
+        }
+    }
+
+    protected void rejectAttributeIfActionNotAllowed(Tenant tenant, String attributeName, String action,
+                                                     Set<AttributeDefinition> attributeDefinitions)
+            throws PermissionException {
+        AttributeDefinition definition = getAttributeDefinitionByName(attributeDefinitions, attributeName);
+        if (definition != null) {
+            logger.debug(LOG_KEY_EVALUATING_ATTRIB_ACTION, action, attributeName, tenant.getName());
+
+            if (!attributePermissionEvaluator.isAllowed(definition, action)) {
+                throw new ActionDeniedException(action, attributeName);
+            }
+        } else {
+            logger.debug(LOG_KEY_NO_ATTRIB_DEF_FOUND, attributeName, tenant.getName());
+        }
+    }
+
+    protected AttributeDefinition getAttributeDefinitionByName(final Set<AttributeDefinition> attributeDefinitions,
+                                                               final String name) {
+        return CollectionUtils.find(attributeDefinitions, new Predicate<AttributeDefinition>() {
+
+            @Override
+            public boolean evaluate(AttributeDefinition definition) {
+                return definition.getName().equals(name);
+            }
+
+        });
     }
 
     protected interface UpdateCallback {

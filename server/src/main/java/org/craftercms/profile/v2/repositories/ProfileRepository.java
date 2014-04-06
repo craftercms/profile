@@ -120,4 +120,13 @@ public interface ProfileRepository extends CrudRepository<Profile> {
      */
     void removeAllForTenant(String tenantName) throws MongoDataException;
 
+    /**
+     * Return the tenant's name for the specified profile ID
+     *
+     * @param profileId the profile's ID
+     *
+     * @return the tenant's name
+     */
+    String findTenantNameForProfile(String profileId) throws MongoDataException;
+
 }

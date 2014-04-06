@@ -20,12 +20,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.AccessToken;
-import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.repositories.AccessTokenRepository;
 import org.craftercms.profile.v2.exceptions.ExpiredAccessTokenException;
 import org.craftercms.profile.v2.exceptions.I10nProfileException;
-import org.craftercms.profile.v2.exceptions.NoSuchAccessTokenIdException;
 import org.craftercms.profile.v2.exceptions.MissingAccessTokenIdParamException;
+import org.craftercms.profile.v2.exceptions.NoSuchAccessTokenIdException;
 import org.craftercms.profile.v2.permissions.Application;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -55,16 +54,10 @@ public class AccessTokenCheckingInterceptor extends HandlerInterceptorAdapter {
     public static final String LOG_KEY_APP_UNBINDING_APP =     "profile.app.unbindingApp";
 
     protected AccessTokenRepository tokenRepository;
-    protected TenantService tenantService;
 
     @Required
     public void setTokenRepository(AccessTokenRepository tokenRepository) {
         this.tokenRepository = tokenRepository;
-    }
-
-    @Required
-    public void setTenantService(TenantService tenantService) {
-        this.tenantService = tenantService;
     }
 
     @Override
