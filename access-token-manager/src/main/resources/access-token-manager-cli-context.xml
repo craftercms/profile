@@ -61,16 +61,16 @@
         <property name="queries" ref="queries"/>
     </bean>
 
-    <bean id="objectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper">
+    <bean id="objectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper" init-method="init">
         <property name="serializers">
             <list>
-                <bean class="org.jongo.marshall.jackson.oid.ObjectIdSerializer"/>
+                <bean class="org.craftercms.commons.jackson.ObjectIdSerializer"/>
             </list>
         </property>
         <property name="deserializers">
             <map>
                 <entry key="org.bson.types.ObjectId">
-                    <bean class="org.jongo.marshall.jackson.oid.ObjectIdDeserializer"/>
+                    <bean class="org.craftercms.commons.jackson.ObjectIdDeserializer"/>
                 </entry>
             </map>
         </property>

@@ -61,14 +61,14 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
     }
 
     /**
-     * Returns the type (class) of the attribute to use for convert.
+     * Returns the type of the attribute to use for converting.
      */
     public String getType() {
         return type;
     }
 
     /**
-     * Sets the type of the attribute (class) to use for convert.
+     * Sets the type of the attribute to use for converting.
      */
     public void setType(String type) {
         this.type = type;

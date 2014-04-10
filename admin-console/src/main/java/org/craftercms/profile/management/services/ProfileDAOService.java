@@ -20,8 +20,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
-import org.craftercms.profile.impl.domain.Profile;
+import org.craftercms.profile.client.exceptions.AppAuthenticationFailedException;
+import org.craftercms.profile.client.impl.domain.Profile;
 
 /**
  * @author Sandra O'Keeffe

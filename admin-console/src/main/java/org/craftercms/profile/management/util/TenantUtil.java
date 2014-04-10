@@ -22,9 +22,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.craftercms.profile.impl.domain.Attribute;
-import org.craftercms.profile.impl.domain.Profile;
-import org.craftercms.profile.impl.domain.Tenant;
+import org.craftercms.profile.client.impl.domain.Attribute;
+import org.craftercms.profile.client.impl.domain.Profile;
+import org.craftercms.profile.client.impl.domain.Tenant;
 
 /**
  * @author David Escalante

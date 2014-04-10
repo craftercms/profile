@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
-import org.craftercms.profile.exceptions.ConflictRequestException;
-import org.craftercms.profile.impl.domain.GroupRole;
-import org.craftercms.profile.impl.domain.Tenant;
+import org.craftercms.profile.client.exceptions.ConflictRequestException;
+import org.craftercms.profile.client.impl.domain.GroupRole;
+import org.craftercms.profile.client.impl.domain.Tenant;
 import org.craftercms.profile.management.services.GroupRoleMappingService;
 import org.craftercms.profile.management.services.TenantDAOService;
 import org.craftercms.profile.management.util.GroupRoleValidator;

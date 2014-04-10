@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- REST Template -->
+
+    <util:list id="crafter.messageConverters">
+        <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+        <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+        <bean class="org.springframework.http.converter.ResourceHttpMessageConverter"/>
+        <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
+        <bean class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter"/>
+        <bean class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter"/>
+        <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+            <property name="objectMapper" ref="crafter.objectMapper"/>
+        </bean>
+    </util:list>
+
+    <bean id="crafter.profileResponseErrorHandler"
+          class="org.craftercms.profile.v2.utils.rest.ProfileResponseErrorHandler"/>
+
+    <bean id="crafter.profileRestTemplate" class="org.craftercms.commons.rest.RestTemplate">
+        <property name="messageConverters" ref="crafter.messageConverters"/>
+        <property name="errorHandler" ref="crafter.profileResponseErrorHandler"/>
+    </bean>
+
+    <!-- Jackson config -->
+
+    <bean id="crafter.objectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper"
+          init-method="init">
+        <property name="serializers">
+            <list>
+                <bean class="org.craftercms.commons.jackson.ObjectIdSerializer"/>
+            </list>
+        </property>
+        <property name="deserializers">
+            <map>
+                <entry key="org.bson.types.ObjectId">
+                    <bean class="org.craftercms.commons.jackson.ObjectIdDeserializer"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <!-- REST Clients -->
+
+    <bean id="crafter.tenantServiceRestClient" class="org.craftercms.profile.v2.services.impl.TenantServiceRestClient">
+        <property name="restTemplate" ref="crafter.profileRestTemplate"/>
+    </bean>
+
+    <bean id="crafter.profileServiceRestClient" class="org.craftercms.profile.v2.services.impl.ProfileServiceRestClient">
+        <property name="restTemplate" ref="crafter.profileRestTemplate"/>
+    </bean>
+
+    <bean id="crafter.authenticationServiceRestClient"
+          class="org.craftercms.profile.v2.services.impl.AuthenticationServiceRestClient">
+        <property name="restTemplate" ref="crafter.profileRestTemplate"/>
+    </bean>
+
+</beans>

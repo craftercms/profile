@@ -98,7 +98,7 @@ public class AccessTokenManagerCliTest {
 
     @Test
     public void testRemove() throws Exception {
-        String id = "507c7f79bcf86cd7994f6c0e";
+        String id = "795b69f0-c044-11e3-8a33-0800200c9a66";
 
         tokens.add(createTestToken());
 
@@ -124,11 +124,10 @@ public class AccessTokenManagerCliTest {
         AccessTokenManagerCli cli = new AccessTokenManagerCli(stdIn, stdOut, tokenRepository, objectMapper);
         cli.run("-list");
 
-        assertEquals("[{\"application\":\"crafterengine\",\"tenantPermissions\":[{\"allowedActions\":" +
-                        "[\"authenticate\",\"update\",\"count\",\"manageProfiles\",\"delete\",\"read\",\"readAll\"," +
-                        "\"create\"],\"tenant\":\"corporate\"}],\"expiresOn\":\"2014-03-05T06:00:00.000+0000\"," +
-                        "\"id\":\"507c7f79bcf86cd7994f6c0e\"}]",
-                outputWriter.toString().trim());
+        assertEquals("[{\"application\":\"crafterengine\",\"tenantPermissions\":[{\"allowedActions\":[\"update\"," +
+                        "\"count\",\"manageProfiles\",\"manageTickets\",\"delete\",\"read\",\"readAll\",\"create\"]," +
+                        "\"tenant\":\"corporate\"}],\"expiresOn\":\"2014-03-05T06:00:00.000+0000\",\"id\":" +
+                        "\"795b69f0-c044-11e3-8a33-0800200c9a66\"}]", outputWriter.toString().trim());
     }
 
     private void createTestAccessTokenRepository() throws MongoDataException {
@@ -181,7 +180,7 @@ public class AccessTokenManagerCliTest {
         permission.allow(TenantActions.ALL_ACTIONS);
 
         AccessToken token = new AccessToken();
-        token.setId(new ObjectId("507c7f79bcf86cd7994f6c0e"));
+        token.setId("795b69f0-c044-11e3-8a33-0800200c9a66");
         token.setApplication("crafterengine");
         token.setExpiresOn(new SimpleDateFormat("MM/dd/yyyy").parse("03/05/2014"));
         token.setTenantPermissions(Arrays.asList(permission));

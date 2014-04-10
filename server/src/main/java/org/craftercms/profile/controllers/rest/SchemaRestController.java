@@ -16,7 +16,7 @@
  */
 package org.craftercms.profile.controllers.rest;
 
-import org.craftercms.profile.constants.AttributeConstants;
+import org.craftercms.profile.client.constants.AttributeConstants;
 import org.craftercms.profile.domain.Attribute;
 import org.craftercms.profile.domain.Schema;
 import org.craftercms.profile.exceptions.TenantException;

@@ -16,7 +16,7 @@
  */
 package org.craftercms.profile.controllers.rest;
 
-import org.craftercms.profile.constants.ProfileConstants;
+import org.craftercms.profile.client.constants.ProfileConstants;
 import org.craftercms.profile.domain.Role;
 import org.craftercms.profile.exceptions.AbstractProfileException;
 import org.craftercms.profile.exceptions.RoleException;

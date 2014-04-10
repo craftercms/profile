@@ -149,7 +149,7 @@
     <!--									-->
     <!-- ////////////////////////////////// -->
 
-    <bean id="crafter.profileClient" class="org.craftercms.profile.impl.ProfileRestClientImpl">
+    <bean id="crafter.profileClient" class="ProfileRestClientImpl">
         <property name="scheme" value="${crafter.security.profile.server.url.scheme}"/>
         <property name="host" value="${crafter.security.profile.server.url.host}"/>
         <property name="port" value="${crafter.security.profile.server.url.port}"/>

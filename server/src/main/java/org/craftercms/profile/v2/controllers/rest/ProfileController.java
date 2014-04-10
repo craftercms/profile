@@ -62,13 +62,13 @@ public class ProfileController {
 
     @RequestMapping(value = URL_PROFILE_UPDATE, method = RequestMethod.POST)
     @ResponseBody
-    public Profile updateProfile(@RequestParam(PARAM_PROFILE_ID) String profileId,
+    public Profile updateProfile(@PathVariable(PATH_VAR_ID) String profileId,
                                  @RequestParam(value = PARAM_USERNAME, required = false) String username,
                                  @RequestParam(value = PARAM_PASSWORD, required = false) String password,
                                  @RequestParam(value = PARAM_EMAIL, required = false) String email,
                                  @RequestParam(value = PARAM_ENABLED, required = false) Boolean enabled,
                                  @RequestParam(value = PARAM_ROLE, required = false) Set<String> roles,
-                                 @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+                                 @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                  String[] attributesToReturn)
             throws ProfileException {
         return profileService.updateProfile(profileId, username, password, email, enabled, roles, attributesToReturn);
@@ -76,8 +76,8 @@ public class ProfileController {
 
     @RequestMapping(value = URL_PROFILE_ENABLE, method = RequestMethod.POST)
     @ResponseBody
-    public Profile enableProfile(@RequestParam(PARAM_PROFILE_ID) String profileId,
-                                 @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+    public Profile enableProfile(@PathVariable(PATH_VAR_ID) String profileId,
+                                 @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                  String[] attributesToReturn)
             throws ProfileException {
         return profileService.enableProfile(profileId, attributesToReturn);
@@ -85,26 +85,26 @@ public class ProfileController {
 
     @RequestMapping(value = URL_PROFILE_DISABLE, method = RequestMethod.POST)
     @ResponseBody
-    public Profile disableProfile(@RequestParam(PARAM_PROFILE_ID) String profileId,
-                                  @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+    public Profile disableProfile(@PathVariable(PATH_VAR_ID) String profileId,
+                                  @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                   String[] attributesToReturn) throws ProfileException {
         return profileService.disableProfile(profileId, attributesToReturn);
     }
 
     @RequestMapping(value = URL_PROFILE_ADD_ROLES, method = RequestMethod.POST)
     @ResponseBody
-    public Profile addRoles(@RequestParam(PARAM_PROFILE_ID) String profileId,
+    public Profile addRoles(@PathVariable(PATH_VAR_ID) String profileId,
                             @RequestParam(PARAM_ROLE) Collection<String> roles,
-                            @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+                            @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                             String[] attributesToReturn) throws ProfileException {
         return profileService.addRoles(profileId, roles, attributesToReturn);
     }
 
     @RequestMapping(value = URL_PROFILE_REMOVE_ROLES, method = RequestMethod.POST)
     @ResponseBody
-    public Profile removeRoles(@RequestParam(PARAM_PROFILE_ID) String profileId,
+    public Profile removeRoles(@PathVariable(PATH_VAR_ID) String profileId,
                                @RequestParam(PARAM_ROLE) Collection<String> roles,
-                               @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+                               @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                String[] attributesToReturn) throws ProfileException {
         return profileService.removeRoles(profileId, roles, attributesToReturn);
     }
@@ -112,7 +112,7 @@ public class ProfileController {
     @RequestMapping(value = URL_PROFILE_VERIFY, method = RequestMethod.POST)
     @ResponseBody
     public Profile verifyProfile(@RequestParam(PARAM_VERIFICATION_TOKEN_ID) String verificationTokenId,
-                                 @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+                                 @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                  String[] attributesToReturn)
             throws ProfileException {
         return profileService.verifyProfile(verificationTokenId, attributesToReturn);
@@ -120,8 +120,8 @@ public class ProfileController {
 
     @RequestMapping(value = URL_PROFILE_GET_ATTRIBUTES, method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getAttributes(@RequestParam(PARAM_PROFILE_ID) String profileId,
-                                             @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+    public Map<String, Object> getAttributes(@PathVariable(PATH_VAR_ID) String profileId,
+                                             @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                              String[] attributesToReturn)
             throws ProfileException {
         return profileService.getAttributes(profileId, attributesToReturn);
@@ -129,18 +129,18 @@ public class ProfileController {
 
     @RequestMapping(value = URL_PROFILE_UPDATE_ATTRIBUTES, method = RequestMethod.POST)
     @ResponseBody
-    public Profile updateAttributes(@RequestParam(PARAM_PROFILE_ID) String profileId,
+    public Profile updateAttributes(@PathVariable(PATH_VAR_ID) String profileId,
                                     @RequestBody Map<String, Object> attributes,
-                                    @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+                                    @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                     String[] attributesToReturn) throws ProfileException {
         return profileService.updateAttributes(profileId, attributes, attributesToReturn);
     }
 
     @RequestMapping(value = URL_PROFILE_REMOVE_ATTRIBUTES, method = RequestMethod.POST)
     @ResponseBody
-    public Profile removeAttributes(@RequestParam(PARAM_PROFILE_ID) String profileId,
-                                    @RequestParam(PARAM_ATTRIBUTES_TO_RETURN) Collection<String> attributeNames,
-                                    @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+    public Profile removeAttributes(@PathVariable(PATH_VAR_ID) String profileId,
+                                    @RequestParam(PARAM_ATTRIBUTE_TO_RETURN) Collection<String> attributeNames,
+                                    @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                     String[] attributesToReturn)
         throws ProfileException {
         return profileService.removeAttributes(profileId, attributeNames, attributesToReturn);
@@ -148,14 +148,14 @@ public class ProfileController {
 
     @RequestMapping(value = URL_PROFILE_DELETE_PROFILE, method = RequestMethod.POST)
     @ResponseBody
-    public void deleteProfile(@RequestParam(PARAM_PROFILE_ID) String profileId) throws ProfileException {
+    public void deleteProfile(@PathVariable(PATH_VAR_ID) String profileId) throws ProfileException {
         profileService.deleteProfile(profileId);
     }
 
     @RequestMapping(value = URL_PROFILE_GET, method = RequestMethod.GET)
     @ResponseBody
-    public Profile getProfile(@RequestParam(PARAM_PROFILE_ID) String profileId,
-                              @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+    public Profile getProfile(@PathVariable(PATH_VAR_ID) String profileId,
+                              @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                               String[] attributesToReturn) throws ProfileException {
         return profileService.getProfile(profileId, attributesToReturn);
     }
@@ -164,15 +164,15 @@ public class ProfileController {
     @ResponseBody
     public Profile getProfileByUsername(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                         @RequestParam(PARAM_USERNAME) String username,
-                                        @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+                                        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                         String[] attributesToReturn) throws ProfileException {
         return profileService.getProfileByUsername(tenantName, username, attributesToReturn);
     }
 
     @RequestMapping(value = URL_PROFILE_GET_BY_USERNAME, method = RequestMethod.GET)
     @ResponseBody
-    public Profile getProfileByTicket(@RequestParam(PARAM_TICKET_ID) String ticketId,
-                                      @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+    public Profile getProfileByTicket(@PathVariable(PARAM_TICKET_ID) String ticketId,
+                                      @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                       String[] attributesToReturn) throws ProfileException {
         return profileService.getProfileByTicket(ticketId, attributesToReturn);
     }
@@ -185,11 +185,11 @@ public class ProfileController {
 
     @RequestMapping(value = URL_PROFILE_GET_BY_IDS, method = RequestMethod.GET)
     @ResponseBody
-    public Iterable<Profile> getProfileByIds(@RequestParam(PARAM_PROFILE_ID) List<String> profileIds,
+    public Iterable<Profile> getProfileByIds(@PathVariable(PATH_VAR_ID) List<String> profileIds,
                                              @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
                                              @RequestParam(value = PARAM_SORT_ORDER, required = false)
                                              SortOrder sortOrder,
-                                             @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+                                             @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                              String[] attributesToReturn) throws ProfileException {
         return profileService.getProfilesByIds(profileIds, sortBy, sortOrder, attributesToReturn);
     }
@@ -202,7 +202,7 @@ public class ProfileController {
                                              SortOrder sortOrder,
                                              @RequestParam(value = PARAM_START, required = false) Integer start,
                                              @RequestParam(value = PARAM_COUNT, required = false) Integer count,
-                                             @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+                                             @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                              String[] attributesToReturn) throws ProfileException {
         return profileService.getProfileRange(tenantName, sortBy, sortOrder, start, count, attributesToReturn);
     }
@@ -214,7 +214,7 @@ public class ProfileController {
                                               @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
                                               @RequestParam(value = PARAM_SORT_ORDER, required = false)
                                               SortOrder sortOrder,
-                                              @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+                                              @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                               String[] attributesToReturn) throws ProfileException {
         return profileService.getProfilesByRole(tenantName, role, sortBy, sortOrder, attributesToReturn);
     }
@@ -227,7 +227,7 @@ public class ProfileController {
                                                    @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
                                                    @RequestParam(value = PARAM_SORT_ORDER, required = false)
                                                    SortOrder sortOrder,
-                                                   @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+                                                   @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                                    String[] attributesToReturn) throws ProfileException {
         return profileService.getProfilesByAttribute(tenantName, attributeName, attributeValue, sortBy, sortOrder,
                 attributesToReturn);
@@ -235,9 +235,9 @@ public class ProfileController {
 
     @RequestMapping(value = URL_PROFILE_FORGOT_PASSWORD, method = RequestMethod.POST)
     @ResponseBody
-    public Profile forgotPassword(@RequestParam(PARAM_PROFILE_ID) String profileId,
+    public Profile forgotPassword(@PathVariable(PATH_VAR_ID) String profileId,
                                   @RequestParam(PARAM_RESET_PASSWORD_URL) String resetPasswordUrl,
-                                  @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+                                  @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                   String[] attributesToReturn) throws ProfileException {
         return profileService.forgotPassword(profileId, resetPasswordUrl, attributesToReturn);
     }
@@ -246,7 +246,7 @@ public class ProfileController {
     @ResponseBody
     public Profile resetPassword(@RequestParam(PARAM_RESET_TOKEN_ID) String resetTokenId,
                                  @RequestParam(PARAM_NEW_PASSWORD) String newPassword,
-                                 @RequestParam(value = PARAM_ATTRIBUTES_TO_RETURN, required = false)
+                                 @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                  String[] attributesToReturn) throws ProfileException {
         return profileService.resetPassword(resetTokenId, newPassword, attributesToReturn);
     }

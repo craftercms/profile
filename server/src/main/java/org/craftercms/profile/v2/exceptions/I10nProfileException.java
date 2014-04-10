@@ -37,13 +37,6 @@ public class I10nProfileException extends ProfileException {
         super(cause);
     }
 
-    public I10nProfileException(String key, Throwable cause, boolean enableSuppression, boolean writableStackTrace,
-                         Object... args) {
-        super(key, cause, enableSuppression, writableStackTrace);
-
-        this.args = args;
-    }
-
     @Override
     public String getLocalizedMessage() {
         String key = getMessage();

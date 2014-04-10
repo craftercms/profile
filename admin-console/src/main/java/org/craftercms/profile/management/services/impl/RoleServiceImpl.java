@@ -3,11 +3,11 @@ package org.craftercms.profile.management.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.craftercms.profile.exceptions.AppAuthenticationException;
-import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
-import org.craftercms.profile.exceptions.ConflictRequestException;
-import org.craftercms.profile.impl.domain.Role;
-import org.craftercms.profile.impl.domain.Tenant;
+import org.craftercms.profile.client.exceptions.AppAuthenticationException;
+import org.craftercms.profile.client.exceptions.AppAuthenticationFailedException;
+import org.craftercms.profile.client.exceptions.ConflictRequestException;
+import org.craftercms.profile.client.impl.domain.Role;
+import org.craftercms.profile.client.impl.domain.Tenant;
 import org.craftercms.profile.management.services.RoleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

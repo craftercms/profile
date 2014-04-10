@@ -52,8 +52,8 @@
     </bean>
 
     <bean id="crafter.jongo" class="org.craftercms.commons.mongo.JongoFactoryBean">
-        <property name="mongoClient" ref="crafter.mongoClient"/>
-        <property name="username" value="${crafter.profile.mongodb.connection.dbUser}"/>
+        <property name="mongo" ref="crafter.mongoClient"/>
+        <property name="username" value="${crafter.profile.mongodb.connection.dbUsername}"/>
         <property name="password" value="${crafter.profile.mongodb.connection.dbPassword}"/>
         <property name="dbName" value="${crafter.profile.mongodb.connection.dbName}"/>
     </bean>
@@ -84,6 +84,15 @@
     <bean id="crafter.verificationTokenRepository"
           class="org.craftercms.profile.v2.repositories.impl.VerificationTokenRepositoryImpl"
           parent="crafter.jongoRepositoryBase"/>
+    
+    <bean id="crafter.mongoInitScriptRunner" class="org.craftercms.commons.mongo.MongoScriptRunner">
+        <property name="mongo" ref="crafter.mongoClient"/>
+        <property name="dbName" value="${crafter.profile.mongodb.connection.dbName}"/>
+        <property name="username" value="${crafter.profile.mongodb.connection.dbUsername}"/>
+        <property name="password" value="${crafter.profile.mongodb.connection.dbPassword}"/>
+        <property name="runOnInit" value="${crafter.profile.mongodb.scripts.runOnInit}"/>
+        <property name="scriptPaths" value="${crafter.profile.mongodb.scripts.paths}"/>
+    </bean>
 
     <!-- Mail -->
 
@@ -179,7 +188,7 @@
 
     <!-- Quartz -->
 
-    <!--bean id="crafter.ticketCleanerJobDetail"
+    <bean id="crafter.ticketCleanerJobDetail"
           class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
         <property name="targetBeanName" value="crafter.ticketRepository"/>
         <property name="targetMethod" value="removeOlderThan"/>
@@ -203,6 +212,6 @@
                 <ref bean="crafter.ticketCleanerTrigger"/>
             </list>
         </property>
-    </bean-->
+    </bean>
 
 </beans>

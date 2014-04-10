@@ -2,8 +2,8 @@ package org.craftercms.profile.management.web;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
-import org.craftercms.profile.impl.domain.Profile;
+import org.craftercms.profile.client.exceptions.AppAuthenticationFailedException;
+import org.craftercms.profile.client.impl.domain.Profile;
 import org.craftercms.profile.management.model.ForgotPassword;
 import org.craftercms.profile.management.model.PasswordChange;
 import org.craftercms.profile.management.services.PasswordChangeService;

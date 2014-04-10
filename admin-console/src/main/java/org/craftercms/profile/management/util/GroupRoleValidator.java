@@ -1,6 +1,6 @@
 package org.craftercms.profile.management.util;
 
-import org.craftercms.profile.impl.domain.GroupRole;
+import org.craftercms.profile.client.impl.domain.GroupRole;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;

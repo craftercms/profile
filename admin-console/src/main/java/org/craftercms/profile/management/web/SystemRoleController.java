@@ -5,8 +5,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletResponse;
 
-import org.craftercms.profile.exceptions.ConflictRequestException;
-import org.craftercms.profile.impl.domain.Role;
+import org.craftercms.profile.client.exceptions.ConflictRequestException;
+import org.craftercms.profile.client.impl.domain.Role;
 import org.craftercms.profile.management.services.RoleService;
 import org.craftercms.security.api.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;

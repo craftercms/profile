@@ -56,7 +56,7 @@ public class TenantController {
 
     @RequestMapping(value = URL_TENANT_GET, method = RequestMethod.GET)
     @ResponseBody
-    public Tenant getTenant(@RequestParam(PARAM_TENANT_NAME) String name) throws ProfileException {
+    public Tenant getTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
         return tenantService.getTenant(name);
     }
 
@@ -68,7 +68,7 @@ public class TenantController {
 
     @RequestMapping(value = URL_TENANT_DELETE, method = RequestMethod.POST)
     @ResponseBody
-    public void deleteTenant(@RequestParam(PARAM_TENANT_NAME) String name) throws ProfileException {
+    public void deleteTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
         tenantService.deleteTenant(name);
     }
 
@@ -86,28 +86,28 @@ public class TenantController {
 
     @RequestMapping(value = URL_TENANT_VERIFY_NEW_PROFILES, method = RequestMethod.POST)
     @ResponseBody
-    public Tenant verifyNewProfiles(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+    public Tenant verifyNewProfiles(@PathVariable(PATH_VAR_NAME) String tenantName,
                                     @RequestParam(PARAM_VERIFY) boolean verify) throws ProfileException {
         return tenantService.verifyNewProfiles(tenantName, verify);
     }
 
     @RequestMapping(value = URL_TENANT_ADD_ROLES, method = RequestMethod.POST)
     @ResponseBody
-    public Tenant addRoles(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+    public Tenant addRoles(@PathVariable(PATH_VAR_NAME) String tenantName,
                            @RequestParam(PARAM_ROLE) Collection<String> roles) throws ProfileException {
         return tenantService.addRoles(tenantName, roles);
     }
 
     @RequestMapping(value = URL_TENANT_REMOVE_ROLES, method = RequestMethod.POST)
     @ResponseBody
-    public Tenant removeRoles(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+    public Tenant removeRoles(@PathVariable(PATH_VAR_NAME) String tenantName,
                               @RequestParam(PARAM_ROLE) Collection<String> roles) throws ProfileException {
         return tenantService.removeRoles(tenantName, roles);
     }
 
     @RequestMapping(value = URL_TENANT_ADD_ATTRIBUTE_DEFINITIONS, method = RequestMethod.POST)
     @ResponseBody
-    public Tenant addAttributeDefinitions(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+    public Tenant addAttributeDefinitions(@PathVariable(PATH_VAR_NAME) String tenantName,
                                           @RequestBody Collection<AttributeDefinition> attributeDefinitions)
             throws ProfileException {
         return tenantService.addAttributeDefinitions(tenantName, attributeDefinitions);
@@ -115,7 +115,7 @@ public class TenantController {
 
     @RequestMapping(value = URL_TENANT_REMOVE_ATTRIBUTE_DEFINITIONS, method = RequestMethod.POST)
     @ResponseBody
-    public Tenant removeAttributeDefinitions(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+    public Tenant removeAttributeDefinitions(@PathVariable(PATH_VAR_NAME) String tenantName,
                                              @RequestParam(PARAM_ATTRIBUTE_NAME) Collection<String> attributeNames)
             throws ProfileException {
         return tenantService.removeAttributeDefinitions(tenantName, attributeNames);

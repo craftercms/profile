@@ -28,30 +28,33 @@ public class RestConstants {
     public static final String BASE_URL_PROFILE =           BASE_URL_REST_API + "/profile";
     public static final String BASE_URL_AUTHENTICATION =    BASE_URL_REST_API + "/authentication";
 
+    public static final String PATH_VAR_NAME =  "name";
+    public static final String PATH_VAR_ID =    "id";
+
     public static final String URL_TENANT_CREATE =                          "/create";
-    public static final String URL_TENANT_GET =                             "";
-    public static final String URL_TENANT_UPDATE =                          "/update";
-    public static final String URL_TENANT_DELETE =                          "/delete";
+    public static final String URL_TENANT_GET =                             "/{name}";
+    public static final String URL_TENANT_UPDATE =                          "/{name}/update";
+    public static final String URL_TENANT_DELETE =                          "/{name}/delete";
     public static final String URL_TENANT_COUNT =                           "/count";
     public static final String URL_TENANT_GET_ALL =                         "/all";
-    public static final String URL_TENANT_VERIFY_NEW_PROFILES =             "/verify_new_profiles";
-    public static final String URL_TENANT_ADD_ROLES =                       "/add_roles";
-    public static final String URL_TENANT_REMOVE_ROLES =                    "/remove_roles";
-    public static final String URL_TENANT_ADD_ATTRIBUTE_DEFINITIONS =       "/add_attribute_definitions";
-    public static final String URL_TENANT_REMOVE_ATTRIBUTE_DEFINITIONS =    "/remove_attribute_definitions";
+    public static final String URL_TENANT_VERIFY_NEW_PROFILES =             "/{name}/verify_new_profiles";
+    public static final String URL_TENANT_ADD_ROLES =                       "/{name}/roles/add";
+    public static final String URL_TENANT_REMOVE_ROLES =                    "/{name}/roles/remove";
+    public static final String URL_TENANT_ADD_ATTRIBUTE_DEFINITIONS =       "/{name}/attribute_definitions/add";
+    public static final String URL_TENANT_REMOVE_ATTRIBUTE_DEFINITIONS =    "/{name}/attribute_definitions/remove";
 
     public static final String URL_PROFILE_CREATE =             "/create";
-    public static final String URL_PROFILE_UPDATE =             "/update";
+    public static final String URL_PROFILE_UPDATE =             "/{id}/update";
     public static final String URL_PROFILE_VERIFY =             "/verify";
-    public static final String URL_PROFILE_ENABLE =             "/enable";
-    public static final String URL_PROFILE_DISABLE =            "/disable";
-    public static final String URL_PROFILE_ADD_ROLES =          "/add_roles";
-    public static final String URL_PROFILE_REMOVE_ROLES =       "/remove_roles";
-    public static final String URL_PROFILE_GET_ATTRIBUTES =     "/attributes";
-    public static final String URL_PROFILE_UPDATE_ATTRIBUTES =  "/update_attributes";
-    public static final String URL_PROFILE_REMOVE_ATTRIBUTES =  "/remove_attributes";
-    public static final String URL_PROFILE_DELETE_PROFILE =     "/delete";
-    public static final String URL_PROFILE_GET =                "";
+    public static final String URL_PROFILE_ENABLE =             "/{id}/enable";
+    public static final String URL_PROFILE_DISABLE =            "/{id}/disable";
+    public static final String URL_PROFILE_ADD_ROLES =          "/{id}/roles/add";
+    public static final String URL_PROFILE_REMOVE_ROLES =       "/{id}/roles/remove";
+    public static final String URL_PROFILE_GET_ATTRIBUTES =     "/{id}/attributes";
+    public static final String URL_PROFILE_UPDATE_ATTRIBUTES =  "/{id}/attributes/update";
+    public static final String URL_PROFILE_REMOVE_ATTRIBUTES =  "/{id}/attributes/remove";
+    public static final String URL_PROFILE_DELETE_PROFILE =     "/{id}/delete";
+    public static final String URL_PROFILE_GET =                "/{id}";
     public static final String URL_PROFILE_GET_BY_USERNAME =    "/by_username";
     public static final String URL_PROFILE_GET_BY_TICKET =      "/by_ticket";
     public static final String URL_PROFILE_GET_COUNT =          "/count";
@@ -59,12 +62,12 @@ public class RestConstants {
     public static final String URL_PROFILE_GET_RANGE =          "/range";
     public static final String URL_PROFILE_GET_BY_ROLE =        "/by_role";
     public static final String URL_PROFILE_GET_BY_ATTRIBUTE =   "/by_attribute";
-    public static final String URL_PROFILE_FORGOT_PASSWORD =    "/forgot_password";
+    public static final String URL_PROFILE_FORGOT_PASSWORD =    "/{id}/forgot_password";
     public static final String URL_PROFILE_RESET_PASSWORD =     "/reset_password";
 
     public static final String URL_AUTH_AUTHENTICATE =      "/authenticate";
-    public static final String URL_AUTH_GET_TICKET =        "/ticket";
-    public static final String URL_AUTH_INVALIDATE_TICKET = "/invalidate_ticket";
+    public static final String URL_AUTH_GET_TICKET =        "/{id}/ticket";
+    public static final String URL_AUTH_INVALIDATE_TICKET = "/{id}/invalidate_ticket";
 
     public static final String PARAM_TENANT_NAME =              "tenantName";
     public static final String PARAM_VERIFY_NEW_PROFILES =      "verifyNewProfiles";
@@ -75,10 +78,10 @@ public class RestConstants {
     public static final String PARAM_PASSWORD =                 "password";
     public static final String PARAM_EMAIL =                    "email";
     public static final String PARAM_ENABLED =                  "enabled";
-    public static final String PARAM_PROFILE_ID =               "profileId";
+    public static final String PARAM_ID =                       "id";
     public static final String PARAM_VERIFICATION_URL =         "verificationUrl";
     public static final String PARAM_VERIFICATION_TOKEN_ID =    "verificationTokenId";
-    public static final String PARAM_ATTRIBUTES_TO_RETURN =     "attributeToReturn";
+    public static final String PARAM_ATTRIBUTE_TO_RETURN =      "attributeToReturn";
     public static final String PARAM_TICKET_ID =                "ticketId";
     public static final String PARAM_SORT_BY =                  "sortBy";
     public static final String PARAM_SORT_ORDER =               "sortOrder";

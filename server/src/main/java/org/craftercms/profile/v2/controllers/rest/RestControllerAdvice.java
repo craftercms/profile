@@ -19,6 +19,7 @@ package org.craftercms.profile.v2.controllers.rest;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.exception.PermissionException;
+import org.craftercms.profile.api.exceptions.ErrorCode;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.v2.exceptions.*;
 import org.springframework.http.HttpHeaders;
@@ -50,69 +51,85 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(MissingAccessTokenIdParamException.class)
     public ResponseEntity<Object> handleMissingAccessTokenIdParamException(MissingAccessTokenIdParamException e,
                                                                            WebRequest request) {
-        return handleExceptionInternal(e, null, new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
+        return handleExceptionInternal(e, HttpStatus.UNAUTHORIZED, ErrorCode.MISSING_ACCESS_TOKEN_ID_PARAM, request);
     }
 
     @ExceptionHandler(NoSuchAccessTokenIdException.class)
     public ResponseEntity<Object> handleNoSuchAccessTokenException(NoSuchAccessTokenIdException e, WebRequest request) {
-        return handleExceptionInternal(e, null, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.NO_SUCH_ACCESS_TOKEN_ID, request);
     }
 
     @ExceptionHandler(ExpiredAccessTokenException.class)
     public ResponseEntity<Object> handleExpiredAccessTokenException(ExpiredAccessTokenException e, WebRequest request) {
-        return handleExceptionInternal(e, null, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.EXPIRED_ACCESS_TOKEN, request);
     }
 
     @ExceptionHandler(ActionDeniedException.class)
     public ResponseEntity<Object> handleAccessDeniedException(ActionDeniedException e, WebRequest request) {
-        return handleExceptionInternal(e, null, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.ACCESS_DENIED, request);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException e, WebRequest request) {
-        return handleExceptionInternal(e, null, new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
+        return handleExceptionInternal(e, HttpStatus.UNAUTHORIZED, ErrorCode.BAD_CREDENTIALS, request);
     }
 
     @ExceptionHandler(DisabledProfileException.class)
     public ResponseEntity<Object> handleDisabledProfileException(DisabledProfileException e, WebRequest request) {
-        return handleExceptionInternal(e, null, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.DISABLED_PROFILE, request);
     }
 
     @ExceptionHandler(NoSuchVerificationTokenException.class)
     public ResponseEntity<Object> handleNoSuchVerificationTokenException(NoSuchVerificationTokenException e,
                                                                          WebRequest request) {
-        return handleExceptionInternal(e, null, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.NO_SUCH_VERIFICATION_TOKEN, request);
     }
 
     @ExceptionHandler(ExpiredVerificationTokenException.class)
     public ResponseEntity<Object> handleExpiredVerificationTokenException(ExpiredVerificationTokenException e,
                                                                           WebRequest request) {
-        return handleExceptionInternal(e, null, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.EXPIRED_VERIFICATION_TOKEN, request);
     }
 
     @ExceptionHandler(InvalidEmailAddressException.class)
     public ResponseEntity<Object> handleInvalidEmailAddressException(InvalidEmailAddressException e,
                                                                      WebRequest request) {
-        return handleExceptionInternal(e, null, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.INVALID_EMAIL_ADDRESS, request);
     }
 
     @ExceptionHandler(PermissionException.class)
     public ResponseEntity<Object> handlePermissionException(PermissionException e, WebRequest request) {
-        return handleExceptionInternal(e, null, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+        return handleExceptionInternal(e, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.PERMISSION_ERROR, request);
+    }
+
+    @ExceptionHandler(AttributeAlreadyDefinedException.class)
+    public ResponseEntity<Object> handleAttributeAlreadyDefinedException(AttributeAlreadyDefinedException e,
+                                                                         WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.ATTRIBUTE_ALREADY_DEFINED, request);
     }
 
     @ExceptionHandler(ProfileException.class)
     public ResponseEntity<Object> handleProfileException(ProfileException e, WebRequest request) {
-        return handleExceptionInternal(e, null, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+        return handleExceptionInternal(e, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.GENERAL_ERROR, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
                                                              HttpStatus status, WebRequest request) {
+        return handleExceptionInternal(ex, headers, status, ErrorCode.GENERAL_ERROR, request);
+    }
+
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpStatus status, ErrorCode errorCode,
+                                                             WebRequest request) {
+        return handleExceptionInternal(ex, new HttpHeaders(), status, errorCode, request);
+    }
+
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpHeaders headers, HttpStatus status,
+                                                             ErrorCode errorCode, WebRequest request) {
         logger.error(LOG_KEY_REST_ERROR, ex, ((ServletWebRequest) request).getRequest().getRequestURI(), status);
 
         Map<String, Object> error = new HashMap<>(3);
-        error.put("code", status.value());
+        error.put("errorCode", errorCode);
         error.put("message", ex.getLocalizedMessage());
 
         return new ResponseEntity<Object>(error, headers, status);

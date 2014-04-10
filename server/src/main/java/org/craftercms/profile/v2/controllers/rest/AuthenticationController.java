@@ -21,10 +21,7 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import static org.craftercms.profile.api.RestConstants.*;
 
@@ -54,12 +51,12 @@ public class AuthenticationController {
 
     @RequestMapping(value = URL_AUTH_GET_TICKET, method = RequestMethod.GET)
     @ResponseBody
-    public Ticket getTicket(@RequestParam(PARAM_TICKET_ID) String ticketId) throws ProfileException {
+    public Ticket getTicket(@PathVariable(PATH_VAR_ID) String ticketId) throws ProfileException {
         return authenticationService.getTicket(ticketId);
     }
 
     @RequestMapping(value = URL_AUTH_INVALIDATE_TICKET, method = RequestMethod.GET)
-    public void invalidateTicket(@RequestParam(PARAM_TICKET_ID) String ticketId) throws ProfileException {
+    public void invalidateTicket(@RequestParam(PATH_VAR_ID) String ticketId) throws ProfileException {
         authenticationService.invalidateTicket(ticketId);
     }
 

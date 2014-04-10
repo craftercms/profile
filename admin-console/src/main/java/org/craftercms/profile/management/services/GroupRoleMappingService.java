@@ -2,8 +2,8 @@ package org.craftercms.profile.management.services;
 
 import java.util.List;
 
-import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
-import org.craftercms.profile.impl.domain.GroupRole;
+import org.craftercms.profile.client.exceptions.AppAuthenticationFailedException;
+import org.craftercms.profile.client.impl.domain.GroupRole;
 
 public interface GroupRoleMappingService {
 

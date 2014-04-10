@@ -30,7 +30,7 @@ http://www.springframework.org/schema/mvc/spring-mvc.xsd">
         </property>
     </bean>
 
-    <bean id="profileRestClient" class="org.craftercms.profile.impl.ProfileRestClientImpl">
+    <bean id="profileRestClient" class="org.craftercms.profile.client.impl.ProfileRestClientImpl">
         <property name="port" value="${crafter.security.profile.server.url.port}"/>
         <property name="host" value="${profile.host}"/>
         <property name="scheme" value="${profile.scheme}"/>

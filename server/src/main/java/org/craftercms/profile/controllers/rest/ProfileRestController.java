@@ -16,36 +16,20 @@
  */
 package org.craftercms.profile.controllers.rest;
 
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.domain.Profile;
-import org.craftercms.profile.exceptions.CipherException;
-import org.craftercms.profile.exceptions.ExpiryDateException;
-import org.craftercms.profile.exceptions.InvalidEmailException;
-import org.craftercms.profile.exceptions.MailException;
-import org.craftercms.profile.exceptions.NoSuchProfileException;
-import org.craftercms.profile.exceptions.ProfileException;
-import org.craftercms.profile.exceptions.TenantException;
-import org.craftercms.profile.exceptions.TicketException;
+import org.craftercms.profile.exceptions.*;
 import org.craftercms.profile.services.ProfileService;
 import org.craftercms.profile.services.VerifyAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+import java.util.*;
 
 @Controller
 @RequestMapping("/api/2/profile/")

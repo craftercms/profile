@@ -16,12 +16,14 @@
  */
 package org.craftercms.profile.api.exceptions;
 
+import java.io.IOException;
+
 /**
  * Root exception for profile.
  *
  * @author avasquez
  */
-public class ProfileException extends Exception {
+public class ProfileException extends IOException {
 
     public ProfileException() {
     }
@@ -36,10 +38,6 @@ public class ProfileException extends Exception {
 
     public ProfileException(Throwable cause) {
         super(cause);
-    }
-
-    public ProfileException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
     }
 
 }

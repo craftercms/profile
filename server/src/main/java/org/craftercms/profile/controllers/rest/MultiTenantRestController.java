@@ -16,8 +16,6 @@
  */
 package org.craftercms.profile.controllers.rest;
 
-import java.util.Arrays;
-
 import org.craftercms.profile.constants.ProfileConstants;
 import org.craftercms.profile.domain.Tenant;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
@@ -27,11 +25,9 @@ import org.craftercms.profile.exceptions.TicketException;
 import org.craftercms.profile.services.MultiTenantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
 
 /**
  * Multitenant Rest controller.

@@ -16,7 +16,7 @@
  */
 package org.craftercms.profile.management.util;
 
-import org.craftercms.profile.impl.domain.Attribute;
+import org.craftercms.profile.client.impl.domain.Attribute;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;

@@ -162,6 +162,7 @@ public class AccessTokenManagerCli {
         List<TenantPermission> permissions = readTenantPermissions();
 
         AccessToken token = new AccessToken();
+        token.setId(UUID.randomUUID().toString());
         token.setApplication(application);
         token.setExpiresOn(expirationDate);
         token.setTenantPermissions(permissions);

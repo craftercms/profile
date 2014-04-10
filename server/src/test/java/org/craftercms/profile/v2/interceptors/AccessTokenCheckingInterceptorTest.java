@@ -16,7 +16,6 @@
  */
 package org.craftercms.profile.v2.interceptors;
 
-import org.bson.types.ObjectId;
 import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.TenantActions;
 import org.craftercms.profile.api.TenantPermission;
@@ -48,8 +47,8 @@ public class AccessTokenCheckingInterceptorTest {
 
     private static final String APPLICATION = "crafterengine";
 
-    private static final ObjectId NORMAL_TOKEN_ID =    new ObjectId("50f1d54e9beb36a0f45c6452");
-    private static final ObjectId EXPIRED_TOKEN_ID =   new ObjectId("50f2329d0092b46dae1dc98e");
+    private static final String NORMAL_TOKEN_ID =    "bfb7fb40-c04c-11e3-8a33-0800200c9a66";
+    private static final String EXPIRED_TOKEN_ID =   "d09bb640-c04c-11e3-8a33-0800200c9a66";
 
     private AccessTokenCheckingInterceptor interceptor;
     @Mock

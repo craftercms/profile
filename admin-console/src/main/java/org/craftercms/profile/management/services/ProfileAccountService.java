@@ -22,12 +22,12 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
-import org.craftercms.profile.constants.ProfileConstants;
-import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
-import org.craftercms.profile.exceptions.RestException;
-import org.craftercms.profile.impl.domain.Attribute;
-import org.craftercms.profile.impl.domain.Profile;
-import org.craftercms.profile.impl.domain.Tenant;
+import org.craftercms.profile.client.constants.ProfileConstants;
+import org.craftercms.profile.client.exceptions.AppAuthenticationFailedException;
+import org.craftercms.profile.client.exceptions.RestException;
+import org.craftercms.profile.client.impl.domain.Attribute;
+import org.craftercms.profile.client.impl.domain.Profile;
+import org.craftercms.profile.client.impl.domain.Tenant;
 import org.craftercms.profile.management.model.FilterForm;
 import org.craftercms.profile.management.model.ProfileUserAccountForm;
 import org.craftercms.profile.management.model.SchemaForm;
