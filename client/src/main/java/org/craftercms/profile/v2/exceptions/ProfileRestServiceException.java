@@ -21,34 +21,41 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 import org.springframework.http.HttpStatus;
 
 /**
- * {@link org.craftercms.profile.api.exceptions.ProfileException} specifically used by Profile clients.
+ * {@link org.craftercms.profile.api.exceptions.ProfileException} used by clients to indicate a REST service error.
  *
  * @author avasquez
  */
-public class ProfileClientException extends ProfileException {
+public class ProfileRestServiceException extends ProfileException {
 
-    protected HttpStatus httpStatus;
+    protected HttpStatus status;
     protected ErrorCode errorCode;
+    protected String detailMessage;
 
-    public ProfileClientException(HttpStatus httpStatus, ErrorCode errorCode, String message) {
-        super(message);
+    public ProfileRestServiceException(HttpStatus status, String detailMessage) {
+        super("status = " + status + ", detailMessage = " + detailMessage);
 
-        this.httpStatus = httpStatus;
-        this.errorCode = errorCode;
+        this.status = status;
+        this.detailMessage = detailMessage;
     }
 
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
+    public ProfileRestServiceException(HttpStatus status, ErrorCode errorCode, String detailMessage) {
+        super("status = " + status + ", errorCode = " + errorCode + ", detailMessage = " + detailMessage);
+
+        this.status = status;
+        this.errorCode = errorCode;
+        this.detailMessage = detailMessage;
+    }
+
+    public HttpStatus getStatus() {
+        return status;
     }
 
     public ErrorCode getErrorCode() {
         return errorCode;
     }
 
-    @Override
-    public String toString() {
-        return String.format("%s: httpStatus = %s, errorCode = %s, details = %s", getClass().getName(), httpStatus,
-                errorCode, getLocalizedMessage());
+    public String getDetailMessage() {
+        return detailMessage;
     }
 
 }

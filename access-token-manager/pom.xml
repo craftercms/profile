@@ -14,7 +14,7 @@
     <artifactId>crafter-profile-access-token-manager</artifactId>
     <name>Crafter Profile Access Token Manager</name>
     <description>Crafter Profile Access Token Manager</description>
-    <url>https://github.com/craftercms/profile/tree/master/api</url>
+    <url>https://github.com/craftercms/profile/tree/master/access-token-manager</url>
     <packaging>jar</packaging>
 
     <organization>

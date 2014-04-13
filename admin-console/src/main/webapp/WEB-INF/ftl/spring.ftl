@@ -331,7 +331,7 @@ kind of variable. This temp value is only used in this macro lib -->
  *    will be used.
 -->
 <#macro showErrors separator classOrStyle="">
-    <#list httpStatus.errorMessages as error>
+    <#list status.errorMessages as error>
         <#if classOrStyle == "">
         <b>${error}</b>
         <#else>

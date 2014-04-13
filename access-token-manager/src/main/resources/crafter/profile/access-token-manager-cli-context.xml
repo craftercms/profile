@@ -7,7 +7,7 @@
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="locations">
             <list>
-                <value>classpath:access-token-manager-cli.properties</value>
+                <value>classpath:crafter/profile/access-token-manager-cli.properties</value>
                 <value>classpath*:custom-access-token-manager-cli.properties</value>
             </list>
         </property>
@@ -41,7 +41,7 @@
     </bean>
 
     <bean id="jongoFactory" class="org.craftercms.commons.mongo.JongoFactoryBean">
-        <property name="mongoClient" ref="mongoClient"/>
+        <property name="mongo" ref="mongoClient"/>
         <property name="username" value="${mongodb.connection.dbUser}"/>
         <property name="password" value="${mongodb.connection.dbPassword}"/>
         <property name="dbName" value="${mongodb.connection.db}"/>
@@ -50,7 +50,7 @@
     <bean id="queries" class="org.craftercms.commons.mongo.JongoQueries" init-method="init">
         <property name="queryFiles">
             <list>
-                <value>classpath:access-token-manager-queries.xml</value>
+                <value>classpath:crafter/profile/access-token-manager-queries.xml</value>
                 <value>classpath:custom-access-token-manager-queries.xml</value>
             </list>
         </property>

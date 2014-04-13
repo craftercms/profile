@@ -28,6 +28,7 @@ import org.craftercms.profile.repositories.AccessTokenRepository;
  */
 public class AccessTokenRepositoryImpl extends JongoRepository<AccessToken> implements AccessTokenRepository {
 
+    public static final String FIND_BY_ID_QUERY_KEY =   "accessToken.byId";
     public static final String REMOVE_BY_ID_QUERY_KEY = "accessToken.removeById";
 
     /**
@@ -35,6 +36,11 @@ public class AccessTokenRepositoryImpl extends JongoRepository<AccessToken> impl
      */
     public AccessTokenRepositoryImpl() throws MongoDataException {
         super();
+    }
+
+    @Override
+    public AccessToken findById(String id) throws MongoDataException {
+        return findOne(getQueryFor(FIND_BY_ID_QUERY_KEY), id);
     }
 
     @Override

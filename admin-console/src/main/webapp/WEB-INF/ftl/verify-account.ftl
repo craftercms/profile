@@ -26,7 +26,7 @@
             <p class="general-error">
                 <#if Session.verifyAccountException??>
                         
-                        ${Session.verifyAccountException.message!""}
+                        ${Session.verifyAccountException.detailMessage!""}
                </#if>
             </p>
         </#if>

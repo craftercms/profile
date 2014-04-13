@@ -16,20 +16,21 @@ public class I10nProfileException extends ProfileException {
 
     public static final String ERROR_BUNDLE_NAME = "crafter.profile.messages.errors";
 
+    protected String key;
     protected Object[] args;
 
     public I10nProfileException() {
     }
 
     public I10nProfileException(String key, Object... args) {
-        super(key);
-
+        this.key = key;
         this.args = args;
     }
 
     public I10nProfileException(String key, Throwable cause, Object... args) {
-        super(key, cause);
+        super(cause);
 
+        this.key = key;
         this.args = args;
     }
 
@@ -38,8 +39,7 @@ public class I10nProfileException extends ProfileException {
     }
 
     @Override
-    public String getLocalizedMessage() {
-        String key = getMessage();
+    public String getMessage() {
         if (StringUtils.isNotEmpty(key)) {
             return I10nUtils.getLocalizedMessage(getResourceBundle(), key, args);
         } else {

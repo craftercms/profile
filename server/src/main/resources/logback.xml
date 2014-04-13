@@ -29,6 +29,7 @@
 
     </appender>
 
+    <logger name="org.springframework" level="INFO"/>
     <logger name="org.craftercms.commons.mongo" level="DEBUG"/>
     <logger name="org.craftercms.profile" level="DEBUG"/>
     <logger name="org.craftercms" level="INFO"/>

@@ -27,7 +27,7 @@
             <p class="general-error">
                 <#if Session.profileResetException??>
                         
-                        ${Session.profileResetException.message!""}
+                        ${Session.profileResetException.detailMessage!""}
                     </#if>
             </p>
         </#if>

@@ -120,9 +120,9 @@
 </#macro>
 
 <#macro showErrors classOrStyle="" errorClassOrStyle="" lastErrorClassOrStyle=errorClassOrStyle>
-    <#if spring.httpStatus.errorMessages?size != 0>
+    <#if spring.status.errorMessages?size != 0>
     <ul <@renderClassOrStyle classOrStyle/>>
-        <#list spring.httpStatus.errorMessages as error>
+        <#list spring.status.errorMessages as error>
             <#if error_has_next>
                 <li <@renderClassOrStyle errorClassOrStyle/>>${error?html}</li>
             <#else>

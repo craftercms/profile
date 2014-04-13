@@ -98,23 +98,6 @@
             <version>${org.springframework.version}</version>
         </dependency>
 
-
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${org.apache.commons.io.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>${org.apache.commons.codec.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.2.2</version>
-        </dependency>
-
         <!-- JSON & XML marshallers -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

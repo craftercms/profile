@@ -21,6 +21,8 @@ import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.v2.repositories.TenantRepository;
 
+import javax.annotation.PostConstruct;
+
 /**
  * Default implementation of {@link org.craftercms.profile.v2.repositories.TenantRepository}.
  *
@@ -34,8 +36,11 @@ public class TenantRepositoryImpl extends JongoRepository<Tenant> implements Ten
 
     public TenantRepositoryImpl() throws MongoDataException {
         super();
+    }
 
-        getCollection().ensureIndex(KEY_NAME_INDEX_KEYS);
+    @PostConstruct
+    public void init() {
+        getCollection().ensureIndex(getQueryFor(KEY_NAME_INDEX_KEYS));
     }
 
     @Override

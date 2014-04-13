@@ -20,6 +20,7 @@ import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.exception.PermissionException;
 import org.craftercms.profile.api.exceptions.ErrorCode;
+import org.craftercms.profile.api.exceptions.ErrorDetails;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.v2.exceptions.*;
 import org.springframework.http.HttpHeaders;
@@ -30,9 +31,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * {@link org.springframework.web.bind.annotation.ControllerAdvice} for REST controllers that includes exception
@@ -119,7 +117,8 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, headers, status, ErrorCode.GENERAL_ERROR, request);
     }
 
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpStatus status, ErrorCode errorCode,
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpStatus status,
+                                                             ErrorCode errorCode,
                                                              WebRequest request) {
         return handleExceptionInternal(ex, new HttpHeaders(), status, errorCode, request);
     }
@@ -128,11 +127,7 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
                                                              ErrorCode errorCode, WebRequest request) {
         logger.error(LOG_KEY_REST_ERROR, ex, ((ServletWebRequest) request).getRequest().getRequestURI(), status);
 
-        Map<String, Object> error = new HashMap<>(3);
-        error.put("errorCode", errorCode);
-        error.put("message", ex.getLocalizedMessage());
-
-        return new ResponseEntity<Object>(error, headers, status);
+        return new ResponseEntity<Object>(new ErrorDetails(errorCode, ex.getLocalizedMessage()), headers, status);
     }
 
 }

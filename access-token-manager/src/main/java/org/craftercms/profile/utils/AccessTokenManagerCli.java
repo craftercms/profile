@@ -45,6 +45,8 @@ import java.util.*;
  */
 public class AccessTokenManagerCli {
 
+    private static final String CONTEXT_PATH = "crafter/profile/access-token-manager-cli-context.xml";
+
     private BufferedReader stdIn;
     private PrintWriter stdOut;
     private AccessTokenRepository repository;
@@ -286,7 +288,7 @@ public class AccessTokenManagerCli {
     }
 
     public static ApplicationContext getApplicationContext() {
-        ApplicationContext context = new ClassPathXmlApplicationContext("access-token-manager-cli-context.xml");
+        ApplicationContext context = new ClassPathXmlApplicationContext(CONTEXT_PATH);
 
         return context;
     }

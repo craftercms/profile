@@ -16,14 +16,12 @@
  */
 package org.craftercms.profile.api.exceptions;
 
-import java.io.IOException;
-
 /**
  * Root exception for profile.
  *
  * @author avasquez
  */
-public class ProfileException extends IOException {
+public class ProfileException extends Exception {
 
     public ProfileException() {
     }

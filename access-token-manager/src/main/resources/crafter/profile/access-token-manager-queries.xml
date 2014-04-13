@@ -24,6 +24,9 @@
         WARNING: This file should only be used with CLI executable Jar
     </comment>
 
+    <entry key="accessToken.byId">
+        {_id: #}
+    </entry>
     <entry key="accessToken.removeById">
         {_id: #}
     </entry>

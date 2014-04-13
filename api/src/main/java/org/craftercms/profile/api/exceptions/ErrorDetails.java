@@ -21,15 +21,15 @@ package org.craftercms.profile.api.exceptions;
  *
  * @author avasquez
  */
-public class ErrorInfo {
+public class ErrorDetails {
 
     private ErrorCode errorCode;
     private String message;
 
-    public ErrorInfo() {
+    public ErrorDetails() {
     }
 
-    public ErrorInfo(ErrorCode errorCode, String message) {
+    public ErrorDetails(ErrorCode errorCode, String message) {
         this.errorCode = errorCode;
         this.message = message;
     }

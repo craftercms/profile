@@ -46,6 +46,7 @@
         <!--module>admin-console</module-->
         <module>api</module>
         <module>access-token-manager</module>
+        <module>integration-tests</module>
     </modules>
     <profiles>
 

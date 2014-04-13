@@ -69,6 +69,7 @@ public class RestConstants {
     public static final String URL_AUTH_GET_TICKET =        "/{id}/ticket";
     public static final String URL_AUTH_INVALIDATE_TICKET = "/{id}/invalidate_ticket";
 
+    public static final String PARAM_ACCESS_TOKEN_ID =          "accessTokenId";
     public static final String PARAM_TENANT_NAME =              "tenantName";
     public static final String PARAM_VERIFY_NEW_PROFILES =      "verifyNewProfiles";
     public static final String PARAM_ROLE =                     "role";

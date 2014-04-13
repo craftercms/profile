@@ -16,15 +16,12 @@
  */
 package org.craftercms.profile.v2.services.impl;
 
+import org.craftercms.commons.rest.RestClientUtils;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.TenantService;
-import org.craftercms.profile.v2.utils.rest.RestClientUtils;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Collection;
 import java.util.Set;
@@ -36,120 +33,102 @@ import static org.craftercms.profile.api.RestConstants.*;
  *
  * @author avasquez
  */
-public class TenantServiceRestClient implements TenantService {
-
-    public static final String DEFAULT_EXTENSION = ".json";
-
-    protected String extension;
-    protected RestTemplate restTemplate;
-
-    public TenantServiceRestClient() {
-        this.extension = DEFAULT_EXTENSION;
-    }
-
-    public void setExtension(String extension) {
-        this.extension = extension;
-    }
-
-    @Required
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+public class TenantServiceRestClient extends ProfileRestClientBase implements TenantService {
 
     @Override
     public Tenant createTenant(String name, boolean verifyNewProfiles, Set<String> roles) throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TENANT_NAME, name, params);
         RestClientUtils.addValue(PARAM_VERIFY_NEW_PROFILES, verifyNewProfiles, params);
         RestClientUtils.addValues(PARAM_ROLE, roles, params);
 
-        String url = BASE_URL_TENANT + URL_TENANT_CREATE + extension;
+        String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_CREATE);
 
-        return restTemplate.postForObject(url, params, Tenant.class);
+        return doPostForObject(url, params, Tenant.class);
     }
 
     @Override
     public Tenant getTenant(String name) throws ProfileException {
-        String url = BASE_URL_TENANT + URL_TENANT_GET + extension;
+        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_GET);
 
-        return restTemplate.getForObject(url, Tenant.class, name);
+        return doGetForObject(url, Tenant.class, name);
     }
 
     @Override
     public Tenant updateTenant(Tenant tenant) throws ProfileException {
-        String url = BASE_URL_TENANT + URL_TENANT_UPDATE + extension;
+        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_UPDATE);
 
-        return restTemplate.postForObject(url, tenant, Tenant.class);
+        return doPostForObject(url, tenant, Tenant.class);
     }
 
     @Override
     public void deleteTenant(String name) throws ProfileException {
-        String url = BASE_URL_TENANT + URL_TENANT_DELETE + extension;
+        String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_DELETE);
 
-        restTemplate.postForLocation(url, null, name);
+        doPostForLocation(url, createBaseParams(), name);
     }
 
     @Override
     public long getTenantCount() throws ProfileException {
-        String url = BASE_URL_TENANT + URL_TENANT_COUNT + extension;
+        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_COUNT);
 
-        return restTemplate.getForObject(url, Long.class);
+        return doGetForObject(url, Long.class);
     }
 
     @Override
     public Iterable<Tenant> getAllTenants() throws ProfileException {
-        String url = BASE_URL_TENANT + URL_TENANT_GET_ALL + extension;
+        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_GET_ALL);
 
-        return restTemplate.getForObject(url, Iterable.class);
+        return doGetForObject(url, Iterable.class);
     }
 
     @Override
     public Tenant verifyNewProfiles(String tenantName, boolean verify) throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_VERIFY, verify, params);
 
-        String url = BASE_URL_TENANT + URL_TENANT_VERIFY_NEW_PROFILES + extension;
+        String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_VERIFY_NEW_PROFILES);
 
-        return restTemplate.postForObject(url, params, Tenant.class, tenantName);
+        return doPostForObject(url, params, Tenant.class, tenantName);
     }
 
     @Override
     public Tenant addRoles(String tenantName, Collection<String> roles) throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValues(PARAM_ROLE, roles, params);
 
-        String url = BASE_URL_TENANT + URL_TENANT_ADD_ROLES + extension;
+        String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_ADD_ROLES);
 
-        return restTemplate.postForObject(url, params, Tenant.class, tenantName);
+        return doPostForObject(url, params, Tenant.class, tenantName);
     }
 
     @Override
     public Tenant removeRoles(String tenantName, Collection<String> roles) throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValues(PARAM_ROLE, roles, params);
 
-        String url = BASE_URL_TENANT + URL_PROFILE_REMOVE_ROLES + extension;
+        String url = getAbsoluteUrl(BASE_URL_TENANT + URL_PROFILE_REMOVE_ROLES);
 
-        return restTemplate.postForObject(url, params, Tenant.class, tenantName);
+        return doPostForObject(url, params, Tenant.class, tenantName);
     }
 
     @Override
     public Tenant addAttributeDefinitions(String tenantName, Collection<AttributeDefinition> attributeDefinitions)
             throws ProfileException {
-        String url = BASE_URL_TENANT + URL_TENANT_ADD_ATTRIBUTE_DEFINITIONS + extension;
+        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_ADD_ATTRIBUTE_DEFINITIONS);
 
-        return restTemplate.postForObject(url, attributeDefinitions, Tenant.class, tenantName);
+        return doPostForObject(url, attributeDefinitions, Tenant.class, tenantName);
     }
 
     @Override
     public Tenant removeAttributeDefinitions(String tenantName, Collection<String> attributeNames)
             throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValues(PARAM_ATTRIBUTE_NAME, attributeNames, params);
 
-        String url = BASE_URL_TENANT + URL_TENANT_REMOVE_ATTRIBUTE_DEFINITIONS + extension;
+        String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_REMOVE_ATTRIBUTE_DEFINITIONS);
 
-        return restTemplate.postForObject(url, params, Tenant.class, tenantName);
+        return doPostForObject(url, params, Tenant.class, tenantName);
     }
 
 }

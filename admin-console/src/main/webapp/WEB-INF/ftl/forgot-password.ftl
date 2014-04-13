@@ -26,7 +26,7 @@
             <p class="general-error">
                 <#if Session.profileForgotException??>
 					
-					${Session.profileForgotException.message!""}
+					${Session.profileForgotException.detailMessage!""}
 				</#if>
             </p>
         </#if>

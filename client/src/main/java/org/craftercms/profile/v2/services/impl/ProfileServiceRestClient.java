@@ -16,15 +16,12 @@
  */
 package org.craftercms.profile.v2.services.impl;
 
+import org.craftercms.commons.rest.RestClientUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
-import org.craftercms.profile.v2.utils.rest.RestClientUtils;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Collection;
 import java.util.List;
@@ -38,30 +35,12 @@ import static org.craftercms.profile.api.RestConstants.*;
  *
  * @author avasquez
  */
-public class ProfileServiceRestClient implements ProfileService {
-
-    public static final String DEFAULT_EXTENSION = ".json";
-
-    protected String extension;
-    protected RestTemplate restTemplate;
-
-    public ProfileServiceRestClient() {
-        this.extension = DEFAULT_EXTENSION;
-    }
-
-    public void setExtension(String extension) {
-        this.extension = extension;
-    }
-
-    @Required
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+public class ProfileServiceRestClient extends ProfileRestClientBase implements ProfileService {
 
     @Override
     public Profile createProfile(String tenantName, String username, String password, String email, boolean enabled,
                                  Set<String> roles, String verificationUrl) throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
         RestClientUtils.addValue(PARAM_USERNAME, username, params);
         RestClientUtils.addValue(PARAM_PASSWORD, password, params);
@@ -70,15 +49,15 @@ public class ProfileServiceRestClient implements ProfileService {
         RestClientUtils.addValues(PARAM_ROLE, roles, params);
         RestClientUtils.addValue(PARAM_VERIFICATION_URL, verificationUrl, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_CREATE + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_CREATE);
 
-        return restTemplate.postForObject(url, params, Profile.class);
+        return doPostForObject(url, params, Profile.class);
     }
 
     @Override
     public Profile updateProfile(String profileId, String username, String password, String email, Boolean enabled,
                                  Set<String> roles, String... attributesToReturn) throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_USERNAME, username, params);
         RestClientUtils.addValue(PARAM_PASSWORD, password, params);
         RestClientUtils.addValue(PARAM_EMAIL, email, params);
@@ -86,175 +65,175 @@ public class ProfileServiceRestClient implements ProfileService {
         RestClientUtils.addValues(PARAM_ROLE, roles, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_UPDATE + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_UPDATE);
 
-        return restTemplate.postForObject(url, params, Profile.class, profileId);
+        return doPostForObject(url, params, Profile.class, profileId);
     }
 
     @Override
     public Profile verifyProfile(String verificationTokenId, String... attributesToReturn) throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_VERIFICATION_TOKEN_ID, verificationTokenId, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_VERIFY + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_VERIFY);
 
-        return restTemplate.postForObject(url, params, Profile.class);
+        return doPostForObject(url, params, Profile.class);
     }
 
     @Override
     public Profile enableProfile(String profileId, String... attributesToReturn) throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_ENABLE + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_ENABLE);
 
-        return restTemplate.postForObject(url, params, Profile.class, profileId);
+        return doPostForObject(url, params, Profile.class, profileId);
     }
 
     @Override
     public Profile disableProfile(String profileId, String... attributesToReturn) throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_DISABLE + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_DISABLE);
 
-        return restTemplate.postForObject(url, params, Profile.class, profileId);
+        return doPostForObject(url, params, Profile.class, profileId);
     }
 
     @Override
     public Profile addRoles(String profileId, Collection<String> roles, String... attributesToReturn)
             throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValues(PARAM_ROLE, roles, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_ADD_ROLES + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_ADD_ROLES);
 
-        return restTemplate.postForObject(url, params, Profile.class, profileId);
+        return doPostForObject(url, params, Profile.class, profileId);
     }
 
     @Override
     public Profile removeRoles(String profileId, Collection<String> roles, String... attributesToReturn)
             throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValues(PARAM_ROLE, roles, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_REMOVE_ROLES + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_REMOVE_ROLES);
 
-        return restTemplate.postForObject(url, params, Profile.class, profileId);
+        return doPostForObject(url, params, Profile.class, profileId);
     }
 
     @Override
     public Map<String, Object> getAttributes(String profileId, String... attributesToReturn) throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_GET_ATTRIBUTES + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_ATTRIBUTES);
         url = RestClientUtils.addQueryParams(url, params, false);
 
-        return restTemplate.getForObject(url, Map.class, profileId);
+        return doGetForObject(url, Map.class, profileId);
     }
 
     @Override
     public Profile updateAttributes(String profileId, Map<String, Object> attributes, String... attributesToReturn)
             throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_UPDATE_ATTRIBUTES + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_UPDATE_ATTRIBUTES);
         url = RestClientUtils.addQueryParams(url, params, false);
 
-        return restTemplate.postForObject(url, attributes, Profile.class, profileId);
+        return doPostForObject(url, attributes, Profile.class, profileId);
     }
 
     @Override
     public Profile removeAttributes(String profileId, Collection<String> attributeNames, String... attributesToReturn)
             throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValues(PARAM_ATTRIBUTE_NAME, attributeNames, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_REMOVE_ATTRIBUTES + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_REMOVE_ATTRIBUTES);
 
-        return restTemplate.postForObject(url, params, Profile.class);
+        return doPostForObject(url, params, Profile.class);
     }
 
     @Override
     public void deleteProfile(String profileId) throws ProfileException {
         String url = BASE_URL_PROFILE + URL_PROFILE_DELETE_PROFILE;
 
-        restTemplate.postForLocation(url, null, profileId);
+        doPostForLocation(url, createBaseParams(), profileId);
     }
 
     @Override
     public Profile getProfile(String profileId, String... attributesToReturn) throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_GET + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET);
         url = RestClientUtils.addQueryParams(url, params, false);
 
-        return restTemplate.getForObject(url, Profile.class, profileId);
+        return doGetForObject(url, Profile.class, profileId);
     }
 
     @Override
     public Profile getProfileByUsername(String tenantName, String username, String... attributesToReturn)
             throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
         RestClientUtils.addValue(PARAM_USERNAME, username, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_GET_BY_USERNAME + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_USERNAME);
         url = RestClientUtils.addQueryParams(url, params, false);
 
-        return restTemplate.getForObject(url, Profile.class);
+        return doGetForObject(url, Profile.class);
     }
 
     @Override
     public Profile getProfileByTicket(String ticketId, String... attributesToReturn) throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TICKET_ID, ticketId, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_GET_BY_TICKET + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_TICKET);
         url = RestClientUtils.addQueryParams(url, params, false);
 
-        return restTemplate.getForObject(url, Profile.class);
+        return doGetForObject(url, Profile.class);
     }
 
     @Override
     public long getProfileCount(String tenantName) throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_GET_COUNT + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_COUNT);
         url = RestClientUtils.addQueryParams(url, params, false);
 
-        return restTemplate.getForObject(url, Long.class);
+        return doGetForObject(url, Long.class);
     }
 
     @Override
     public Iterable<Profile> getProfilesByIds(List<String> profileIds, String sortBy, SortOrder sortOrder,
                                               String... attributesToReturn) throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValues(PARAM_ID, profileIds, params);
         RestClientUtils.addValue(PARAM_SORT_BY, sortBy, params);
         RestClientUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_GET_BY_IDS + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_IDS);
         url = RestClientUtils.addQueryParams(url, params, false);
 
-        return restTemplate.getForObject(url, Iterable.class);
+        return doGetForObject(url, Iterable.class);
     }
 
     @Override
     public Iterable<Profile> getProfileRange(String tenantName, String sortBy, SortOrder sortOrder, Integer start,
                                              Integer count, String... attributesToReturn) throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
         RestClientUtils.addValue(PARAM_SORT_BY, sortBy, params);
         RestClientUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
@@ -262,33 +241,33 @@ public class ProfileServiceRestClient implements ProfileService {
         RestClientUtils.addValue(PARAM_COUNT, count, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_GET_RANGE + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_RANGE);
         url = RestClientUtils.addQueryParams(url, params, false);
 
-        return restTemplate.getForObject(url, Iterable.class);
+        return doGetForObject(url, Iterable.class);
     }
 
     @Override
     public Iterable<Profile> getProfilesByRole(String tenantName, String role, String sortBy, SortOrder sortOrder,
                                                String... attributesToReturn) throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
         RestClientUtils.addValue(PARAM_ROLE, role, params);
         RestClientUtils.addValue(PARAM_SORT_BY, sortBy, params);
         RestClientUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_GET_BY_ROLE + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_ROLE);
         url = RestClientUtils.addQueryParams(url, params, false);
 
-        return restTemplate.getForObject(url, Iterable.class);
+        return doGetForObject(url, Iterable.class);
     }
 
     @Override
     public Iterable<Profile> getProfilesByAttribute(String tenantName, String attributeName, String attributeValue,
                                                     String sortBy, SortOrder sortOrder, String... attributesToReturn)
             throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
         RestClientUtils.addValue(PARAM_ATTRIBUTE_NAME, attributeName, params);
         RestClientUtils.addValue(PARAM_ATTRIBUTE_VALUE, attributeValue, params);
@@ -296,35 +275,35 @@ public class ProfileServiceRestClient implements ProfileService {
         RestClientUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_GET_ATTRIBUTES + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_ATTRIBUTES);
         url = RestClientUtils.addQueryParams(url, params, false);
 
-        return restTemplate.getForObject(url, Iterable.class);
+        return doGetForObject(url, Iterable.class);
     }
 
     @Override
     public Profile forgotPassword(String profileId, String resetPasswordUrl, String... attributesToReturn)
             throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_RESET_PASSWORD_URL, resetPasswordUrl, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_FORGOT_PASSWORD + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_FORGOT_PASSWORD);
 
-        return restTemplate.postForObject(url, params, Profile.class, profileId);
+        return doPostForObject(url, params, Profile.class, profileId);
     }
 
     @Override
     public Profile resetPassword(String resetTokenId, String newPassword, String... attributesToReturn)
             throws ProfileException {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_RESET_TOKEN_ID, resetTokenId, params);
         RestClientUtils.addValue(PARAM_NEW_PASSWORD, newPassword, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = BASE_URL_PROFILE + URL_PROFILE_RESET_PASSWORD + extension;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_RESET_PASSWORD);
 
-        return restTemplate.postForObject(url, params, Profile.class);
+        return doPostForObject(url, params, Profile.class);
     }
 
 }

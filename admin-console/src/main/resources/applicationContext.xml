@@ -55,7 +55,7 @@ http://www.springframework.org/schema/mvc/spring-mvc.xsd">
           class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basenames">
             <list>
-                <value>message</value>
+                <value>detailMessage</value>
             </list>
         </property>
     </bean>

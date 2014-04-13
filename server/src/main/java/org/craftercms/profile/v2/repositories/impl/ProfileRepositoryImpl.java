@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Default implementation of {@link org.craftercms.profile.v2.repositories.ProfileRepository}.
@@ -185,25 +184,6 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
     @Override
     public void removeAllForTenant(String tenantName) throws MongoDataException {
         remove(getQueryFor(KEY_REMOVE_BY_TENANT_QUERY), tenantName);
-    }
-
-    @Override
-    public String findTenantNameForProfile(String profileId) throws MongoDataException {
-        try {
-            FindOne findOne = getCollection().findOne(new ObjectId(profileId));
-            findOne = findOne.projection("{\"" + FIELD_TENANT_NAME + "\": 1}");
-            Map<String, String> tenantNameMap = findOne.as(Map.class);
-
-            return tenantNameMap.get(FIELD_TENANT_NAME);
-        } catch (MongoException ex) {
-            String msg = "Unable to find tenant name for profile " + profileId;
-            logger.error(msg, ex);
-            throw new MongoDataException(msg, ex);
-        } catch (IllegalArgumentException ex) {
-            String msg = "Given id '" + profileId + "' can't be converted to an ObjectId";
-            logger.error(msg, ex);
-            throw new MongoDataException(msg, ex);
-        }
     }
 
     protected Find addSort(Find find, String sortBy, SortOrder sortOrder) {
