@@ -73,8 +73,12 @@
 
     <!-- Tenant Queries -->
 
-    <entry key="profile.tenant.nameIndex">
+    <entry key="profile.tenant.nameIndex.keys">
         {name: 1}
+    </entry>
+
+    <entry key="profile.tenant.nameIndex.options">
+        {unique: true}
     </entry>
 
     <entry key="profile.tenant.byName">

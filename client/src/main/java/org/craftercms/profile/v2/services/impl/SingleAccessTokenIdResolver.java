@@ -14,21 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.v2.exceptions;
+package org.craftercms.profile.v2.services.impl;
 
-import java.util.Date;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
- * Thrown when the access token has already expired.
+ * Implementation of {@link org.craftercms.profile.v2.services.impl.AccessTokenIdResolver} that uses a single
+ * access token ID, set as property.
  *
  * @author avasquez
  */
-public class ExpiredAccessTokenException extends I10nProfileException {
+public class SingleAccessTokenIdResolver implements AccessTokenIdResolver {
 
-    private static final String KEY = "profile.accessToken.expiredAccessToken";
+    protected String accessTokenId;
 
-    public ExpiredAccessTokenException(String id, String application, Date expiredOn) {
-        super(KEY, id, application, expiredOn);
+    @Required
+    public void setAccessTokenId(String accessTokenId) {
+        this.accessTokenId = accessTokenId;
+    }
+
+    @Override
+    public String getAccessTokenId() {
+        return accessTokenId;
     }
 
 }

@@ -21,6 +21,7 @@ import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.TenantService;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.util.MultiValueMap;
 
 import java.util.Collection;
@@ -34,6 +35,9 @@ import static org.craftercms.profile.api.RestConstants.*;
  * @author avasquez
  */
 public class TenantServiceRestClient extends ProfileRestClientBase implements TenantService {
+
+    public static final ParameterizedTypeReference<Iterable<Tenant>> tenantListTypeRef =
+            new ParameterizedTypeReference<Iterable<Tenant>>() {};
 
     @Override
     public Tenant createTenant(String name, boolean verifyNewProfiles, Set<String> roles) throws ProfileException {
@@ -55,13 +59,6 @@ public class TenantServiceRestClient extends ProfileRestClientBase implements Te
     }
 
     @Override
-    public Tenant updateTenant(Tenant tenant) throws ProfileException {
-        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_UPDATE);
-
-        return doPostForObject(url, tenant, Tenant.class);
-    }
-
-    @Override
     public void deleteTenant(String name) throws ProfileException {
         String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_DELETE);
 
@@ -79,7 +76,7 @@ public class TenantServiceRestClient extends ProfileRestClientBase implements Te
     public Iterable<Tenant> getAllTenants() throws ProfileException {
         String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_GET_ALL);
 
-        return doGetForObject(url, Iterable.class);
+        return doGetForObject(url, tenantListTypeRef);
     }
 
     @Override

@@ -14,21 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.v2.exceptions;
-
-import java.util.Date;
+package org.craftercms.profile.v2.services.impl;
 
 /**
- * Thrown when the access token has already expired.
+ * Resolves the access token ID to use for REST calls to profile.
  *
  * @author avasquez
  */
-public class ExpiredAccessTokenException extends I10nProfileException {
+public interface AccessTokenIdResolver {
 
-    private static final String KEY = "profile.accessToken.expiredAccessToken";
-
-    public ExpiredAccessTokenException(String id, String application, Date expiredOn) {
-        super(KEY, id, application, expiredOn);
-    }
+    String getAccessTokenId();
 
 }

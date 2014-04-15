@@ -86,7 +86,7 @@ public class AccessTokenCheckingInterceptor extends HandlerInterceptorAdapter {
         if (token.getExpiresOn() == null || now.before(token.getExpiresOn())) {
             return new Application(token.getApplication(), token.getTenantPermissions());
         } else {
-            throw new ExpiredAccessTokenException(token.getApplication(), token.getExpiresOn());
+            throw new ExpiredAccessTokenException(token.getId(), token.getApplication(), token.getExpiresOn());
         }
     }
 

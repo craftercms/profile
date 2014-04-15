@@ -100,18 +100,6 @@ public class TenantServiceImplTest {
     }
 
     @Test
-    public void testUpdateTenant() throws Exception {
-        Tenant expected = getTenant();
-        expected.setVerifyNewProfiles(false);
-
-        Tenant actual = tenantService.updateTenant(expected);
-
-        assertEqualTenants(expected, actual);
-
-        verify(tenantRepository).save(actual);
-    }
-
-    @Test
     public void testDeleteTenant() throws Exception {
         tenantService.deleteTenant(TENANT_NAME);
 

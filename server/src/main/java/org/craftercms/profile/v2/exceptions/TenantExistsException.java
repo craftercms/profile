@@ -16,19 +16,17 @@
  */
 package org.craftercms.profile.v2.exceptions;
 
-import java.util.Date;
-
 /**
- * Thrown when the access token has already expired.
+ * Thrown when a create tenant operation fails because a tenant with the same name already exists.
  *
  * @author avasquez
  */
-public class ExpiredAccessTokenException extends I10nProfileException {
+public class TenantExistsException extends I10nProfileException {
 
-    private static final String KEY = "profile.accessToken.expiredAccessToken";
+    public static final String KEY = "profile.tenant.tenantExists";
 
-    public ExpiredAccessTokenException(String id, String application, Date expiredOn) {
-        super(KEY, id, application, expiredOn);
+    public TenantExistsException(String tenantName) {
+        super(KEY, tenantName);
     }
 
 }

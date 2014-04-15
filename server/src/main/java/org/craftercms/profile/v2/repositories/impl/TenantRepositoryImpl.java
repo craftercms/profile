@@ -30,7 +30,8 @@ import javax.annotation.PostConstruct;
  */
 public class TenantRepositoryImpl extends JongoRepository<Tenant> implements TenantRepository {
 
-    public static final String KEY_NAME_INDEX_KEYS =        "profile.tenant.nameIndex";
+    public static final String KEY_NAME_INDEX_KEYS =        "profile.tenant.nameIndex.keys";
+    public static final String KEY_NAME_INDEX_OPTIONS =     "profile.tenant.nameIndex.options";
     public static final String KEY_FIND_BY_NAME_QUERY =     "profile.tenant.byName";
     public static final String KEY_REMOVE_BY_NAME_QUERY =   "profile.tenant.removeByName";
 
@@ -40,7 +41,7 @@ public class TenantRepositoryImpl extends JongoRepository<Tenant> implements Ten
 
     @PostConstruct
     public void init() {
-        getCollection().ensureIndex(getQueryFor(KEY_NAME_INDEX_KEYS));
+        getCollection().ensureIndex(getQueryFor(KEY_NAME_INDEX_KEYS), getQueryFor(KEY_NAME_INDEX_OPTIONS));
     }
 
     @Override

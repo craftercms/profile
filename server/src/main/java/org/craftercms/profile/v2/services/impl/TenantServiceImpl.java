@@ -16,6 +16,7 @@
  */
 package org.craftercms.profile.v2.services.impl;
 
+import org.craftercms.commons.mongo.DuplicateKeyException;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
@@ -25,6 +26,7 @@ import org.craftercms.profile.api.TenantActions;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.v2.exceptions.AttributeAlreadyDefinedException;
+import org.craftercms.profile.v2.exceptions.TenantExistsException;
 import org.craftercms.profile.v2.exceptions.I10nProfileException;
 import org.craftercms.profile.v2.exceptions.NoSuchTenantException;
 import org.craftercms.profile.v2.permissions.Application;
@@ -43,12 +45,12 @@ import java.util.Set;
  */
 public class TenantServiceImpl implements TenantService {
 
-    public static final String ERROR_KEY_CREATE_TENANT_ERROR =     "profile.tenant.createTenantError";
-    public static final String ERROR_KEY_GET_TENANT_ERROR =        "profile.tenant.getTenantError";
-    public static final String ERROR_KEY_UPDATE_TENANT_ERROR =     "profile.tenant.updateTenantError";
-    public static final String ERROR_KEY_DELETE_TENANT_ERROR =     "profile.tenant.deleteTenantError";
-    public static final String ERROR_KEY_GET_TENANT_COUNT_ERROR =  "profile.tenant.getTenantCountError";
-    public static final String ERROR_KEY_GET_ALL_TENANTS_ERROR =   "profile.tenant.getAllTenantsError";
+    public static final String ERROR_KEY_CREATE_TENANT_ERROR =      "profile.tenant.createTenantError";
+    public static final String ERROR_KEY_GET_TENANT_ERROR =         "profile.tenant.getTenantError";
+    public static final String ERROR_KEY_UPDATE_TENANT_ERROR =      "profile.tenant.updateTenantError";
+    public static final String ERROR_KEY_DELETE_TENANT_ERROR =      "profile.tenant.deleteTenantError";
+    public static final String ERROR_KEY_GET_TENANT_COUNT_ERROR =   "profile.tenant.getTenantCountError";
+    public static final String ERROR_KEY_GET_ALL_TENANTS_ERROR =    "profile.tenant.getAllTenantsError";
 
     protected PermissionEvaluator<Application, String> permissionEvaluator;
     protected TenantRepository tenantRepository;
@@ -80,6 +82,8 @@ public class TenantServiceImpl implements TenantService {
 
         try {
             tenantRepository.save(tenant);
+        } catch (DuplicateKeyException e) {
+            throw new TenantExistsException(name);
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_CREATE_TENANT_ERROR, e, name);
         }
@@ -96,19 +100,6 @@ public class TenantServiceImpl implements TenantService {
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_GET_TENANT_ERROR, e, name);
         }
-    }
-
-    @Override
-    public Tenant updateTenant(Tenant tenant) throws ProfileException {
-        checkTenantPermission(tenant.getName(), TenantActions.UPDATE);
-
-        try {
-            tenantRepository.save(tenant);
-        } catch (MongoDataException e) {
-            throw new I10nProfileException(ERROR_KEY_UPDATE_TENANT_ERROR, e, tenant.getName());
-        }
-
-        return tenant;
     }
 
     @Override
@@ -258,6 +249,18 @@ public class TenantServiceImpl implements TenantService {
 
         void doWithTenant(Tenant tenant) throws ProfileException;
 
+    }
+
+    protected Tenant updateTenant(Tenant tenant) throws ProfileException {
+        checkTenantPermission(tenant.getName(), TenantActions.UPDATE);
+
+        try {
+            tenantRepository.save(tenant);
+        } catch (MongoDataException e) {
+            throw new I10nProfileException(ERROR_KEY_UPDATE_TENANT_ERROR, e, tenant.getName());
+        }
+
+        return tenant;
     }
 
 }

@@ -64,7 +64,7 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ActionDeniedException.class)
     public ResponseEntity<Object> handleAccessDeniedException(ActionDeniedException e, WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.ACCESS_DENIED, request);
+        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.ACTION_DENIED, request);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
@@ -104,6 +104,11 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleAttributeAlreadyDefinedException(AttributeAlreadyDefinedException e,
                                                                          WebRequest request) {
         return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.ATTRIBUTE_ALREADY_DEFINED, request);
+    }
+
+    @ExceptionHandler(TenantExistsException.class)
+    public ResponseEntity<Object> handleProfileException(TenantExistsException e, WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.TENANT_EXISTS, request);
     }
 
     @ExceptionHandler(ProfileException.class)

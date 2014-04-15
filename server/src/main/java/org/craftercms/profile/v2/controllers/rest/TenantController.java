@@ -60,12 +60,6 @@ public class TenantController {
         return tenantService.getTenant(name);
     }
 
-    @RequestMapping(value = URL_TENANT_UPDATE, method = RequestMethod.POST)
-    @ResponseBody
-    public Tenant updateTenant(@RequestBody Tenant tenant) throws ProfileException {
-        return tenantService.updateTenant(tenant);
-    }
-
     @RequestMapping(value = URL_TENANT_DELETE, method = RequestMethod.POST)
     @ResponseBody
     public void deleteTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {

@@ -55,27 +55,32 @@
 
     <!-- REST Clients -->
 
+    <bean id="profile.accessTokenIdResolver"
+          class="org.craftercms.profile.v2.services.impl.SingleAccessTokenIdResolver">
+        <property name="accessTokenId" value="${crafter.profile.rest.client.accessToken.id}"/>
+    </bean>
+
     <bean id="profile.tenantServiceRestClient" class="org.craftercms.profile.v2.services.impl.TenantServiceRestClient">
         <property name="baseUrl" value="${crafter.profile.rest.client.url.base}"/>
         <property name="extension" value="${crafter.profile.rest.client.url.extension}"/>
-        <property name="accessTokenId" value="${crafter.profile.rest.client.accessToken.id}"/>
         <property name="restTemplate" ref="profile.profileRestTemplate"/>
+        <property name="accessTokenIdResolver" ref="profile.accessTokenIdResolver"/>
     </bean>
 
     <bean id="profile.profileServiceRestClient"
           class="org.craftercms.profile.v2.services.impl.ProfileServiceRestClient">
         <property name="baseUrl" value="${crafter.profile.rest.client.url.base}"/>
         <property name="extension" value="${crafter.profile.rest.client.url.extension}"/>
-        <property name="accessTokenId" value="${crafter.profile.rest.client.accessToken.id}"/>
         <property name="restTemplate" ref="profile.profileRestTemplate"/>
+        <property name="accessTokenIdResolver" ref="profile.accessTokenIdResolver"/>
     </bean>
 
     <bean id="profile.authenticationServiceRestClient"
           class="org.craftercms.profile.v2.services.impl.AuthenticationServiceRestClient">
         <property name="baseUrl" value="${crafter.profile.rest.client.url.base}"/>
         <property name="extension" value="${crafter.profile.rest.client.url.extension}"/>
-        <property name="accessTokenId" value="${crafter.profile.rest.client.accessToken.id}"/>
         <property name="restTemplate" ref="profile.profileRestTemplate"/>
+        <property name="accessTokenIdResolver" ref="profile.accessTokenIdResolver"/>
     </bean>
 
     <import resource="classpath*:crafter/profile/extension/client-context.xml"/>

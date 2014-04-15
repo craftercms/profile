@@ -25,6 +25,8 @@ import org.craftercms.profile.api.exceptions.ErrorDetails;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.v2.exceptions.ProfileRestServiceException;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -38,25 +40,31 @@ import java.net.URI;
  */
 public class ProfileRestClientBase extends RestClientBase {
 
-    protected String accessTokenId;
+    protected AccessTokenIdResolver accessTokenIdResolver;
 
     @Required
-    public void setAccessTokenId(String accessTokenId) {
-        this.accessTokenId = accessTokenId;
+    public void setAccessTokenIdResolver(AccessTokenIdResolver accessTokenIdResolver) {
+        this.accessTokenIdResolver = accessTokenIdResolver;
     }
 
     protected String getAbsoluteUrlWithAccessTokenIdParam(String relativeUrl) {
         String absoluteUrl = getAbsoluteUrl(relativeUrl);
-        if (absoluteUrl.contains("?")) {
-            return absoluteUrl + "&" + RestConstants.PARAM_ACCESS_TOKEN_ID + "=" + accessTokenId;
+        String accessTokenId = accessTokenIdResolver.getAccessTokenId();
+
+        if (accessTokenId != null) {
+            if (absoluteUrl.contains("?")) {
+                return absoluteUrl + "&" + RestConstants.PARAM_ACCESS_TOKEN_ID + "=" + accessTokenId;
+            } else {
+                return absoluteUrl + "?" + RestConstants.PARAM_ACCESS_TOKEN_ID + "=" + accessTokenId;
+            }
         } else {
-            return absoluteUrl + "?" + RestConstants.PARAM_ACCESS_TOKEN_ID + "=" + accessTokenId;
+            return absoluteUrl;
         }
     }
 
     protected MultiValueMap<String, String> createBaseParams() {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        RestClientUtils.addValue(RestConstants.PARAM_ACCESS_TOKEN_ID, accessTokenId, params);
+        RestClientUtils.addValue(RestConstants.PARAM_ACCESS_TOKEN_ID, accessTokenIdResolver.getAccessTokenId(), params);
 
         return params;
     }
@@ -90,6 +98,19 @@ public class ProfileRestClientBase extends RestClientBase {
     protected <T> T doGetForObject(String url, Class<T> responseType, Object... uriVariables) throws ProfileException {
         try {
             return restTemplate.getForObject(url, responseType, uriVariables);
+        } catch (RestServiceException e) {
+            handleRestServiceException(e);
+        } catch (Exception e) {
+            handleException(e);
+        }
+
+        return null;
+    }
+
+    protected <T> T doGetForObject(String url, ParameterizedTypeReference<T> responseType, Object... uriVariables)
+            throws ProfileException {
+        try {
+            return restTemplate.exchange(url, HttpMethod.GET, null, responseType).getBody();
         } catch (RestServiceException e) {
             handleRestServiceException(e);
         } catch (Exception e) {
