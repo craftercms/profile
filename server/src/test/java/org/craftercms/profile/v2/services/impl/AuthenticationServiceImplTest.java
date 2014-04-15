@@ -88,7 +88,7 @@ public class AuthenticationServiceImplTest {
 
         assertNotNull(ticket);
         assertEquals(PROFILE_ID, ticket.getProfileId());
-        assertNotNull(ticket.getTimestamp());
+        assertNotNull(ticket.getLastRequestTime());
 
         verify(profileService).getProfileByUsername(TENANT_NAME, USERNAME1);
         verify(ticketRepository).save(ticket);
@@ -119,9 +119,10 @@ public class AuthenticationServiceImplTest {
         assertNotNull(ticket);
         assertEquals(NORMAL_TICKET_ID, ticket.getId());
         assertEquals(PROFILE_ID, ticket.getProfileId());
-        assertNotNull(ticket.getTimestamp());
+        assertNotNull(ticket.getLastRequestTime());
 
         verify(ticketRepository).findById(NORMAL_TICKET_ID.toString());
+        verify(ticketRepository).save(ticket);
     }
 
     @Test
@@ -157,7 +158,7 @@ public class AuthenticationServiceImplTest {
         Ticket ticket = new Ticket();
         ticket.setId(NORMAL_TICKET_ID);
         ticket.setProfileId(PROFILE_ID.toString());
-        ticket.setTimestamp(new Date());
+        ticket.setLastRequestTime(new Date());
 
         return ticket;
     }
@@ -166,7 +167,7 @@ public class AuthenticationServiceImplTest {
         Ticket ticket = new Ticket();
         ticket.setId(EXPIRED_TICKET_ID);
         ticket.setProfileId(PROFILE_ID.toString());
-        ticket.setTimestamp(new Date(System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(TICKET_MAX_AGE)));
+        ticket.setLastRequestTime(new Date(System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(TICKET_MAX_AGE)));
 
         return ticket;
     }

@@ -28,10 +28,10 @@ import org.craftercms.profile.api.Ticket;
 public interface TicketRepository extends CrudRepository<Ticket> {
 
     /**
-     * Removes tickets older than the specified number of seconds.
+     * Removes tickets with last request time older than the specified number of seconds.
      *
      * @param seconds   the number of seconds
      */
-    void removeOlderThan(long seconds) throws MongoDataException;
+    void removeWithLastRequestTimeOlderThan(long seconds) throws MongoDataException;
 
 }

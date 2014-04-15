@@ -503,7 +503,7 @@ public class ProfileServiceImplTest {
         ticket.setId(TICKET_ID);
         ticket.setTenant(TENANT1_NAME);
         ticket.setProfileId(PROFILE1_ID.toString());
-        ticket.setTimestamp(new Date());
+        ticket.setLastRequestTime(new Date());
 
         return ticket;
     }

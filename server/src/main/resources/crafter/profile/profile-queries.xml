@@ -91,8 +91,8 @@
 
     <!-- Ticket Queries -->
 
-    <entry key="profile.ticket.removeOlderThan">
-        {timestamp: {"$lt": #}}
+    <entry key="profile.ticket.removeWithLastRequestTimeOlderThan">
+        {lastRequestTime: {"$lt": #}}
     </entry>
 
 </properties>

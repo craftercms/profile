@@ -137,7 +137,7 @@ public class VerificationServiceImpl implements VerificationService {
         if (Calendar.getInstance().before(expirationTime)) {
             return callback.doOnSuccess(token);
         } else {
-            throw new ExpiredVerificationTokenException(expirationTime.getTime());
+            throw new ExpiredVerificationTokenException(tokenId, expirationTime.getTime());
         }
     }
 

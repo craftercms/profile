@@ -14,7 +14,7 @@ public class Ticket {
     private ObjectId _id;
     private String tenant;
     private String profileId;
-    private Date timestamp;
+    private Date lastRequestTime;
 
     public ObjectId getId() {
         return _id;
@@ -40,12 +40,12 @@ public class Ticket {
         this.profileId = profileId;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
+    public Date getLastRequestTime() {
+        return lastRequestTime;
     }
 
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
+    public void setLastRequestTime(Date lastRequestTime) {
+        this.lastRequestTime = lastRequestTime;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class Ticket {
                 "id=" + _id +
                 ", tenant='" + tenant + '\'' +
                 ", profileId='" + profileId + '\'' +
-                ", timestamp=" + timestamp +
+                ", lastRequestTime=" + lastRequestTime +
                 '}';
     }
 

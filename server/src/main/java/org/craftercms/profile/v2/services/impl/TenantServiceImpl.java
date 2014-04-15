@@ -73,7 +73,7 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public Tenant createTenant(String name, boolean verifyNewProfiles, Set<String> roles) throws ProfileException {
-        checkTenantPermission(null, TenantActions.CREATE);
+        checkIfTenantActionIsAllowed(null, TenantActions.CREATE);
 
         Tenant tenant = new Tenant();
         tenant.setName(name);
@@ -93,7 +93,7 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public Tenant getTenant(String name) throws ProfileException {
-        checkTenantPermission(name, TenantActions.READ);
+        checkIfTenantActionIsAllowed(name, TenantActions.READ);
 
         try {
             return tenantRepository.findByName(name);
@@ -104,7 +104,7 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public void deleteTenant(String name) throws ProfileException {
-        checkTenantPermission(name, TenantActions.DELETE);
+        checkIfTenantActionIsAllowed(name, TenantActions.DELETE);
 
         try {
             profileRepository.removeAllForTenant(name);
@@ -116,7 +116,7 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public long getTenantCount() throws ProfileException  {
-        checkTenantPermission(null, TenantActions.COUNT);
+        checkIfTenantActionIsAllowed(null, TenantActions.COUNT);
 
         try {
             return tenantRepository.count();
@@ -127,7 +127,7 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public Iterable<Tenant> getAllTenants() throws ProfileException {
-        checkTenantPermission(null, TenantActions.READ_ALL);
+        checkIfTenantActionIsAllowed(null, TenantActions.READ_ALL);
 
         try {
             return tenantRepository.findAll();
@@ -220,7 +220,7 @@ public class TenantServiceImpl implements TenantService {
         });
     }
 
-    protected void checkTenantPermission(String tenantName, String action) {
+    protected void checkIfTenantActionIsAllowed(String tenantName, String action) {
         if (!permissionEvaluator.isAllowed(tenantName, action)) {
             if (tenantName != null) {
                 throw new ActionDeniedException(action, tenantName);
@@ -233,7 +233,7 @@ public class TenantServiceImpl implements TenantService {
     protected Tenant updateTenant(String tenantName, UpdateCallback callback) throws ProfileException {
         Tenant tenant = getTenant(tenantName);
         if (tenant != null) {
-            checkTenantPermission(tenantName, TenantActions.UPDATE);
+            checkIfTenantActionIsAllowed(tenantName, TenantActions.UPDATE);
 
             callback.doWithTenant(tenant);
 
@@ -252,7 +252,7 @@ public class TenantServiceImpl implements TenantService {
     }
 
     protected Tenant updateTenant(Tenant tenant) throws ProfileException {
-        checkTenantPermission(tenant.getName(), TenantActions.UPDATE);
+        checkIfTenantActionIsAllowed(tenant.getName(), TenantActions.UPDATE);
 
         try {
             tenantRepository.save(tenant);

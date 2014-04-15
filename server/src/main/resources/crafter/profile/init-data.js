@@ -8,15 +8,15 @@ if (db.accesstoken.count() == 0) {
 				"tenant" : "*"
 			}
 		],
-		"expiresOn" : ISODate("2024-01-01T06:00:00Z")
+		"expiresOn" : new Date("Jan 1, 2024")
 	});
 }
 if (db.tenant.count() == 0) {
-	db.tenant.save({
-		"name" : "default",
-		"verifyNewProfiles" : false,
-		"roles" : [ "ADMIN" ],
-		"attributeDefinitions" : [
+    db.tenant.save({
+        "name" : "default",
+        "verifyNewProfiles" : false,
+        "roles" : [ "PROFILE_ADMIN", "SOCIAL_USER", "SOCIAL_MODERATOR", "SOCIAL_AUTHOR", "SOCIAL_ADMIN" ],
+        "attributeDefinitions" : [
             {
                 "name" : "firstName",
                 "label" : "First Name",
@@ -48,5 +48,19 @@ if (db.tenant.count() == 0) {
                 ]
             }
         ]
-	});
+    });
+}
+if (db.profile.count() == 0) {
+    db.profile.save({
+        "username" : "admin",
+        "password" : "4rQ8a67wAk1GRwIqHix5kYw1MORa49o83Y7zXQhBqT0=|j4vsWtPbYjO3LfSiQcnGlw==",
+        "email" : "admin@craftersoftware.com",
+        "verified" : false,
+        "enabled" : true,
+        "created" : new Date(),
+        "modified" : new Date(),
+        "tenant" : "default",
+        "roles" : [ "PROFILE_ADMIN", "SOCIAL_ADMIN" ],
+        "attributes" : [ ]
+    });
 }

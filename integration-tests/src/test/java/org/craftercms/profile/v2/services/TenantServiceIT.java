@@ -51,12 +51,12 @@ public class TenantServiceIT {
     private static final String CRAFTER_SOCIAL_ACCESS_TOKEN_ID =    "2ba3ac10-c43e-11e3-9c1a-0800200c9a66";
 
     private static final String ADMIN_ROLE =            "ADMIN";
-    private static final String AUTHOR_ROLE =           "AUTHOR";
-    private static final String VIEWER_ROLE =           "VIEWER";
+    private static final String USER_ROLE =             "USER";
     private static final String DEFAULT_TENANT =        "default";
-    private static final Set<String> DEFAULT_ROLES =    new HashSet<>(Arrays.asList(ADMIN_ROLE));
+    private static final Set<String> DEFAULT_ROLES =    new HashSet<>(Arrays.asList(
+            "PROFILE_ADMIN", "SOCIAL_USER", "SOCIAL_MODERATOR", "SOCIAL_AUTHOR", "SOCIAL_ADMIN"));
     private static final String CORPORATE_TENANT =      "corporate";
-    private static final Set<String> CORPORATE_ROLES =  new HashSet<>(Arrays.asList(ADMIN_ROLE, AUTHOR_ROLE));
+    private static final Set<String> CORPORATE_ROLES =  new HashSet<>(Arrays.asList(ADMIN_ROLE));
 
     private static final String ATTRIBUTE_NAME =        "testAttribute";
     private static final String ATTRIBUTE_LABEL =       "Test Attribute";
@@ -205,10 +205,10 @@ public class TenantServiceIT {
     public void testAddRoles() throws Exception {
         tenantService.createTenant(CORPORATE_TENANT, true, CORPORATE_ROLES);
 
-        Tenant tenant = tenantService.addRoles(CORPORATE_TENANT, Arrays.asList(VIEWER_ROLE));
+        Tenant tenant = tenantService.addRoles(CORPORATE_TENANT, Arrays.asList(USER_ROLE));
 
         Set<String> expectedRoles = new HashSet<>(CORPORATE_ROLES);
-        expectedRoles.add(VIEWER_ROLE);
+        expectedRoles.add(USER_ROLE);
 
         assertNotNull(tenant);
         assertEquals(expectedRoles, tenant.getRoles());
@@ -220,10 +220,10 @@ public class TenantServiceIT {
     public void testRemoveRoles() throws Exception {
         tenantService.createTenant(CORPORATE_TENANT, true, CORPORATE_ROLES);
 
-        Tenant tenant = tenantService.removeRoles(CORPORATE_TENANT, Arrays.asList(AUTHOR_ROLE));
+        Tenant tenant = tenantService.removeRoles(CORPORATE_TENANT, Arrays.asList(ADMIN_ROLE));
 
         Set<String> expectedRoles = new HashSet<>(CORPORATE_ROLES);
-        expectedRoles.remove(AUTHOR_ROLE);
+        expectedRoles.remove(ADMIN_ROLE);
 
         assertNotNull(tenant);
         assertEquals(expectedRoles, tenant.getRoles());

@@ -20,7 +20,6 @@ import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
-import org.craftercms.commons.security.permissions.annotations.SecuredObject;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.TenantActions;
 import org.craftercms.profile.api.Ticket;
@@ -44,8 +43,9 @@ import java.util.Date;
  */
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    public static final String ERROR_KEY_AUTHENTICATE_ERROR =       "profile.auth.authenticateError";
+    public static final String ERROR_KEY_CREATE_TICKET_ERROR =      "profile.auth.createTicketError";
     public static final String ERROR_KEY_GET_TICKET_ERROR =         "profile.auth.getTicketError";
+    public static final String ERROR_KEY_UPDATE_TICKET_ERROR =      "profile.auth.updateTicketError";
     public static final String ERROR_KEY_INVALIDATE_TICKET_ERROR =  "profile.auth.invalidateTicket";
 
     protected PermissionEvaluator<Application, String> permissionEvaluator;
@@ -74,8 +74,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Ticket authenticate(@SecuredObject String tenantName, String username, String password)
-            throws ProfileException {
+    public Ticket authenticate(String tenantName, String username, String password) throws ProfileException {
+        checkIfManageTicketsIsAllowed(tenantName);
+
         try {
             Profile profile = profileService.getProfileByUsername(tenantName, username);
 
@@ -83,6 +84,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 // Invalid username
                 throw new BadCredentialsException();
             }
+
             if (!profile.isEnabled()) {
                 throw new DisabledProfileException(profile.getId().toString(), tenantName);
             }
@@ -94,34 +96,46 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             Ticket ticket = new Ticket();
             ticket.setTenant(tenantName);
             ticket.setProfileId(profile.getId().toString());
-            ticket.setTimestamp(new Date());
+            ticket.setLastRequestTime(new Date());
 
             ticketRepository.save(ticket);
 
             return ticket;
         } catch (MongoDataException e) {
-            throw new I10nProfileException(ERROR_KEY_AUTHENTICATE_ERROR, username, tenantName);
+            throw new I10nProfileException(ERROR_KEY_CREATE_TICKET_ERROR, username, tenantName);
         }
     }
 
     @Override
     public Ticket getTicket(String ticketId) throws ProfileException {
+        Ticket ticket;
         try {
-            Ticket ticket = ticketRepository.findById(ticketId);
-            if (ticket != null) {
-                checkManageTicketsPermission(ticket.getTenant());
-
-                Calendar expirationTime = Calendar.getInstance();
-                expirationTime.setTime(ticket.getTimestamp());
-                expirationTime.add(Calendar.SECOND, ticketMaxAge);
-
-                return Calendar.getInstance().before(expirationTime) ? ticket : null;
-            } else {
-                return null;
-            }
+            ticket = ticketRepository.findById(ticketId);
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_GET_TICKET_ERROR, ticketId);
         }
+
+        if (ticket != null) {
+            checkIfManageTicketsIsAllowed(ticket.getTenant());
+
+            Calendar expirationTime = Calendar.getInstance();
+            expirationTime.setTime(ticket.getLastRequestTime());
+            expirationTime.add(Calendar.SECOND, ticketMaxAge);
+
+            if (Calendar.getInstance().before(expirationTime)) {
+                ticket.setLastRequestTime(new Date());
+
+                try {
+                    ticketRepository.save(ticket);
+                } catch (MongoDataException e) {
+                    throw new I10nProfileException(ERROR_KEY_UPDATE_TICKET_ERROR, ticketId);
+                }
+
+                return ticket;
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -129,7 +143,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         try {
             Ticket ticket = ticketRepository.findById(ticketId);
             if (ticket != null) {
-                checkManageTicketsPermission(ticket.getTenant());
+                checkIfManageTicketsIsAllowed(ticket.getTenant());
 
                 ticketRepository.removeById(ticketId);
             }
@@ -138,9 +152,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    protected void checkManageTicketsPermission(String tenantName) {
-        if (!permissionEvaluator.isAllowed(tenantName, TenantActions.MANAGE_PROFILES)) {
-            throw new ActionDeniedException(TenantActions.MANAGE_PROFILES, tenantName);
+    protected void checkIfManageTicketsIsAllowed(String tenantName) {
+        if (!permissionEvaluator.isAllowed(tenantName, TenantActions.MANAGE_TICKETS)) {
+            throw new ActionDeniedException(TenantActions.MANAGE_TICKETS, tenantName);
         }
     }
 

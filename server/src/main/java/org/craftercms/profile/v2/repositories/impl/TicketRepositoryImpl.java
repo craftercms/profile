@@ -31,7 +31,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class TicketRepositoryImpl extends JongoRepository<Ticket> implements TicketRepository {
 
-    public static final String KEY_REMOVE_OLDER_THAN_QUERY = "profile.ticket.removeOlderThan";
+    public static final String KEY_REMOVE_WITH_LAST_REQUEST_TIME_OLDER_THAN_QUERY =
+            "profile.ticket.removeWithLastRequestTimeOlderThan";
 
     /**
      * Creates a instance of a Jongo Repository.
@@ -41,11 +42,11 @@ public class TicketRepositoryImpl extends JongoRepository<Ticket> implements Tic
     }
 
     @Override
-    public void removeOlderThan(long seconds) throws MongoDataException {
+    public void removeWithLastRequestTimeOlderThan(long seconds) throws MongoDataException {
         long millis = TimeUnit.SECONDS.toMillis(seconds);
         Date limit = new Date(System.currentTimeMillis() - millis);
 
-        remove(getQueryFor(KEY_REMOVE_OLDER_THAN_QUERY), limit);
+        remove(getQueryFor(KEY_REMOVE_WITH_LAST_REQUEST_TIME_OLDER_THAN_QUERY), limit);
     }
 
 }

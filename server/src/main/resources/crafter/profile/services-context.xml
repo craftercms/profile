@@ -196,7 +196,7 @@
     <!--bean id="profile.ticketCleanerJobDetail"
           class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
         <property name="targetBeanName" value="profile.ticketRepository"/>
-        <property name="targetMethod" value="removeOlderThan"/>
+        <property name="targetMethod" value="removeWithLastRequestTimeOlderThan"/>
         <property name="arguments">
             <array>
                 <value>${crafter.profile.auth.ticket.maxAge}</value>

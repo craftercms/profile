@@ -27,8 +27,8 @@ public class ExpiredVerificationTokenException extends I10nProfileException {
 
     private static final String KEY = "profile.verification.expiredVerificationToken";
 
-    public ExpiredVerificationTokenException(Date expiredOn) {
-        super(KEY, expiredOn);
+    public ExpiredVerificationTokenException(String tokenId, Date expiredOn) {
+        super(KEY, tokenId, expiredOn);
     }
 
 }

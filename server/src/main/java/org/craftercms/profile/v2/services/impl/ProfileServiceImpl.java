@@ -114,7 +114,7 @@ public class ProfileServiceImpl implements ProfileService {
     public Profile createProfile(String tenantName, String username, String password, String email, boolean enabled,
                                  Set<String> roles, String verificationUrl)
             throws ProfileException {
-        checkManageProfilesPermission(tenantName);
+        checkIfManageProfilesIsAllowed(tenantName);
 
         if (!EmailUtils.validateEmail(email)) {
             throw new InvalidEmailAddressException(email);
@@ -319,7 +319,7 @@ public class ProfileServiceImpl implements ProfileService {
         try {
             Profile profile = profileRepository.findById(profileId, attributesToReturn);
             if (profile != null) {
-                checkManageProfilesPermission(profile.getTenant());
+                checkIfManageProfilesIsAllowed(profile.getTenant());
                 filterNonReadableAttributes(profile);
             }
 
@@ -332,7 +332,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile getProfileByUsername(String tenantName, String username, String... attributesToReturn)
             throws ProfileException {
-        checkManageProfilesPermission(tenantName);
+        checkIfManageProfilesIsAllowed(tenantName);
 
         try {
             Profile profile = profileRepository.findByTenantAndUsername(tenantName, username, attributesToReturn);
@@ -356,7 +356,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public long getProfileCount(String tenantName) throws ProfileException {
-        checkManageProfilesPermission(tenantName);
+        checkIfManageProfilesIsAllowed(tenantName);
 
         try {
             return profileRepository.countByTenant(tenantName);
@@ -372,7 +372,7 @@ public class ProfileServiceImpl implements ProfileService {
             Iterable<Profile> profiles = profileRepository.findByIds(profileIds, sortBy, sortOrder, attributesToReturn);
             if (profiles != null) {
                 for (Profile profile : profiles) {
-                    checkManageProfilesPermission(profile.getTenant());
+                    checkIfManageProfilesIsAllowed(profile.getTenant());
                     filterNonReadableAttributes(profile);
                 }
             }
@@ -386,7 +386,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Iterable<Profile> getProfileRange(String tenantName, String sortBy, SortOrder sortOrder, Integer start,
                                              Integer count, String... attributesToReturn) throws ProfileException {
-        checkManageProfilesPermission(tenantName);
+        checkIfManageProfilesIsAllowed(tenantName);
 
         try {
             Iterable<Profile> profiles = profileRepository.findRange(tenantName, sortBy, sortOrder, start, count,
@@ -402,7 +402,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Iterable<Profile> getProfilesByRole(String tenantName, String role, String sortBy, SortOrder sortOrder,
                                                String... attributesToReturn) throws ProfileException {
-        checkManageProfilesPermission(tenantName);
+        checkIfManageProfilesIsAllowed(tenantName);
 
         try {
             Iterable<Profile> profiles = profileRepository.findByTenantAndRole(tenantName, role, sortBy, sortOrder,
@@ -419,7 +419,7 @@ public class ProfileServiceImpl implements ProfileService {
     public Iterable<Profile> getProfilesByAttribute(String tenantName, String attributeName, String attributeValue,
                                                     String sortBy, SortOrder sortOrder, String... attributesToReturn)
             throws ProfileException {
-        checkManageProfilesPermission(tenantName);
+        checkIfManageProfilesIsAllowed(tenantName);
 
         try {
             Iterable<Profile> profiles = profileRepository.findByTenantAndAttribute(tenantName, attributeName,
@@ -467,7 +467,7 @@ public class ProfileServiceImpl implements ProfileService {
         return resetPasswordVerificationService.verifyToken(resetTokenId, callback);
     }
 
-    protected void checkManageProfilesPermission(String tenantName) {
+    protected void checkIfManageProfilesIsAllowed(String tenantName) {
         if (!tenantPermissionEvaluator.isAllowed(tenantName, TenantActions.MANAGE_PROFILES)) {
             throw new ActionDeniedException(TenantActions.MANAGE_PROFILES, tenantName);
         }
@@ -496,6 +496,8 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = getNonNullProfile(profileId, attributesToReturn);
 
         callback.doWithProfile(profile);
+
+        profile.setModified(new Date());
 
         try {
             profileRepository.save(profile);
