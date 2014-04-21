@@ -106,8 +106,20 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.ATTRIBUTE_ALREADY_DEFINED, request);
     }
 
+    @ExceptionHandler(AttributeNotDefinedException.class)
+    public ResponseEntity<Object> handleAttributeNotDefinedDefinedException(AttributeNotDefinedException e,
+                                                                            WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.ATTRIBUTE_NOT_DEFINED, request);
+    }
+
+    @ExceptionHandler(AttributeDefinitionStillUsedException.class)
+    public ResponseEntity<Object> handleAttributeDefinitionStillUsedException(AttributeDefinitionStillUsedException e,
+                                                                              WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.ATTRIBUTE_DEFINITION_STILL_USED, request);
+    }
+
     @ExceptionHandler(TenantExistsException.class)
-    public ResponseEntity<Object> handleProfileException(TenantExistsException e, WebRequest request) {
+    public ResponseEntity<Object> handleTenantExistsException(TenantExistsException e, WebRequest request) {
         return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.TENANT_EXISTS, request);
     }
 

@@ -11,12 +11,12 @@ import org.craftercms.commons.security.permissions.SecuredObjectBase;
 public class AttributeDefinition extends SecuredObjectBase<AttributePermission> {
 
     private String name;
+    private String owner;
     private String label;
     private int order;
     private String type;
     private String constraint;
     private boolean required;
-    private String owner;
 
     /**
      * Returns the name of the attribute.
@@ -30,6 +30,20 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
      */
     public void setName(final String name) {
         this.name = name;
+    }
+
+    /**
+     * Returns the owner (application) of the attribute.
+     */
+    public String getOwner() {
+        return owner;
+    }
+
+    /**
+     * Sets the owner (application) of the attribute
+     */
+    public void setOwner(final String owner) {
+        this.owner = owner;
     }
 
     /**
@@ -102,20 +116,6 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
         this.required = required;
     }
 
-    /**
-     * Returns the owner (application) of the attribute.
-     */
-    public String getOwner() {
-        return owner;
-    }
-
-    /**
-     * Sets the owner (application) of the attribute
-     */
-    public void setOwner(final String owner) {
-        this.owner = owner;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -143,12 +143,12 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
     public String toString() {
         return "AttributeDefinition{" +
                 "name='" + name + '\'' +
+                ", owner='" + owner + '\'' +
                 ", label='" + label + '\'' +
                 ", order=" + order +
                 ", type='" + type + '\'' +
                 ", constraint='" + constraint + '\'' +
                 ", required=" + required +
-                ", owner='" + owner + '\'' +
                 '}';
     }
 

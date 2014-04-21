@@ -23,6 +23,7 @@ import org.bson.types.ObjectId;
 import org.craftercms.commons.mongo.JongoRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.v2.repositories.ProfileRepository;
 import org.jongo.Find;
@@ -41,8 +42,6 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
 
     private static final Logger logger = LoggerFactory.getLogger(ProfileRepositoryImpl.class);
 
-    public static final String FIELD_TENANT_NAME = "tenantName";
-
     public static final String KEY_DEFAULT_FIELDS =                     "profile.profile.defaultFields";
     public static final String KEY_FIND_BY_TENANT_AND_USERNAME_QUERY =  "profile.profile.byTenantAndUsername";
     public static final String KEY_COUNT_BY_TENANT_QUERY =              "profile.profile.countByTenant";
@@ -50,7 +49,10 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
     public static final String KEY_FIND_BY_IDS_QUERY =                  "profile.profile.byIds";
     public static final String KEY_FIND_BY_TENANT_QUERY =               "profile.profile.byTenant";
     public static final String KEY_FIND_BY_TENANT_AND_ROLE_QUERY =      "profile.profile.byTenantAndRole";
-    public static final String KEY_FIND_BY_TENANT_AND_ATTRIB_QUERY =    "profile.profile.byTenantAndAttribute";
+    public static final String KEY_FIND_BY_TENANT_AND_EXISTING_ATTRIB_QUERY =
+            "profile.profile.byTenantAndExistingAttribute";
+    public static final String KEY_FIND_BY_TENANT_AND_ATTRIB_VALUE_QUERY =
+            "profile.profile.byTenantAndAttributeValue";
 
     public static final String ATTRIBUTE_FIELD_PREFIX = "attributes.";
 
@@ -64,13 +66,11 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
     @Override
     public Profile findById(String id, String... attributesToReturn) throws MongoDataException {
         try {
-            if (ArrayUtils.isNotEmpty(attributesToReturn)) {
-                String projection = buildProjectionWithAttributes(attributesToReturn);
+            FindOne findOne = getCollection().findOne(new ObjectId(id));
 
-                return getCollection().findOne(new ObjectId(id)).projection(projection).as(Profile.class);
-            } else {
-                return getCollection().findOne(new ObjectId(id)).as(Profile.class);
-            }
+            addProjection(findOne, attributesToReturn);
+
+            return findOne.as(Profile.class);
         } catch (MongoException ex) {
             String msg = "Unable to find profile by id '" + id + "'";
             logger.error(msg, ex);
@@ -138,11 +138,31 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
     }
 
     @Override
-    public Iterable<Profile> findByTenantAndAttribute(String tenantName, String attributeName, String attributeValue,
-                                                      String sortBy, SortOrder sortOrder, String... attributesToReturn)
+    public Iterable<Profile> findByTenantAndExistingAttribute(String tenantName, String attributeName, String sortBy,
+                                                              SortOrder sortOrder, String... attributesToReturn)
             throws MongoDataException {
         try {
-            String query = getQueryFor(KEY_FIND_BY_TENANT_AND_ATTRIB_QUERY);
+            String query = getQueryFor(KEY_FIND_BY_TENANT_AND_EXISTING_ATTRIB_QUERY);
+            Find find = getCollection().find(query, tenantName, attributeName);
+
+            addSort(find, sortBy, sortOrder);
+            addProjection(find, attributesToReturn);
+
+            return find.as(Profile.class);
+        } catch (MongoException ex) {
+            String msg = "Unable to find profiles with attribute " + attributeName + " and tenant '" + tenantName + "'";
+            logger.error(msg, ex);
+            throw new MongoDataException(msg, ex);
+        }
+    }
+
+    @Override
+    public Iterable<Profile> findByTenantAndAttributeValue(String tenantName, String attributeName,
+                                                           String attributeValue, String sortBy,
+                                                           SortOrder sortOrder, String... attributesToReturn)
+            throws MongoDataException {
+        try {
+            String query = getQueryFor(KEY_FIND_BY_TENANT_AND_ATTRIB_VALUE_QUERY);
             Find find = getCollection().find(query, tenantName, attributeName, attributeValue);
 
             addSort(find, sortBy, sortOrder);
@@ -206,6 +226,14 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
         return find;
     }
 
+    protected FindOne addProjection(FindOne findOne, String... attributesToReturn) {
+        if (ArrayUtils.isNotEmpty(attributesToReturn)) {
+            findOne = findOne.projection(buildProjectionWithAttributes(attributesToReturn));
+        }
+
+        return findOne;
+    }
+
     protected Find addProjection(Find find, String... attributesToReturn) {
         if (ArrayUtils.isNotEmpty(attributesToReturn)) {
             find = find.projection(buildProjectionWithAttributes(attributesToReturn));
@@ -217,18 +245,20 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
     protected String buildProjectionWithAttributes(String... attributeNames) {
         StringBuilder projection = new StringBuilder(getQueryFor(KEY_DEFAULT_FIELDS));
 
-        projection.deleteCharAt(projection.length() - 1);
+        if (!ArrayUtils.contains(attributeNames, ProfileConstants.NO_ATTRIBUTE)) {
+            projection.deleteCharAt(projection.length() - 1);
 
-        for (String attributeName : attributeNames) {
-            projection.append(", ");
-            projection.append("\"");
-            projection.append(ATTRIBUTE_FIELD_PREFIX);
-            projection.append(attributeName);
-            projection.append("\"");
-            projection.append(": 1");
+            for (String attributeName : attributeNames) {
+                projection.append(", ");
+                projection.append("\"");
+                projection.append(ATTRIBUTE_FIELD_PREFIX);
+                projection.append(attributeName);
+                projection.append("\"");
+                projection.append(": 1");
+            }
+
+            projection.append("}");
         }
-
-        projection.append("}");
 
         return projection.toString();
     }

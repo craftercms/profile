@@ -37,6 +37,7 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static org.craftercms.profile.api.ProfileConstants.*;
 
 /**
  * Unit test for {@link org.craftercms.profile.v2.services.impl.ProfileServiceImpl}.
@@ -104,13 +105,12 @@ public class ProfileServiceImplTest {
         when(tenantPermissionEvaluator.isAllowed(anyString(), anyString())).thenReturn(true);
         when(attributePermissionEvaluator.isAllowed(any(AttributeDefinition.class), anyString())).thenReturn(true);
 
-        Profile profileNoLastName = getTenant1Profile();
-        profileNoLastName.getAttributes().remove(ATTRIB_NAME_LAST_NAME);
-
         when(profileRepository.findById(PROFILE1_ID.toString(), new String[0]))
                 .thenReturn(getTenant1Profile());
+        when(profileRepository.findById(PROFILE1_ID.toString(), NO_ATTRIBUTE))
+                .thenReturn(getTenant1ProfileNoAttributes());
         when(profileRepository.findById(PROFILE1_ID.toString(), ATTRIB_NAME_FIRST_NAME))
-                .thenReturn(profileNoLastName);
+                .thenReturn(getTenant1ProfileNoLastName());
         when(profileRepository.findById(PROFILE2_ID.toString(), new String[0]))
                 .thenReturn(getTenant2Profile());
         when(profileRepository.findByTenantAndUsername(TENANT1_NAME, USERNAME1, new String[0]))
@@ -121,7 +121,7 @@ public class ProfileServiceImplTest {
                 .thenReturn(getAllTenant1Profiles());
         when(profileRepository.findByTenantAndRole(TENANT1_NAME, ROLE1, SORT_BY, SortOrder.ASC))
                 .thenReturn(getAllTenant1Profiles());
-        when(profileRepository.findByTenantAndAttribute(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME, FIRST_NAME, SORT_BY,
+        when(profileRepository.findByTenantAndAttributeValue(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME, FIRST_NAME, SORT_BY,
                 SortOrder.ASC)).thenReturn(getAllTenant1Profiles());
         when(profileRepository.countByTenant(TENANT1_NAME)).thenReturn(10L);
 
@@ -160,7 +160,7 @@ public class ProfileServiceImplTest {
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(tenantService).getTenant(TENANT1_NAME);
-        verify(profileRepository).save(actual);
+        verify(profileRepository).insert(actual);
         verify(newProfileVerificationService).sendEmail(actual, VERIFICATION_URL);
     }
 
@@ -179,7 +179,7 @@ public class ProfileServiceImplTest {
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT2_NAME, TenantActions.MANAGE_PROFILES);
         verify(tenantService).getTenant(TENANT2_NAME);
-        verify(profileRepository).save(actual);
+        verify(profileRepository).insert(actual);
         verify(newProfileVerificationService, never()).sendEmail(actual, VERIFICATION_URL);
     }
 
@@ -305,6 +305,14 @@ public class ProfileServiceImplTest {
     }
 
     @Test
+    public void testGetNoAttributes() throws Exception {
+        Map<String, Object> attributes = profileService.getAttributes(PROFILE1_ID.toString(), NO_ATTRIBUTE);
+
+        assertNotNull(attributes);
+        assertEquals(0, attributes.size());
+    }
+
+    @Test
     public void testUpdateAttributes() throws Exception {
         Profile expected = getTenant1Profile();
         expected.getAttributes().put(ATTRIB_NAME_GENDER, GENDER);
@@ -413,13 +421,13 @@ public class ProfileServiceImplTest {
     @Test
     public void testGetProfilesByAttribute() throws Exception {
         List<Profile> expected = getAllTenant1Profiles();
-        List<Profile> actual = (List<Profile>) profileService.getProfilesByAttribute(TENANT1_NAME,
+        List<Profile> actual = (List<Profile>) profileService.getProfilesByAttributeValue(TENANT1_NAME,
                 ATTRIB_NAME_FIRST_NAME, FIRST_NAME, SORT_BY, SortOrder.ASC);
 
         assertEqualProfileLists(expected, actual);
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
-        verify(profileRepository).findByTenantAndAttribute(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME, FIRST_NAME, SORT_BY,
+        verify(profileRepository).findByTenantAndAttributeValue(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME, FIRST_NAME, SORT_BY,
                 SortOrder.ASC);
     }
 
@@ -449,9 +457,27 @@ public class ProfileServiceImplTest {
     }
 
     private Tenant getTenant1() {
+        AttributePermission anyAppCanDoAnything = new AttributePermission(AttributePermission.ANY_APPLICATION);
+        anyAppCanDoAnything.allow(AttributePermission.ANY_ACTION);
+
+        AttributeDefinition firstNameDefinition = new AttributeDefinition();
+        firstNameDefinition.setName(ATTRIB_NAME_FIRST_NAME);
+        firstNameDefinition.addPermission(anyAppCanDoAnything);
+
+        AttributeDefinition lastNameDefinition = new AttributeDefinition();
+        lastNameDefinition.setName(ATTRIB_NAME_LAST_NAME);
+        lastNameDefinition.addPermission(anyAppCanDoAnything);
+
+        AttributeDefinition genderDefinition = new AttributeDefinition();
+        genderDefinition.setName(ATTRIB_NAME_GENDER);
+        genderDefinition.addPermission(anyAppCanDoAnything);
+
         Tenant tenant = new Tenant();
         tenant.setName(TENANT1_NAME);
         tenant.setVerifyNewProfiles(true);
+        tenant.getAttributeDefinitions().add(firstNameDefinition);
+        tenant.getAttributeDefinitions().add(lastNameDefinition);
+        tenant.getAttributeDefinitions().add(genderDefinition);
 
         return tenant;
     }
@@ -476,6 +502,20 @@ public class ProfileServiceImplTest {
         profile.setEnabled(true);
         profile.getAttributes().put(ATTRIB_NAME_FIRST_NAME, FIRST_NAME);
         profile.getAttributes().put(ATTRIB_NAME_LAST_NAME, LAST_NAME);
+
+        return profile;
+    }
+
+    private Profile getTenant1ProfileNoAttributes() {
+        Profile profile = getTenant1Profile();
+        profile.getAttributes().clear();
+
+        return profile;
+    }
+
+    private Profile getTenant1ProfileNoLastName() {
+        Profile profile = getTenant1Profile();
+        profile.getAttributes().remove(ATTRIB_NAME_LAST_NAME);
 
         return profile;
     }

@@ -17,10 +17,11 @@
 package org.craftercms.profile.v2.controllers.rest;
 
 import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
-import org.craftercms.profile.api.SortOrder;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.craftercms.profile.api.RestConstants.*;
+import static org.craftercms.profile.api.ProfileConstants.*;
 
 /**
  * REST controller for the profile service.
@@ -147,7 +148,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_DELETE_PROFILE, method = RequestMethod.POST)
-    @ResponseBody
+    @ResponseStatus(value = HttpStatus.OK)
     public void deleteProfile(@PathVariable(PATH_VAR_ID) String profileId) throws ProfileException {
         profileService.deleteProfile(profileId);
     }
@@ -219,17 +220,34 @@ public class ProfileController {
         return profileService.getProfilesByRole(tenantName, role, sortBy, sortOrder, attributesToReturn);
     }
 
-    @RequestMapping(value = URL_PROFILE_GET_BY_ATTRIBUTE, method = RequestMethod.GET)
+    @RequestMapping(value = URL_PROFILE_GET_BY_EXISTING_ATTRIB, method = RequestMethod.GET)
     @ResponseBody
-    public Iterable<Profile> getProfileByAttribute(@RequestParam(PARAM_TENANT_NAME) String tenantName,
-                                                   @RequestParam(PARAM_ATTRIBUTE_NAME) String attributeName,
-                                                   @RequestParam(PARAM_ATTRIBUTE_VALUE) String attributeValue,
-                                                   @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
-                                                   @RequestParam(value = PARAM_SORT_ORDER, required = false)
-                                                   SortOrder sortOrder,
-                                                   @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
-                                                   String[] attributesToReturn) throws ProfileException {
-        return profileService.getProfilesByAttribute(tenantName, attributeName, attributeValue, sortBy, sortOrder,
+    public Iterable<Profile> getProfileByExistingAttribute(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                                           @RequestParam(PARAM_ATTRIBUTE_NAME) String attributeName,
+                                                           @RequestParam(value = PARAM_SORT_BY, required = false)
+                                                           String sortBy,
+                                                           @RequestParam(value = PARAM_SORT_ORDER, required = false)
+                                                           SortOrder sortOrder,
+                                                           @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN,
+                                                                   required = false)
+                                                           String[] attributesToReturn) throws ProfileException {
+        return profileService.getProfilesByExistingAttribute(tenantName, attributeName, sortBy, sortOrder,
+                attributesToReturn);
+    }
+
+    @RequestMapping(value = URL_PROFILE_GET_BY_ATTRIB_VALUE, method = RequestMethod.GET)
+    @ResponseBody
+    public Iterable<Profile> getProfileByAttributeValue(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                                        @RequestParam(PARAM_ATTRIBUTE_NAME) String attributeName,
+                                                        @RequestParam(PARAM_ATTRIBUTE_VALUE) String attributeValue,
+                                                        @RequestParam(value = PARAM_SORT_BY, required = false)
+                                                        String sortBy,
+                                                        @RequestParam(value = PARAM_SORT_ORDER, required = false)
+                                                        SortOrder sortOrder,
+                                                        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN,
+                                                                required = false)
+                                                        String[] attributesToReturn) throws ProfileException {
+        return profileService.getProfilesByAttributeValue(tenantName, attributeName, attributeValue, sortBy, sortOrder,
                 attributesToReturn);
     }
 

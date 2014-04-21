@@ -14,27 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.api.exceptions;
+package org.craftercms.profile.v2.exceptions;
 
 /**
- * Contains profile's error codes.
+ * Thrown when an attribute definition is being updated or when an attribute value is being set but not attribute
+ * definition was found.
  *
  * @author avasquez
  */
-public enum ErrorCode {
-    MISSING_ACCESS_TOKEN_ID_PARAM,
-    NO_SUCH_ACCESS_TOKEN_ID,
-    EXPIRED_ACCESS_TOKEN,
-    ACTION_DENIED,
-    BAD_CREDENTIALS,
-    DISABLED_PROFILE,
-    NO_SUCH_VERIFICATION_TOKEN,
-    EXPIRED_VERIFICATION_TOKEN,
-    INVALID_EMAIL_ADDRESS,
-    PERMISSION_ERROR,
-    ATTRIBUTE_ALREADY_DEFINED,
-    ATTRIBUTE_NOT_DEFINED,
-    ATTRIBUTE_DEFINITION_STILL_USED,
-    TENANT_EXISTS,
-    GENERAL_ERROR;
+public class AttributeNotDefinedException extends I10nProfileException {
+
+    public static final String KEY = "profile.attribute.attributeNotDefined";
+
+    public AttributeNotDefinedException(String attributeName, String tenant) {
+        super(KEY, attributeName, tenant);
+    }
+
 }

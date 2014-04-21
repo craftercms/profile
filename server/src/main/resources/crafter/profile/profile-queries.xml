@@ -26,7 +26,7 @@
 
     <!--This entry "profile.profiles.defaultFields" is used to "filter" the retrieve only-->
     <!--the basic files this is done due Attributes could be large.-->
-    <entry key="profile.profiles.defaultFields">
+    <entry key="profile.profile.defaultFields">
         {
         "_id" :1,
         "username" : 1,
@@ -56,7 +56,7 @@
     </entry>
 
     <entry key="profile.profile.byIds">
-        {_id: {"$in": #}}
+        {_id: {$in: #}}
     </entry>
 
     <entry key="profile.profile.byTenant">
@@ -67,7 +67,11 @@
         {tenant: #, roles: #}
     </entry>
 
-    <entry key="profile.profile.byTenantAndAttribute">
+    <entry key="profile.profile.byTenantAndExistingAttribute">
+        {tenant: #, attributes.#: {$exists: true}}
+    </entry>
+
+    <entry key="profile.profile.byTenantAndAttributeValue">
         {tenant: #, attributes.#: #}
     </entry>
 
@@ -92,7 +96,7 @@
     <!-- Ticket Queries -->
 
     <entry key="profile.ticket.removeWithLastRequestTimeOlderThan">
-        {lastRequestTime: {"$lt": #}}
+        {lastRequestTime: {$lt: #}}
     </entry>
 
 </properties>

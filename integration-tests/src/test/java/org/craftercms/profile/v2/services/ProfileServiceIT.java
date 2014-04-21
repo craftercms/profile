@@ -14,27 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.api.exceptions;
+package org.craftercms.profile.v2.services;
 
 /**
- * Contains profile's error codes.
+ * Integration tests for {@link org.craftercms.profile.services.ProfileService}.
  *
  * @author avasquez
  */
-public enum ErrorCode {
-    MISSING_ACCESS_TOKEN_ID_PARAM,
-    NO_SUCH_ACCESS_TOKEN_ID,
-    EXPIRED_ACCESS_TOKEN,
-    ACTION_DENIED,
-    BAD_CREDENTIALS,
-    DISABLED_PROFILE,
-    NO_SUCH_VERIFICATION_TOKEN,
-    EXPIRED_VERIFICATION_TOKEN,
-    INVALID_EMAIL_ADDRESS,
-    PERMISSION_ERROR,
-    ATTRIBUTE_ALREADY_DEFINED,
-    ATTRIBUTE_NOT_DEFINED,
-    ATTRIBUTE_DEFINITION_STILL_USED,
-    TENANT_EXISTS,
-    GENERAL_ERROR;
+public class ProfileServiceIT {
 }

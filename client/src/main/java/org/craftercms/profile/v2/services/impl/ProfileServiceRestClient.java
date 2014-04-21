@@ -21,6 +21,7 @@ import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.util.MultiValueMap;
 
 import java.util.Collection;
@@ -28,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.craftercms.profile.api.RestConstants.*;
+import static org.craftercms.profile.api.ProfileConstants.*;
 
 /**
  * REST client implementation of {@link org.craftercms.profile.api.services.ProfileService}.
@@ -36,6 +37,9 @@ import static org.craftercms.profile.api.RestConstants.*;
  * @author avasquez
  */
 public class ProfileServiceRestClient extends ProfileRestClientBase implements ProfileService {
+
+    public static final ParameterizedTypeReference<List<Profile>> profileListTypeRef =
+            new ParameterizedTypeReference<List<Profile>>() {};
 
     @Override
     public Profile createProfile(String tenantName, String username, String password, String email, boolean enabled,
@@ -216,7 +220,7 @@ public class ProfileServiceRestClient extends ProfileRestClientBase implements P
     }
 
     @Override
-    public Iterable<Profile> getProfilesByIds(List<String> profileIds, String sortBy, SortOrder sortOrder,
+    public List<Profile> getProfilesByIds(List<String> profileIds, String sortBy, SortOrder sortOrder,
                                               String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValues(PARAM_ID, profileIds, params);
@@ -227,11 +231,11 @@ public class ProfileServiceRestClient extends ProfileRestClientBase implements P
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_IDS);
         url = RestClientUtils.addQueryParams(url, params, false);
 
-        return doGetForObject(url, Iterable.class);
+        return doGetForObject(url, profileListTypeRef);
     }
 
     @Override
-    public Iterable<Profile> getProfileRange(String tenantName, String sortBy, SortOrder sortOrder, Integer start,
+    public List<Profile> getProfileRange(String tenantName, String sortBy, SortOrder sortOrder, Integer start,
                                              Integer count, String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
@@ -244,11 +248,11 @@ public class ProfileServiceRestClient extends ProfileRestClientBase implements P
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_RANGE);
         url = RestClientUtils.addQueryParams(url, params, false);
 
-        return doGetForObject(url, Iterable.class);
+        return doGetForObject(url, profileListTypeRef);
     }
 
     @Override
-    public Iterable<Profile> getProfilesByRole(String tenantName, String role, String sortBy, SortOrder sortOrder,
+    public List<Profile> getProfilesByRole(String tenantName, String role, String sortBy, SortOrder sortOrder,
                                                String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
@@ -260,13 +264,30 @@ public class ProfileServiceRestClient extends ProfileRestClientBase implements P
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_ROLE);
         url = RestClientUtils.addQueryParams(url, params, false);
 
-        return doGetForObject(url, Iterable.class);
+        return doGetForObject(url, profileListTypeRef);
     }
 
     @Override
-    public Iterable<Profile> getProfilesByAttribute(String tenantName, String attributeName, String attributeValue,
-                                                    String sortBy, SortOrder sortOrder, String... attributesToReturn)
+    public List<Profile> getProfilesByExistingAttribute(String tenantName, String attributeName, String sortBy,
+                                                            SortOrder sortOrder, String... attributesToReturn)
             throws ProfileException {
+        MultiValueMap<String, String> params = createBaseParams();
+        RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
+        RestClientUtils.addValue(PARAM_ATTRIBUTE_NAME, attributeName, params);
+        RestClientUtils.addValue(PARAM_SORT_BY, sortBy, params);
+        RestClientUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
+        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_EXISTING_ATTRIB);
+        url = RestClientUtils.addQueryParams(url, params, false);
+
+        return doGetForObject(url, profileListTypeRef);
+    }
+
+    @Override
+    public List<Profile> getProfilesByAttributeValue(String tenantName, String attributeName,
+                                                         String attributeValue, String sortBy, SortOrder sortOrder,
+                                                         String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
         RestClientUtils.addValue(PARAM_ATTRIBUTE_NAME, attributeName, params);
@@ -275,10 +296,10 @@ public class ProfileServiceRestClient extends ProfileRestClientBase implements P
         RestClientUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_ATTRIBUTES);
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_ATTRIB_VALUE);
         url = RestClientUtils.addQueryParams(url, params, false);
 
-        return doGetForObject(url, Iterable.class);
+        return doGetForObject(url, profileListTypeRef);
     }
 
     @Override

@@ -18,10 +18,10 @@ package org.craftercms.profile.v2.services.impl;
 
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
-import org.craftercms.profile.api.AttributeDefinition;
-import org.craftercms.profile.api.Tenant;
-import org.craftercms.profile.api.TenantPermission;
+import org.craftercms.profile.api.*;
+import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.v2.exceptions.AttributeAlreadyDefinedException;
+import org.craftercms.profile.v2.exceptions.AttributeDefinitionStillUsedException;
 import org.craftercms.profile.v2.permissions.Application;
 import org.craftercms.profile.v2.repositories.ProfileRepository;
 import org.craftercms.profile.v2.repositories.TenantRepository;
@@ -42,8 +42,8 @@ import static org.mockito.Mockito.*;
  */
 public class TenantServiceImplTest {
 
-    private static final String TENANT_NAME =            "tenant1";
-    private static final boolean VERIFY_NEW_PROFILES =   true;
+    private static final String TENANT1_NAME =          "tenant1";
+    private static final String TENANT2_NAME =          "tenant2";
     private static final String ROLE1 =                  "role1";
     private static final String ROLE2 =                  "role2";
     private static final Set<String> ROLES =             new HashSet<>(Arrays.asList(ROLE1));
@@ -60,6 +60,8 @@ public class TenantServiceImplTest {
     private TenantRepository tenantRepository;
     @Mock
     private ProfileRepository profileRepository;
+    @Mock
+    private ProfileService profileService;
 
     @Before
     public void setUp() throws Exception {
@@ -67,49 +69,52 @@ public class TenantServiceImplTest {
 
         when(permissionEvaluator.isAllowed(anyString(), anyString())).thenReturn(true);
 
-        when(tenantRepository.findByName(TENANT_NAME)).thenReturn(getTenant());
-        when(tenantRepository.findAll()).thenReturn(Arrays.asList(getTenant()));
-        when(tenantRepository.count()).thenReturn(3L);
+        when(tenantRepository.findByName(TENANT1_NAME)).thenReturn(getTenant1());
+        when(tenantRepository.findByName(TENANT2_NAME)).thenReturn(getTenant2());
+        when(tenantRepository.findAll()).thenReturn(Arrays.asList(getTenant1(), getTenant2()));
+        when(tenantRepository.count()).thenReturn(2L);
+
+        when(profileService.getProfilesByExistingAttribute(TENANT2_NAME, ATTRIB1_NAME, null, null, ProfileConstants
+                .NO_ATTRIBUTE)).thenReturn(Arrays.asList(mock(Profile.class)));
 
         tenantService = new TenantServiceImpl();
         tenantService.setPermissionEvaluator(permissionEvaluator);
         tenantService.setTenantRepository(tenantRepository);
         tenantService.setProfileRepository(profileRepository);
+        tenantService.setProfileService(profileService);
     }
 
     @Test
     public void testCreateTenant() throws Exception {
-        Tenant actual = tenantService.createTenant(TENANT_NAME, VERIFY_NEW_PROFILES, ROLES);
-        Tenant expected = getTenant();
-
-        expected.setAttributeDefinitions(Collections.<AttributeDefinition>emptySet());
+        Tenant actual = tenantService.createTenant(getTenant1());
+        Tenant expected = getTenant1();
 
         assertEqualTenants(expected, actual);
 
-        verify(tenantRepository).save(actual);
+        verify(tenantRepository).insert(actual);
     }
 
     @Test
     public void testGetTenant() throws Exception {
-        Tenant actual = tenantService.getTenant(TENANT_NAME);
-        Tenant expected = getTenant();
+        Tenant actual = tenantService.getTenant(TENANT1_NAME);
+        Tenant expected = getTenant1();
 
         assertEqualTenants(expected, actual);
 
-        verify(tenantRepository).findByName(TENANT_NAME);
+        verify(tenantRepository).findByName(TENANT1_NAME);
     }
 
     @Test
     public void testDeleteTenant() throws Exception {
-        tenantService.deleteTenant(TENANT_NAME);
+        tenantService.deleteTenant(TENANT1_NAME);
 
-        verify(profileRepository).removeAllForTenant(TENANT_NAME);
-        verify(tenantRepository).removeByName(TENANT_NAME);
+        verify(profileRepository).removeAllForTenant(TENANT1_NAME);
+        verify(tenantRepository).removeByName(TENANT1_NAME);
     }
 
     @Test
     public void testGetTenantCount() throws Exception {
-        long expected = 3L;
+        long expected = 2L;
         long actual = tenantService.getTenantCount();
 
         assertEquals(expected, actual);
@@ -119,52 +124,53 @@ public class TenantServiceImplTest {
 
     @Test
     public void testGetAllTenants() throws Exception {
-        List<Tenant> expected = Arrays.asList(getTenant());
+        List<Tenant> expected = Arrays.asList(getTenant1(), getTenant2());
         List<Tenant> actual = (List<Tenant>) tenantService.getAllTenants();
 
         assertNotNull(actual);
-        assertEquals(1, actual.size());
+        assertEquals(2, actual.size());
         assertEqualTenants(expected.get(0), actual.get(0));
+        assertEqualTenants(expected.get(1), actual.get(1));
 
         verify(tenantRepository).findAll();
     }
 
     @Test
     public void testVerifyNewProfiles() throws Exception {
-        Tenant expected = getTenant();
+        Tenant expected = getTenant1();
         expected.setVerifyNewProfiles(false);
 
-        Tenant actual = tenantService.verifyNewProfiles(TENANT_NAME, false);
+        Tenant actual = tenantService.verifyNewProfiles(TENANT1_NAME, false);
 
         assertEqualTenants(expected, actual);
 
-        verify(tenantRepository).findByName(TENANT_NAME);
+        verify(tenantRepository).findByName(TENANT1_NAME);
         verify(tenantRepository).save(actual);
     }
 
     @Test
     public void testAddRoles() throws Exception {
-        Tenant expected = getTenant();
+        Tenant expected = getTenant1();
         expected.getRoles().add(ROLE2);
 
-        Tenant actual = tenantService.addRoles(TENANT_NAME, Arrays.asList(ROLE2));
+        Tenant actual = tenantService.addRoles(TENANT1_NAME, Arrays.asList(ROLE2));
 
         assertEqualTenants(expected, actual);
 
-        verify(tenantRepository).findByName(TENANT_NAME);
+        verify(tenantRepository).findByName(TENANT1_NAME);
         verify(tenantRepository).save(actual);
     }
 
     @Test
     public void testRemoveRoles() throws Exception {
-        Tenant expected = getTenant();
+        Tenant expected = getTenant1();
         expected.getRoles().remove("role1");
 
-        Tenant actual = tenantService.removeRoles(TENANT_NAME, Arrays.asList("role1"));
+        Tenant actual = tenantService.removeRoles(TENANT1_NAME, Arrays.asList("role1"));
 
         assertEqualTenants(expected, actual);
 
-        verify(tenantRepository).findByName(TENANT_NAME);
+        verify(tenantRepository).findByName(TENANT1_NAME);
         verify(tenantRepository).save(actual);
     }
 
@@ -174,14 +180,14 @@ public class TenantServiceImplTest {
         def.setName(ATTRIB2_NAME);
         def.setOwner(APP1_NAME);
 
-        Tenant expected = getTenant();
+        Tenant expected = getTenant1();
         expected.getAttributeDefinitions().add(def);
 
-        Tenant actual = tenantService.addAttributeDefinitions(TENANT_NAME, Arrays.asList(def));
+        Tenant actual = tenantService.addAttributeDefinitions(TENANT1_NAME, Arrays.asList(def));
 
         assertEqualTenants(expected, actual);
 
-        verify(tenantRepository).findByName(TENANT_NAME);
+        verify(tenantRepository).findByName(TENANT1_NAME);
         verify(tenantRepository).save(actual);
 
 
@@ -194,7 +200,7 @@ public class TenantServiceImplTest {
         def.setOwner(APP1_NAME);
 
         try {
-            tenantService.addAttributeDefinitions(TENANT_NAME, Arrays.asList(def));
+            tenantService.addAttributeDefinitions(TENANT1_NAME, Arrays.asList(def));
             fail("Expected " + AttributeAlreadyDefinedException.class.getSimpleName() + " exception");
         } catch (AttributeAlreadyDefinedException e) {
         }
@@ -204,14 +210,14 @@ public class TenantServiceImplTest {
     public void testRemoveAttributeDefinitions() throws Exception {
         Application.setCurrent(new Application(APP1_NAME, Collections.<TenantPermission>emptyList()));
 
-        Tenant expected = getTenant();
+        Tenant expected = getTenant1();
         expected.getAttributeDefinitions().clear();
 
-        Tenant actual = tenantService.removeAttributeDefinitions(TENANT_NAME, Arrays.asList(ATTRIB1_NAME));
+        Tenant actual = tenantService.removeAttributeDefinitions(TENANT1_NAME, Arrays.asList(ATTRIB1_NAME));
 
         assertEqualTenants(expected, actual);
 
-        verify(tenantRepository).findByName(TENANT_NAME);
+        verify(tenantRepository).findByName(TENANT1_NAME);
         verify(tenantRepository).save(actual);
 
         Application.clear();
@@ -222,7 +228,7 @@ public class TenantServiceImplTest {
         Application.setCurrent(new Application(APP2_NAME, Collections.<TenantPermission>emptyList()));
 
         try {
-            tenantService.removeAttributeDefinitions(TENANT_NAME, Arrays.asList(ATTRIB1_NAME));
+            tenantService.removeAttributeDefinitions(TENANT1_NAME, Arrays.asList(ATTRIB1_NAME));
             fail("Expected " + ActionDeniedException.class.getSimpleName() + " exception");
         } catch (ActionDeniedException e) {
         }
@@ -230,14 +236,39 @@ public class TenantServiceImplTest {
         Application.clear();
     }
 
-    private Tenant getTenant() {
+    @Test
+    public void testRemoveAttributeDefinitionStillUsed() throws Exception {
+        Application.setCurrent(new Application(APP1_NAME, Collections.<TenantPermission>emptyList()));
+
+        try {
+            tenantService.removeAttributeDefinitions(TENANT2_NAME, Arrays.asList(ATTRIB1_NAME));
+            fail("Expected " + AttributeDefinitionStillUsedException.class.getSimpleName() + " exception");
+        } catch (AttributeDefinitionStillUsedException e) {
+        }
+    }
+
+    private Tenant getTenant1() {
         AttributeDefinition def = new AttributeDefinition();
         def.setName(ATTRIB1_NAME);
         def.setOwner(APP1_NAME);
 
         Tenant tenant = new Tenant();
-        tenant.setName(TENANT_NAME);
-        tenant.setVerifyNewProfiles(VERIFY_NEW_PROFILES);
+        tenant.setName(TENANT1_NAME);
+        tenant.setVerifyNewProfiles(true);
+        tenant.setRoles(ROLES);
+        tenant.setAttributeDefinitions(new HashSet<>(Arrays.asList(def)));
+
+        return tenant;
+    }
+
+    private Tenant getTenant2() {
+        AttributeDefinition def = new AttributeDefinition();
+        def.setName(ATTRIB1_NAME);
+        def.setOwner(APP1_NAME);
+
+        Tenant tenant = new Tenant();
+        tenant.setName(TENANT2_NAME);
+        tenant.setVerifyNewProfiles(true);
         tenant.setRoles(ROLES);
         tenant.setAttributeDefinitions(new HashSet<>(Arrays.asList(def)));
 

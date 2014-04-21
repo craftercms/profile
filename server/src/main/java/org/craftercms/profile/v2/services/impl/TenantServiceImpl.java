@@ -16,19 +16,21 @@
  */
 package org.craftercms.profile.v2.services.impl;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
+import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.mongo.DuplicateKeyException;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.AttributeDefinition;
+import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.TenantActions;
 import org.craftercms.profile.api.exceptions.ProfileException;
+import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.api.services.TenantService;
-import org.craftercms.profile.v2.exceptions.AttributeAlreadyDefinedException;
-import org.craftercms.profile.v2.exceptions.TenantExistsException;
-import org.craftercms.profile.v2.exceptions.I10nProfileException;
-import org.craftercms.profile.v2.exceptions.NoSuchTenantException;
+import org.craftercms.profile.v2.exceptions.*;
 import org.craftercms.profile.v2.permissions.Application;
 import org.craftercms.profile.v2.repositories.ProfileRepository;
 import org.craftercms.profile.v2.repositories.TenantRepository;
@@ -36,6 +38,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -55,6 +58,7 @@ public class TenantServiceImpl implements TenantService {
     protected PermissionEvaluator<Application, String> permissionEvaluator;
     protected TenantRepository tenantRepository;
     protected ProfileRepository profileRepository;
+    protected ProfileService profileService;
 
     @Required
     public void setPermissionEvaluator(PermissionEvaluator<Application, String> permissionEvaluator) {
@@ -71,21 +75,24 @@ public class TenantServiceImpl implements TenantService {
         this.profileRepository = profileRepository;
     }
 
+    @Required
+    public void setProfileService(ProfileService profileService) {
+        this.profileService = profileService;
+    }
+
     @Override
-    public Tenant createTenant(String name, boolean verifyNewProfiles, Set<String> roles) throws ProfileException {
+    public Tenant createTenant(Tenant tenant) throws ProfileException {
         checkIfTenantActionIsAllowed(null, TenantActions.CREATE);
 
-        Tenant tenant = new Tenant();
-        tenant.setName(name);
-        tenant.setVerifyNewProfiles(verifyNewProfiles);
-        tenant.setRoles(roles);
+        // Make sure ID is null, we want it auto-generated
+        tenant.setId(null);
 
         try {
-            tenantRepository.save(tenant);
+            tenantRepository.insert(tenant);
         } catch (DuplicateKeyException e) {
-            throw new TenantExistsException(name);
+            throw new TenantExistsException(tenant.getName());
         } catch (MongoDataException e) {
-            throw new I10nProfileException(ERROR_KEY_CREATE_TENANT_ERROR, e, name);
+            throw new I10nProfileException(ERROR_KEY_CREATE_TENANT_ERROR, e, tenant.getName());
         }
 
         return tenant;
@@ -126,11 +133,11 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public Iterable<Tenant> getAllTenants() throws ProfileException {
+    public List<Tenant> getAllTenants() throws ProfileException {
         checkIfTenantActionIsAllowed(null, TenantActions.READ_ALL);
 
         try {
-            return tenantRepository.findAll();
+            return IterableUtils.toList(tenantRepository.findAll());
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_GET_ALL_TENANTS_ERROR, e);
         }
@@ -193,7 +200,40 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public Tenant removeAttributeDefinitions(String tenantName,
+    public Tenant updateAttributeDefinitions(final String tenantName,
+                                             final Collection<AttributeDefinition> attributeDefinitions)
+            throws ProfileException {
+        return updateTenant(tenantName, new UpdateCallback() {
+
+            @Override
+            public void doWithTenant(Tenant tenant) throws ProfileException {
+                Set<AttributeDefinition> allDefinitions = tenant.getAttributeDefinitions();
+                String currentApp = Application.getCurrent().getName();
+
+                for (AttributeDefinition updatedDefinition : attributeDefinitions) {
+                    String attributeName = updatedDefinition.getName();
+                    AttributeDefinition originalDefinition = findAttributeDefinition(allDefinitions, attributeName);
+                    if (originalDefinition != null) {
+                        if (!originalDefinition.getOwner().equals(currentApp)) {
+                            throw new ActionDeniedException("update", originalDefinition);
+                        }
+
+                        originalDefinition.setOwner(updatedDefinition.getOwner());
+                        originalDefinition.setLabel(updatedDefinition.getLabel());
+                        originalDefinition.setType(updatedDefinition.getType());
+                        originalDefinition.setConstraint(updatedDefinition.getConstraint());
+                        originalDefinition.setRequired(updatedDefinition.isRequired());
+                    } else {
+                        throw new AttributeNotDefinedException(attributeName, tenantName);
+                    }
+                }
+            }
+
+        });
+    }
+
+    @Override
+    public Tenant removeAttributeDefinitions(final String tenantName,
                                              final Collection<String> attributeNames) throws ProfileException {
         return updateTenant(tenantName, new UpdateCallback() {
 
@@ -208,6 +248,12 @@ public class TenantServiceImpl implements TenantService {
                         if (attributeDefinition.getName().equals(attributeName)) {
                             if (!attributeDefinition.getOwner().equals(currentApp)) {
                                 throw new ActionDeniedException("remove", attributeDefinition);
+                            }
+
+                            int attributeCount = IterableUtils.count(profileService.getProfilesByExistingAttribute(
+                                    tenantName, attributeName, null, null, ProfileConstants.NO_ATTRIBUTE));
+                            if (attributeCount > 0) {
+                                throw new AttributeDefinitionStillUsedException(attributeName, tenantName);
                             }
 
                             iter.remove();
@@ -261,6 +307,18 @@ public class TenantServiceImpl implements TenantService {
         }
 
         return tenant;
+    }
+
+    protected AttributeDefinition findAttributeDefinition(Iterable<AttributeDefinition> definitions,
+                                                          final String attributeName) {
+        return CollectionUtils.find(definitions, new Predicate<AttributeDefinition>() {
+
+            @Override
+            public boolean evaluate(AttributeDefinition definition) {
+                return definition.getName().equals(attributeName);
+            }
+
+        });
     }
 
 }

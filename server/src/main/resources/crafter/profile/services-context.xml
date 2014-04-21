@@ -172,6 +172,7 @@
         <property name="tenantRepository" ref="profile.tenantRepository"/>
         <property name="profileRepository" ref="profile.profileRepository"/>
         <property name="permissionEvaluator" ref="profile.tenantPermissionEvaluator"/>
+        <property name="profileService" ref="profile.profileService"/>
     </bean>
 
     <bean id="profile.profileService" class="org.craftercms.profile.v2.services.impl.ProfileServiceImpl">

@@ -204,8 +204,8 @@ public interface ProfileService {
      *
      * @return the list of profiles (can be smaller than the list of ids if some where not found)
      */
-    Iterable<Profile> getProfilesByIds(List<String> profileIds, String sortBy, SortOrder sortOrder,
-                                       String... attributesToReturn) throws ProfileException;
+    List<Profile> getProfilesByIds(List<String> profileIds, String sortBy, SortOrder sortOrder,
+                                   String... attributesToReturn) throws ProfileException;
 
     /**
      * Returns a range of profiles for the specified tenant.
@@ -221,8 +221,8 @@ public interface ProfileService {
      *
      * @return the list of profiles
      */
-    Iterable<Profile> getProfileRange(String tenantName, String sortBy, SortOrder sortOrder, Integer start,
-                                      Integer count, String... attributesToReturn) throws ProfileException;
+    List<Profile> getProfileRange(String tenantName, String sortBy, SortOrder sortOrder, Integer start, Integer count,
+                                  String... attributesToReturn) throws ProfileException;
 
     /**
      * Returns a list of profiles for a specific role and tenant.
@@ -236,8 +236,24 @@ public interface ProfileService {
      *
      * @return the list of profiles
      */
-    Iterable<Profile> getProfilesByRole(String tenantName, String role, String sortBy, SortOrder sortOrder,
-                                        String... attributesToReturn) throws ProfileException;
+    List<Profile> getProfilesByRole(String tenantName, String role, String sortBy, SortOrder sortOrder,
+                                    String... attributesToReturn) throws ProfileException;
+
+    /**
+     * Returns the list of profiles that have the given attribute, with any value
+     *
+     * @param tenantName            the tenant's name
+     * @param attributeName         the name of the attribute profiles must have
+     * @param sortBy                profile attribute to sort the list by (optional)
+     * @param sortOrder             the sort order (either ASC or DESC) (optional)
+     * @param attributesToReturn    the names of the attributes to return for each profile (null to return all
+     *                              attributes)
+     *
+     * @return the list of profiles
+     */
+    List<Profile> getProfilesByExistingAttribute(String tenantName, String attributeName, String sortBy,
+                                                 SortOrder sortOrder, String... attributesToReturn)
+            throws ProfileException;
 
     /**
      * Returns the list of profiles that have the given attribute with the given value.
@@ -252,8 +268,8 @@ public interface ProfileService {
      *
      * @return the list of profiles
      */
-    Iterable<Profile> getProfilesByAttribute(String tenantName, String attributeName, String attributeValue,
-                                             String sortBy, SortOrder sortOrder, String... attributesToReturn)
+    List<Profile> getProfilesByAttributeValue(String tenantName, String attributeName, String attributeValue,
+                                              String sortBy, SortOrder sortOrder, String... attributesToReturn)
             throws ProfileException;
 
     /**

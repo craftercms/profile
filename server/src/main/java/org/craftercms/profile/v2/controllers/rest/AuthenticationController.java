@@ -20,10 +20,11 @@ import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import static org.craftercms.profile.api.RestConstants.*;
+import static org.craftercms.profile.api.ProfileConstants.*;
 
 /**
  * REST controller for the authentication service.
@@ -55,8 +56,9 @@ public class AuthenticationController {
         return authenticationService.getTicket(ticketId);
     }
 
-    @RequestMapping(value = URL_AUTH_INVALIDATE_TICKET, method = RequestMethod.GET)
-    public void invalidateTicket(@RequestParam(PATH_VAR_ID) String ticketId) throws ProfileException {
+    @RequestMapping(value = URL_AUTH_INVALIDATE_TICKET, method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public void invalidateTicket(@PathVariable(PATH_VAR_ID) String ticketId) throws ProfileException {
         authenticationService.invalidateTicket(ticketId);
     }
 

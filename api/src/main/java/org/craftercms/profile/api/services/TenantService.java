@@ -5,7 +5,7 @@ import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ProfileException;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Service for managing tenants.
@@ -17,13 +17,11 @@ public interface TenantService {
     /**
      * Creates the given tenant, failing it already has been created.
      *
-     * @param name                  the tenant's name
-     * @param verifyNewProfiles     if new profiles should be verified through email by the user
-     * @param roles                 the usable roles by the tenant's profiles
+     * @param tenant the tenant to create
      *
      * @return the created tenant
      */
-    Tenant createTenant(String name, boolean verifyNewProfiles, Set<String> roles) throws ProfileException;
+    Tenant createTenant(Tenant tenant) throws ProfileException;
 
     /**
      * Returns a tenant.
@@ -53,7 +51,7 @@ public interface TenantService {
      *
      * @return a list with al the tenants.
      */
-    Iterable<Tenant> getAllTenants() throws ProfileException;
+    List<Tenant> getAllTenants() throws ProfileException;
 
     /**
      * Sets verify new profiles for specified tenant.
@@ -86,7 +84,7 @@ public interface TenantService {
     Tenant removeRoles(String tenantName, Collection<String> roles) throws ProfileException;
 
     /**
-     * Adds the given attribute definitions to the current tenant.
+     * Adds the given attribute definitions to the specified tenant.
      *
      * @param tenantName            the tenant's name
      * @param attributeDefinitions  the definitions to add
@@ -97,7 +95,18 @@ public interface TenantService {
             throws ProfileException;
 
     /**
-     * Removes the given attribute definitions from the current tenant.
+     * Adds the given attribute definitions to the specified tenant.
+     *
+     * @param tenantName            the tenant's name
+     * @param attributeDefinitions  the definitions to update
+     *
+     * @return the tenant
+     */
+    Tenant updateAttributeDefinitions(String tenantName, Collection<AttributeDefinition> attributeDefinitions)
+            throws ProfileException;
+
+    /**
+     * Removes the given attribute definitions from the specified tenant.
      *
      * @param tenantName        the tenant's name
      * @param attributeNames    the name of the attributes whose definitions should be removed

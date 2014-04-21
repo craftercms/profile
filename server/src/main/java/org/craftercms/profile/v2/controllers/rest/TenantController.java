@@ -21,13 +21,13 @@ import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.TenantService;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.Set;
 
-import static org.craftercms.profile.api.RestConstants.*;
+import static org.craftercms.profile.api.ProfileConstants.*;
 
 /**
  * REST controller for the tenant service.
@@ -47,11 +47,8 @@ public class TenantController {
 
     @RequestMapping(value = URL_TENANT_CREATE, method = RequestMethod.POST)
     @ResponseBody
-    public Tenant createTenant(@RequestParam(PARAM_TENANT_NAME) String name,
-                               @RequestParam(PARAM_VERIFY_NEW_PROFILES) boolean verifyNewProfiles,
-                               @RequestParam(PARAM_ROLE) Set<String> roles)
-            throws ProfileException {
-        return tenantService.createTenant(name, verifyNewProfiles, roles);
+    public Tenant createTenant(@RequestBody Tenant tenant) throws ProfileException {
+        return tenantService.createTenant(tenant);
     }
 
     @RequestMapping(value = URL_TENANT_GET, method = RequestMethod.GET)
@@ -61,7 +58,7 @@ public class TenantController {
     }
 
     @RequestMapping(value = URL_TENANT_DELETE, method = RequestMethod.POST)
-    @ResponseBody
+    @ResponseStatus(value = HttpStatus.OK)
     public void deleteTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
         tenantService.deleteTenant(name);
     }
@@ -105,6 +102,14 @@ public class TenantController {
                                           @RequestBody Collection<AttributeDefinition> attributeDefinitions)
             throws ProfileException {
         return tenantService.addAttributeDefinitions(tenantName, attributeDefinitions);
+    }
+
+    @RequestMapping(value = URL_TENANT_UPDATE_ATTRIBUTE_DEFINITIONS, method = RequestMethod.POST)
+    @ResponseBody
+    public Tenant updateAttributeDefinitions(@PathVariable(PATH_VAR_NAME) String tenantName,
+                                             @RequestBody Collection<AttributeDefinition> attributeDefinitions)
+            throws ProfileException {
+        return tenantService.updateAttributeDefinitions(tenantName, attributeDefinitions);
     }
 
     @RequestMapping(value = URL_TENANT_REMOVE_ATTRIBUTE_DEFINITIONS, method = RequestMethod.POST)

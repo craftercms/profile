@@ -91,6 +91,20 @@ public interface ProfileRepository extends CrudRepository<Profile> {
                                           String... attributesToReturn) throws MongoDataException;
 
     /**
+     * Returns the profiles that have the given attribute, with any value, for the given tenant.
+     *
+     * @param tenantName            the tenant's name
+     * @param attributeName         the name of the attribute profiles must have
+     * @param sortBy                profile attribute to sort the list by (optional)
+     * @param sortOrder             the sort order (either ASC or DESC) (optional)
+     * @param attributesToReturn    the names of the attributes to return for each profile (null to return all)
+     * @return the matching profiles
+     */
+    Iterable<Profile> findByTenantAndExistingAttribute(String tenantName, String attributeName, String sortBy,
+                                                       SortOrder sortOrder, String... attributesToReturn)
+            throws MongoDataException;
+
+    /**
      * Returns the profiles that have the given attribute with the given value for the given tenant.
      *
      * @param tenantName            the tenant's name
@@ -101,8 +115,8 @@ public interface ProfileRepository extends CrudRepository<Profile> {
      * @param attributesToReturn    the names of the attributes to return for each profile (null to return all)
      * @return the matching profiles
      */
-    Iterable<Profile> findByTenantAndAttribute(String tenantName, String attributeName, String attributeValue,
-                                               String sortBy, SortOrder sortOrder, String... attributesToReturn)
+    Iterable<Profile> findByTenantAndAttributeValue(String tenantName, String attributeName, String attributeValue,
+                                                    String sortBy, SortOrder sortOrder, String... attributesToReturn)
             throws MongoDataException;
 
     /**

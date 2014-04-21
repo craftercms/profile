@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.AccessToken;
-import org.craftercms.profile.api.RestConstants;
+import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.repositories.AccessTokenRepository;
 import org.craftercms.profile.v2.exceptions.ExpiredAccessTokenException;
 import org.craftercms.profile.v2.exceptions.I10nProfileException;
@@ -91,7 +91,7 @@ public class AccessTokenCheckingInterceptor extends HandlerInterceptorAdapter {
     }
 
     protected AccessToken getAccessToken(HttpServletRequest request) throws I10nProfileException {
-        String tokenId = request.getParameter(RestConstants.PARAM_ACCESS_TOKEN_ID);
+        String tokenId = request.getParameter(ProfileConstants.PARAM_ACCESS_TOKEN_ID);
 
         if (StringUtils.isNotEmpty(tokenId)) {
             AccessToken token;

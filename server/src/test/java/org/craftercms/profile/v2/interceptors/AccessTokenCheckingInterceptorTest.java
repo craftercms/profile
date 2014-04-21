@@ -17,7 +17,7 @@
 package org.craftercms.profile.v2.interceptors;
 
 import org.craftercms.profile.api.AccessToken;
-import org.craftercms.profile.api.RestConstants;
+import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.TenantActions;
 import org.craftercms.profile.api.TenantPermission;
 import org.craftercms.profile.repositories.AccessTokenRepository;
@@ -69,7 +69,7 @@ public class AccessTokenCheckingInterceptorTest {
     @Test
     public void testPreHandle() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setParameter(RestConstants.PARAM_ACCESS_TOKEN_ID, NORMAL_TOKEN_ID.toString());
+        request.setParameter(ProfileConstants.PARAM_ACCESS_TOKEN_ID, NORMAL_TOKEN_ID.toString());
 
         interceptor.preHandle(request, null, null);
 
@@ -97,7 +97,7 @@ public class AccessTokenCheckingInterceptorTest {
     @Test(expected = ExpiredAccessTokenException.class)
     public void testPreHandleExpiredAccessToken() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setParameter(RestConstants.PARAM_ACCESS_TOKEN_ID, EXPIRED_TOKEN_ID.toString());
+        request.setParameter(ProfileConstants.PARAM_ACCESS_TOKEN_ID, EXPIRED_TOKEN_ID.toString());
 
         interceptor.preHandle(request, null, null);
     }

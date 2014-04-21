@@ -17,11 +17,19 @@
 package org.craftercms.profile.api;
 
 /**
- * Constants for REST services.
+ * Common constants.
  *
  * @author avasquez
  */
-public class RestConstants {
+public class ProfileConstants {
+
+    /**
+     * Constant used to indicate in Profile service methods that receive an array of {@code attributeToReturn},
+     * that no attribute should be returned.
+     */
+    public static final String NO_ATTRIBUTE = "$none";
+
+    // ********** REST Constants **********
 
     public static final String BASE_URL_REST_API =          "/api/3";
     public static final String BASE_URL_TENANT =            BASE_URL_REST_API + "/tenant";
@@ -33,7 +41,6 @@ public class RestConstants {
 
     public static final String URL_TENANT_CREATE =                          "/create";
     public static final String URL_TENANT_GET =                             "/{name}";
-    public static final String URL_TENANT_UPDATE =                          "/{name}/update";
     public static final String URL_TENANT_DELETE =                          "/{name}/delete";
     public static final String URL_TENANT_COUNT =                           "/count";
     public static final String URL_TENANT_GET_ALL =                         "/all";
@@ -41,29 +48,31 @@ public class RestConstants {
     public static final String URL_TENANT_ADD_ROLES =                       "/{name}/roles/add";
     public static final String URL_TENANT_REMOVE_ROLES =                    "/{name}/roles/remove";
     public static final String URL_TENANT_ADD_ATTRIBUTE_DEFINITIONS =       "/{name}/attribute_definitions/add";
+    public static final String URL_TENANT_UPDATE_ATTRIBUTE_DEFINITIONS =    "/{name}/attribute_definitions/update";
     public static final String URL_TENANT_REMOVE_ATTRIBUTE_DEFINITIONS =    "/{name}/attribute_definitions/remove";
 
-    public static final String URL_PROFILE_CREATE =             "/create";
-    public static final String URL_PROFILE_UPDATE =             "/{id}/update";
-    public static final String URL_PROFILE_VERIFY =             "/verify";
-    public static final String URL_PROFILE_ENABLE =             "/{id}/enable";
-    public static final String URL_PROFILE_DISABLE =            "/{id}/disable";
-    public static final String URL_PROFILE_ADD_ROLES =          "/{id}/roles/add";
-    public static final String URL_PROFILE_REMOVE_ROLES =       "/{id}/roles/remove";
-    public static final String URL_PROFILE_GET_ATTRIBUTES =     "/{id}/attributes";
-    public static final String URL_PROFILE_UPDATE_ATTRIBUTES =  "/{id}/attributes/update";
-    public static final String URL_PROFILE_REMOVE_ATTRIBUTES =  "/{id}/attributes/remove";
-    public static final String URL_PROFILE_DELETE_PROFILE =     "/{id}/delete";
-    public static final String URL_PROFILE_GET =                "/{id}";
-    public static final String URL_PROFILE_GET_BY_USERNAME =    "/by_username";
-    public static final String URL_PROFILE_GET_BY_TICKET =      "/by_ticket";
-    public static final String URL_PROFILE_GET_COUNT =          "/count";
-    public static final String URL_PROFILE_GET_BY_IDS =         "/by_ids";
-    public static final String URL_PROFILE_GET_RANGE =          "/range";
-    public static final String URL_PROFILE_GET_BY_ROLE =        "/by_role";
-    public static final String URL_PROFILE_GET_BY_ATTRIBUTE =   "/by_attribute";
-    public static final String URL_PROFILE_FORGOT_PASSWORD =    "/{id}/forgot_password";
-    public static final String URL_PROFILE_RESET_PASSWORD =     "/reset_password";
+    public static final String URL_PROFILE_CREATE =                 "/create";
+    public static final String URL_PROFILE_UPDATE =                 "/{id}/update";
+    public static final String URL_PROFILE_VERIFY =                 "/verify";
+    public static final String URL_PROFILE_ENABLE =                 "/{id}/enable";
+    public static final String URL_PROFILE_DISABLE =                "/{id}/disable";
+    public static final String URL_PROFILE_ADD_ROLES =              "/{id}/roles/add";
+    public static final String URL_PROFILE_REMOVE_ROLES =           "/{id}/roles/remove";
+    public static final String URL_PROFILE_GET_ATTRIBUTES =         "/{id}/attributes";
+    public static final String URL_PROFILE_UPDATE_ATTRIBUTES =      "/{id}/attributes/update";
+    public static final String URL_PROFILE_REMOVE_ATTRIBUTES =      "/{id}/attributes/remove";
+    public static final String URL_PROFILE_DELETE_PROFILE =         "/{id}/delete";
+    public static final String URL_PROFILE_GET =                    "/{id}";
+    public static final String URL_PROFILE_GET_BY_USERNAME =        "/by_username";
+    public static final String URL_PROFILE_GET_BY_TICKET =          "/by_ticket";
+    public static final String URL_PROFILE_GET_COUNT =              "/count";
+    public static final String URL_PROFILE_GET_BY_IDS =             "/by_ids";
+    public static final String URL_PROFILE_GET_RANGE =              "/range";
+    public static final String URL_PROFILE_GET_BY_ROLE =            "/by_role";
+    public static final String URL_PROFILE_GET_BY_EXISTING_ATTRIB = "/by_existing_attribute";
+    public static final String URL_PROFILE_GET_BY_ATTRIB_VALUE =    "/by_attribute_value";
+    public static final String URL_PROFILE_FORGOT_PASSWORD =        "/{id}/forgot_password";
+    public static final String URL_PROFILE_RESET_PASSWORD =         "/reset_password";
 
     public static final String URL_AUTH_AUTHENTICATE =      "/authenticate";
     public static final String URL_AUTH_GET_TICKET =        "/{id}/ticket";
@@ -71,7 +80,6 @@ public class RestConstants {
 
     public static final String PARAM_ACCESS_TOKEN_ID =          "accessTokenId";
     public static final String PARAM_TENANT_NAME =              "tenantName";
-    public static final String PARAM_VERIFY_NEW_PROFILES =      "verifyNewProfiles";
     public static final String PARAM_ROLE =                     "role";
     public static final String PARAM_VERIFY =                   "verify";
     public static final String PARAM_ATTRIBUTE_NAME =           "attributeName";
@@ -93,7 +101,7 @@ public class RestConstants {
     public static final String PARAM_RESET_TOKEN_ID =           "resetTokenId";
     public static final String PARAM_NEW_PASSWORD =             "newPassword";
 
-    private RestConstants() {
+    private ProfileConstants() {
     }
 
 }

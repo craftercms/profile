@@ -4,11 +4,9 @@ import org.craftercms.commons.rest.RestClientUtils;
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AuthenticationService;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
-import static org.craftercms.profile.api.RestConstants.*;
+import static org.craftercms.profile.api.ProfileConstants.*;
 
 /**
  * REST client implementation of {@link org.craftercms.profile.api.services.AuthenticationService}.
@@ -16,24 +14,6 @@ import static org.craftercms.profile.api.RestConstants.*;
  * @author avasquez
  */
 public class AuthenticationServiceRestClient extends ProfileRestClientBase implements AuthenticationService {
-
-    public static final String DEFAULT_EXTENSION = ".json";
-
-    protected String extension;
-    protected RestTemplate restTemplate;
-
-    public AuthenticationServiceRestClient() {
-        this.extension = DEFAULT_EXTENSION;
-    }
-
-    public void setExtension(String extension) {
-        this.extension = extension;
-    }
-
-    @Required
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 
     @Override
     public Ticket authenticate(String tenantName, String username, String password) throws ProfileException {
@@ -56,7 +36,7 @@ public class AuthenticationServiceRestClient extends ProfileRestClientBase imple
 
     @Override
     public void invalidateTicket(String ticketId) throws ProfileException {
-        String url = BASE_URL_AUTHENTICATION + URL_AUTH_GET_TICKET + extension;
+        String url = getAbsoluteUrl(BASE_URL_AUTHENTICATION + URL_AUTH_INVALIDATE_TICKET);
 
         doPostForLocation(url, createBaseParams(), ticketId);
     }

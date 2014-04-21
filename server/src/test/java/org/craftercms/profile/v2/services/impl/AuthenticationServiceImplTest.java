@@ -91,7 +91,7 @@ public class AuthenticationServiceImplTest {
         assertNotNull(ticket.getLastRequestTime());
 
         verify(profileService).getProfileByUsername(TENANT_NAME, USERNAME1);
-        verify(ticketRepository).save(ticket);
+        verify(ticketRepository).insert(ticket);
     }
 
     @Test(expected = BadCredentialsException.class)
@@ -132,6 +132,7 @@ public class AuthenticationServiceImplTest {
         assertNull(ticket);
 
         verify(ticketRepository).findById(EXPIRED_TICKET_ID.toString());
+        verify(ticketRepository).removeById(EXPIRED_TICKET_ID.toString());
     }
 
     private Profile getProfile1() {

@@ -25,9 +25,9 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.util.MultiValueMap;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
-import static org.craftercms.profile.api.RestConstants.*;
+import static org.craftercms.profile.api.ProfileConstants.*;
 
 /**
  * REST client implementation of {@link org.craftercms.profile.api.services.TenantService}.
@@ -36,19 +36,14 @@ import static org.craftercms.profile.api.RestConstants.*;
  */
 public class TenantServiceRestClient extends ProfileRestClientBase implements TenantService {
 
-    public static final ParameterizedTypeReference<Iterable<Tenant>> tenantListTypeRef =
-            new ParameterizedTypeReference<Iterable<Tenant>>() {};
+    public static final ParameterizedTypeReference<List<Tenant>> tenantListTypeRef =
+            new ParameterizedTypeReference<List<Tenant>>() {};
 
     @Override
-    public Tenant createTenant(String name, boolean verifyNewProfiles, Set<String> roles) throws ProfileException {
-        MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_TENANT_NAME, name, params);
-        RestClientUtils.addValue(PARAM_VERIFY_NEW_PROFILES, verifyNewProfiles, params);
-        RestClientUtils.addValues(PARAM_ROLE, roles, params);
+    public Tenant createTenant(Tenant tenant) throws ProfileException {
+        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_CREATE);
 
-        String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_CREATE);
-
-        return doPostForObject(url, params, Tenant.class);
+        return doPostForObject(url, tenant, Tenant.class);
     }
 
     @Override
@@ -73,7 +68,7 @@ public class TenantServiceRestClient extends ProfileRestClientBase implements Te
     }
 
     @Override
-    public Iterable<Tenant> getAllTenants() throws ProfileException {
+    public List<Tenant> getAllTenants() throws ProfileException {
         String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_GET_ALL);
 
         return doGetForObject(url, tenantListTypeRef);
@@ -113,6 +108,14 @@ public class TenantServiceRestClient extends ProfileRestClientBase implements Te
     public Tenant addAttributeDefinitions(String tenantName, Collection<AttributeDefinition> attributeDefinitions)
             throws ProfileException {
         String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_ADD_ATTRIBUTE_DEFINITIONS);
+
+        return doPostForObject(url, attributeDefinitions, Tenant.class, tenantName);
+    }
+
+    @Override
+    public Tenant updateAttributeDefinitions(String tenantName, Collection<AttributeDefinition> attributeDefinitions)
+            throws ProfileException {
+        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_UPDATE_ATTRIBUTE_DEFINITIONS);
 
         return doPostForObject(url, attributeDefinitions, Tenant.class, tenantName);
     }

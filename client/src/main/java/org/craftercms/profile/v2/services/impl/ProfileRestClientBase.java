@@ -19,7 +19,7 @@ package org.craftercms.profile.v2.services.impl;
 import org.craftercms.commons.rest.RestClientBase;
 import org.craftercms.commons.rest.RestClientUtils;
 import org.craftercms.commons.rest.RestServiceException;
-import org.craftercms.profile.api.RestConstants;
+import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.exceptions.ErrorCode;
 import org.craftercms.profile.api.exceptions.ErrorDetails;
 import org.craftercms.profile.api.exceptions.ProfileException;
@@ -53,9 +53,9 @@ public class ProfileRestClientBase extends RestClientBase {
 
         if (accessTokenId != null) {
             if (absoluteUrl.contains("?")) {
-                return absoluteUrl + "&" + RestConstants.PARAM_ACCESS_TOKEN_ID + "=" + accessTokenId;
+                return absoluteUrl + "&" + ProfileConstants.PARAM_ACCESS_TOKEN_ID + "=" + accessTokenId;
             } else {
-                return absoluteUrl + "?" + RestConstants.PARAM_ACCESS_TOKEN_ID + "=" + accessTokenId;
+                return absoluteUrl + "?" + ProfileConstants.PARAM_ACCESS_TOKEN_ID + "=" + accessTokenId;
             }
         } else {
             return absoluteUrl;
@@ -64,7 +64,7 @@ public class ProfileRestClientBase extends RestClientBase {
 
     protected MultiValueMap<String, String> createBaseParams() {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        RestClientUtils.addValue(RestConstants.PARAM_ACCESS_TOKEN_ID, accessTokenIdResolver.getAccessTokenId(), params);
+        RestClientUtils.addValue(ProfileConstants.PARAM_ACCESS_TOKEN_ID, accessTokenIdResolver.getAccessTokenId(), params);
 
         return params;
     }

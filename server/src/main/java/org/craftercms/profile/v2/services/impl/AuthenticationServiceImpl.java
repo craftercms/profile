@@ -43,10 +43,10 @@ import java.util.Date;
  */
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    public static final String ERROR_KEY_CREATE_TICKET_ERROR =      "profile.auth.createTicketError";
-    public static final String ERROR_KEY_GET_TICKET_ERROR =         "profile.auth.getTicketError";
-    public static final String ERROR_KEY_UPDATE_TICKET_ERROR =      "profile.auth.updateTicketError";
-    public static final String ERROR_KEY_INVALIDATE_TICKET_ERROR =  "profile.auth.invalidateTicket";
+    public static final String ERROR_KEY_CREATE_TICKET_ERROR =  "profile.auth.createTicketError";
+    public static final String ERROR_KEY_GET_TICKET_ERROR =     "profile.auth.getTicketError";
+    public static final String ERROR_KEY_UPDATE_TICKET_ERROR =  "profile.auth.updateTicketError";
+    public static final String ERROR_KEY_DELETE_TICKET_ERROR =  "profile.auth.deleteTicketError";
 
     protected PermissionEvaluator<Application, String> permissionEvaluator;
     protected TicketRepository ticketRepository;
@@ -84,7 +84,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 // Invalid username
                 throw new BadCredentialsException();
             }
-
             if (!profile.isEnabled()) {
                 throw new DisabledProfileException(profile.getId().toString(), tenantName);
             }
@@ -98,7 +97,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             ticket.setProfileId(profile.getId().toString());
             ticket.setLastRequestTime(new Date());
 
-            ticketRepository.save(ticket);
+            ticketRepository.insert(ticket);
 
             return ticket;
         } catch (MongoDataException e) {
@@ -132,6 +131,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 }
 
                 return ticket;
+            } else {
+                try {
+                    ticketRepository.removeById(ticketId);
+                } catch (MongoDataException e) {
+                    throw new I10nProfileException(ERROR_KEY_DELETE_TICKET_ERROR, ticketId);
+                }
             }
         }
 
@@ -148,7 +153,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 ticketRepository.removeById(ticketId);
             }
         } catch (MongoDataException e) {
-            throw new I10nProfileException(ERROR_KEY_INVALIDATE_TICKET_ERROR, ticketId);
+            throw new I10nProfileException(ERROR_KEY_DELETE_TICKET_ERROR, ticketId);
         }
     }
 

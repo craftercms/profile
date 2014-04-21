@@ -1,5 +1,5 @@
 if (db.accesstoken.count() == 0) {
-	db.accesstoken.save({
+	db.accesstoken.insert({
 		"_id" : "e8f5170c-877b-416f-b70f-4b09772f8e2d",
 		"application" : "adminconsole",
 		"tenantPermissions" : [
@@ -12,7 +12,7 @@ if (db.accesstoken.count() == 0) {
 	});
 }
 if (db.tenant.count() == 0) {
-    db.tenant.save({
+    db.tenant.insert({
         "name" : "default",
         "verifyNewProfiles" : false,
         "roles" : [ "PROFILE_ADMIN", "SOCIAL_USER", "SOCIAL_MODERATOR", "SOCIAL_AUTHOR", "SOCIAL_ADMIN" ],
@@ -28,7 +28,7 @@ if (db.tenant.count() == 0) {
                 "permissions" : [
                     {
                         "application" : "*",
-                        "actions" : "*"
+                        "allowedActions" : [ "*" ]
                     }
                 ]
             },
@@ -43,7 +43,7 @@ if (db.tenant.count() == 0) {
                 "permissions" : [
                     {
                         "application" : "*",
-                        "actions" : "*"
+                        "allowedActions" : [ "*" ]
                     }
                 ]
             }
@@ -51,7 +51,7 @@ if (db.tenant.count() == 0) {
     });
 }
 if (db.profile.count() == 0) {
-    db.profile.save({
+    db.profile.insert({
         "username" : "admin",
         "password" : "4rQ8a67wAk1GRwIqHix5kYw1MORa49o83Y7zXQhBqT0=|j4vsWtPbYjO3LfSiQcnGlw==",
         "email" : "admin@craftersoftware.com",
@@ -61,6 +61,6 @@ if (db.profile.count() == 0) {
         "modified" : new Date(),
         "tenant" : "default",
         "roles" : [ "PROFILE_ADMIN", "SOCIAL_ADMIN" ],
-        "attributes" : [ ]
+        "attributes" : { }
     });
 }
