@@ -125,7 +125,7 @@ public class TenantServiceImplTest {
     @Test
     public void testGetAllTenants() throws Exception {
         List<Tenant> expected = Arrays.asList(getTenant1(), getTenant2());
-        List<Tenant> actual = (List<Tenant>) tenantService.getAllTenants();
+        List<Tenant> actual = tenantService.getAllTenants();
 
         assertNotNull(actual);
         assertEquals(2, actual.size());

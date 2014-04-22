@@ -17,13 +17,14 @@
 package org.craftercms.profile.v2.services;
 
 import org.craftercms.commons.collections.IterableUtils;
+import org.craftercms.profile.api.AttributeActions;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.AttributePermission;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ErrorCode;
+import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.v2.exceptions.ProfileRestServiceException;
 import org.craftercms.profile.v2.services.impl.SingleAccessTokenIdResolver;
-import org.craftercms.profile.v2.services.impl.TenantServiceRestClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,28 +55,25 @@ public class TenantServiceIT {
     private static final String ADMIN_ROLE =            "ADMIN";
     private static final String USER_ROLE =             "USER";
     private static final String DEFAULT_TENANT_NAME =   "default";
-    private static final Set<String> DEFAULT_ROLES =    new HashSet<>(Arrays.asList(
-            "PROFILE_ADMIN", "SOCIAL_USER", "SOCIAL_MODERATOR", "SOCIAL_AUTHOR", "SOCIAL_ADMIN"));
+    private static final Set<String> DEFAULT_ROLES =    new HashSet<>(Arrays.asList( "PROFILE_ADMIN", "SOCIAL_USER",
+            "SOCIAL_MODERATOR", "SOCIAL_AUTHOR", "SOCIAL_ADMIN"));
     private static final String CORPORATE_TENANT_NAME = "corporate";
     private static final Set<String> CORPORATE_ROLES =  new HashSet<>(Arrays.asList(ADMIN_ROLE));
 
     private static final String FIRST_NAME_ATTRIBUTE_NAME =     "firstName";
-    private static final String FIRST_NAME_ATTRIBUTE_LABEL =    "First Name";
-    private static final String FIRST_NAME_ATTRIBUTE_TYPE =     "java.lang.String";
     private static final String FIRST_NAME_ATTRIBUTE_OWNER =    "adminconsole";
 
-    private static final String LAST_NAME_ATTRIBUTE_NAME =     "lastName";
-    private static final String LAST_NAME_ATTRIBUTE_LABEL =    "Last Name";
-    private static final String LAST_NAME_ATTRIBUTE_TYPE =     "java.lang.String";
-    private static final String LAST_NAME_ATTRIBUTE_OWNER =    "adminconsole";
+    private static final String LAST_NAME_ATTRIBUTE_NAME =  "lastName";
+    private static final String LAST_NAME_ATTRIBUTE_OWNER = "adminconsole";
+
+    private static final String SUBSCRIPTIONS_ATTRIBUTE_NAME =  "subscriptions";
+    private static final String SUBSCRIPTIONS_ATTRIBUTE_OWNER = "craftersocial";
 
     private static final String GENDER_ATTRIBUTE_NAME =     "gender";
-    private static final String GENDER_ATTRIBUTE_LABEL =    "Gender";
-    private static final String GENDER_ATTRIBUTE_TYPE =     "java.lang.String";
     private static final String GENDER_ATTRIBUTE_OWNER =    "adminconsole";
 
     @Autowired
-    private TenantServiceRestClient tenantService;
+    private TenantService tenantService;
     @Autowired
     private SingleAccessTokenIdResolver accessTokenIdResolver;
 
@@ -163,7 +161,7 @@ public class TenantServiceIT {
         assertNotNull(tenant);
         assertNotNull(tenant.getId());
         assertEquals(DEFAULT_TENANT_NAME, tenant.getName());
-        assertEquals(true, tenant.isVerifyNewProfiles());
+        assertEquals(false, tenant.isVerifyNewProfiles());
         assertEquals(DEFAULT_ROLES, tenant.getRoles());
         assertEqualAttributeDefinitionSets(getAttributeDefinitions(), tenant.getAttributeDefinitions());
     }
@@ -197,7 +195,7 @@ public class TenantServiceIT {
         assertNotNull(tenants);
         assertEquals(1, tenants.size());
         assertEquals(DEFAULT_TENANT_NAME, tenants.get(0).getName());
-        assertEquals(true, tenants.get(0).isVerifyNewProfiles());
+        assertEquals(false, tenants.get(0).isVerifyNewProfiles());
         assertEquals(DEFAULT_ROLES, tenants.get(0).getRoles());
         assertEqualAttributeDefinitionSets(getAttributeDefinitions(), tenants.get(0).getAttributeDefinitions());
     }
@@ -259,7 +257,7 @@ public class TenantServiceIT {
 
             assertNotNull(tenant);
             assertNotNull(tenant.getAttributeDefinitions());
-            assertEquals(3, tenant.getAttributeDefinitions().size());
+            assertEquals(4, tenant.getAttributeDefinitions().size());
             assertEquals(expected, tenant.getAttributeDefinitions());
 
             try {
@@ -297,7 +295,7 @@ public class TenantServiceIT {
 
             assertNotNull(tenant);
             assertNotNull(tenant.getAttributeDefinitions());
-            assertEquals(0, tenant.getAttributeDefinitions().size());
+            assertEquals(1, tenant.getAttributeDefinitions().size());
 
             try {
                 tenantService.removeAttributeDefinitions(DEFAULT_TENANT_NAME, attributeNames);
@@ -322,7 +320,8 @@ public class TenantServiceIT {
     }
 
     private Set<AttributeDefinition> getAttributeDefinitions() {
-        return new HashSet<>(Arrays.asList(getFirstNameAttributeDefinition(), getLastNameAttributeDefinition()));
+        return new HashSet<>(Arrays.asList(getFirstNameAttributeDefinition(), getLastNameAttributeDefinition(),
+                getSubscriptionsAttributeDefinition()));
     }
 
     private AttributeDefinition getFirstNameAttributeDefinition() {
@@ -331,11 +330,6 @@ public class TenantServiceIT {
 
         AttributeDefinition definition = new AttributeDefinition();
         definition.setName(FIRST_NAME_ATTRIBUTE_NAME);
-        definition.setLabel(FIRST_NAME_ATTRIBUTE_LABEL);
-        definition.setOrder(0);
-        definition.setType(FIRST_NAME_ATTRIBUTE_TYPE);
-        definition.setConstraint("");
-        definition.setRequired(false);
         definition.setOwner(FIRST_NAME_ATTRIBUTE_OWNER);
         definition.addPermission(permission);
 
@@ -348,13 +342,24 @@ public class TenantServiceIT {
 
         AttributeDefinition definition = new AttributeDefinition();
         definition.setName(LAST_NAME_ATTRIBUTE_NAME);
-        definition.setLabel(LAST_NAME_ATTRIBUTE_LABEL);
-        definition.setOrder(0);
-        definition.setType(LAST_NAME_ATTRIBUTE_TYPE);
-        definition.setConstraint("");
-        definition.setRequired(false);
         definition.setOwner(LAST_NAME_ATTRIBUTE_OWNER);
         definition.addPermission(permission);
+
+        return definition;
+    }
+
+    private AttributeDefinition getSubscriptionsAttributeDefinition() {
+        AttributePermission permission1 = new AttributePermission("craftersocial");
+        permission1.allow(AttributePermission.ANY_ACTION);
+
+        AttributePermission permission2 = new AttributePermission("crafterengine");
+        permission2.allow(AttributeActions.READ);
+
+        AttributeDefinition definition = new AttributeDefinition();
+        definition.setName(SUBSCRIPTIONS_ATTRIBUTE_NAME);
+        definition.setOwner(SUBSCRIPTIONS_ATTRIBUTE_OWNER);
+        definition.addPermission(permission1);
+        definition.addPermission(permission2);
 
         return definition;
     }
@@ -365,11 +370,6 @@ public class TenantServiceIT {
 
         AttributeDefinition definition = new AttributeDefinition();
         definition.setName(GENDER_ATTRIBUTE_NAME);
-        definition.setLabel(GENDER_ATTRIBUTE_LABEL);
-        definition.setOrder(0);
-        definition.setType(GENDER_ATTRIBUTE_TYPE);
-        definition.setConstraint("");
-        definition.setRequired(false);
         definition.setOwner(GENDER_ATTRIBUTE_OWNER);
         definition.addPermission(permission);
 
@@ -396,11 +396,6 @@ public class TenantServiceIT {
         List<AttributePermission> actualPermissions = actual.getPermissions();
 
         assertEquals(expected.getName(), actual.getName());
-        assertEquals(expected.getLabel(), actual.getLabel());
-        assertEquals(expected.getOrder(), actual.getOrder());
-        assertEquals(expected.getType(), actual.getType());
-        assertEquals(expected.getConstraint(), actual.getConstraint());
-        assertEquals(expected.isRequired(), actual.isRequired());
         assertEquals(expected.getOwner(), actual.getOwner());
         assertNotNull(actualPermissions);
         assertEquals(expectedPermissions.size(), actualPermissions.size());

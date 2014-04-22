@@ -3,6 +3,8 @@ package org.craftercms.profile.api;
 
 import org.craftercms.commons.security.permissions.SecuredObjectBase;
 
+import java.util.Map;
+
 /**
  * Represents the definition of an attribute in a tenant.
  *
@@ -12,11 +14,7 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
 
     private String name;
     private String owner;
-    private String label;
-    private int order;
-    private String type;
-    private String constraint;
-    private boolean required;
+    private Map<String, Object> metadata;
 
     /**
      * Returns the name of the attribute.
@@ -33,87 +31,31 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
     }
 
     /**
-     * Returns the owner (application) of the attribute.
+     * Returns the owner (application) of the attribute definition.
      */
     public String getOwner() {
         return owner;
     }
 
     /**
-     * Sets the owner (application) of the attribute
+     * Sets the owner (application) of the attribute definition.
      */
     public void setOwner(final String owner) {
         this.owner = owner;
     }
 
     /**
-     * Returns the label that's displayed for the attribute on applications like Admin Consoles.
+     * Returns the additional metadata associated to an attribute (like label, type, etc.).
      */
-    public String getLabel() {
-        return label;
+    public Map<String, Object> getMetadata() {
+        return metadata;
     }
 
     /**
-     * Sets the label that's displayed for the attribute on applications like Admin Consoles.
+     * Sets the additional metadata associated to an attribute (like label, type, etc.).
      */
-    public void setLabel(final String label) {
-        this.label = label;
-    }
-
-    /**
-     * Returns the display order of the attribute on applications like Admin Console.
-     */
-    public int getOrder() {
-        return order;
-    }
-
-    /**
-     * Sets the display order of the attribute on applications like Admin Console.
-     */
-    public void setOrder(int order) {
-        this.order = order;
-    }
-
-    /**
-     * Returns the type of the attribute to use for converting.
-     */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * Sets the type of the attribute to use for converting.
-     */
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    /**
-     * Returns the constraint used to validate the field (regex).
-     */
-    public String getConstraint() {
-        return constraint;
-    }
-
-    /**
-     * Sets the constraint used to validate the field (regex).
-     */
-    public void setConstraint(final String constraint) {
-        this.constraint = constraint;
-    }
-
-    /**
-     * Returns true if the attribute is required, false otherwise.
-     */
-    public boolean isRequired() {
-        return required;
-    }
-
-    /**
-     * Sets if the attribute is required or not.
-     */
-    public void setRequired(final boolean required) {
-        this.required = required;
+    public void setMetadata(Map<String, Object> metadata) {
+        this.metadata = metadata;
     }
 
     @Override
@@ -137,19 +79,6 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
     @Override
     public int hashCode() {
         return name.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "AttributeDefinition{" +
-                "name='" + name + '\'' +
-                ", owner='" + owner + '\'' +
-                ", label='" + label + '\'' +
-                ", order=" + order +
-                ", type='" + type + '\'' +
-                ", constraint='" + constraint + '\'' +
-                ", required=" + required +
-                '}';
     }
 
 }

@@ -96,7 +96,7 @@ public class VerificationServiceImpl implements VerificationService {
         VerificationToken token = new VerificationToken(profile.getId().toString(), new Date());
 
         try {
-            tokenRepository.save(token);
+            tokenRepository.insert(token);
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_CREATE_TOKEN_ERROR, profile.getId());
         }

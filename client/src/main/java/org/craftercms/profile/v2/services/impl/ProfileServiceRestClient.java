@@ -161,12 +161,12 @@ public class ProfileServiceRestClient extends ProfileRestClientBase implements P
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_REMOVE_ATTRIBUTES);
 
-        return doPostForObject(url, params, Profile.class);
+        return doPostForObject(url, params, Profile.class, profileId);
     }
 
     @Override
     public void deleteProfile(String profileId) throws ProfileException {
-        String url = BASE_URL_PROFILE + URL_PROFILE_DELETE_PROFILE;
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_DELETE_PROFILE);
 
         doPostForLocation(url, createBaseParams(), profileId);
     }

@@ -77,6 +77,11 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.DISABLED_PROFILE, request);
     }
 
+    @ExceptionHandler(NoSuchTicketException.class)
+    public ResponseEntity<Object> handleNoSuchTicketException(NoSuchTicketException e, WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.NO_SUCH_TICKET, request);
+    }
+
     @ExceptionHandler(NoSuchVerificationTokenException.class)
     public ResponseEntity<Object> handleNoSuchVerificationTokenException(NoSuchVerificationTokenException e,
                                                                          WebRequest request) {

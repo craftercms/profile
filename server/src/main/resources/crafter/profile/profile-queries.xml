@@ -28,16 +28,16 @@
     <!--the basic files this is done due Attributes could be large.-->
     <entry key="profile.profile.defaultFields">
         {
-        "_id" :1,
-        "username" : 1,
-        "password" : 1,
-        "email": 1,
-        "verified": 1,
-        "enabled": 1,
-        "created": 1,
-        "modified": 1,
-        "tenant": 1,
-        "roles": 1
+        _id: 1,
+        username: 1,
+        password: 1,
+        email: 1,
+        verified: 1,
+        enabled: 1,
+        created: 1,
+        modified: 1,
+        tenant: 1,
+        roles: 1
         }
     </entry>
 

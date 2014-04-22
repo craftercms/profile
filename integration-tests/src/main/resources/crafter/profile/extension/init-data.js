@@ -49,16 +49,11 @@ if (db.accesstoken.count() == 0) {
 if (db.tenant.count() == 0) {
 	db.tenant.insert({
 		"name" : "default",
-		"verifyNewProfiles" : true,
+		"verifyNewProfiles" : false,
 		"roles" : [ "PROFILE_ADMIN", "SOCIAL_USER", "SOCIAL_MODERATOR", "SOCIAL_AUTHOR", "SOCIAL_ADMIN" ],
         "attributeDefinitions" : [
             {
                 "name" : "firstName",
-                "label" : "First Name",
-                "order" : 0,
-                "type" : "java.lang.String",
-                "constraint" : "",
-                "required" : false,
                 "owner" : "adminconsole",
                 "permissions" : [
                     {
@@ -69,16 +64,25 @@ if (db.tenant.count() == 0) {
             },
             {
                 "name" : "lastName",
-                "label" : "Last Name",
-                "order" : 0,
-                "type" : "java.lang.String",
-                "constraint" : "",
-                "required" : false,
                 "owner" : "adminconsole",
                 "permissions" : [
                     {
                         "application" : "*",
                         "allowedActions" : [ "*" ]
+                    }
+                ]
+            },
+            {
+                "name" : "subscriptions",
+                "owner" : "craftersocial",
+                "permissions" : [
+                    {
+                        "application" : "craftersocial",
+                        "allowedActions" : [ "*" ]
+                    },
+                    {
+                        "application" : "crafterengine",
+                        "allowedActions" : [ "read" ]
                     }
                 ]
             }
@@ -102,16 +106,21 @@ if (db.profile.count() == 0) {
         {
             "username" : "jdoe",
             "password" : "s1TISAqZA3jctSTy7Pz9sT/828eo3/PVfu5oyIBiyMM=|LyIyByTrB7RHJ0uePTL05w==",
-            "email" : "jdoe@craftersoftware.com",
+            "email" : "john.doe@craftersoftware.com",
             "verified" : false,
             "enabled" : false,
             "created" : new Date(),
             "modified" : new Date(),
             "tenant" : "default",
-            "roles" : [ ],
+            "roles" : [ "SOCIAL_ADMIN" ],
             "attributes" : {
                 "firstName" : "John",
-                "lastName" : "Doe"
+                "lastName" : "Doe",
+                "subscriptions" : {
+                    "frequency" : "instant",
+                    "autoWatch" : true,
+                    "targets" : [ "news" ]
+                }
             }
         }
     ]);

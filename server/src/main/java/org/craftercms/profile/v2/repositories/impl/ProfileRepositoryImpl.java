@@ -31,6 +31,7 @@ import org.jongo.FindOne;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -85,9 +86,21 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
     @Override
     public Iterable<Profile> findByIds(List<String> ids, String sortBy, SortOrder sortOrder,
                                        String... attributesToReturn) throws MongoDataException {
+        List<ObjectId> objectIds = new ArrayList<>(ids.size());
+        for (String id : ids) {
+            try {
+                objectIds.add(new ObjectId(id));
+            } catch (IllegalArgumentException ex) {
+                String msg = "Given id '" + id + "' can't be converted to an ObjectId";
+                logger.error(msg, ex);
+                throw new MongoDataException(msg, ex);
+            }
+        }
+
         try {
+
             String query = getQueryFor(KEY_FIND_BY_IDS_QUERY);
-            Find find = getCollection().find(query, ids);
+            Find find = getCollection().find(query, objectIds);
 
             addSort(find, sortBy, sortOrder);
             addProjection(find, attributesToReturn);
@@ -257,7 +270,7 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
                 projection.append(": 1");
             }
 
-            projection.append("}");
+            projection.append(" }");
         }
 
         return projection.toString();

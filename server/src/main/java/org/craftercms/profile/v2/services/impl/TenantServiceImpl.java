@@ -219,10 +219,7 @@ public class TenantServiceImpl implements TenantService {
                         }
 
                         originalDefinition.setOwner(updatedDefinition.getOwner());
-                        originalDefinition.setLabel(updatedDefinition.getLabel());
-                        originalDefinition.setType(updatedDefinition.getType());
-                        originalDefinition.setConstraint(updatedDefinition.getConstraint());
-                        originalDefinition.setRequired(updatedDefinition.isRequired());
+                        originalDefinition.setMetadata(updatedDefinition.getMetadata());
                     } else {
                         throw new AttributeNotDefinedException(attributeName, tenantName);
                     }
@@ -269,7 +266,7 @@ public class TenantServiceImpl implements TenantService {
     protected void checkIfTenantActionIsAllowed(String tenantName, String action) {
         if (!permissionEvaluator.isAllowed(tenantName, action)) {
             if (tenantName != null) {
-                throw new ActionDeniedException(action, tenantName);
+                throw new ActionDeniedException(action, "tenant \"" + tenantName + "\"");
             } else {
                 throw new ActionDeniedException(action);
             }

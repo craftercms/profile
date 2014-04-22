@@ -111,7 +111,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         try {
             ticket = ticketRepository.findById(ticketId);
         } catch (MongoDataException e) {
-            throw new I10nProfileException(ERROR_KEY_GET_TICKET_ERROR, ticketId);
+            throw new I10nProfileException(ERROR_KEY_GET_TICKET_ERROR, e, ticketId);
         }
 
         if (ticket != null) {
@@ -159,7 +159,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     protected void checkIfManageTicketsIsAllowed(String tenantName) {
         if (!permissionEvaluator.isAllowed(tenantName, TenantActions.MANAGE_TICKETS)) {
-            throw new ActionDeniedException(TenantActions.MANAGE_TICKETS, tenantName);
+            throw new ActionDeniedException(TenantActions.MANAGE_TICKETS, "tenant \"" + tenantName + "\"");
         }
     }
 

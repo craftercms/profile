@@ -140,7 +140,7 @@ public class ProfileController {
     @RequestMapping(value = URL_PROFILE_REMOVE_ATTRIBUTES, method = RequestMethod.POST)
     @ResponseBody
     public Profile removeAttributes(@PathVariable(PATH_VAR_ID) String profileId,
-                                    @RequestParam(PARAM_ATTRIBUTE_TO_RETURN) Collection<String> attributeNames,
+                                    @RequestParam(PARAM_ATTRIBUTE_NAME) Collection<String> attributeNames,
                                     @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                     String[] attributesToReturn)
         throws ProfileException {
@@ -161,7 +161,7 @@ public class ProfileController {
         return profileService.getProfile(profileId, attributesToReturn);
     }
 
-    @RequestMapping(value = URL_PROFILE_GET_BY_TICKET, method = RequestMethod.GET)
+    @RequestMapping(value = URL_PROFILE_GET_BY_USERNAME, method = RequestMethod.GET)
     @ResponseBody
     public Profile getProfileByUsername(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                         @RequestParam(PARAM_USERNAME) String username,
@@ -170,9 +170,9 @@ public class ProfileController {
         return profileService.getProfileByUsername(tenantName, username, attributesToReturn);
     }
 
-    @RequestMapping(value = URL_PROFILE_GET_BY_USERNAME, method = RequestMethod.GET)
+    @RequestMapping(value = URL_PROFILE_GET_BY_TICKET, method = RequestMethod.GET)
     @ResponseBody
-    public Profile getProfileByTicket(@PathVariable(PARAM_TICKET_ID) String ticketId,
+    public Profile getProfileByTicket(@RequestParam(PARAM_TICKET_ID) String ticketId,
                                       @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                       String[] attributesToReturn) throws ProfileException {
         return profileService.getProfileByTicket(ticketId, attributesToReturn);
@@ -186,7 +186,7 @@ public class ProfileController {
 
     @RequestMapping(value = URL_PROFILE_GET_BY_IDS, method = RequestMethod.GET)
     @ResponseBody
-    public Iterable<Profile> getProfileByIds(@PathVariable(PATH_VAR_ID) List<String> profileIds,
+    public Iterable<Profile> getProfileByIds(@RequestParam(PATH_VAR_ID) List<String> profileIds,
                                              @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
                                              @RequestParam(value = PARAM_SORT_ORDER, required = false)
                                              SortOrder sortOrder,

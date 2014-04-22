@@ -139,9 +139,7 @@ public class ProfileServiceImpl implements ProfileService {
             Tenant tenant = getTenant(tenantName);
             boolean emailNewProfiles = tenant.isVerifyNewProfiles();
 
-            if (emailNewProfiles) {
-                profile.setEnabled(false);
-            } else {
+            if (!emailNewProfiles) {
                 profile.setEnabled(enabled);
             }
 
@@ -491,7 +489,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     protected void checkIfManageProfilesIsAllowed(String tenantName) {
         if (!tenantPermissionEvaluator.isAllowed(tenantName, TenantActions.MANAGE_PROFILES)) {
-            throw new ActionDeniedException(TenantActions.MANAGE_PROFILES, tenantName);
+            throw new ActionDeniedException(TenantActions.MANAGE_PROFILES, "tenant \"" + tenantName + "\"");
         }
     }
 
@@ -589,7 +587,7 @@ public class ProfileServiceImpl implements ProfileService {
             logger.debug(LOG_KEY_EVALUATING_ATTRIB_ACTION, action, attributeName, tenant.getName());
 
             if (!attributePermissionEvaluator.isAllowed(definition, action)) {
-                throw new ActionDeniedException(action, attributeName);
+                throw new ActionDeniedException(action, "attribute \"" + attributeName + "\"");
             }
         } else {
             throw new AttributeNotDefinedException(attributeName, tenant.getName());

@@ -95,10 +95,11 @@ public interface TenantService {
             throws ProfileException;
 
     /**
-     * Adds the given attribute definitions to the specified tenant.
+     * Updates the given attribute definitions of the specified tenant.
      *
      * @param tenantName            the tenant's name
-     * @param attributeDefinitions  the definitions to update
+     * @param attributeDefinitions  the definitions to update (should have the same name as definitions that the
+     *                              tenant already has)
      *
      * @return the tenant
      */

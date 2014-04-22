@@ -22,6 +22,7 @@ import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.*;
 import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.api.services.TenantService;
+import org.craftercms.profile.v2.exceptions.InvalidEmailAddressException;
 import org.craftercms.profile.v2.permissions.Application;
 import org.craftercms.profile.v2.repositories.ProfileRepository;
 import org.craftercms.profile.v2.services.VerificationService;
@@ -165,6 +166,15 @@ public class ProfileServiceImplTest {
     }
 
     @Test
+    public void testCreateProfileInvalidEmail() throws Exception {
+        try {
+            profileService.createProfile(TENANT1_NAME, USERNAME2, PASSWORD2, "a.com", true, ROLES2, VERIFICATION_URL);
+            fail("Exception " + InvalidEmailAddressException.class.getName() + " expected");
+        } catch (InvalidEmailAddressException e) {
+        }
+    }
+
+    @Test
     public void testCreateProfileNotVerify() throws Exception {
         Profile expected = getTenant2Profile();
         expected.setEnabled(true);
@@ -205,6 +215,15 @@ public class ProfileServiceImplTest {
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
+    }
+
+    @Test
+    public void testUpdateProfileInvalidEmail() throws Exception {
+        try {
+            profileService.updateProfile(PROFILE1_ID.toString(), USERNAME2, PASSWORD2, "a.com", false, ROLES2);
+            fail("Exception " + InvalidEmailAddressException.class.getName() + " expected");
+        } catch (InvalidEmailAddressException e) {
+        }
     }
 
     @Test
@@ -385,8 +404,7 @@ public class ProfileServiceImplTest {
     @Test
     public void testGetProfilesByIds() throws Exception {
         List<Profile> expected = getAllTenant1Profiles();
-        List<Profile> actual = (List<Profile>) profileService.getProfilesByIds(TENANT1_PROFILE_IDS, "username",
-                SortOrder.ASC);
+        List<Profile> actual = profileService.getProfilesByIds(TENANT1_PROFILE_IDS, "username", SortOrder.ASC);
 
         assertEqualProfileLists(expected, actual);
 
@@ -397,8 +415,7 @@ public class ProfileServiceImplTest {
     @Test
     public void testGetProfileRange() throws Exception {
         List<Profile> expected = getAllTenant1Profiles();
-        List<Profile> actual = (List<Profile>) profileService.getProfileRange(TENANT1_NAME, SORT_BY, SortOrder.ASC,
-                START, COUNT);
+        List<Profile> actual = profileService.getProfileRange(TENANT1_NAME, SORT_BY, SortOrder.ASC, START, COUNT);
 
         assertEqualProfileLists(expected, actual);
 
@@ -409,8 +426,7 @@ public class ProfileServiceImplTest {
     @Test
     public void testGetProfileByRole() throws Exception {
         List<Profile> expected = getAllTenant1Profiles();
-        List<Profile> actual = (List<Profile>) profileService.getProfilesByRole(TENANT1_NAME, ROLE1, SORT_BY,
-                SortOrder.ASC);
+        List<Profile> actual = profileService.getProfilesByRole(TENANT1_NAME, ROLE1, SORT_BY, SortOrder.ASC);
 
         assertEqualProfileLists(expected, actual);
 
@@ -421,8 +437,8 @@ public class ProfileServiceImplTest {
     @Test
     public void testGetProfilesByAttribute() throws Exception {
         List<Profile> expected = getAllTenant1Profiles();
-        List<Profile> actual = (List<Profile>) profileService.getProfilesByAttributeValue(TENANT1_NAME,
-                ATTRIB_NAME_FIRST_NAME, FIRST_NAME, SORT_BY, SortOrder.ASC);
+        List<Profile> actual = profileService.getProfilesByAttributeValue(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME,
+                FIRST_NAME, SORT_BY, SortOrder.ASC);
 
         assertEqualProfileLists(expected, actual);
 

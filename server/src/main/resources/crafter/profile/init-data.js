@@ -19,11 +19,6 @@ if (db.tenant.count() == 0) {
         "attributeDefinitions" : [
             {
                 "name" : "firstName",
-                "label" : "First Name",
-                "order" : 0,
-                "type" : "java.lang.String",
-                "constraint" : "",
-                "required" : false,
                 "owner" : "adminconsole",
                 "permissions" : [
                     {
@@ -34,16 +29,25 @@ if (db.tenant.count() == 0) {
             },
             {
                 "name" : "lastName",
-                "label" : "Last Name",
-                "order" : 0,
-                "type" : "java.lang.String",
-                "constraint" : "",
-                "required" : false,
                 "owner" : "adminconsole",
                 "permissions" : [
                     {
                         "application" : "*",
                         "allowedActions" : [ "*" ]
+                    }
+                ]
+            },
+            {
+                "name" : "subscriptions",
+                "owner" : "craftersocial",
+                "permissions" : [
+                    {
+                        "application" : "craftersocial",
+                        "allowedActions" : [ "*" ]
+                    },
+                    {
+                        "application" : "crafterengine",
+                        "allowedActions" : [ "read" ]
                     }
                 ]
             }

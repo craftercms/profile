@@ -88,7 +88,7 @@ public class VerificationServiceImplTest {
                 return token;
             }
 
-        }).when(tokenRepository).save(any(VerificationToken.class));
+        }).when(tokenRepository).insert(any(VerificationToken.class));
         when(tokenRepository.findById(NORMAL_TOKEN_ID.toString())).thenReturn(getNormalToken());
         when(tokenRepository.findById(EXPIRED_TOKEN_ID.toString())).thenReturn(getExpiredToken());
 
@@ -113,7 +113,7 @@ public class VerificationServiceImplTest {
 
         verificationService.sendEmail(profile, VERIFICATION_BASE_URL);
 
-        verify(tokenRepository).save(any(VerificationToken.class));
+        verify(tokenRepository).insert(any(VerificationToken.class));
         verify(emailFactory).getEmail(FROM, TO, null, null, SUBJECT, TEMPLATE_NAME, VERIFICATION_TEMPLATE_ARGS, true);
         verify(email).send();
     }
