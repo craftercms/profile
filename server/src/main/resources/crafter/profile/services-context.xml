@@ -194,7 +194,7 @@
 
     <!-- Quartz -->
 
-    <!--bean id="profile.ticketCleanerJobDetail"
+    <bean id="profile.ticketCleanerJobDetail"
           class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
         <property name="targetBeanName" value="profile.ticketRepository"/>
         <property name="targetMethod" value="removeWithLastRequestTimeOlderThan"/>
@@ -209,16 +209,16 @@
     <bean id="profile.ticketCleanerTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
         <property name="startDelay" value="${crafter.profile.auth.ticket.cleaner.startDelay}"/>
         <property name="repeatInterval" value="${crafter.profile.auth.ticket.cleaner.repeatInterval}"/>
-        <property name="jobDetail" ref="crafter.ticketCleanerJobDetail"/>
+        <property name="jobDetail" ref="profile.ticketCleanerJobDetail"/>
     </bean>
 
     <bean id="profile.schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-                <ref bean="crafter.ticketCleanerTrigger"/>
+                <ref bean="profile.ticketCleanerTrigger"/>
             </list>
         </property>
-    </bean-->
+    </bean>
 
     <import resource="classpath*:crafter/profile/extension/services-context.xml"/>
 
