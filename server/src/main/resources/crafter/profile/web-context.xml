@@ -28,7 +28,7 @@
     </mvc:interceptors>
     
     <bean id="crafter.accessTokenCheckingInterceptor"
-          class="org.craftercms.profile.v2.interceptors.AccessTokenCheckingInterceptor">
+          class="org.craftercms.profile.interceptors.AccessTokenCheckingInterceptor">
         <property name="tokenRepository" ref="crafter.accessTokenRepository"/>
     </bean>
 
@@ -51,18 +51,18 @@
 
     <!-- Controllers -->
 
-    <bean id="crafter.restControllerAdvice" class="org.craftercms.profile.v2.controllers.rest.RestControllerAdvice"/>
+    <bean id="crafter.restControllerAdvice" class="org.craftercms.profile.controllers.rest.RestControllerAdvice"/>
 
-    <bean id="crafter.tenantController" class="org.craftercms.profile.v2.controllers.rest.TenantController">
+    <bean id="crafter.tenantController" class="org.craftercms.profile.controllers.rest.TenantController">
         <property name="tenantService" ref="crafter.tenantService"/>
     </bean>
 
-    <bean id="crafter.profileController" class="org.craftercms.profile.v2.controllers.rest.ProfileController">
+    <bean id="crafter.profileController" class="org.craftercms.profile.controllers.rest.ProfileController">
         <property name="profileService" ref="crafter.profileService"/>
     </bean>
 
     <bean id="crafter.authenticationController"
-          class="org.craftercms.profile.v2.controllers.rest.AuthenticationController">
+          class="org.craftercms.profile.controllers.rest.AuthenticationController">
         <property name="authenticationService" ref="crafter.authenticationService"/>
     </bean>
 

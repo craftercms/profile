@@ -1,0 +1,731 @@
+/*
+ * Copyright (C) 2007-2014 Crafter Software Corporation.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.craftercms.profile.services;
+
+import com.icegreen.greenmail.util.GreenMail;
+import com.icegreen.greenmail.util.GreenMailUtil;
+import com.icegreen.greenmail.util.ServerSetupTest;
+import org.bson.types.ObjectId;
+import org.craftercms.commons.crypto.CipherUtils;
+import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.SortOrder;
+import org.craftercms.profile.api.Ticket;
+import org.craftercms.profile.api.exceptions.ErrorCode;
+import org.craftercms.profile.api.services.AuthenticationService;
+import org.craftercms.profile.api.services.ProfileService;
+import org.craftercms.profile.api.services.TenantService;
+import org.craftercms.profile.exceptions.ProfileRestServiceException;
+import org.craftercms.profile.services.impl.SingleAccessTokenIdResolver;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.craftercms.profile.api.ProfileConstants.*;
+import static org.junit.Assert.*;
+
+/**
+ * Integration tests for {@link org.craftercms.profile.api.services.ProfileService}.
+ *
+ * @author avasquez
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:crafter/profile/extension/client-context.xml")
+public class ProfileServiceIT {
+
+    private static final String VERIFICATION_EMAIL_REGEX = ".+<a id=\"verificationLink\" href=\".+\\?tokenId=(.+)\">.+";
+
+    private static final String INVALID_ACCESS_TOKEN_ID =           "ab785de0-c327-11e3-9c1a-0800200c9a66";
+    private static final String EXPIRED_ACCESS_TOKEN_ID =           "9161fb80-c329-11e3-9c1a-0800200c9a66";
+    private static final String UNALLOWED_ACCESS_TOKEN_ID =         "f9929b40-c358-11e3-9c1a-0800200c9a66";
+    private static final String ADMIN_CONSOLE_ACCESS_TOKEN_ID =     "e8f5170c-877b-416f-b70f-4b09772f8e2d";
+    private static final String CRAFTER_SOCIAL_ACCESS_TOKEN_ID =    "2ba3ac10-c43e-11e3-9c1a-0800200c9a66";
+
+    private static final String DEFAULT_TENANT = "default";
+
+    private static final String ADMIN_USERNAME =    "admin";
+    private static final String ADMIN_PASSWORD =    "admin";
+    private static final String ADMIN_EMAIL =       "admin@craftersoftware.com";
+    private static final Set<String> ADMIN_ROLES =  new HashSet<>(Arrays.asList("PROFILE_ADMIN", "SOCIAL_ADMIN"));
+
+    private static final String JDOE_USERNAME =                     "jdoe";
+    private static final String JDOE_PASSWORD =                     "1234";
+    private static final String JDOE_EMAIL =                        "john.doe@craftersoftware.com";
+    private static final Set<String> JDOE_ROLES =                   new HashSet<>(Arrays.asList("SOCIAL_ADMIN"));
+    private static final String JDOE_FIRST_NAME =                   "John";
+    private static final String JDOE_LAST_NAME =                    "Doe";
+    private static final String JDOE_SUBSCRIPTIONS_FREQUENCY =      "instant";
+    private static final boolean JDOE_SUBSCRIPTIONS_AUTO_WATCH =    true;
+    private static final List<String> JDOE_SUBSCRIPTIONS_TARGETS =  Arrays.asList("news");
+
+    private static final String AVASQUEZ_USERNAME =     "avasquez";
+    private static final String AVASQUEZ_PASSWORD1 =    "1234";
+    private static final String AVASQUEZ_PASSWORD2 =    "4321";
+    private static final String AVASQUEZ_EMAIL1 =       "alfonso.vasquez@craftersoftware.com";
+    private static final String AVASQUEZ_EMAIL2 =       "avasquez@rivetlogic.com";
+    private static final Set<String> AVASQUEZ_ROLES1 =  new HashSet<>(Arrays.asList("PROFILE_ADMIN", "SOCIAL_MODERATOR"));
+    private static final Set<String> AVASQUEZ_ROLES2 =  new HashSet<>(Arrays.asList("SOCIAL_AUTHOR"));
+
+    private static final String VERIFICATION_URL = "http://localhost:8983/crafter-profile" + BASE_URL_PROFILE +
+            URL_PROFILE_VERIFY;
+    private static final String RESET_PASSWORD_URL = "http://localhost:8983/crafter-profile" + BASE_URL_PROFILE +
+            URL_PROFILE_RESET_PASSWORD;
+
+    @Autowired
+    private ProfileService profileService;
+    @Autowired
+    private TenantService tenantService;
+    @Autowired
+    private AuthenticationService authenticationService;
+    @Autowired
+    private SingleAccessTokenIdResolver accessTokenIdResolver;
+
+    @Test
+    @DirtiesContext
+    public void testMissingAccessTokenIdParamError() throws Exception {
+        accessTokenIdResolver.setAccessTokenId(null);
+
+        try {
+            profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1, AVASQUEZ_EMAIL1, true,
+                    AVASQUEZ_ROLES1, VERIFICATION_URL);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+            assertEquals(ErrorCode.MISSING_ACCESS_TOKEN_ID_PARAM, e.getErrorCode());
+        }
+    }
+
+    @Test
+    @DirtiesContext
+    public void testNoSuchAccessTokenIdError() throws Exception {
+        accessTokenIdResolver.setAccessTokenId(INVALID_ACCESS_TOKEN_ID);
+
+        try {
+            profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1, AVASQUEZ_EMAIL1, true,
+                    AVASQUEZ_ROLES1, VERIFICATION_URL);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
+            assertEquals(ErrorCode.NO_SUCH_ACCESS_TOKEN_ID, e.getErrorCode());
+        }
+    }
+
+    @Test
+    @DirtiesContext
+    public void testExpiredAccessTokenError() throws Exception {
+        accessTokenIdResolver.setAccessTokenId(EXPIRED_ACCESS_TOKEN_ID);
+
+        try {
+            profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1, AVASQUEZ_EMAIL1, true,
+                    AVASQUEZ_ROLES1, VERIFICATION_URL);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
+            assertEquals(ErrorCode.EXPIRED_ACCESS_TOKEN, e.getErrorCode());
+        }
+    }
+
+    @Test
+    @DirtiesContext
+    public void testUnallowedAccessTokenError() throws Exception {
+        accessTokenIdResolver.setAccessTokenId(UNALLOWED_ACCESS_TOKEN_ID);
+
+        try {
+            profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1, AVASQUEZ_EMAIL1, true,
+                    AVASQUEZ_ROLES1, VERIFICATION_URL);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
+            assertEquals(ErrorCode.ACTION_DENIED, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void testCreateProfile() throws Exception {
+        Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
+                AVASQUEZ_EMAIL1, true, AVASQUEZ_ROLES1, VERIFICATION_URL);
+        try {
+            assertNotNull(profile);
+            assertNotNull(profile.getId());
+            assertEquals(AVASQUEZ_USERNAME, profile.getUsername());
+            assertTrue(CipherUtils.matchPassword(profile.getPassword(), AVASQUEZ_PASSWORD1));
+            assertEquals(AVASQUEZ_EMAIL1, profile.getEmail());
+            assertFalse(profile.isVerified());
+            assertTrue(profile.isEnabled());
+            assertNotNull(profile.getCreatedOn());
+            assertNotNull(profile.getLastModified());
+            assertEquals(DEFAULT_TENANT, profile.getTenant());
+            assertEquals(AVASQUEZ_ROLES1, profile.getRoles());
+            assertNotNull(profile.getAttributes());
+            assertEquals(0, profile.getAttributes().size());
+        } finally {
+            profileService.deleteProfile(profile.getId().toString());
+        }
+    }
+
+    @Test
+    public void testCreateAndVerifyProfile() throws Exception {
+        GreenMail mailServer = new GreenMail(ServerSetupTest.SMTP);
+        mailServer.start();
+
+        tenantService.verifyNewProfiles(DEFAULT_TENANT, true);
+
+        Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
+                AVASQUEZ_EMAIL1, true, AVASQUEZ_ROLES1, VERIFICATION_URL);
+
+        try {
+            assertNotNull(profile);
+            assertNotNull(profile.getId());
+            assertEquals(AVASQUEZ_USERNAME, profile.getUsername());
+            assertTrue(CipherUtils.matchPassword(profile.getPassword(), AVASQUEZ_PASSWORD1));
+            assertEquals(AVASQUEZ_EMAIL1, profile.getEmail());
+            assertFalse(profile.isVerified());
+            assertFalse(profile.isEnabled());
+            assertNotNull(profile.getCreatedOn());
+            assertNotNull(profile.getLastModified());
+            assertEquals(DEFAULT_TENANT, profile.getTenant());
+            assertEquals(AVASQUEZ_ROLES1, profile.getRoles());
+            assertNotNull(profile.getAttributes());
+            assertEquals(0, profile.getAttributes().size());
+
+            String email = GreenMailUtil.getBody(mailServer.getReceivedMessages()[0]);
+
+            assertNotNull(email);
+
+            Pattern emailPattern = Pattern.compile(VERIFICATION_EMAIL_REGEX, Pattern.DOTALL);
+            Matcher emailMatcher = emailPattern.matcher(email);
+
+            assertTrue(emailMatcher.matches());
+
+            String verificationTokenId = emailMatcher.group(1);
+
+            Profile verifiedProfile = profileService.verifyProfile(verificationTokenId);
+
+            assertNotNull(verifiedProfile);
+            assertEquals(profile.getId(), verifiedProfile.getId());
+            assertTrue(verifiedProfile.isEnabled());
+            assertTrue(verifiedProfile.isVerified());
+        } finally {
+            profileService.deleteProfile(profile.getId().toString());
+
+            tenantService.verifyNewProfiles(DEFAULT_TENANT, false);
+
+            mailServer.stop();
+        }
+    }
+
+    @Test
+    public void testUpdateProfile() throws Exception {
+        Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
+                AVASQUEZ_EMAIL1, true, AVASQUEZ_ROLES1, VERIFICATION_URL);
+        try {
+            assertNotNull(profile);
+
+            Profile updatedProfile = profileService.updateProfile(profile.getId().toString(), AVASQUEZ_USERNAME,
+                    AVASQUEZ_PASSWORD2, AVASQUEZ_EMAIL2, false, AVASQUEZ_ROLES2);
+
+            assertNotNull(updatedProfile);
+            assertEquals(profile.getId(), updatedProfile.getId());
+            assertEquals(profile.getUsername(), updatedProfile.getUsername());
+            assertTrue(CipherUtils.matchPassword(updatedProfile.getPassword(), AVASQUEZ_PASSWORD2));
+            assertEquals(AVASQUEZ_EMAIL2, updatedProfile.getEmail());
+            assertEquals(profile.isVerified(), updatedProfile.isVerified());
+            assertFalse(updatedProfile.isEnabled());
+            assertEquals(profile.getCreatedOn(), updatedProfile.getCreatedOn());
+            assertTrue(profile.getLastModified().before(updatedProfile.getLastModified()));
+            assertEquals(profile.getTenant(), updatedProfile.getTenant());
+            assertEquals(AVASQUEZ_ROLES2, updatedProfile.getRoles());
+            assertEquals(profile.getAttributes(), updatedProfile.getAttributes());
+        } finally {
+            profileService.deleteProfile(profile.getId().toString());
+        }
+    }
+
+    @Test
+    public void testEnableProfile() throws Exception {
+        Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
+                AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, VERIFICATION_URL);
+        try {
+            assertNotNull(profile);
+            assertFalse(profile.isEnabled());
+
+            Profile updatedProfile = profileService.enableProfile(profile.getId().toString());
+
+            assertNotNull(updatedProfile);
+            assertEquals(profile.getId(), updatedProfile.getId());
+            assertEquals(profile.getUsername(), updatedProfile.getUsername());
+            assertEquals(profile.getPassword(), updatedProfile.getPassword());
+            assertEquals(profile.getEmail(), updatedProfile.getEmail());
+            assertEquals(profile.isVerified(), updatedProfile.isVerified());
+            assertTrue(updatedProfile.isEnabled());
+            assertEquals(profile.getCreatedOn(), updatedProfile.getCreatedOn());
+            assertTrue(profile.getLastModified().before(updatedProfile.getLastModified()));
+            assertEquals(profile.getTenant(), updatedProfile.getTenant());
+            assertEquals(profile.getRoles(), updatedProfile.getRoles());
+            assertEquals(profile.getAttributes(), updatedProfile.getAttributes());
+        } finally {
+            profileService.deleteProfile(profile.getId().toString());
+        }
+    }
+
+    @Test
+    public void testDisableProfile() throws Exception {
+        Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
+                AVASQUEZ_EMAIL1, true, AVASQUEZ_ROLES1, VERIFICATION_URL);
+        try {
+            assertNotNull(profile);
+            assertTrue(profile.isEnabled());
+
+            Profile updatedProfile = profileService.disableProfile(profile.getId().toString());
+
+            assertNotNull(updatedProfile);
+            assertEquals(profile.getId(), updatedProfile.getId());
+            assertEquals(profile.getUsername(), updatedProfile.getUsername());
+            assertEquals(profile.getPassword(), updatedProfile.getPassword());
+            assertEquals(profile.getEmail(), updatedProfile.getEmail());
+            assertEquals(profile.isVerified(), updatedProfile.isVerified());
+            assertFalse(updatedProfile.isEnabled());
+            assertEquals(profile.getCreatedOn(), updatedProfile.getCreatedOn());
+            assertTrue(profile.getLastModified().before(updatedProfile.getLastModified()));
+            assertEquals(profile.getTenant(), updatedProfile.getTenant());
+            assertEquals(profile.getRoles(), updatedProfile.getRoles());
+            assertEquals(profile.getAttributes(), updatedProfile.getAttributes());
+        } finally {
+            profileService.deleteProfile(profile.getId().toString());
+        }
+    }
+
+    @Test
+    public void testAddRoles() throws Exception {
+        Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
+                AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, VERIFICATION_URL);
+        try {
+            assertNotNull(profile);
+            assertEquals(AVASQUEZ_ROLES1, profile.getRoles());
+
+            Profile updatedProfile = profileService.addRoles(profile.getId().toString(), Arrays.asList(
+                    "SOCIAL_AUTHOR"));
+
+            Set<String> expectedRoles = new HashSet<>(AVASQUEZ_ROLES1);
+            expectedRoles.add("SOCIAL_AUTHOR");
+
+            assertNotNull(updatedProfile);
+            assertEquals(profile.getId(), updatedProfile.getId());
+            assertEquals(profile.getUsername(), updatedProfile.getUsername());
+            assertEquals(profile.getPassword(), updatedProfile.getPassword());
+            assertEquals(profile.getEmail(), updatedProfile.getEmail());
+            assertEquals(profile.isVerified(), updatedProfile.isVerified());
+            assertEquals(profile.isEnabled(), updatedProfile.isEnabled());
+            assertEquals(profile.getCreatedOn(), updatedProfile.getCreatedOn());
+            assertTrue(profile.getLastModified().before(updatedProfile.getLastModified()));
+            assertEquals(profile.getTenant(), updatedProfile.getTenant());
+            assertEquals(expectedRoles, updatedProfile.getRoles());
+            assertEquals(profile.getAttributes(), updatedProfile.getAttributes());
+        } finally {
+            profileService.deleteProfile(profile.getId().toString());
+        }
+    }
+
+    @Test
+    public void testRemoveRoles() throws Exception {
+        Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
+                AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, VERIFICATION_URL);
+        try {
+            assertNotNull(profile);
+            assertEquals(AVASQUEZ_ROLES1, profile.getRoles());
+
+            Profile updatedProfile = profileService.removeRoles(profile.getId().toString(), Arrays.asList(
+                    "SOCIAL_MODERATOR"));
+
+            Set<String> expectedRoles = new HashSet<>(AVASQUEZ_ROLES1);
+            expectedRoles.remove("SOCIAL_MODERATOR");
+
+            assertNotNull(updatedProfile);
+            assertEquals(profile.getId(), updatedProfile.getId());
+            assertEquals(profile.getUsername(), updatedProfile.getUsername());
+            assertEquals(profile.getPassword(), updatedProfile.getPassword());
+            assertEquals(profile.getEmail(), updatedProfile.getEmail());
+            assertEquals(profile.isVerified(), updatedProfile.isVerified());
+            assertEquals(profile.isEnabled(), updatedProfile.isEnabled());
+            assertEquals(profile.getCreatedOn(), updatedProfile.getCreatedOn());
+            assertTrue(profile.getLastModified().before(updatedProfile.getLastModified()));
+            assertEquals(profile.getTenant(), updatedProfile.getTenant());
+            assertEquals(expectedRoles, updatedProfile.getRoles());
+            assertEquals(profile.getAttributes(), updatedProfile.getAttributes());
+        } finally {
+            profileService.deleteProfile(profile.getId().toString());
+        }
+    }
+
+    @Test
+    @DirtiesContext
+    public void testGetAllAttributes() throws Exception {
+        accessTokenIdResolver.setAccessTokenId(CRAFTER_SOCIAL_ACCESS_TOKEN_ID);
+
+        // Get all attributes
+        ObjectId profileId = profileService.getProfileByUsername(DEFAULT_TENANT, JDOE_USERNAME).getId();
+        Map<String, Object> attributes = profileService.getAttributes(profileId.toString());
+
+        assertNotNull(attributes);
+        assertEquals(3, attributes.size());
+        assertEquals(JDOE_FIRST_NAME, attributes.get("firstName"));
+        assertEquals(JDOE_LAST_NAME, attributes.get("lastName"));
+
+        Map<String, Object> subscriptions = (Map<String, Object>) attributes.get("subscriptions");
+
+        assertNotNull(subscriptions);
+        assertEquals(3, subscriptions.size());
+        assertEquals(JDOE_SUBSCRIPTIONS_FREQUENCY, subscriptions.get("frequency"));
+        assertEquals(JDOE_SUBSCRIPTIONS_AUTO_WATCH, subscriptions.get("autoWatch"));
+        assertEquals(JDOE_SUBSCRIPTIONS_TARGETS, subscriptions.get("targets"));
+
+        accessTokenIdResolver.setAccessTokenId(ADMIN_CONSOLE_ACCESS_TOKEN_ID);
+
+        // Get only allowed attributes
+        attributes = profileService.getAttributes(profileId.toString());
+
+        assertNotNull(attributes);
+        assertEquals(2, attributes.size());
+        assertEquals(JDOE_FIRST_NAME, attributes.get("firstName"));
+        assertEquals(JDOE_LAST_NAME, attributes.get("lastName"));
+
+        // Get a specific attribute
+        attributes = profileService.getAttributes(profileId.toString(), "firstName");
+
+        assertNotNull(attributes);
+        assertEquals(1, attributes.size());
+        assertEquals(JDOE_FIRST_NAME, attributes.get("firstName"));
+
+        // Get no attributes
+        attributes = profileService.getAttributes(profileId.toString(), NO_ATTRIBUTE);
+
+        assertNotNull(attributes);
+        assertEquals(0, attributes.size());
+    }
+
+    @Test
+    @DirtiesContext
+    public void testUpdateAttributes() throws Exception {
+        accessTokenIdResolver.setAccessTokenId(CRAFTER_SOCIAL_ACCESS_TOKEN_ID);
+
+        // Update a bunch attributes
+        Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
+                AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, VERIFICATION_URL);
+        Map<String, Object> attributes = new HashMap<>();
+        try {
+            Map<String, Object> subscriptions = new HashMap<>();
+            subscriptions.put("frequency", JDOE_SUBSCRIPTIONS_FREQUENCY);
+            subscriptions.put("autoWatch", JDOE_SUBSCRIPTIONS_AUTO_WATCH);
+            subscriptions.put("targets", JDOE_SUBSCRIPTIONS_TARGETS);
+
+            attributes.put("subscriptions", subscriptions);
+
+            profile = profileService.updateAttributes(profile.getId().toString(), attributes);
+            attributes = profile.getAttributes();
+
+            assertNotNull(attributes);
+            assertEquals(1, attributes.size());
+
+            subscriptions = (Map<String, Object>) attributes.get("subscriptions");
+
+            assertNotNull(subscriptions);
+            assertEquals(3, subscriptions.size());
+            assertEquals(JDOE_SUBSCRIPTIONS_FREQUENCY, subscriptions.get("frequency"));
+            assertEquals(JDOE_SUBSCRIPTIONS_AUTO_WATCH, subscriptions.get("autoWatch"));
+            assertEquals(JDOE_SUBSCRIPTIONS_TARGETS, subscriptions.get("targets"));
+
+            accessTokenIdResolver.setAccessTokenId(ADMIN_CONSOLE_ACCESS_TOKEN_ID);
+
+            // Unallowed updates should be rejected
+            try {
+                profileService.updateAttributes(profile.getId().toString(), attributes);
+                fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+            } catch (ProfileRestServiceException e) {
+                assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
+                assertEquals(ErrorCode.ACTION_DENIED, e.getErrorCode());
+            }
+        } finally {
+            profileService.deleteProfile(profile.getId().toString());
+        }
+    }
+
+    @Test
+    @DirtiesContext
+    public void testDeleteAttributes() throws Exception {
+        accessTokenIdResolver.setAccessTokenId(CRAFTER_SOCIAL_ACCESS_TOKEN_ID);
+
+        Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
+                AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, VERIFICATION_URL);
+        Map<String, Object> attributes = new HashMap<>();
+        try {
+            Map<String, Object> subscriptions = new HashMap<>();
+            subscriptions.put("frequency", JDOE_SUBSCRIPTIONS_FREQUENCY);
+            subscriptions.put("autoWatch", JDOE_SUBSCRIPTIONS_AUTO_WATCH);
+            subscriptions.put("targets", JDOE_SUBSCRIPTIONS_TARGETS);
+
+            attributes.put("subscriptions", subscriptions);
+
+            profileService.updateAttributes(profile.getId().toString(), attributes);
+
+            accessTokenIdResolver.setAccessTokenId(ADMIN_CONSOLE_ACCESS_TOKEN_ID);
+
+            // Unallowed deletes should be rejected
+            try {
+                profileService.removeAttributes(profile.getId().toString(), Arrays.asList("subscriptions"));
+                fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+            } catch (ProfileRestServiceException e) {
+                assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
+                assertEquals(ErrorCode.ACTION_DENIED, e.getErrorCode());
+            }
+
+            accessTokenIdResolver.setAccessTokenId(CRAFTER_SOCIAL_ACCESS_TOKEN_ID);
+
+            // Delete an attribute
+            profile = profileService.removeAttributes(profile.getId().toString(), Arrays.asList("subscriptions"));
+            attributes = profile.getAttributes();
+
+            assertNotNull(attributes);
+            assertEquals(0, attributes.size());
+        } finally {
+            profileService.deleteProfile(profile.getId().toString());
+        }
+    }
+
+    @Test
+    public void testDeleteProfile() throws Exception {
+        Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
+                AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, VERIFICATION_URL);
+
+        profileService.deleteProfile(profile.getId().toString());
+
+        profile = profileService.getProfile(profile.getId().toString());
+
+        assertNull(profile);
+    }
+
+    @Test
+    public void testGetProfile() throws Exception {
+        ObjectId profileId = profileService.getProfileByUsername(DEFAULT_TENANT, ADMIN_USERNAME).getId();
+        Profile profile = profileService.getProfile(profileId.toString());
+
+        assertAdminProfile(profile);
+    }
+
+    @Test
+    public void testGetProfileByUsername() throws Exception {
+        Profile profile = profileService.getProfileByUsername(DEFAULT_TENANT, ADMIN_USERNAME);
+
+        assertAdminProfile(profile);
+    }
+
+    @Test
+    public void testGetProfileByTicket() throws Exception {
+        Ticket ticket = authenticationService.authenticate(DEFAULT_TENANT, ADMIN_USERNAME, ADMIN_PASSWORD);
+        Profile profile = profileService.getProfileByTicket(ticket.getId().toString());
+
+        assertAdminProfile(profile);
+
+        authenticationService.invalidateTicket(ticket.getId().toString());
+
+        // Try with invalid ticket
+        try {
+            profileService.getProfileByTicket("507c7f79bcf86cd7994f6c0e");
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals(ErrorCode.NO_SUCH_TICKET, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void testGetProfileCount() throws Exception {
+        long count = profileService.getProfileCount(DEFAULT_TENANT);
+
+        assertEquals(2, count);
+    }
+
+    @Test
+    public void testGetProfileByIds() throws Exception {
+        ObjectId adminProfileId = profileService.getProfileByUsername(DEFAULT_TENANT, ADMIN_USERNAME).getId();
+        ObjectId jdoeProfileId = profileService.getProfileByUsername(DEFAULT_TENANT, JDOE_USERNAME).getId();
+
+        List<Profile> profiles = profileService.getProfilesByIds(Arrays.asList(adminProfileId.toString(),
+                jdoeProfileId.toString()), null, null);
+
+        assertNotNull(profiles);
+        assertEquals(2, profiles.size());
+        assertAdminProfile(profiles.get(0));
+        assertJdoeProfile(profiles.get(1));
+
+        // With sort
+        profiles = profileService.getProfilesByIds(Arrays.asList(adminProfileId.toString(), jdoeProfileId.toString()),
+                "username", SortOrder.DESC);
+
+        assertNotNull(profiles);
+        assertEquals(2, profiles.size());
+        assertJdoeProfile(profiles.get(0));
+        assertAdminProfile(profiles.get(1));
+    }
+
+    @Test
+    public void testGetProfileRange() throws Exception {
+        List<Profile> profiles = profileService.getProfileRange(DEFAULT_TENANT, null, null, 1, 1);
+
+        assertNotNull(profiles);
+        assertEquals(1, profiles.size());
+        assertJdoeProfile(profiles.get(0));
+
+        // With sort
+        profiles = profileService.getProfileRange(DEFAULT_TENANT, "username", SortOrder.DESC, 1, 1);
+
+        assertNotNull(profiles);
+        assertEquals(1, profiles.size());
+        assertAdminProfile(profiles.get(0));
+    }
+
+    @Test
+    public void testGetProfileByRole() throws Exception {
+        List<Profile> profiles = profileService.getProfilesByRole(DEFAULT_TENANT, "SOCIAL_ADMIN", null, null);
+
+        assertNotNull(profiles);
+        assertEquals(2, profiles.size());
+        assertAdminProfile(profiles.get(0));
+        assertJdoeProfile(profiles.get(1));
+
+        // With sort
+        profiles = profileService.getProfilesByRole(DEFAULT_TENANT, "SOCIAL_ADMIN", "username", SortOrder.DESC);
+
+        assertNotNull(profiles);
+        assertEquals(2, profiles.size());
+        assertJdoeProfile(profiles.get(0));
+        assertAdminProfile(profiles.get(1));
+    }
+
+    @Test
+    public void testGetProfileByExistingAttribute() throws Exception {
+        List<Profile> profiles = profileService.getProfilesByExistingAttribute(DEFAULT_TENANT, "subscriptions." +
+                "frequency", null, null);
+
+        assertNotNull(profiles);
+        assertEquals(1, profiles.size());
+        assertJdoeProfile(profiles.get(0));
+
+        // With sort
+        profiles = profileService.getProfilesByExistingAttribute(DEFAULT_TENANT,  "subscriptions.frequency",
+                "username", SortOrder.DESC);
+
+        assertNotNull(profiles);
+        assertEquals(1, profiles.size());
+        assertJdoeProfile(profiles.get(0));
+    }
+
+    @Test
+    public void testGetProfileByAttributeValue() throws Exception {
+        List<Profile> profiles = profileService.getProfilesByAttributeValue(DEFAULT_TENANT, "subscriptions." +
+                "frequency", "instant", null, null);
+
+        assertNotNull(profiles);
+        assertEquals(1, profiles.size());
+        assertJdoeProfile(profiles.get(0));
+
+        // With sort
+        profiles = profileService.getProfilesByAttributeValue(DEFAULT_TENANT,  "subscriptions.frequency", "instant",
+                "username", SortOrder.DESC);
+
+        assertNotNull(profiles);
+        assertEquals(1, profiles.size());
+        assertJdoeProfile(profiles.get(0));
+    }
+
+    @Test
+    public void testForgotAndResetPassword() throws Exception {
+        GreenMail mailServer = new GreenMail(ServerSetupTest.SMTP);
+        mailServer.start();
+
+        Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
+                AVASQUEZ_EMAIL1, true, AVASQUEZ_ROLES1, VERIFICATION_URL);
+
+        try {
+            profile = profileService.forgotPassword(profile.getId().toString(), RESET_PASSWORD_URL);
+
+            assertNotNull(profile);
+
+            String email = GreenMailUtil.getBody(mailServer.getReceivedMessages()[0]);
+
+            assertNotNull(email);
+
+            Pattern emailPattern = Pattern.compile(VERIFICATION_EMAIL_REGEX, Pattern.DOTALL);
+            Matcher emailMatcher = emailPattern.matcher(email);
+
+            assertTrue(emailMatcher.matches());
+
+            String resetTokenId = emailMatcher.group(1);
+
+            Profile profileWithNewPswd = profileService.resetPassword(resetTokenId, AVASQUEZ_PASSWORD2);
+
+            assertNotNull(profileWithNewPswd);
+            assertEquals(profile.getId(), profileWithNewPswd.getId());
+            assertTrue(CipherUtils.matchPassword(profileWithNewPswd.getPassword(), AVASQUEZ_PASSWORD2));
+        } finally {
+            profileService.deleteProfile(profile.getId().toString());
+
+            mailServer.stop();
+        }
+    }
+
+    private void assertAdminProfile(Profile profile) {
+        assertNotNull(profile);
+        assertEquals(ADMIN_USERNAME, profile.getUsername());
+        assertTrue(CipherUtils.matchPassword(profile.getPassword(), ADMIN_PASSWORD));
+        assertEquals(ADMIN_EMAIL, profile.getEmail());
+        assertFalse(profile.isVerified());
+        assertTrue(profile.isEnabled());
+        assertNotNull(profile.getCreatedOn());
+        assertNotNull(profile.getLastModified());
+        assertEquals(DEFAULT_TENANT, profile.getTenant());
+        assertEquals(ADMIN_ROLES, profile.getRoles());
+        assertNotNull(profile.getAttributes());
+        assertEquals(0, profile.getAttributes().size());
+    }
+
+    private void assertJdoeProfile(Profile profile) {
+        assertNotNull(profile);
+        assertEquals(JDOE_USERNAME, profile.getUsername());
+        assertTrue(CipherUtils.matchPassword(profile.getPassword(), JDOE_PASSWORD));
+        assertEquals(JDOE_EMAIL, profile.getEmail());
+        assertFalse(profile.isVerified());
+        assertFalse(profile.isEnabled());
+        assertNotNull(profile.getCreatedOn());
+        assertNotNull(profile.getLastModified());
+        assertEquals(DEFAULT_TENANT, profile.getTenant());
+        assertEquals(JDOE_ROLES, profile.getRoles());
+
+        Map<String, Object> attributes = profile.getAttributes();
+
+        assertNotNull(attributes);
+        assertEquals(2, attributes.size());
+        assertEquals(JDOE_FIRST_NAME, attributes.get("firstName"));
+        assertEquals(JDOE_LAST_NAME, attributes.get("lastName"));
+    }
+
+}
