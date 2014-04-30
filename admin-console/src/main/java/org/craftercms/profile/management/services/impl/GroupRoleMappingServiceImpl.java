@@ -2,9 +2,9 @@ package org.craftercms.profile.management.services.impl;
 
 import java.util.List;
 
-import org.craftercms.profile.exceptions.AppAuthenticationException;
-import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
-import org.craftercms.profile.impl.domain.GroupRole;
+import org.craftercms.profile.client.exceptions.AppAuthenticationException;
+import org.craftercms.profile.client.exceptions.AppAuthenticationFailedException;
+import org.craftercms.profile.client.impl.domain.GroupRole;
 import org.craftercms.profile.management.services.GroupRoleMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

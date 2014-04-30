@@ -16,30 +16,28 @@
  */
 package org.craftercms.security.authorization.impl;
 
-import java.io.IOException;
+import org.apache.commons.lang3.StringUtils;
+import org.craftercms.commons.http.RequestContext;
+import org.craftercms.security.authorization.AccessDeniedHandler;
+import org.craftercms.security.exception.AccessDeniedException;
+import org.craftercms.security.exception.SecurityProviderException;
+import org.craftercms.security.utils.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.StringUtils;
-import org.craftercms.security.api.RequestContext;
-import org.craftercms.security.api.SecurityConstants;
-import org.craftercms.security.authentication.BaseHandler;
-import org.craftercms.security.authorization.AccessDeniedHandler;
-import org.craftercms.security.exception.AccessDeniedException;
-import org.craftercms.security.exception.CrafterSecurityException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
 
 /**
- * Default implementation of {@link AccessDeniedHandler}: forwards to the error page URL,
- * so that the original URL is preserved in
- * the browser. If not error URL is specified, a 403 FORBIDDEN error is sent.
+ * Default implementation of {@link AccessDeniedHandler}, which forwards to the error page URL, so that the original
+ * URL is preserved in the browser. If not error URL is specified, a 403 FORBIDDEN error is sent.
  *
  * @author Alfonso Vásquez
  */
-public class AccessDeniedHandlerImpl extends BaseHandler implements AccessDeniedHandler {
+public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AccessDeniedHandlerImpl.class);
 
@@ -47,7 +45,6 @@ public class AccessDeniedHandlerImpl extends BaseHandler implements AccessDenied
 
     public AccessDeniedHandlerImpl() {
         super();
-
     }
 
     /**
@@ -58,41 +55,31 @@ public class AccessDeniedHandlerImpl extends BaseHandler implements AccessDenied
     }
 
     /**
-     * Saves the access denied in the request, so it can be used after the request is forwarded. It then forwards to
-     * the error page,
-     * but if not error page was specified, a 403 error is sent.
+     * Forwards to the error page, but if not error page was specified, a 403 error is sent.
      *
-     * @param e       the exception with the reason of the access deny
      * @param context the request context
-     * @throws CrafterSecurityException
-     * @throws IOException
+     * @param e       the exception with the reason of the access deny
      */
-    public void onAccessDenied(AccessDeniedException e, RequestContext context) throws CrafterSecurityException,
-        IOException {
-        saveException(e, context);
+    @Override
+    public void handle(RequestContext context, AccessDeniedException e) throws SecurityProviderException, IOException {
+        saveException(context, e);
 
-        if (isRedirectRequired && StringUtils.isNotEmpty(errorPageUrl)) {
+        if (StringUtils.isNotEmpty(errorPageUrl)) {
             forwardToErrorPage(context);
         } else {
             sendError(e, context);
         }
     }
 
-    /**
-     * Saves the exception in the request.
-     */
-    protected void saveException(AccessDeniedException e, RequestContext context) {
+    protected void saveException(RequestContext context, AccessDeniedException e) {
         if (logger.isDebugEnabled()) {
             logger.debug("Saving access denied exception in request to use after forward");
         }
 
-        context.getRequest().setAttribute(SecurityConstants.ACCESS_DENIED_EXCEPTION_ATTRIBUTE, e);
+        context.getRequest().setAttribute(SecurityUtils.ACCESS_DENIED_EXCEPTION_ATTRIBUTE, e);
     }
 
-    /**
-     * Forwards the request to the error page (to preserve the browser URL).
-     */
-    protected void forwardToErrorPage(RequestContext context) throws CrafterSecurityException, IOException {
+    protected void forwardToErrorPage(RequestContext context) throws SecurityProviderException, IOException {
         HttpServletRequest request = context.getRequest();
         HttpServletResponse response = context.getResponse();
 
@@ -106,27 +93,16 @@ public class AccessDeniedHandlerImpl extends BaseHandler implements AccessDenied
         try {
             dispatcher.forward(request, response);
         } catch (ServletException e) {
-            throw new CrafterSecurityException(e.getMessage(), e);
+            throw new SecurityProviderException(e.getMessage(), e);
         }
     }
 
-    /**
-     * Sends a 403 FORBIDDEN error.
-     */
     protected void sendError(AccessDeniedException e, RequestContext requestContext) throws IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("Sending 403 FORBIDDEN error");
         }
-        requestContext.getResponse().setContentType("application/json");
+
         requestContext.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
-    }
-
-    public boolean isRedirectRequired() {
-        return isRedirectRequired;
-    }
-
-    public void setRedirectRequired(boolean isRedirectRequired) {
-        this.isRedirectRequired = isRedirectRequired;
     }
 
 }

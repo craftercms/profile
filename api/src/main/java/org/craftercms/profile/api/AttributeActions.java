@@ -9,6 +9,9 @@ public class AttributeActions {
 
     public static final String READ =   "read";
     public static final String WRITE =  "write";
+    public static final String DELETE = "delete";
+
+    public static final String[] ALL_ACTIONS = { READ, WRITE, DELETE };
 
     private AttributeActions() {
     }

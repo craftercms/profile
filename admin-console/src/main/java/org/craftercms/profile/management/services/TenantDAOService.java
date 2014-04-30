@@ -18,10 +18,10 @@ package org.craftercms.profile.management.services;
 
 import java.util.List;
 
-import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
-import org.craftercms.profile.impl.domain.Attribute;
-import org.craftercms.profile.impl.domain.Schema;
-import org.craftercms.profile.impl.domain.Tenant;
+import org.craftercms.profile.client.exceptions.AppAuthenticationFailedException;
+import org.craftercms.profile.client.impl.domain.Attribute;
+import org.craftercms.profile.client.impl.domain.Schema;
+import org.craftercms.profile.client.impl.domain.Tenant;
 import org.craftercms.profile.management.model.TenantFilterForm;
 
 /**

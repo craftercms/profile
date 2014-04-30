@@ -21,10 +21,7 @@ package org.craftercms.security.exception;
  *
  * @author Alfonso Vásquez
  */
-public class AccessDeniedException extends CrafterSecurityException {
-
-    public AccessDeniedException() {
-    }
+public class AccessDeniedException extends SecurityProviderException {
 
     public AccessDeniedException(String s) {
         super(s);
@@ -32,10 +29,6 @@ public class AccessDeniedException extends CrafterSecurityException {
 
     public AccessDeniedException(String s, Throwable throwable) {
         super(s, throwable);
-    }
-
-    public AccessDeniedException(Throwable throwable) {
-        super(throwable);
     }
 
 }

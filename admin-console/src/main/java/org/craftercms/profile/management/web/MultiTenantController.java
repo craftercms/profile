@@ -16,13 +16,9 @@
  */
 package org.craftercms.profile.management.web;
 
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.craftercms.profile.exceptions.ConflictRequestException;
-import org.craftercms.profile.impl.domain.Role;
-import org.craftercms.profile.impl.domain.Tenant;
+import org.craftercms.profile.client.exceptions.ConflictRequestException;
+import org.craftercms.profile.client.impl.domain.Role;
+import org.craftercms.profile.client.impl.domain.Tenant;
 import org.craftercms.profile.management.model.TenantFilterForm;
 import org.craftercms.profile.management.services.RoleDAOService;
 import org.craftercms.profile.management.services.TenantDAOService;
@@ -33,12 +29,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 @SessionAttributes({"tenant"})

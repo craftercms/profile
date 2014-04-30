@@ -1,5 +1,8 @@
 package org.craftercms.profile.api.services;
 
+import org.craftercms.profile.api.Ticket;
+import org.craftercms.profile.api.exceptions.ProfileException;
+
 /**
  * Service for handling authentication for users.
  *
@@ -10,31 +13,28 @@ public interface AuthenticationService {
     /**
      * Authenticates the user, and returns a ticket identifying the authentication.
      *
-     * @param tenant    the tenant's name
-     * @param username  the username
-     * @param password  the password
+     * @param tenantName    the tenant's name
+     * @param username      the username
+     * @param password      the password
      *
      * @return the ticket
      */
-    String authenticate(String tenant, String username, String password);
+    Ticket authenticate(String tenantName, String username, String password) throws ProfileException;
 
     /**
-     * Returns if the ticket is still valid, basically that it corresponds to an authenticated user and that it
-     * hasn't expired
+     * Returns the ticket object for the given ticket ID.
      *
-     * @param tenant    the tenant's name
-     * @param ticket    the ticket to validate
+     * @param ticketId      the ID of the ticket
      *
-     * @return true if the ticket corresponds to an authenticated user and that it hasn't expired
+     * @return the ticket object, or null if no ticket found or ticket has expired
      */
-    boolean isTicketValid(String tenant, String ticket);
+    Ticket getTicket(String ticketId) throws ProfileException;
 
     /**
      * Invalidates the ticket.
      *
-     * @param tenant    the tenant's name
-     * @param ticket    the ticket to invalidate
+     * @param ticketId      the ID of the ticket to invalidate
      */
-    void invalidateTicket(String tenant, String ticket);
+    void invalidateTicket(String ticketId) throws ProfileException;
 
 }

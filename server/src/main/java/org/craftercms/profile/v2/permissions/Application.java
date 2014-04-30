@@ -57,4 +57,12 @@ public class Application {
         return tenantPermissions;
     }
 
+    @Override
+    public String toString() {
+        return "Application{" +
+                "name='" + name + '\'' +
+                ", tenantPermissions=" + tenantPermissions +
+                '}';
+    }
+
 }

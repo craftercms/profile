@@ -16,19 +16,17 @@
  */
 package org.craftercms.profile.v2.exceptions;
 
-import org.craftercms.profile.api.exceptions.ProfileException;
-
 /**
- * Thrown when a specified tenant name doesn't correspond to any known tenant.
+ * Thrown if no tenant with a specified name was found.
  *
  * @author avasquez
  */
-public class NoSuchTenantException extends ProfileException {
+public class NoSuchTenantException extends I10nProfileException {
 
-    public static final String MESSAGE_FORMAT = "No tenant found with name '%s'";
+    private static final String KEY = "profile.tenant.noSuchTenant";
 
-    public NoSuchTenantException(String tenant) {
-        super(String.format(MESSAGE_FORMAT, tenant));
+    public NoSuchTenantException(String tenantName) {
+        super(KEY, tenantName);
     }
 
 }

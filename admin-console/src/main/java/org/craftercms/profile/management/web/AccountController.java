@@ -24,12 +24,11 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.craftercms.profile.constants.ProfileConstants;
-import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
-import org.craftercms.profile.exceptions.ConflictRequestException;
-import org.craftercms.profile.exceptions.RestException;
-import org.craftercms.profile.impl.domain.Attribute;
-import org.craftercms.profile.impl.domain.Tenant;
+import org.craftercms.profile.client.exceptions.AppAuthenticationFailedException;
+import org.craftercms.profile.client.exceptions.ConflictRequestException;
+import org.craftercms.profile.client.exceptions.RestException;
+import org.craftercms.profile.client.impl.domain.Attribute;
+import org.craftercms.profile.client.impl.domain.Tenant;
 import org.craftercms.profile.management.model.FilterForm;
 import org.craftercms.profile.management.model.ProfileUserAccountForm;
 import org.craftercms.profile.management.model.VerifyAccount;

@@ -16,19 +16,10 @@
  */
 package org.craftercms.security.authentication.impl;
 
-import java.io.IOException;
-import javax.servlet.http.HttpSession;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.HttpStatus;
-import org.craftercms.security.api.RequestContext;
-import org.craftercms.security.api.SecurityConstants;
-import org.craftercms.security.api.UserProfile;
-import org.craftercms.security.authentication.AuthenticationToken;
-import org.craftercms.security.authentication.AuthenticationTokenCache;
-import org.craftercms.security.authentication.BaseHandler;
+import org.craftercms.commons.http.RequestContext;
+import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.LoginSuccessHandler;
-import org.craftercms.security.exception.CrafterSecurityException;
+import org.craftercms.security.exception.SecurityProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -36,13 +27,16 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 /**
  * Default implementation of {@link LoginSuccessHandler}:
  * <p/>
  * <ol>
  * <li>Deletes any authentication exception saved in the session.</li>
- * <li>Stores the authentication token in the request context.</li>
- * <li>Caches the authentication token.</li>
+ * <li>Adds the ticket ID and profile last modified cookies to response.</li>
  * <li>Uses the Spring {@link RequestCache} to obtain the previous request before login and redirect to it.</li>
  * </ol>
  *
@@ -52,7 +46,6 @@ public class LoginSuccessHandlerImpl extends BaseHandler implements LoginSuccess
 
     private static final Logger logger = LoggerFactory.getLogger(LoginSuccessHandlerImpl.class);
 
-    protected AuthenticationTokenCache authenticationTokenCache;
     protected RequestCache requestCache;
     protected String defaultTargetUrl;
 
@@ -62,105 +55,23 @@ public class LoginSuccessHandlerImpl extends BaseHandler implements LoginSuccess
 
     }
 
-    /**
-     * Sets the cache to store the authentication token after login success.
-     */
-    @Required
-    public void setAuthenticationTokenCache(AuthenticationTokenCache authenticationTokenCache) {
-        this.authenticationTokenCache = authenticationTokenCache;
-    }
-
-    /**
-     * Cache where the previous request is stored.
-     */
     public void setRequestCache(RequestCache requestCache) {
         this.requestCache = requestCache;
     }
 
-    /**
-     * The target URL to redirect to if it's not possible to redirect to the previous request.
-     */
     @Required
     public void setDefaultTargetUrl(String defaultTargetUrl) {
         this.defaultTargetUrl = defaultTargetUrl;
     }
 
-    /**
-     * <ol>
-     * <li>Deletes any authentication exception saved in the session.</li>
-     * <li>Stores the authentication token created from the specified ticket and profile in the cache.</li>
-     * <li>Caches the authentication token.</li>
-     * <li>Uses the Spring {@link RequestCache} to obtain the previous request before login and redirect to it.</li>
-     * </ol>
-     *
-     * @param ticket  the authentication ticket, product of the recent login
-     * @param profile the user profile
-     * @param context the request context
-     * @throws CrafterSecurityException
-     * @throws IOException
-     */
-    public void onLoginSuccess(String ticket, UserProfile profile, RequestContext context) throws
-        CrafterSecurityException, IOException {
-        AuthenticationToken token = new AuthenticationToken();
-        token.setTicket(ticket);
-        token.setProfile(profile);
-
-        context.setAuthenticationToken(token);
-
-        clearException(context);
-        cacheAuthenticationToken(token, context);
-
-        if (isRedirectRequired) {
-            redirectToSavedUrl(context);
-        } else {
-            this.sendResponseLogin(context, profile);
-        }
+    @Override
+    public void handle(RequestContext context, Authentication authentication) throws SecurityProviderException,
+            IOException {
+        redirectToSavedRequest(context.getRequest(), context.getResponse());
     }
 
-    private void sendResponseLogin(RequestContext context, UserProfile profile) {
-        try {
-            context.getResponse().setContentType("application/json");
-            context.getResponse().setStatus(HttpStatus.SC_OK);
-            ObjectMapper mapper = new ObjectMapper();
-            context.getResponse().getWriter().write(mapper.writeValueAsString(profile));
-        } catch (IOException e) {
-            this.logger.error(e.getMessage());
-            context.getResponse().setStatus(HttpStatus.SC_OK, "Unable to include profile data");
-        }
-
-    }
-
-    /**
-     * Remove any previous saved authentication exception from the cache.
-     */
-    protected void clearException(RequestContext context) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Removing any authentication exceptions from session, not needed anymore");
-        }
-
-        HttpSession session = context.getRequest().getSession();
-        session.removeAttribute(SecurityConstants.AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE);
-        session.removeAttribute(SecurityConstants.USER_AUTHENTICATION_EXCEPTION_ATTRIBUTE);
-    }
-
-    /**
-     * Saves the authentication token in the cache.
-     */
-    protected void cacheAuthenticationToken(AuthenticationToken token, RequestContext context) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Caching authentication token " + token);
-        }
-
-        authenticationTokenCache.saveToken(context, token);
-    }
-
-    /**
-     * Redirects to the previous request URL, if found in the request cache. If not found,
-     * redirects to the default target URL.
-     */
-    protected void redirectToSavedUrl(RequestContext context) throws IOException {
-        SavedRequest savedRequest = requestCache.getRequest(context.getRequest(), context.getResponse());
-
+    protected void redirectToSavedRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        SavedRequest savedRequest = requestCache.getRequest(request, response);
         if (savedRequest != null) {
             String redirectUrl = savedRequest.getRedirectUrl();
 
@@ -168,24 +79,10 @@ public class LoginSuccessHandlerImpl extends BaseHandler implements LoginSuccess
                 logger.debug("Redirecting to saved URL before login: " + redirectUrl);
             }
 
-            context.getResponse().sendRedirect(redirectUrl);
+            response.sendRedirect(redirectUrl);
         } else {
-            redirectToDefaultTargetUrl(context);
+            redirectToUrl(request, response, defaultTargetUrl);
         }
     }
-
-    /**
-     * Redirects to the default target URL.
-     */
-    protected void redirectToDefaultTargetUrl(RequestContext context) throws IOException {
-        String redirectUrl = context.getRequest().getContextPath() + defaultTargetUrl;
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Redirecting to URL: " + redirectUrl);
-        }
-
-        context.getResponse().sendRedirect(redirectUrl);
-    }
-
 
 }

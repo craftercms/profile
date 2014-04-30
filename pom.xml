@@ -43,10 +43,10 @@
         <module>server</module>
         <module>client</module>
         <module>crafter-security-provider</module>
-        <module>spring-security-preauth</module>
-        <module>spring-security-provider-filter</module>
-        <module>admin-console</module>
+        <!--module>admin-console</module-->
         <module>api</module>
+        <module>access-token-manager</module>
+        <module>integration-tests</module>
     </modules>
     <profiles>
 

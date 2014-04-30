@@ -16,6 +16,8 @@
  */
 package org.craftercms.security.api;
 
+import org.craftercms.commons.http.RequestContext;
+
 /**
  * Represents a chain of {@link RequestSecurityProcessor}s.
  *

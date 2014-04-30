@@ -16,7 +16,7 @@
  */
 package org.craftercms.profile.management.model;
 
-import org.craftercms.profile.impl.domain.Schema;
+import org.craftercms.profile.client.impl.domain.Schema;
 
 public class SchemaModel extends Schema {
 

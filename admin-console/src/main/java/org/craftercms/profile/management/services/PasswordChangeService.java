@@ -1,6 +1,6 @@
 package org.craftercms.profile.management.services;
 
-import org.craftercms.profile.exceptions.AppAuthenticationFailedException;
+import org.craftercms.profile.client.exceptions.AppAuthenticationFailedException;
 
 public interface PasswordChangeService {
 

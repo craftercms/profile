@@ -1,12 +1,8 @@
 package org.craftercms.profile.api;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.bson.types.ObjectId;
+
+import java.util.*;
 
 /**
  * Representation of a user.
@@ -19,11 +15,12 @@ public class Profile {
     private String username;
     private String password;
     private String email;
-    private Boolean enabled;
-    private Date created;
-    private Date modified;
+    private boolean verified;
+    private boolean enabled;
+    private Date createdOn;
+    private Date lastModified;
     private String tenant;
-    private List<String> roles;
+    private Set<String> roles;
     private Map<String, Object> attributes;
 
     public ObjectId getId() {
@@ -58,28 +55,36 @@ public class Profile {
         this.email = email;
     }
 
-    public Boolean getEnabled() {
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
+
+    public boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(final boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
-    public Date getCreated() {
-        return created;
+    public Date getCreatedOn() {
+        return createdOn;
     }
 
-    public void setCreated(final Date created) {
-        this.created = created;
+    public void setCreatedOn(final Date createdOn) {
+        this.createdOn = createdOn;
     }
 
-    public Date getModified() {
-        return modified;
+    public Date getLastModified() {
+        return lastModified;
     }
 
-    public void setModified(final Date modified) {
-        this.modified = modified;
+    public void setLastModified(final Date lastModified) {
+        this.lastModified = lastModified;
     }
 
     public String getTenant() {
@@ -90,15 +95,29 @@ public class Profile {
         this.tenant = tenant;
     }
 
-    public List<String> getRoles() {
+    public boolean hasRole(String role) {
+        return getRoles().contains(role);
+    }
+
+    public boolean hasAnyRole(Collection<String> roles) {
+        for (String role : roles) {
+            if (hasRole(role)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public Set<String> getRoles() {
         if (roles == null) {
-            roles = new ArrayList<>();
+            roles = new HashSet<>();
         }
 
         return roles;
     }
 
-    public void setRoles(final List<String> roles) {
+    public void setRoles(Set<String> roles) {
         this.roles = roles;
     }
 
@@ -110,8 +129,50 @@ public class Profile {
         return attributes;
     }
 
+    public Object getAttribute(String name) {
+        return getAttributes().get(name);
+    }
+
     public void setAttributes(final Map<String, Object> attributes) {
         this.attributes = attributes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Profile profile = (Profile) o;
+
+        if (!_id.equals(profile._id)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return _id.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Profile{" +
+                "id=" + _id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", verified=" + verified +
+                ", enabled=" + enabled +
+                ", createdOn=" + createdOn +
+                ", lastModified=" + lastModified +
+                ", tenant='" + tenant + '\'' +
+                ", roles=" + roles +
+                ", attributes=" + attributes +
+                '}';
     }
 
 }

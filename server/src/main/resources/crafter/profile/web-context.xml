@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--
+    Activates various annotations to be detected in bean classes: Spring's @Required and @Autowired, as well as JSR
+    250's @PostConstruct, @PreDestroy and @Resource (if available), JAX-WS's @WebServiceRef (if available), EJB3's @EJB
+    (if available), and JPA's @PersistenceContext and @PersistenceUnit (if available).
+    -->
+    <context:annotation-config/>
+
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper" ref="crafter.objectMapper"/>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <mvc:interceptors>
+        <ref bean="crafter.accessTokenCheckingInterceptor"/>
+    </mvc:interceptors>
+    
+    <bean id="crafter.accessTokenCheckingInterceptor"
+          class="org.craftercms.profile.v2.interceptors.AccessTokenCheckingInterceptor">
+        <property name="tokenRepository" ref="crafter.accessTokenRepository"/>
+    </bean>
+
+    <!-- Jackson config -->
+
+    <bean id="crafter.objectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper">
+        <property name="serializers">
+            <list>
+                <bean class="org.craftercms.commons.jackson.ObjectIdSerializer"/>
+            </list>
+        </property>
+        <property name="deserializers">
+            <map>
+                <entry key="org.bson.types.ObjectId">
+                    <bean class="org.craftercms.commons.jackson.ObjectIdDeserializer"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <!-- Controllers -->
+
+    <bean id="crafter.restControllerAdvice" class="org.craftercms.profile.v2.controllers.rest.RestControllerAdvice"/>
+
+    <bean id="crafter.tenantController" class="org.craftercms.profile.v2.controllers.rest.TenantController">
+        <property name="tenantService" ref="crafter.tenantService"/>
+    </bean>
+
+    <bean id="crafter.profileController" class="org.craftercms.profile.v2.controllers.rest.ProfileController">
+        <property name="profileService" ref="crafter.profileService"/>
+    </bean>
+
+    <bean id="crafter.authenticationController"
+          class="org.craftercms.profile.v2.controllers.rest.AuthenticationController">
+        <property name="authenticationService" ref="crafter.authenticationService"/>
+    </bean>
+
+    <import resource="classpath*:crafter/profile/extension/web-context.xml"/>
+
+</beans>

@@ -16,9 +16,10 @@
  */
 package org.craftercms.security.impl.processors;
 
-import org.craftercms.security.api.RequestContext;
+import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.api.RequestSecurityProcessor;
 import org.craftercms.security.api.RequestSecurityProcessorChain;
+import org.craftercms.security.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -55,7 +56,7 @@ public class TenantNameResolvingProcessor implements RequestSecurityProcessor {
             logger.debug("Tenant name resolved for current request: " + defaultTenantName);
         }
 
-        context.setTenantName(defaultTenantName);
+        SecurityUtils.setTenant(context.getRequest(), defaultTenantName);
 
         processorChain.processRequest(context);
     }

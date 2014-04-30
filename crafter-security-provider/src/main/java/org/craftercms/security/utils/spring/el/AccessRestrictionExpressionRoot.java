@@ -16,51 +16,50 @@
  */
 package org.craftercms.security.utils.spring.el;
 
-import java.util.List;
+import org.craftercms.profile.api.Profile;
 
-import org.craftercms.security.api.UserProfile;
+import java.util.Collection;
 
 /**
  * Instances of this class are used as the root object for Spring EL {@link org.springframework.expression
- * .Expression}s that are
- * used to evaluate access restrictions.
+ * .Expression}s that are used to evaluate access restrictions.
  *
  * @author Alfonso Vásquez
  */
 public class AccessRestrictionExpressionRoot {
 
-    private UserProfile profile;
+    private Profile profile;
 
-    public AccessRestrictionExpressionRoot(UserProfile profile) {
+    public void setProfile(Profile profile) {
         this.profile = profile;
     }
 
     /**
-     * Returns trues if the profile is anonymous.
+     * Returns trues if user is anonymous.
      */
     public boolean isAnonymous() {
-        return profile.isAnonymous();
+        return profile == null;
     }
 
     /**
-     * Returns trues if the profile is authenticated.
+     * Returns trues if user is authenticated.
      */
     public boolean isAuthenticated() {
-        return profile.isAuthenticated();
+        return profile != null;
     }
 
     /**
      * Returns trues if the profile has the specified role.
      */
     public boolean hasRole(String role) {
-        return profile.hasRole(role);
+        return isAuthenticated() && profile.hasRole(role);
     }
 
     /**
      * Returns trues if the profile has any of the specified roles.
      */
-    public boolean hasAnyRole(List<String> roles) {
-        return profile.hasAnyRole(roles);
+    public boolean hasAnyRole(Collection<String> roles) {
+        return isAuthenticated() && profile.hasAnyRole(roles);
     }
 
     /**

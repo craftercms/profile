@@ -21,7 +21,7 @@ package org.craftercms.security.exception;
  *
  * @author Alfonso Vásquez
  */
-public class AuthenticationException extends CrafterSecurityException {
+public class AuthenticationException extends SecurityProviderException {
 
     public AuthenticationException() {
     }

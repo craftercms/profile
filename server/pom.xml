@@ -94,6 +94,11 @@
             <artifactId>crafter-profile-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.craftercms</groupId>
+            <artifactId>crafter-profile-access-token-manager</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -344,45 +349,6 @@
     <build>
         <outputDirectory>target/classes</outputDirectory>
         <plugins>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.14.1</version>
-                <configuration>
-                    <includes>
-                        <include>**/unit/**/*.java</include>
-                    </includes>
-                    <excludes>
-                        <exclude>**/integration/**/*.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
-                    <testFailureIgnore>false</testFailureIgnore>
-                    <skip>true</skip>
-                    <includes>
-                        <include>
-                            **/integration/**/*.java
-                        </include>
-                    </includes>
-                    <excludes>
-                        <exclude>**/*$__CLR*</exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <!-- <goal>verify</goal> -->
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -458,7 +424,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+            <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.9</version>
@@ -470,7 +436,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
 
 
             <plugin>
