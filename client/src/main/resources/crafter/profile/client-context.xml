@@ -55,11 +55,11 @@
     <!-- REST Clients -->
 
     <bean id="crafter.accessTokenIdResolver"
-          class="org.craftercms.profile.v2.services.impl.SingleAccessTokenIdResolver">
+          class="org.craftercms.profile.services.impl.SingleAccessTokenIdResolver">
         <property name="accessTokenId" value="${crafter.profile.rest.client.accessToken.id}"/>
     </bean>
 
-    <bean id="crafter.tenantServiceRestClient" class="org.craftercms.profile.v2.services.impl.TenantServiceRestClient">
+    <bean id="crafter.tenantServiceRestClient" class="org.craftercms.profile.services.impl.TenantServiceRestClient">
         <property name="baseUrl" value="${crafter.profile.rest.client.url.base}"/>
         <property name="extension" value="${crafter.profile.rest.client.url.extension}"/>
         <property name="restTemplate" ref="crafter.profileRestTemplate"/>
@@ -67,7 +67,7 @@
     </bean>
 
     <bean id="crafter.profileServiceRestClient"
-          class="org.craftercms.profile.v2.services.impl.ProfileServiceRestClient">
+          class="org.craftercms.profile.services.impl.ProfileServiceRestClient">
         <property name="baseUrl" value="${crafter.profile.rest.client.url.base}"/>
         <property name="extension" value="${crafter.profile.rest.client.url.extension}"/>
         <property name="restTemplate" ref="crafter.profileRestTemplate"/>
@@ -75,7 +75,7 @@
     </bean>
 
     <bean id="crafter.authenticationServiceRestClient"
-          class="org.craftercms.profile.v2.services.impl.AuthenticationServiceRestClient">
+          class="org.craftercms.profile.services.impl.AuthenticationServiceRestClient">
         <property name="baseUrl" value="${crafter.profile.rest.client.url.base}"/>
         <property name="extension" value="${crafter.profile.rest.client.url.extension}"/>
         <property name="restTemplate" ref="crafter.profileRestTemplate"/>

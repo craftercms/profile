@@ -76,17 +76,17 @@
     <bean id="crafter.accessTokenRepository" class="org.craftercms.profile.repositories.impl.AccessTokenRepositoryImpl"
           parent="crafter.jongoRepositoryBase"/>
 
-    <bean id="crafter.profileRepository" class="org.craftercms.profile.v2.repositories.impl.ProfileRepositoryImpl"
+    <bean id="crafter.profileRepository" class="org.craftercms.profile.repositories.impl.ProfileRepositoryImpl"
           parent="crafter.jongoRepositoryBase"/>
 
-    <bean id="crafter.tenantRepository" class="org.craftercms.profile.v2.repositories.impl.TenantRepositoryImpl"
+    <bean id="crafter.tenantRepository" class="org.craftercms.profile.repositories.impl.TenantRepositoryImpl"
           parent="crafter.jongoRepositoryBase"/>
 
-    <bean id="crafter.ticketRepository" class="org.craftercms.profile.v2.repositories.impl.TicketRepositoryImpl"
+    <bean id="crafter.ticketRepository" class="org.craftercms.profile.repositories.impl.TicketRepositoryImpl"
           parent="crafter.jongoRepositoryBase"/>
 
     <bean id="crafter.verificationTokenRepository"
-          class="org.craftercms.profile.v2.repositories.impl.VerificationTokenRepositoryImpl"
+          class="org.craftercms.profile.repositories.impl.VerificationTokenRepositoryImpl"
           parent="crafter.jongoRepositoryBase"/>
     
     <bean id="crafter.mongoInitScriptRunner" class="org.craftercms.commons.mongo.MongoScriptRunner">
@@ -127,12 +127,12 @@
 
     <!-- Permissions -->
 
-    <bean id="crafter.appSubjectResolver" class="org.craftercms.profile.v2.permissions.ApplicationSubjectResolver"/>
+    <bean id="crafter.appSubjectResolver" class="org.craftercms.profile.permissions.ApplicationSubjectResolver"/>
 
-    <bean id="crafter.tenantPermissionResolver" class="org.craftercms.profile.v2.permissions.TenantPermissionResolver"/>
+    <bean id="crafter.tenantPermissionResolver" class="org.craftercms.profile.permissions.TenantPermissionResolver"/>
 
     <bean id="crafter.attributePermissionResolver"
-          class="org.craftercms.profile.v2.permissions.AttributePermissionResolver"/>
+          class="org.craftercms.profile.permissions.AttributePermissionResolver"/>
 
     <bean id="crafter.tenantPermissionEvaluator"
           class="org.craftercms.commons.security.permissions.impl.PermissionEvaluatorImpl">
@@ -149,7 +149,7 @@
     <!-- Services -->
 
     <bean id="crafter.verificationServiceBase"
-          class="org.craftercms.profile.v2.services.impl.VerificationServiceImpl" abstract="true">
+          class="org.craftercms.profile.services.impl.VerificationServiceImpl" abstract="true">
         <property name="emailFactory" ref="crafter.emailFactory"/>
         <property name="tokenRepository" ref="crafter.verificationTokenRepository"/>
         <property name="tokenMaxAge" value="${crafter.profile.verification.token.maxAge}"/>
@@ -168,14 +168,14 @@
         <property name="templateName" value="${crafter.profile.verification.resetPassword.mail.templateName}"/>
     </bean>
 
-    <bean id="crafter.tenantService" class="org.craftercms.profile.v2.services.impl.TenantServiceImpl">
+    <bean id="crafter.tenantService" class="org.craftercms.profile.services.impl.TenantServiceImpl">
         <property name="tenantRepository" ref="crafter.tenantRepository"/>
         <property name="profileRepository" ref="crafter.profileRepository"/>
         <property name="permissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
         <property name="profileService" ref="crafter.profileService"/>
     </bean>
 
-    <bean id="crafter.profileService" class="org.craftercms.profile.v2.services.impl.ProfileServiceImpl">
+    <bean id="crafter.profileService" class="org.craftercms.profile.services.impl.ProfileServiceImpl">
         <property name="profileRepository" ref="crafter.profileRepository"/>
         <property name="tenantService" ref="crafter.tenantService"/>
         <property name="authenticationService" ref="crafter.authenticationService"/>
@@ -185,7 +185,7 @@
         <property name="attributePermissionEvaluator" ref="crafter.attributePermissionEvaluator"/>
     </bean>
 
-    <bean id="crafter.authenticationService" class="org.craftercms.profile.v2.services.impl.AuthenticationServiceImpl">
+    <bean id="crafter.authenticationService" class="org.craftercms.profile.services.impl.AuthenticationServiceImpl">
         <property name="ticketMaxAge" value="${crafter.profile.auth.ticket.maxAge}"/>
         <property name="ticketRepository" ref="crafter.ticketRepository"/>
         <property name="profileService" ref="crafter.profileService"/>

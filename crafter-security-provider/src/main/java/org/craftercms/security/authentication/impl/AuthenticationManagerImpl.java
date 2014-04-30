@@ -24,7 +24,7 @@ import org.craftercms.profile.api.exceptions.ErrorCode;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.api.services.ProfileService;
-import org.craftercms.profile.v2.exceptions.ProfileRestServiceException;
+import org.craftercms.profile.exceptions.ProfileRestServiceException;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.AuthenticationManager;
 import org.craftercms.security.exception.AuthenticationException;
