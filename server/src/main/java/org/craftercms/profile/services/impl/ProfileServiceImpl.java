@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.i10n.I10nLogger;
+import org.craftercms.commons.mail.EmailUtils;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.exception.PermissionException;
@@ -36,7 +37,6 @@ import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.services.VerificationService;
 import org.craftercms.profile.services.VerificationSuccessCallback;
-import org.craftercms.profile.utils.EmailUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.*;
