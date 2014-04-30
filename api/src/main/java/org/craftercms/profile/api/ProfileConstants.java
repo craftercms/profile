@@ -83,6 +83,7 @@ public class ProfileConstants {
     public static final String PARAM_ROLE =                     "role";
     public static final String PARAM_VERIFY =                   "verify";
     public static final String PARAM_ATTRIBUTE_NAME =           "attributeName";
+    public static final String PARAM_VERSION_NUM =              "versionNum";
     public static final String PARAM_USERNAME =                 "username";
     public static final String PARAM_PASSWORD =                 "password";
     public static final String PARAM_EMAIL =                    "email";

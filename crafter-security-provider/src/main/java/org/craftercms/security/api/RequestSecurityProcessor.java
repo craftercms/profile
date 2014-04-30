@@ -16,6 +16,8 @@
  */
 package org.craftercms.security.api;
 
+import org.craftercms.commons.http.RequestContext;
+
 /**
  * Implementations should process a request to enforce a security aspect (authentication, authorization, etc.).
  *
@@ -26,8 +28,7 @@ public interface RequestSecurityProcessor {
     /**
      * Processes a request, enforcing security when required.
      *
-     * @param context        the context which holds the current request and other security info pertinent to the
-     *                       request
+     * @param context        the context which holds the current request and response
      * @param processorChain the {@link RequestSecurityProcessorChain}, used to call the next processor
      */
     void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception;

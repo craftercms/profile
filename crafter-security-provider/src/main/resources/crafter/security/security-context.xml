@@ -18,19 +18,22 @@
 
     <aop:aspectj-autoproxy/>
 
+    <import resource="classpath:crafter/profile/client-context.xml"/>
+
     <!-- Default configuration properties -->
 
     <bean name="crafter.properties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="locations">
             <list>
+                <value>classpath:crafter/profile/client-config.properties</value>
                 <value>classpath:crafter/security/security.properties</value>
-                <value>classpath*:crafter/security/extension/security.properties</value>
             </list>
         </property>
-        <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
-    <bean id="crafter.securityEnabledAwareProcessor" class="org.craftercms.security.utils.spring.SecurityEnabledAwareProcessor">
+    <bean id="crafter.securityEnabledAwareProcessor"
+          class="org.craftercms.security.utils.spring.SecurityEnabledAwareProcessor">
         <constructor-arg value="${crafter.security.enabled}"/>
     </bean>
 
@@ -42,28 +45,26 @@
 
     <bean id="crafter.runIfSecurityEnabledAspect" class="org.craftercms.security.aop.RunIfSecurityEnabledAspect" />
 
+    <bean id="crafter.refreshCurrentAuthenticationOnProfileUpdateAspect"
+          class="org.craftercms.security.utils.profile.RefreshCurrentAuthenticationOnProfileUpdateAspect">
+        <property name="authenticationCache" ref="crafter.authenticationCache"/>
+    </bean>
+
     <!-- ////////////////////////////////// -->
     <!--								 	-->
     <!--			 Filters				-->
     <!--									-->
     <!-- ////////////////////////////////// -->
 
-    <bean id="crafter.requestContextBindingFilter"
-          class="org.craftercms.security.servlet.filters.RequestContextBindingFilter"/>
-
     <!-- Order of the processors is important, so if you need to override this bean try to maintain a similar order -->
     <bean id="crafter.securityFilter" class="org.craftercms.security.servlet.filters.RequestSecurityFilter">
         <property name="securityProcessors">
             <list>
-                <ref bean="crafter.saveAuthenticationCookieResponseWrappingProcessor"/>
+                <ref bean="crafter.addSecurityCookiesProcessor"/>
                 <ref bean="crafter.tenantNameResolvingProcessor"/>
-                <ref bean="crafter.authTokenResolvingProcessor"/>
+                <ref bean="crafter.currentAuthenticationResolvingProcessor"/>
                 <ref bean="crafter.loginProcessor"/>
                 <ref bean="crafter.logoutProcessor"/>
-                <ref bean="crafter.forgotPasswordProcessor"/>
-                <ref bean="crafter.resetPasswordProcessor"/>
-                <ref bean="crafter.createProfileProcessor"/>
-                <ref bean="crafter.verifyAccountProcessor"/>
                 <ref bean="crafter.saveRequestAwareProcessor"/>
                 <ref bean="crafter.securityExceptionProcessor"/>
                 <ref bean="crafter.urlAccessRestrictionCheckingProcessor"/>
@@ -75,35 +76,64 @@
 
     <!-- ////////////////////////////////// -->
     <!--								 	-->
+    <!--	    Security Cookies			-->
+    <!--									-->
+    <!-- ////////////////////////////////// -->
+
+    <bean id="crafter.ticketCookieFactory" class="org.craftercms.commons.http.CookieFactory">
+        <property name="maxAge" value="${crafter.security.cookie.ticket.maxAge}"/>
+    </bean>
+
+    <bean id="crafter.profileLastModifiedCookieFactory" class="org.craftercms.commons.http.CookieFactory">
+        <property name="maxAge" value="${crafter.security.cookie.ticket.maxAge}"/>
+    </bean>
+
+    <!-- ////////////////////////////////// -->
+    <!--								 	-->
+    <!--		       Cache			    -->
+    <!--									-->
+    <!-- ////////////////////////////////// -->
+
+    <bean id="crafter.authenticationCacheConfig" class="net.sf.ehcache.config.CacheConfiguration">
+        <property name="maxEntriesLocalHeap" value="${crafter.security.authentication.cache.maxElementsInMemory}"/>
+        <property name="timeToIdleSeconds" value="${crafter.security.authentication.cache.timeToIdle}"/>
+    </bean>
+
+    <bean id="crafter.authenticationCache" class="org.craftercms.commons.cache.EhCacheFactoryBean">
+        <property name="configuration" ref="crafter.authenticationCacheConfig"/>
+    </bean>    
+
+    <!-- ////////////////////////////////// -->
+    <!--								 	-->
     <!--	    Security Processors			-->
     <!--									-->
     <!-- ////////////////////////////////// -->
 
-    <bean id="crafter.saveAuthenticationCookieResponseWrappingProcessor"
-          class="org.craftercms.security.impl.processors.SaveAuthenticationCookieResponseWrappingProcessor"/>
+    <bean id="crafter.addSecurityCookiesProcessor"
+          class="org.craftercms.security.impl.processors.AddSecurityCookiesProcessor">
+        <property name="ticketCookieFactory" ref="crafter.ticketCookieFactory"/>
+        <property name="profileLastModifiedCookieFactory" ref="crafter.profileLastModifiedCookieFactory"/>
+    </bean>
 
     <bean id="crafter.tenantNameResolvingProcessor"
           class="org.craftercms.security.impl.processors.TenantNameResolvingProcessor">
         <property name="defaultTenantName" value="${crafter.security.tenant.default.name}"/>
     </bean>
 
-    <bean id="crafter.authTokenResolvingProcessor"
-          class="org.craftercms.security.impl.processors.AuthenticationTokenResolvingProcessor">
-        <property name="authenticationTokenCache" ref="crafter.authenticationTokenCache"/>
-        <property name="authenticationService" ref="crafter.authenticationService"/>
+    <bean id="crafter.currentAuthenticationResolvingProcessor"
+          class="org.craftercms.security.impl.processors.CurrentAuthenticationResolvingProcessor">
+        <property name="authenticationManager" ref="crafter.authenticationManager"/>
     </bean>
 
     <bean id="crafter.loginProcessor" class="org.craftercms.security.impl.processors.LoginProcessor">
+        <property name="authenticationManager" ref="crafter.authenticationManager"/>
         <property name="loginSuccessHandler" ref="crafter.loginSuccessHandler"/>
         <property name="loginFailureHandler" ref="crafter.loginFailureHandler"/>
-        <property name="authenticationService" ref="crafter.authenticationService"/>
-        
     </bean>
 
     <bean id="crafter.logoutProcessor" class="org.craftercms.security.impl.processors.LogoutProcessor">
-        <property name="authenticationTokenCache" ref="crafter.authenticationTokenCache"/>
-        <property name="authenticationService" ref="crafter.authenticationService"/>
-        <property name="targetUrl" value="${crafter.security.logout.success.url}"/>
+        <property name="authenticationManager" ref="crafter.authenticationManager"/>
+        <property name="logoutSuccessHandler" ref="crafter.logoutSuccessHandler"/>
     </bean>
 
     <bean id="crafter.saveRequestAwareProcessor"
@@ -120,129 +150,34 @@
         <property name="urlRestrictions" ref="crafter.urlRestrictions"/>
     </bean>
 
-    <bean id="crafter.resetPasswordProcessor" class="org.craftercms.security.impl.processors.ResetPasswordProcessor">
-        <property name="authenticationService" ref="crafter.authenticationService"/>
-        <property name="resetPasswordSuccessHandler" ref="crafter.resetSuccessHandler"/>
-        <property name="resetPasswordFailureHandler" ref="crafter.resetFailureHandler"/>
-    </bean>
-    <bean id="crafter.forgotPasswordProcessor" class="org.craftercms.security.impl.processors.ForgotPasswordProcessor">
-        <property name="authenticationService" ref="crafter.authenticationService"/>
-        <property name="forgotPasswordSuccessHandler" ref="crafter.forgotSuccessHandler"/>
-        <property name="forgotPasswordFailureHandler" ref="crafter.forgotFailureHandler"/>
-    </bean>
-    
-    <bean id="crafter.createProfileProcessor" class="org.craftercms.security.impl.processors.CreateProfileProcessor">
-        <property name="authenticationService" ref="crafter.authenticationService"/>
-        <property name="createProfileSuccessHandler" ref="crafter.createProfileSuccessHandler"/>
-        <property name="createProfileFailureHandler" ref="crafter.createProfileFailureHandler"/>
-    </bean>
-    
-    <bean id="crafter.verifyAccountProcessor" class="org.craftercms.security.impl.processors.VerifyAccountProcessor">
-        <property name="authenticationService" ref="crafter.authenticationService"/>
-        <property name="verifyAccountSuccessHandler" ref="crafter.verifyAccountSuccessHandler"/>
-        <property name="verifyAccountFailureHandler" ref="crafter.verifyAccountFailureHandler"/>
-    </bean>
-
-    <!-- ////////////////////////////////// -->
-    <!--								 	-->
-    <!--			 Profile				-->
-    <!--									-->
-    <!-- ////////////////////////////////// -->
-
-    <bean id="crafter.profileClient" class="ProfileRestClientImpl">
-        <property name="scheme" value="${crafter.security.profile.server.url.scheme}"/>
-        <property name="host" value="${crafter.security.profile.server.url.host}"/>
-        <property name="port" value="${crafter.security.profile.server.url.port}"/>
-        <property name="profileAppPath" value="${crafter.security.profile.server.url.path}"/>
-    </bean>
-
     <!-- ////////////////////////////////// -->
     <!--								 	-->
     <!--		   Authentication			-->
     <!--									-->
     <!-- ////////////////////////////////// -->
 
-    <bean id="crafter.authenticationTokenCache"
-          class="org.craftercms.security.authentication.impl.AuthenticationTokenCacheImpl">
-        <property name="maxElementsInCache" value="${crafter.security.authentication.token.cache.maxElementsInMemory}"/>
-        <property name="profileTimeToOutdated" value="${crafter.security.authentication.token.profile.timeToOutdated}"/>
-        <property name="cookieMaxAge" value="${crafter.security.authentication.cookie.maxAge}"/>
-        <property name="cookieFactory" ref="crafter.authenticationCookieFactory"/>
-    </bean>
-
-    <bean id="crafter.authenticationCookieFactory"
-          class="org.craftercms.security.authentication.impl.CipheredAuthenticationCookieFactory">
-        <property name="encryptionKeyFile" value="${crafter.security.authentication.cookie.encryptionKey.file}"/>
-    </bean>
-
-    <bean id="crafter.authenticationService" class="org.craftercms.security.impl.CrafterProfileAuthenticationService">
-        <property name="profileClient" ref="crafter.profileClient"/>
-        <property name="appUsername" value="${crafter.security.profile.app.username}"/>
-        <property name="appPassword" value="${crafter.security.profile.app.password}"/>
+    <bean id="crafter.authenticationManager"
+          class="org.craftercms.security.authentication.impl.AuthenticationManagerImpl">
+        <property name="authenticationService" ref="crafter.authenticationServiceRestClient"/>
+        <property name="authenticationCache" ref="crafter.authenticationCache"/>
+        <property name="profileService" ref="crafter.profileServiceRestClient"/>
     </bean>
 
     <bean id="crafter.loginSuccessHandler" class="org.craftercms.security.authentication.impl.LoginSuccessHandlerImpl">
-        <property name="authenticationTokenCache" ref="crafter.authenticationTokenCache"/>
         <property name="defaultTargetUrl" value="${crafter.security.login.success.url}"/>
-        <property name="redirectRequired" value="${crafter.security.default.redirect.required}"/>
     </bean>
 
     <bean id="crafter.loginFailureHandler" class="org.craftercms.security.authentication.impl.LoginFailureHandlerImpl">
         <property name="targetUrl" value="${crafter.security.login.failure.url}"/>
-        <property name="redirectRequired" value="${crafter.security.default.redirect.required}"/>
-    </bean>
-    <bean id="crafter.forgotSuccessHandler"
-          class="org.craftercms.security.authentication.impl.ForgotPasswordSuccessHandlerImpl">
-        <property name="redirectRequired" value="${crafter.security.default.redirect.required}"/>
-        <property name="defaultTargetUrl" value="${crafter.security.forgot.success.url}"/>
     </bean>
 
-    <bean id="crafter.forgotFailureHandler"
-          class="org.craftercms.security.authentication.impl.ForgotPasswordFailureHandlerImpl">
-        <property name="targetUrl" value="${crafter.security.forgot.failure.url}"/>
-        <property name="redirectRequired" value="${crafter.security.default.redirect.required}"/>
-    </bean>
-
-    <bean id="crafter.resetSuccessHandler"
-          class="org.craftercms.security.authentication.impl.ResetPasswordSuccessHandlerImpl">
-        <property name="defaultTargetUrl" value="${crafter.security.reset.success.url}"/>
-        <property name="redirectRequired" value="${crafter.security.default.redirect.required}"/>
-    </bean>
-
-    <bean id="crafter.resetFailureHandler"
-          class="org.craftercms.security.authentication.impl.ResetPasswordFailureHandlerImpl">
-        <property name="targetUrl" value="${crafter.security.reset.failure.url}"/>
-        <property name="redirectRequired" value="${crafter.security.default.redirect.required}"/>
+    <bean id="crafter.logoutSuccessHandler" class="org.craftercms.security.authentication.impl.LogoutSuccessHandlerImpl">
+        <property name="targetUrl" value="${crafter.security.logout.success.url}"/>
     </bean>
 
     <bean id="crafter.authenticationRequiredHandler"
           class="org.craftercms.security.authentication.impl.AuthenticationRequiredHandlerImpl">
         <property name="loginFormUrl" value="${crafter.security.login.form.url}"/>
-        <property name="redirectRequired" value="${crafter.security.default.redirect.required}"/>
-    </bean>
-    
-    <bean id="crafter.createProfileSuccessHandler"
-          class="org.craftercms.security.authentication.impl.CreateProfileSuccessHandlerImpl">
-        <property name="defaultTargetUrl" value="${crafter.security.createprofile.success.url}"/>
-        <property name="redirectRequired" value="${crafter.security.default.redirect.required}"/>
-    </bean>
-
-    <bean id="crafter.createProfileFailureHandler"
-          class="org.craftercms.security.authentication.impl.CreateProfileFailureHandlerImpl">
-        <property name="targetUrl" value="${crafter.security.createprofile.failure.url}"/>
-        <property name="redirectRequired" value="${crafter.security.default.redirect.required}"/>
-    </bean>
-    
-    <bean id="crafter.verifyAccountSuccessHandler"
-          class="org.craftercms.security.authentication.impl.VerifyAccountSuccessHandlerImpl">
-        <property name="defaultTargetUrl" value="${crafter.security.verifyaccount.success.url}"/>
-        <property name="redirectRequired" value="${crafter.security.default.redirect.required}"/>
-    </bean>
-
-    <bean id="crafter.verifyAccountFailureHandler"
-          class="org.craftercms.security.authentication.impl.VerifyAccountFailureHandlerImpl">
-        <property name="targetUrl" value="${crafter.security.verifyaccount.failure.url}"/>
-        <property name="redirectRequired" value="${crafter.security.default.redirect.required}"/>
     </bean>
 
     <!-- ////////////////////////////////// -->
@@ -253,7 +188,6 @@
 
     <bean id="crafter.accessDeniedHandler" class="org.craftercms.security.authorization.impl.AccessDeniedHandlerImpl">
         <property name="errorPageUrl" value="${crafter.security.accessDenied.error.url}"/>
-        <property name="redirectRequired" value="${crafter.security.default.redirect.required}"/>
     </bean>
 
     <!-- ////////////////////////////////// -->

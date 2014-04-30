@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Crafter Software Corporation.
+ * Copyright (C) 2007-2014 Crafter Software Corporation.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,28 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.security.exception;
+package org.craftercms.security.authentication;
+
+import org.craftercms.profile.api.Profile;
 
 /**
- * Thrown when user authentication fails because of invalid username/password.
+ * Represents a successful authentication.
  *
- * @author Alfonso Vásquez
+ * @author avasquez
  */
-public class UserAuthenticationException extends AuthenticationException {
+public interface Authentication {
 
-    public UserAuthenticationException() {
-    }
+    /**
+     * Returns the ticket that identifies the authentication.
+     */
+    String getTicket();
 
-    public UserAuthenticationException(String s) {
-        super(s);
-    }
-
-    public UserAuthenticationException(String s, Throwable throwable) {
-        super(s, throwable);
-    }
-
-    public UserAuthenticationException(Throwable throwable) {
-        super(throwable);
-    }
+    /**
+     * Returns the profile associated to the authentication.
+     */
+    Profile getProfile();
 
 }

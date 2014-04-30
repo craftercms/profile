@@ -36,9 +36,9 @@ import org.mockito.stubbing.Answer;
 
 import java.util.*;
 
+import static org.craftercms.profile.api.ProfileConstants.NO_ATTRIBUTE;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.craftercms.profile.api.ProfileConstants.*;
 
 /**
  * Unit test for {@link org.craftercms.profile.v2.services.impl.ProfileServiceImpl}.
@@ -156,8 +156,8 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
         assertTrue(CipherUtils.matchPassword(actual.getPassword(), PASSWORD2));
-        assertNotNull(actual.getCreated());
-        assertNotNull(actual.getModified());
+        assertNotNull(actual.getCreatedOn());
+        assertNotNull(actual.getLastModified());
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
         verify(tenantService).getTenant(TENANT1_NAME);
@@ -184,8 +184,8 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
         assertTrue(CipherUtils.matchPassword(actual.getPassword(), PASSWORD2));
-        assertNotNull(actual.getCreated());
-        assertNotNull(actual.getModified());
+        assertNotNull(actual.getCreatedOn());
+        assertNotNull(actual.getLastModified());
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT2_NAME, TenantActions.MANAGE_PROFILES);
         verify(tenantService).getTenant(TENANT2_NAME);
@@ -207,8 +207,8 @@ public class ProfileServiceImplTest {
         expected.getAttributes().put(ATTRIB_NAME_FIRST_NAME, FIRST_NAME);
         expected.getAttributes().put(ATTRIB_NAME_LAST_NAME, LAST_NAME);
 
-        Profile actual = profileService.updateProfile(PROFILE1_ID.toString(), USERNAME2, PASSWORD2, EMAIL2, false,
-                ROLES2);
+        Profile actual = profileService.updateProfile(PROFILE1_ID.toString(), USERNAME2, PASSWORD2,
+                EMAIL2, false, ROLES2);
 
         assertEqualProfiles(expected, actual);
 
@@ -220,7 +220,8 @@ public class ProfileServiceImplTest {
     @Test
     public void testUpdateProfileInvalidEmail() throws Exception {
         try {
-            profileService.updateProfile(PROFILE1_ID.toString(), USERNAME2, PASSWORD2, "a.com", false, ROLES2);
+            profileService.updateProfile(PROFILE1_ID.toString(), USERNAME2, PASSWORD2, "a.com", false,
+                    ROLES2);
             fail("Exception " + InvalidEmailAddressException.class.getName() + " expected");
         } catch (InvalidEmailAddressException e) {
         }
@@ -443,8 +444,8 @@ public class ProfileServiceImplTest {
         assertEqualProfileLists(expected, actual);
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantActions.MANAGE_PROFILES);
-        verify(profileRepository).findByTenantAndAttributeValue(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME, FIRST_NAME, SORT_BY,
-                SortOrder.ASC);
+        verify(profileRepository).findByTenantAndAttributeValue(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME, FIRST_NAME,
+                SORT_BY, SortOrder.ASC);
     }
 
     @Test

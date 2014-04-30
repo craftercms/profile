@@ -16,21 +16,24 @@
  */
 package org.craftercms.security.impl.processors;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
-import org.craftercms.security.api.AuthenticationService;
-import org.craftercms.security.api.RequestContext;
+import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.api.RequestSecurityProcessor;
 import org.craftercms.security.api.RequestSecurityProcessorChain;
-import org.craftercms.security.api.UserProfile;
+import org.craftercms.security.authentication.Authentication;
+import org.craftercms.security.authentication.AuthenticationManager;
 import org.craftercms.security.authentication.LoginFailureHandler;
 import org.craftercms.security.authentication.LoginSuccessHandler;
 import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.AuthenticationSystemException;
+import org.craftercms.security.exception.BadCredentialsException;
+import org.craftercms.security.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * Processes login requests.
@@ -50,8 +53,7 @@ public class LoginProcessor implements RequestSecurityProcessor {
     protected String loginMethod;
     protected String usernameParameter;
     protected String passwordParameter;
-
-    protected AuthenticationService authenticationService;
+    protected AuthenticationManager authenticationManager;
     protected LoginSuccessHandler loginSuccessHandler;
     protected LoginFailureHandler loginFailureHandler;
 
@@ -64,54 +66,32 @@ public class LoginProcessor implements RequestSecurityProcessor {
         usernameParameter = DEFAULT_USERNAME_PARAM;
         passwordParameter = DEFAULT_PASSWORD_PARAM;
     }
-
-    /**
-     * Sets the login URL this processor should respond to.
-     */
     public void setLoginUrl(String loginUrl) {
         this.loginUrl = loginUrl;
     }
 
-    /**
-     * Sets the HTTP method for the login request this processor should respond to.
-     */
     public void setLoginMethod(String loginMethod) {
         this.loginMethod = loginMethod;
     }
 
-    /**
-     * Sets the password parameter name.
-     */
     public void setPasswordParameter(String passwordParameter) {
         this.passwordParameter = passwordParameter;
     }
 
-    /**
-     * Sets the username parameter name.
-     */
     public void setUsernameParameter(String usernameParameter) {
         this.usernameParameter = usernameParameter;
     }
 
-    /**
-     * Sets the {@link AuthenticationService}, to perform the login against.
-     */
     @Required
-    public void setAuthenticationService(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
     }
 
-    /**
-     * Sets the {@link LoginSuccessHandler}, used to handle the request after successful login.
-     */
     @Required
     public void setLoginSuccessHandler(LoginSuccessHandler loginSuccessHandler) {
         this.loginSuccessHandler = loginSuccessHandler;
     }
 
-    /**
-     * Sets the {@link LoginFailureHandler}, used to handle the request after login failure.
-     */
     @Required
     public void setLoginFailureHandler(LoginFailureHandler loginFailureHandler) {
         this.loginFailureHandler = loginFailureHandler;
@@ -119,16 +99,10 @@ public class LoginProcessor implements RequestSecurityProcessor {
 
     /**
      * Checks if the request URL matches the {@code loginUrl} and the HTTP method matches the {@code loginMethod}. If
-     * it does, it
-     * proceeds to login the user using the username/password specified in the parameters. If the login is
-     * successful, the
-     * {@link LoginSuccessHandler} is used to handle the request, if not, the {@link LoginFailureHandler} is used
-     * instead.
+     * it does, it proceeds to login the user using the username/password specified in the parameters.
      *
-     * @param context        the context which holds the current request and other security info pertinent to the
-     *                       request
+     * @param context        the context which holds the current request and response
      * @param processorChain the processor chain, used to call the next processor
-     * @throws Exception
      */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         HttpServletRequest request = context.getRequest();
@@ -138,7 +112,8 @@ public class LoginProcessor implements RequestSecurityProcessor {
                 logger.debug("Processing login request");
             }
 
-            if (StringUtils.isEmpty(context.getTenantName())) {
+            String tenant = SecurityUtils.getTenant(request);
+            if (StringUtils.isEmpty(tenant)) {
                 throw new IllegalArgumentException("Request context doesn't contain a tenant name");
             }
 
@@ -154,65 +129,72 @@ public class LoginProcessor implements RequestSecurityProcessor {
 
             try {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Authenticating user '" + username + "' for tenant '" + context.getTenantName() + "'");
+                    logger.debug("Authenticating user '" + username + "' for tenant '" + tenant + "'");
                 }
 
-                String ticket = authenticationService.authenticate(context.getTenantName(), username, password);
-                UserProfile profile = authenticationService.getProfile(ticket);
+                Authentication auth = authenticationManager.authenticateUser(tenant, username, password);
 
-                if (profile != null) {
-                    onLoginSuccess(ticket, profile, context);
-                } else {
-                    throw new AuthenticationSystemException("Authentication service returned a null profile for " +
-                        "recently created " +
-                        "ticket '" + ticket + "' for user '" + username + "'");
-                }
+                onLoginSuccess(context, auth);
             } catch (AuthenticationException e) {
-                onLoginFailure(e, context);
+                onLoginFailure(context, e);
             }
         } else {
             processorChain.processRequest(context);
         }
     }
 
-    /**
-     * Returns true if the request URL matches the {@code loginUrl} and the HTTP method matches the {@code loginMethod}.
-     */
     protected boolean isLoginRequest(HttpServletRequest request) {
-        return request.getRequestURI().equals(request.getContextPath() + loginUrl) && request.getMethod().equals
-            (loginMethod);
+        return request.getRequestURI().equals(request.getContextPath() + loginUrl) && request.getMethod()
+                .equals(loginMethod);
     }
 
-    /**
-     * Returns the value of the username parameter from the request.
-     */
     protected String getUsername(HttpServletRequest request) {
         return request.getParameter(usernameParameter);
     }
 
-    /**
-     * Returns the value of the password parameter from the request.
-     */
     protected String getPassword(HttpServletRequest request) {
         return request.getParameter(passwordParameter);
     }
 
-    /**
-     * Calls the {@link LoginSuccessHandler} to subsequently handle the request on login success.
-     */
-    protected void onLoginSuccess(String ticket, UserProfile profile, RequestContext context) throws Exception {
-        logger.info("Login successful for user '" + profile.getUserName() + "'");
+    protected void onLoginSuccess(RequestContext context, Authentication authentication) throws Exception {
+        logger.info("Login successful for user '" + authentication.getProfile().getUsername() + "'");
 
-        loginSuccessHandler.onLoginSuccess(ticket, profile, context);
+        HttpServletRequest request = context.getRequest();
+
+        clearExceptions(request);
+
+        SecurityUtils.setAuthentication(request, authentication);
+
+        loginSuccessHandler.handle(context, authentication);
     }
 
-    /**
-     * Calls the {@link LoginFailureHandler} to subsequently handle the request on login failure.
-     */
-    protected void onLoginFailure(AuthenticationException e, RequestContext context) throws Exception {
+    protected void onLoginFailure(RequestContext context, AuthenticationException e) throws Exception {
         logger.warn("Login failed", e);
 
-        loginFailureHandler.onLoginFailure(e, context);
+        saveException(e, context.getRequest());
+
+        loginFailureHandler.handle(context, e);
+    }
+
+    protected void saveException(AuthenticationException e, HttpServletRequest request) {
+        logger.debug("Saving authentication exception in session for later use");
+
+        HttpSession session = request.getSession(true);
+        if (e instanceof AuthenticationSystemException) {
+            session.setAttribute(SecurityUtils.AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE, e);
+        } else if (e instanceof BadCredentialsException) {
+            session.setAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_ATTRIBUTE, e);
+        }
+    }
+
+    protected void clearExceptions(HttpServletRequest request) {
+        logger.debug("Removing any authentication exceptions from session, not needed anymore");
+
+        HttpSession session = request.getSession();
+        if (session != null) {
+            session.removeAttribute(SecurityUtils.AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE);
+            session.removeAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_ATTRIBUTE);
+        }
     }
 
 }

@@ -18,23 +18,23 @@
     <mvc:annotation-driven>
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-                <property name="objectMapper" ref="profile.objectMapper"/>
+                <property name="objectMapper" ref="crafter.objectMapper"/>
             </bean>
         </mvc:message-converters>
     </mvc:annotation-driven>
 
     <mvc:interceptors>
-        <ref bean="profile.accessTokenCheckingInterceptor"/>
+        <ref bean="crafter.accessTokenCheckingInterceptor"/>
     </mvc:interceptors>
     
-    <bean id="profile.accessTokenCheckingInterceptor"
+    <bean id="crafter.accessTokenCheckingInterceptor"
           class="org.craftercms.profile.v2.interceptors.AccessTokenCheckingInterceptor">
-        <property name="tokenRepository" ref="profile.accessTokenRepository"/>
+        <property name="tokenRepository" ref="crafter.accessTokenRepository"/>
     </bean>
 
     <!-- Jackson config -->
 
-    <bean id="profile.objectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper">
+    <bean id="crafter.objectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper">
         <property name="serializers">
             <list>
                 <bean class="org.craftercms.commons.jackson.ObjectIdSerializer"/>
@@ -51,19 +51,19 @@
 
     <!-- Controllers -->
 
-    <bean id="profile.restControllerAdvice" class="org.craftercms.profile.v2.controllers.rest.RestControllerAdvice"/>
+    <bean id="crafter.restControllerAdvice" class="org.craftercms.profile.v2.controllers.rest.RestControllerAdvice"/>
 
-    <bean id="profile.tenantController" class="org.craftercms.profile.v2.controllers.rest.TenantController">
-        <property name="tenantService" ref="profile.tenantService"/>
+    <bean id="crafter.tenantController" class="org.craftercms.profile.v2.controllers.rest.TenantController">
+        <property name="tenantService" ref="crafter.tenantService"/>
     </bean>
 
-    <bean id="profile.profileController" class="org.craftercms.profile.v2.controllers.rest.ProfileController">
-        <property name="profileService" ref="profile.profileService"/>
+    <bean id="crafter.profileController" class="org.craftercms.profile.v2.controllers.rest.ProfileController">
+        <property name="profileService" ref="crafter.profileService"/>
     </bean>
 
-    <bean id="profile.authenticationController"
+    <bean id="crafter.authenticationController"
           class="org.craftercms.profile.v2.controllers.rest.AuthenticationController">
-        <property name="authenticationService" ref="profile.authenticationService"/>
+        <property name="authenticationService" ref="crafter.authenticationService"/>
     </bean>
 
     <import resource="classpath*:crafter/profile/extension/web-context.xml"/>

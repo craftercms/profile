@@ -16,11 +16,11 @@
  */
 package org.craftercms.security.authentication;
 
-import java.io.IOException;
-
-import org.craftercms.security.api.RequestContext;
+import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.exception.AuthenticationException;
-import org.craftercms.security.exception.CrafterSecurityException;
+import org.craftercms.security.exception.SecurityProviderException;
+
+import java.io.IOException;
 
 /**
  * Handles the request after a failed authentication.
@@ -32,9 +32,9 @@ public interface LoginFailureHandler {
     /**
      * Handles the request after a failed authentication
      *
-     * @param e       the exception that caused the login to fail.
      * @param context the request context
+     * @param e       the exception that caused the login to fail.
      */
-    void onLoginFailure(AuthenticationException e, RequestContext context) throws CrafterSecurityException, IOException;
+    void handle(RequestContext context, AuthenticationException e) throws SecurityProviderException, IOException;
 
 }

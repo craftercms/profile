@@ -17,24 +17,24 @@
 package org.craftercms.security.exception;
 
 /**
- * Thrown when a security cookie, like the profile cache key cookie, has an invalid format.
+ * Root class of security provider related exceptions
  *
  * @author Alfonso Vásquez
  */
-public class InvalidCookieException extends CrafterSecurityException {
+public class SecurityProviderException extends RuntimeException {
 
-    public InvalidCookieException() {
+    public SecurityProviderException() {
     }
 
-    public InvalidCookieException(String s) {
+    public SecurityProviderException(String s) {
         super(s);
     }
 
-    public InvalidCookieException(String s, Throwable throwable) {
+    public SecurityProviderException(String s, Throwable throwable) {
         super(s, throwable);
     }
 
-    public InvalidCookieException(Throwable throwable) {
+    public SecurityProviderException(Throwable throwable) {
         super(throwable);
     }
 

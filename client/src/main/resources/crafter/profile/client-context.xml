@@ -6,19 +6,18 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <bean name="profile.properties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean name="crafter.properties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="locations">
             <list>
                 <value>classpath:crafter/profile/client-config.properties</value>
-                <value>classpath*:crafter/profile/extension/client-config.properties</value>
             </list>
         </property>
     </bean>
 
     <!-- REST Template -->
 
-    <util:list id="profile.messageConverters">
+    <util:list id="crafter.messageConverters">
         <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
         <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
         <bean class="org.springframework.http.converter.ResourceHttpMessageConverter"/>
@@ -26,18 +25,18 @@
         <bean class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter"/>
         <bean class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter"/>
         <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-            <property name="objectMapper" ref="profile.objectMapper"/>
+            <property name="objectMapper" ref="crafter.objectMapper"/>
         </bean>
     </util:list>
 
-    <bean id="profile.profileRestTemplate" class="org.craftercms.commons.rest.RestTemplate">
-        <property name="messageConverters" ref="profile.messageConverters"/>
+    <bean id="crafter.profileRestTemplate" class="org.craftercms.commons.rest.RestTemplate">
+        <property name="messageConverters" ref="crafter.messageConverters"/>
         <property name="errorResponseType" value="org.craftercms.profile.api.exceptions.ErrorDetails"/>
     </bean>
 
     <!-- Jackson config -->
 
-    <bean id="profile.objectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper"
+    <bean id="crafter.objectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper"
           init-method="init">
         <property name="serializers">
             <list>
@@ -55,34 +54,32 @@
 
     <!-- REST Clients -->
 
-    <bean id="profile.accessTokenIdResolver"
+    <bean id="crafter.accessTokenIdResolver"
           class="org.craftercms.profile.v2.services.impl.SingleAccessTokenIdResolver">
         <property name="accessTokenId" value="${crafter.profile.rest.client.accessToken.id}"/>
     </bean>
 
-    <bean id="profile.tenantServiceRestClient" class="org.craftercms.profile.v2.services.impl.TenantServiceRestClient">
+    <bean id="crafter.tenantServiceRestClient" class="org.craftercms.profile.v2.services.impl.TenantServiceRestClient">
         <property name="baseUrl" value="${crafter.profile.rest.client.url.base}"/>
         <property name="extension" value="${crafter.profile.rest.client.url.extension}"/>
-        <property name="restTemplate" ref="profile.profileRestTemplate"/>
-        <property name="accessTokenIdResolver" ref="profile.accessTokenIdResolver"/>
+        <property name="restTemplate" ref="crafter.profileRestTemplate"/>
+        <property name="accessTokenIdResolver" ref="crafter.accessTokenIdResolver"/>
     </bean>
 
-    <bean id="profile.profileServiceRestClient"
+    <bean id="crafter.profileServiceRestClient"
           class="org.craftercms.profile.v2.services.impl.ProfileServiceRestClient">
         <property name="baseUrl" value="${crafter.profile.rest.client.url.base}"/>
         <property name="extension" value="${crafter.profile.rest.client.url.extension}"/>
-        <property name="restTemplate" ref="profile.profileRestTemplate"/>
-        <property name="accessTokenIdResolver" ref="profile.accessTokenIdResolver"/>
+        <property name="restTemplate" ref="crafter.profileRestTemplate"/>
+        <property name="accessTokenIdResolver" ref="crafter.accessTokenIdResolver"/>
     </bean>
 
-    <bean id="profile.authenticationServiceRestClient"
+    <bean id="crafter.authenticationServiceRestClient"
           class="org.craftercms.profile.v2.services.impl.AuthenticationServiceRestClient">
         <property name="baseUrl" value="${crafter.profile.rest.client.url.base}"/>
         <property name="extension" value="${crafter.profile.rest.client.url.extension}"/>
-        <property name="restTemplate" ref="profile.profileRestTemplate"/>
-        <property name="accessTokenIdResolver" ref="profile.accessTokenIdResolver"/>
+        <property name="restTemplate" ref="crafter.profileRestTemplate"/>
+        <property name="accessTokenIdResolver" ref="crafter.accessTokenIdResolver"/>
     </bean>
-
-    <import resource="classpath*:crafter/profile/extension/client-context.xml"/>
 
 </beans>

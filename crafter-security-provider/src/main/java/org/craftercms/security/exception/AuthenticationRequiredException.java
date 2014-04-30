@@ -23,19 +23,8 @@ package org.craftercms.security.exception;
  */
 public class AuthenticationRequiredException extends AuthenticationException {
 
-    public AuthenticationRequiredException() {
-    }
-
-    public AuthenticationRequiredException(String s) {
-        super(s);
-    }
-
     public AuthenticationRequiredException(String s, Throwable throwable) {
         super(s, throwable);
-    }
-
-    public AuthenticationRequiredException(Throwable throwable) {
-        super(throwable);
     }
 
 }

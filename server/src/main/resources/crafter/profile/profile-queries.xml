@@ -34,8 +34,8 @@
         email: 1,
         verified: 1,
         enabled: 1,
-        created: 1,
-        modified: 1,
+        createdOn: 1,
+        lastModified: 1,
         tenant: 1,
         roles: 1
         }

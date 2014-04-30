@@ -61,8 +61,8 @@ if (db.profile.count() == 0) {
         "email" : "admin@craftersoftware.com",
         "verified" : false,
         "enabled" : true,
-        "created" : new Date(),
-        "modified" : new Date(),
+        "createdOn" : new Date(),
+        "lastModified" : new Date(),
         "tenant" : "default",
         "roles" : [ "PROFILE_ADMIN", "SOCIAL_ADMIN" ],
         "attributes" : { }

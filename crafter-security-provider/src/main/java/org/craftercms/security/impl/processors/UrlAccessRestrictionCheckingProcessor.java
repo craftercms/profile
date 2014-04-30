@@ -16,17 +16,13 @@
  */
 package org.craftercms.security.impl.processors;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.collections4.MapUtils;
-import org.craftercms.security.api.RequestContext;
+import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.api.RequestSecurityProcessor;
 import org.craftercms.security.api.RequestSecurityProcessorChain;
-import org.craftercms.security.api.UserProfile;
+import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.exception.AccessDeniedException;
-import org.craftercms.security.exception.CrafterSecurityException;
+import org.craftercms.security.utils.SecurityUtils;
 import org.craftercms.security.utils.spring.el.AccessRestrictionExpressionRoot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,14 +33,16 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Processor that checks if the current user has permission to access the current request URL. To do this,
- * the processor matches
- * the URL against the keys of the {@code restriction} map, which are ANT-style path patterns. If a key matches,
- * the value is
- * interpreted as a Spring EL expression, the expression is executed, and if it returns true,
- * the processor chain is continued, if not
- * an {@link AccessDeniedException} is thrown. The expression should be one of this method calls that return a boolean:
+ * the processor matches the URL against the keys of the {@code restriction} map, which are ANT-style path patterns.
+ * If a key matches, the value is interpreted as a Spring EL expression, the expression is executed, and if it returns
+ * true, the processor chain is continued, if not an {@link AccessDeniedException} is thrown. The expression should be
+ * one of this method calls that return a boolean:
  * <p/>
  * <ol>
  * <li>isAnonymous()</li>
@@ -91,11 +89,8 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
     }
 
     /**
-     * Sets the map of restrictions. Each key of the map is ANT-style path pattern,
-     * used to match the URLs of incoming requests, and
-     * each value is a Spring EL expression that is executed using an {@link AccessRestrictionExpressionRoot},
-     * with the user profile, as
-     * root object to ensure the user should or shouldn't have access to the resource assigned to the URL.
+     * Sets the map of restrictions. Each key of the map is ANT-style path pattern, used to match the URLs of incoming
+     * requests, and each value is a Spring EL expression.
      */
     @Required
     public void setUrlRestrictions(Map<String, String> restrictions) {
@@ -110,17 +105,11 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
 
     /**
      * Matches the request URL against the keys of the {@code restriction} map, which are ANT-style path patterns. If
-     * a key matches, the
-     * value is interpreted as a Spring EL expression, the expression is executed using an {@link
-     * AccessRestrictionExpressionRoot}. with
-     * the user profile, as root object, and if it returns true, the processor chain is continued,
-     * if not an  {@link AccessDeniedException}
-     * is thrown.
+     * a key matches, the value is interpreted as a Spring EL expression, the expression is executed, and if it returns
+     * true, the processor chain is continued, if not an {@link AccessDeniedException} is thrown.
      *
-     * @param context        the context which holds the current request and other security info pertinent to the
-     *                       request
+     * @param context        the context which holds the current request and response
      * @param processorChain the processor chain, used to call the next processor
-     * @throws Exception
      */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         if (MapUtils.isNotEmpty(urlRestrictions)) {
@@ -128,40 +117,24 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
                 logger.debug("Checking URL access restrictions");
             }
 
-            if (context.getAuthenticationToken() == null) {
-                throw new IllegalArgumentException("Request context doesn't contain an authentication token");
-            }
-            if (context.getAuthenticationToken().getProfile() == null) {
-                throw new IllegalArgumentException("Authentication token of request context doesn't contain a user "
-                    + "profile");
-            }
-
+            HttpServletRequest request = context.getRequest();
             String requestUrl = getRequestUrl(context.getRequest());
-            UserProfile profile = context.getAuthenticationToken().getProfile();
 
             for (Map.Entry<String, Expression> entry : urlRestrictions.entrySet()) {
                 String urlPattern = entry.getKey();
                 Expression expression = entry.getValue();
 
                 if (pathMatcher.match(urlPattern, requestUrl)) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Checking restriction ['" + requestUrl + "' => " + expression
-                            .getExpressionString() + "] for user " +
-                            profile.getUserName());
-                    }
+                    logger.debug("Checking restriction [{} => {}]", requestUrl, expression.getExpressionString());
 
-                    if (isAccessAllowed(profile, expression)) {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Restriction ['" + requestUrl + "' => " + expression.getExpressionString() +
-                                "] evaluated to " +
-                                "true for user " + profile.getUserName() + ": access allowed");
-                        }
+                    if (isAccessAllowed(request, expression)) {
+                        logger.debug("Restriction [{}' => {}] evaluated to true for user: access allowed", requestUrl,
+                                expression.getExpressionString());
 
                         break;
                     } else {
                         throw new AccessDeniedException("Restriction ['" + requestUrl + "' => " + expression
-                            .getExpressionString() +
-                            "] evaluated to false for user " + profile.getUserName() + ": access denied");
+                            .getExpressionString() + "] evaluated to false for user: access denied");
                     }
                 }
             }
@@ -177,26 +150,25 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
         return request.getRequestURI().substring(request.getContextPath().length());
     }
 
-    /**
-     * Executes the Spring EL expression using an {@link AccessRestrictionExpressionRoot}, with the user profile,
-     * as root object. The
-     * expression should return a boolean: true if access is allowed, false otherwise.
-     */
-    protected boolean isAccessAllowed(UserProfile profile, Expression expression) {
-        Object value = expression.getValue(createExpressionRoot(profile));
+    protected boolean isAccessAllowed(HttpServletRequest request, Expression expression) {
+        Object value = expression.getValue(createExpressionRoot(request));
         if (!(value instanceof Boolean)) {
-            throw new CrafterSecurityException("Expression " + expression.getExpressionString() + " should return a " +
+            throw new IllegalStateException("Expression " + expression.getExpressionString() + " should return a " +
                 "boolean value");
         }
 
         return (Boolean)value;
     }
 
-    /**
-     * Creates an {@link AccessRestrictionExpressionRoot}, using the specified {@link UserProfile}.
-     */
-    protected AccessRestrictionExpressionRoot createExpressionRoot(UserProfile profile) {
-        return new AccessRestrictionExpressionRoot(profile);
+    protected Object createExpressionRoot(HttpServletRequest request) {
+        AccessRestrictionExpressionRoot root = new AccessRestrictionExpressionRoot();
+        Authentication auth = SecurityUtils.getAuthentication(request);
+
+        if (auth != null) {
+            root.setProfile(auth.getProfile());
+        }
+
+        return root;
     }
 
 }

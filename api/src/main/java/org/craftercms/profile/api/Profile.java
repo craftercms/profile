@@ -17,8 +17,8 @@ public class Profile {
     private String email;
     private boolean verified;
     private boolean enabled;
-    private Date created;
-    private Date modified;
+    private Date createdOn;
+    private Date lastModified;
     private String tenant;
     private Set<String> roles;
     private Map<String, Object> attributes;
@@ -71,20 +71,20 @@ public class Profile {
         this.enabled = enabled;
     }
 
-    public Date getCreated() {
-        return created;
+    public Date getCreatedOn() {
+        return createdOn;
     }
 
-    public void setCreated(final Date created) {
-        this.created = created;
+    public void setCreatedOn(final Date createdOn) {
+        this.createdOn = createdOn;
     }
 
-    public Date getModified() {
-        return modified;
+    public Date getLastModified() {
+        return lastModified;
     }
 
-    public void setModified(final Date modified) {
-        this.modified = modified;
+    public void setLastModified(final Date lastModified) {
+        this.lastModified = lastModified;
     }
 
     public String getTenant() {
@@ -93,6 +93,20 @@ public class Profile {
 
     public void setTenant(final String tenant) {
         this.tenant = tenant;
+    }
+
+    public boolean hasRole(String role) {
+        return getRoles().contains(role);
+    }
+
+    public boolean hasAnyRole(Collection<String> roles) {
+        for (String role : roles) {
+            if (hasRole(role)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public Set<String> getRoles() {
@@ -153,8 +167,8 @@ public class Profile {
                 ", email='" + email + '\'' +
                 ", verified=" + verified +
                 ", enabled=" + enabled +
-                ", created=" + created +
-                ", modified=" + modified +
+                ", createdOn=" + createdOn +
+                ", lastModified=" + lastModified +
                 ", tenant='" + tenant + '\'' +
                 ", roles=" + roles +
                 ", attributes=" + attributes +

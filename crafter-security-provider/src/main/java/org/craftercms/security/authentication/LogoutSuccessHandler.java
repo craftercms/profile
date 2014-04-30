@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Crafter Software Corporation.
+ * Copyright (C) 2007-2014 Crafter Software Corporation.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,24 +17,23 @@
 package org.craftercms.security.authentication;
 
 import org.craftercms.commons.http.RequestContext;
-import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.SecurityProviderException;
 
 import java.io.IOException;
 
 /**
- * Handles the request when authentication is required.
+ * Handles the request after a successful logout.
  *
- * @author Alfonso Vásquez
+ * @author avasquez
  */
-public interface AuthenticationRequiredHandler {
+public interface LogoutSuccessHandler {
 
     /**
-     * Handles the request when authentication is required.
+     * Handles the request after a successful authentication.
      *
-     * @param context the request context
-     * @param e       the exception with the reason for requiring authentication
+     * @param context           the request context
+     * @param authentication    the authentication object, just invalidated
      */
-    void handle(RequestContext context, AuthenticationException e) throws SecurityProviderException, IOException;
+    void handle(RequestContext context, Authentication authentication) throws SecurityProviderException, IOException;
 
 }

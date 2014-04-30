@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Crafter Software Corporation.
+ * Copyright (C) 2007-2014 Crafter Software Corporation.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,25 +17,14 @@
 package org.craftercms.security.exception;
 
 /**
- * General exception thrown by the authentication service.
+ * Thrown if an authentication attempt is performed with a disabled user.
  *
- * @author Alfonso Vásquez
+ * @author avasquez
  */
-public class AuthenticationException extends SecurityProviderException {
+public class DisabledUserException extends AccessDeniedException {
 
-    public AuthenticationException() {
-    }
-
-    public AuthenticationException(String s) {
-        super(s);
-    }
-
-    public AuthenticationException(String s, Throwable throwable) {
+    public DisabledUserException(String s, Throwable throwable) {
         super(s, throwable);
-    }
-
-    public AuthenticationException(Throwable throwable) {
-        super(throwable);
     }
 
 }

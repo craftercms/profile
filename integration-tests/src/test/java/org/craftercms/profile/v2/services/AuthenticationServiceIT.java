@@ -40,7 +40,7 @@ import static org.junit.Assert.*;
  * @author avasquez
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:crafter/profile/client-context.xml")
+@ContextConfiguration("classpath:crafter/profile/extension/client-context.xml")
 public class AuthenticationServiceIT {
 
     private static final String INVALID_ACCESS_TOKEN_ID =   "ab785de0-c327-11e3-9c1a-0800200c9a66";

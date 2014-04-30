@@ -16,35 +16,22 @@
  */
 package org.craftercms.security.authentication.impl;
 
-import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.lang3.StringUtils;
-import org.craftercms.security.api.RequestContext;
-import org.craftercms.security.api.SecurityConstants;
-import org.craftercms.security.authentication.BaseHandler;
+import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.LoginFailureHandler;
 import org.craftercms.security.exception.AuthenticationException;
-import org.craftercms.security.exception.AuthenticationSystemException;
-import org.craftercms.security.exception.CrafterSecurityException;
-import org.craftercms.security.exception.UserAuthenticationException;
+import org.craftercms.security.exception.SecurityProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Default implementation of {@link LoginFailureHandler}:
- * <p/>
- * <ol>
- * <li>Saves authentication exception in session for later use.</li>
- * <li>Redirects to target URL, if there's one, and if not, sends 401 UNAUTHORIZED error.</li>
- * </ol>
- *
- * @author Alfonso Vásquez
- */
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
- * @author Alvaro Gonzalez
+ * Default implementation of {@link org.craftercms.security.authentication.LoginFailureHandler}, which redirects the
+ * response to a target URL or 401 is sent if there's no target URL.
+ *
+ * @author Alfonso Vásquez
  */
 public class LoginFailureHandlerImpl extends BaseHandler implements LoginFailureHandler {
 
@@ -56,77 +43,32 @@ public class LoginFailureHandlerImpl extends BaseHandler implements LoginFailure
         super();
     }
 
-    /**
-     * Sets the URL to redirect to.
-     */
     public void setTargetUrl(String targetUrl) {
         this.targetUrl = targetUrl;
     }
 
     /**
-     * Saves the authentication exception in the session,
-     * under the {@link SecurityConstants#AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE}
-     * or the {@link SecurityConstants#USER_AUTHENTICATION_EXCEPTION_ATTRIBUTE}, depending on the exception type,
-     * and then redirects to
-     * the target URL or sends a 401 if there's no target URL.
+     * Redirects the response to target URL if target URL is not empty. If not, a 401 UNAUTHORIZED error is sent.
      *
-     * @param e       the exception that caused the login to fail.
      * @param context the request context
-     * @throws CrafterSecurityException
-     * @throws IOException
+     * @param e       the exception that caused the login to fail.
      */
-    public void onLoginFailure(AuthenticationException e, RequestContext context) throws CrafterSecurityException,
-        IOException {
-        saveException(e, context);
-
-        if (isRedirectRequired && StringUtils.isNotEmpty(targetUrl)) {
-            redirectToTargetUrl(context);
+    @Override
+    public void handle(RequestContext context, AuthenticationException e) throws SecurityProviderException,
+            IOException {
+        if (StringUtils.isNotEmpty(targetUrl)) {
+            redirectToUrl(context.getRequest(), context.getResponse(), targetUrl);
         } else {
             sendError(e, context);
         }
     }
 
-    /**
-     * Saves the authentication exception in the session,
-     * under the {@link SecurityConstants#AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE}
-     * or the {@link SecurityConstants#USER_AUTHENTICATION_EXCEPTION_ATTRIBUTE}, depending on the exception type.
-     */
-    protected void saveException(AuthenticationException e, RequestContext context) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Saving authentication exception in session for use after redirect");
-        }
-
-        HttpSession session = context.getRequest().getSession();
-        if (e instanceof AuthenticationSystemException) {
-            session.setAttribute(SecurityConstants.AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE, e);
-        } else if (e instanceof UserAuthenticationException) {
-            session.setAttribute(SecurityConstants.USER_AUTHENTICATION_EXCEPTION_ATTRIBUTE, e);
-        }
-    }
-
-    /**
-     * Redirects to the target URL.
-     */
-    protected void redirectToTargetUrl(RequestContext context) throws IOException {
-        String redirectUrl = context.getRequest().getContextPath() + targetUrl;
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Redirecting to URL: " + redirectUrl);
-        }
-
-        context.getResponse().sendRedirect(redirectUrl);
-    }
-
-    /**
-     * Sends a 401 UNAUTHORIZED error.
-     */
     protected void sendError(AuthenticationException e, RequestContext context) throws IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("Sending 401 UNAUTHORIZED error");
         }
-        context.getResponse().setContentType("application/json");
+
         context.getResponse().sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
     }
-
 
 }

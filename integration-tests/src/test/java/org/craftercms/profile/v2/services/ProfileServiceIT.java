@@ -46,12 +46,12 @@ import static org.craftercms.profile.api.ProfileConstants.*;
 import static org.junit.Assert.*;
 
 /**
- * Integration tests for {@link org.craftercms.profile.services.ProfileService}.
+ * Integration tests for {@link org.craftercms.profile.api.services.ProfileService}.
  *
  * @author avasquez
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:crafter/profile/client-context.xml")
+@ContextConfiguration("classpath:crafter/profile/extension/client-context.xml")
 public class ProfileServiceIT {
 
     private static final String VERIFICATION_EMAIL_REGEX = ".+<a id=\"verificationLink\" href=\".+\\?tokenId=(.+)\">.+";
@@ -173,8 +173,8 @@ public class ProfileServiceIT {
             assertEquals(AVASQUEZ_EMAIL1, profile.getEmail());
             assertFalse(profile.isVerified());
             assertTrue(profile.isEnabled());
-            assertNotNull(profile.getCreated());
-            assertNotNull(profile.getModified());
+            assertNotNull(profile.getCreatedOn());
+            assertNotNull(profile.getLastModified());
             assertEquals(DEFAULT_TENANT, profile.getTenant());
             assertEquals(AVASQUEZ_ROLES1, profile.getRoles());
             assertNotNull(profile.getAttributes());
@@ -202,8 +202,8 @@ public class ProfileServiceIT {
             assertEquals(AVASQUEZ_EMAIL1, profile.getEmail());
             assertFalse(profile.isVerified());
             assertFalse(profile.isEnabled());
-            assertNotNull(profile.getCreated());
-            assertNotNull(profile.getModified());
+            assertNotNull(profile.getCreatedOn());
+            assertNotNull(profile.getLastModified());
             assertEquals(DEFAULT_TENANT, profile.getTenant());
             assertEquals(AVASQUEZ_ROLES1, profile.getRoles());
             assertNotNull(profile.getAttributes());
@@ -252,8 +252,8 @@ public class ProfileServiceIT {
             assertEquals(AVASQUEZ_EMAIL2, updatedProfile.getEmail());
             assertEquals(profile.isVerified(), updatedProfile.isVerified());
             assertFalse(updatedProfile.isEnabled());
-            assertEquals(profile.getCreated(), updatedProfile.getCreated());
-            assertTrue(profile.getModified().before(updatedProfile.getModified()));
+            assertEquals(profile.getCreatedOn(), updatedProfile.getCreatedOn());
+            assertTrue(profile.getLastModified().before(updatedProfile.getLastModified()));
             assertEquals(profile.getTenant(), updatedProfile.getTenant());
             assertEquals(AVASQUEZ_ROLES2, updatedProfile.getRoles());
             assertEquals(profile.getAttributes(), updatedProfile.getAttributes());
@@ -279,8 +279,8 @@ public class ProfileServiceIT {
             assertEquals(profile.getEmail(), updatedProfile.getEmail());
             assertEquals(profile.isVerified(), updatedProfile.isVerified());
             assertTrue(updatedProfile.isEnabled());
-            assertEquals(profile.getCreated(), updatedProfile.getCreated());
-            assertTrue(profile.getModified().before(updatedProfile.getModified()));
+            assertEquals(profile.getCreatedOn(), updatedProfile.getCreatedOn());
+            assertTrue(profile.getLastModified().before(updatedProfile.getLastModified()));
             assertEquals(profile.getTenant(), updatedProfile.getTenant());
             assertEquals(profile.getRoles(), updatedProfile.getRoles());
             assertEquals(profile.getAttributes(), updatedProfile.getAttributes());
@@ -306,8 +306,8 @@ public class ProfileServiceIT {
             assertEquals(profile.getEmail(), updatedProfile.getEmail());
             assertEquals(profile.isVerified(), updatedProfile.isVerified());
             assertFalse(updatedProfile.isEnabled());
-            assertEquals(profile.getCreated(), updatedProfile.getCreated());
-            assertTrue(profile.getModified().before(updatedProfile.getModified()));
+            assertEquals(profile.getCreatedOn(), updatedProfile.getCreatedOn());
+            assertTrue(profile.getLastModified().before(updatedProfile.getLastModified()));
             assertEquals(profile.getTenant(), updatedProfile.getTenant());
             assertEquals(profile.getRoles(), updatedProfile.getRoles());
             assertEquals(profile.getAttributes(), updatedProfile.getAttributes());
@@ -337,8 +337,8 @@ public class ProfileServiceIT {
             assertEquals(profile.getEmail(), updatedProfile.getEmail());
             assertEquals(profile.isVerified(), updatedProfile.isVerified());
             assertEquals(profile.isEnabled(), updatedProfile.isEnabled());
-            assertEquals(profile.getCreated(), updatedProfile.getCreated());
-            assertTrue(profile.getModified().before(updatedProfile.getModified()));
+            assertEquals(profile.getCreatedOn(), updatedProfile.getCreatedOn());
+            assertTrue(profile.getLastModified().before(updatedProfile.getLastModified()));
             assertEquals(profile.getTenant(), updatedProfile.getTenant());
             assertEquals(expectedRoles, updatedProfile.getRoles());
             assertEquals(profile.getAttributes(), updatedProfile.getAttributes());
@@ -368,8 +368,8 @@ public class ProfileServiceIT {
             assertEquals(profile.getEmail(), updatedProfile.getEmail());
             assertEquals(profile.isVerified(), updatedProfile.isVerified());
             assertEquals(profile.isEnabled(), updatedProfile.isEnabled());
-            assertEquals(profile.getCreated(), updatedProfile.getCreated());
-            assertTrue(profile.getModified().before(updatedProfile.getModified()));
+            assertEquals(profile.getCreatedOn(), updatedProfile.getCreatedOn());
+            assertTrue(profile.getLastModified().before(updatedProfile.getLastModified()));
             assertEquals(profile.getTenant(), updatedProfile.getTenant());
             assertEquals(expectedRoles, updatedProfile.getRoles());
             assertEquals(profile.getAttributes(), updatedProfile.getAttributes());
@@ -433,40 +433,41 @@ public class ProfileServiceIT {
         Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
                 AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, VERIFICATION_URL);
         Map<String, Object> attributes = new HashMap<>();
-
-        Map<String, Object> subscriptions = new HashMap<>();
-        subscriptions.put("frequency", JDOE_SUBSCRIPTIONS_FREQUENCY);
-        subscriptions.put("autoWatch", JDOE_SUBSCRIPTIONS_AUTO_WATCH);
-        subscriptions.put("targets", JDOE_SUBSCRIPTIONS_TARGETS);
-
-        attributes.put("subscriptions", subscriptions);
-
-        profile = profileService.updateAttributes(profile.getId().toString(), attributes);
-        attributes = profile.getAttributes();
-
-        assertNotNull(attributes);
-        assertEquals(1, attributes.size());
-
-        subscriptions = (Map<String, Object>) attributes.get("subscriptions");
-
-        assertNotNull(subscriptions);
-        assertEquals(3, subscriptions.size());
-        assertEquals(JDOE_SUBSCRIPTIONS_FREQUENCY, subscriptions.get("frequency"));
-        assertEquals(JDOE_SUBSCRIPTIONS_AUTO_WATCH, subscriptions.get("autoWatch"));
-        assertEquals(JDOE_SUBSCRIPTIONS_TARGETS, subscriptions.get("targets"));
-
-        accessTokenIdResolver.setAccessTokenId(ADMIN_CONSOLE_ACCESS_TOKEN_ID);
-
-        // Unallowed updates should be rejected
         try {
-            profileService.updateAttributes(profile.getId().toString(), attributes);
-            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-        } catch (ProfileRestServiceException e) {
-            assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
-            assertEquals(ErrorCode.ACTION_DENIED, e.getErrorCode());
-        }
+            Map<String, Object> subscriptions = new HashMap<>();
+            subscriptions.put("frequency", JDOE_SUBSCRIPTIONS_FREQUENCY);
+            subscriptions.put("autoWatch", JDOE_SUBSCRIPTIONS_AUTO_WATCH);
+            subscriptions.put("targets", JDOE_SUBSCRIPTIONS_TARGETS);
 
-        profileService.deleteProfile(profile.getId().toString());
+            attributes.put("subscriptions", subscriptions);
+
+            profile = profileService.updateAttributes(profile.getId().toString(), attributes);
+            attributes = profile.getAttributes();
+
+            assertNotNull(attributes);
+            assertEquals(1, attributes.size());
+
+            subscriptions = (Map<String, Object>) attributes.get("subscriptions");
+
+            assertNotNull(subscriptions);
+            assertEquals(3, subscriptions.size());
+            assertEquals(JDOE_SUBSCRIPTIONS_FREQUENCY, subscriptions.get("frequency"));
+            assertEquals(JDOE_SUBSCRIPTIONS_AUTO_WATCH, subscriptions.get("autoWatch"));
+            assertEquals(JDOE_SUBSCRIPTIONS_TARGETS, subscriptions.get("targets"));
+
+            accessTokenIdResolver.setAccessTokenId(ADMIN_CONSOLE_ACCESS_TOKEN_ID);
+
+            // Unallowed updates should be rejected
+            try {
+                profileService.updateAttributes(profile.getId().toString(), attributes);
+                fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+            } catch (ProfileRestServiceException e) {
+                assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
+                assertEquals(ErrorCode.ACTION_DENIED, e.getErrorCode());
+            }
+        } finally {
+            profileService.deleteProfile(profile.getId().toString());
+        }
     }
 
     @Test
@@ -477,37 +478,38 @@ public class ProfileServiceIT {
         Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
                 AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, VERIFICATION_URL);
         Map<String, Object> attributes = new HashMap<>();
-
-        Map<String, Object> subscriptions = new HashMap<>();
-        subscriptions.put("frequency", JDOE_SUBSCRIPTIONS_FREQUENCY);
-        subscriptions.put("autoWatch", JDOE_SUBSCRIPTIONS_AUTO_WATCH);
-        subscriptions.put("targets", JDOE_SUBSCRIPTIONS_TARGETS);
-
-        attributes.put("subscriptions", subscriptions);
-
-        profileService.updateAttributes(profile.getId().toString(), attributes);
-
-        accessTokenIdResolver.setAccessTokenId(ADMIN_CONSOLE_ACCESS_TOKEN_ID);
-
-        // Unallowed deletes should be rejected
         try {
-            profileService.removeAttributes(profile.getId().toString(), Arrays.asList("subscriptions"));
-            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-        } catch (ProfileRestServiceException e) {
-            assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
-            assertEquals(ErrorCode.ACTION_DENIED, e.getErrorCode());
+            Map<String, Object> subscriptions = new HashMap<>();
+            subscriptions.put("frequency", JDOE_SUBSCRIPTIONS_FREQUENCY);
+            subscriptions.put("autoWatch", JDOE_SUBSCRIPTIONS_AUTO_WATCH);
+            subscriptions.put("targets", JDOE_SUBSCRIPTIONS_TARGETS);
+
+            attributes.put("subscriptions", subscriptions);
+
+            profileService.updateAttributes(profile.getId().toString(), attributes);
+
+            accessTokenIdResolver.setAccessTokenId(ADMIN_CONSOLE_ACCESS_TOKEN_ID);
+
+            // Unallowed deletes should be rejected
+            try {
+                profileService.removeAttributes(profile.getId().toString(), Arrays.asList("subscriptions"));
+                fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+            } catch (ProfileRestServiceException e) {
+                assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
+                assertEquals(ErrorCode.ACTION_DENIED, e.getErrorCode());
+            }
+
+            accessTokenIdResolver.setAccessTokenId(CRAFTER_SOCIAL_ACCESS_TOKEN_ID);
+
+            // Delete an attribute
+            profile = profileService.removeAttributes(profile.getId().toString(), Arrays.asList("subscriptions"));
+            attributes = profile.getAttributes();
+
+            assertNotNull(attributes);
+            assertEquals(0, attributes.size());
+        } finally {
+            profileService.deleteProfile(profile.getId().toString());
         }
-
-        accessTokenIdResolver.setAccessTokenId(CRAFTER_SOCIAL_ACCESS_TOKEN_ID);
-
-        // Delete an attribute
-        profile = profileService.removeAttributes(profile.getId().toString(), Arrays.asList("subscriptions"));
-        attributes = profile.getAttributes();
-
-        assertNotNull(attributes);
-        assertEquals(0, attributes.size());
-
-        profileService.deleteProfile(profile.getId().toString());
     }
 
     @Test
@@ -698,8 +700,8 @@ public class ProfileServiceIT {
         assertEquals(ADMIN_EMAIL, profile.getEmail());
         assertFalse(profile.isVerified());
         assertTrue(profile.isEnabled());
-        assertNotNull(profile.getCreated());
-        assertNotNull(profile.getModified());
+        assertNotNull(profile.getCreatedOn());
+        assertNotNull(profile.getLastModified());
         assertEquals(DEFAULT_TENANT, profile.getTenant());
         assertEquals(ADMIN_ROLES, profile.getRoles());
         assertNotNull(profile.getAttributes());
@@ -713,8 +715,8 @@ public class ProfileServiceIT {
         assertEquals(JDOE_EMAIL, profile.getEmail());
         assertFalse(profile.isVerified());
         assertFalse(profile.isEnabled());
-        assertNotNull(profile.getCreated());
-        assertNotNull(profile.getModified());
+        assertNotNull(profile.getCreatedOn());
+        assertNotNull(profile.getLastModified());
         assertEquals(DEFAULT_TENANT, profile.getTenant());
         assertEquals(JDOE_ROLES, profile.getRoles());
 

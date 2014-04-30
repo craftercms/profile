@@ -17,25 +17,14 @@
 package org.craftercms.security.exception;
 
 /**
- * Root class of security related exceptions
+ * Thrown when user authentication fails because of invalid username/password.
  *
  * @author Alfonso Vásquez
  */
-public class CrafterSecurityException extends RuntimeException {
+public class BadCredentialsException extends AuthenticationException {
 
-    public CrafterSecurityException() {
-    }
-
-    public CrafterSecurityException(String s) {
-        super(s);
-    }
-
-    public CrafterSecurityException(String s, Throwable throwable) {
+    public BadCredentialsException(String s, Throwable throwable) {
         super(s, throwable);
-    }
-
-    public CrafterSecurityException(Throwable throwable) {
-        super(throwable);
     }
 
 }

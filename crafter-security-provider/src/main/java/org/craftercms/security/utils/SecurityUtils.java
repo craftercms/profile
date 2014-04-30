@@ -16,24 +16,141 @@
  */
 package org.craftercms.security.utils;
 
-import org.craftercms.security.api.SecurityConstants;
-import org.craftercms.security.api.UserProfile;
+import org.apache.commons.lang3.StringUtils;
+import org.craftercms.commons.http.HttpUtils;
+import org.craftercms.commons.http.RequestContext;
+import org.craftercms.security.authentication.Authentication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Contains security utility methods.
  *
  * @author Alfonso Vásquez
  */
-public abstract class SecurityUtils {
+public class SecurityUtils {
 
-    public static UserProfile getAnonymousProfile() {
-        UserProfile profile = new UserProfile();
-        profile.setId(null);
-        profile.setUserName(SecurityConstants.ANONYMOUS_USERNAME);
-        profile.setPassword("");
-        profile.setActive(true);
+    private static final Logger logger = LoggerFactory.getLogger(SecurityUtils.class);
 
-        return profile;
+    public static final String AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE =  "authenticationSystemException";
+    public static final String BAD_CREDENTIALS_EXCEPTION_ATTRIBUTE =        "badCredentialsException";
+    public static final String ACCESS_DENIED_EXCEPTION_ATTRIBUTE =          "accessDeniedException";
+
+    public static final String TICKET_COOKIE_NAME =                     "ticket";
+    public static final String PROFILE_LAST_MODIFIED_COOKIE_NAME =      "profileLastModified";
+    public static final String TENANT_REQUEST_ATTRIBUTE_NAME =          "tenant";
+    public static final String AUTHENTICATION_REQUEST_ATTRIBUTE_NAME =  "authentication";
+
+    private SecurityUtils() {
+    }
+
+    /**
+     * Returns the ticket cookie value from the request.
+     *
+     * @param request the request where to retrieve the ticket from
+     *
+     * @return the ticket
+     */
+    public static String getTicketCookie(HttpServletRequest request) {
+        return HttpUtils.getCookieValue(TICKET_COOKIE_NAME, request);
+    }
+
+    /**
+     * Returns the last modified timestamp cookie from the request.
+     *
+     * @param request the request where to retrieve the last modified timestamp from
+     *
+     * @return the last modified timestamp of the authenticated profile
+     */
+    public static Long getProfileLastModifiedCookie(HttpServletRequest request) {
+        String profileLastModified = HttpUtils.getCookieValue(PROFILE_LAST_MODIFIED_COOKIE_NAME, request);
+        if (StringUtils.isNotEmpty(profileLastModified)) {
+            try {
+                return new Long(profileLastModified);
+            } catch (NumberFormatException e) {
+                logger.error("Invalid profile last modified cookie format: {}", profileLastModified);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the tenant attribute from the specified request.
+     *
+     * @param request the request where to get the attribute from
+     *
+     * @return the tenant name
+     */
+    public static String getTenant(HttpServletRequest request) {
+        return (String) request.getAttribute(TENANT_REQUEST_ATTRIBUTE_NAME);
+    }
+
+    /**
+     * Sets the tenant attribute in the specified request.
+     *
+     * @param request   the request where to add the attribute to
+     * @param tenant    the tenant name to set as request attribute
+     */
+    public static void setTenant(HttpServletRequest request, String tenant) {
+        request.setAttribute(TENANT_REQUEST_ATTRIBUTE_NAME, tenant);
+    }
+
+    /**
+     * Returns the authentication attribute from the current request.
+     *
+     * @return the authentication object
+     */
+    public static Authentication getCurrentAuthentication() {
+        return getAuthentication(RequestContext.getCurrent().getRequest());
+    }
+
+    /**
+     * Sets the authentication attribute in the current request.
+     *
+     * @param authentication    the authentication object to set as request attribute
+     */
+    public static void setCurrentAuthentication(Authentication authentication) {
+        setAuthentication(RequestContext.getCurrent().getRequest(), authentication);
+    }
+
+    /**
+     * Removes the authentication attribute from the current request.
+     */
+    public static void removeCurrentAuthentication() {
+        removeAuthentication(RequestContext.getCurrent().getRequest());
+    }
+
+    /**
+     * Returns the authentication attribute from the specified request.
+     *
+     * @param request the request where to get the attribute from
+     *
+     * @return the authentication object
+     */
+    public static Authentication getAuthentication(HttpServletRequest request) {
+        return (Authentication) request.getAttribute(AUTHENTICATION_REQUEST_ATTRIBUTE_NAME);
+    }
+
+    /**
+     * Sets the authentication attribute in the specified request.
+     *
+     * @param request           the request where to add the attribute to
+     * @param authentication    the authentication object to set as request attribute
+     */
+    public static void setAuthentication(HttpServletRequest request, Authentication authentication) {
+        request.setAttribute(AUTHENTICATION_REQUEST_ATTRIBUTE_NAME, authentication);
+    }
+
+    /**
+     * Removes the authentication attribute from the specified request.
+     *
+     * @param request the request where to remove the attribute from
+     */
+    public static void removeAuthentication(HttpServletRequest request) {
+        request.removeAttribute(AUTHENTICATION_REQUEST_ATTRIBUTE_NAME);
     }
 
 }

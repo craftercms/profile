@@ -131,8 +131,8 @@ public class ProfileServiceImpl implements ProfileService {
             profile.setUsername(username);
             profile.setPassword(CipherUtils.hashPassword(password));
             profile.setEmail(email);
-            profile.setCreated(now);
-            profile.setModified(now);
+            profile.setCreatedOn(now);
+            profile.setLastModified(now);
             profile.setRoles(roles);
             profile.setVerified(false);
 
@@ -198,6 +198,7 @@ public class ProfileServiceImpl implements ProfileService {
                     Profile profile = getNonNullProfile(token.getProfileId(), attributesToReturn);
                     profile.setEnabled(true);
                     profile.setVerified(true);
+                    profile.setLastModified(new Date());
 
                     profileRepository.save(profile);
 
@@ -473,6 +474,7 @@ public class ProfileServiceImpl implements ProfileService {
                 try {
                     Profile profile = getNonNullProfile(token.getProfileId(), attributesToReturn);
                     profile.setPassword(CipherUtils.hashPassword(newPassword));
+                    profile.setLastModified(new Date());
 
                     profileRepository.save(profile);
 
@@ -517,7 +519,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         callback.doWithProfile(profile);
 
-        profile.setModified(new Date());
+        profile.setLastModified(new Date());
 
         try {
             profileRepository.save(profile);
