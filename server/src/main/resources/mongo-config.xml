@@ -21,7 +21,7 @@
 
     <!-- to configure a replica set, use this as the first line of the configuration instead -->
     <!-- mongo:mongo write-concern="REPLICA_SAFE" replica-set="${mongo.replica.set}"-->
-    <mongo:mongo host="${mongo.host}" port="${mongo.port}" write-concern="SAFE" >
+    <mongo:mongo replica-set="${mongo.server.set}"  write-concern="${mongo.writeConcern}">
         <mongo:options connections-per-host="${mongo.connectionsPerHost}"
                        threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
                        connect-timeout="${mongo.connectTimeout}" max-wait-time="${mongo.maxWaitTime}"
