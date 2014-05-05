@@ -18,9 +18,9 @@ package org.craftercms.security.servlet.filters;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.craftercms.commons.http.RequestContext;
-import org.craftercms.security.api.RequestSecurityProcessor;
-import org.craftercms.security.api.RequestSecurityProcessorChain;
-import org.craftercms.security.impl.processors.RequestSecurityProcessorChainImpl;
+import org.craftercms.security.processors.RequestSecurityProcessor;
+import org.craftercms.security.processors.RequestSecurityProcessorChain;
+import org.craftercms.security.processors.impl.RequestSecurityProcessorChainImpl;
 import org.craftercms.security.utils.SecurityEnabledAware;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.util.AntPathMatcher;

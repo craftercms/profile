@@ -95,6 +95,7 @@
     <!-- ////////////////////////////////// -->
 
     <bean id="crafter.authenticationCacheConfig" class="net.sf.ehcache.config.CacheConfiguration">
+        <property name="name" value="authenticationCache"/>
         <property name="maxEntriesLocalHeap" value="${crafter.security.authentication.cache.maxElementsInMemory}"/>
         <property name="timeToIdleSeconds" value="${crafter.security.authentication.cache.timeToIdle}"/>
     </bean>
@@ -110,43 +111,43 @@
     <!-- ////////////////////////////////// -->
 
     <bean id="crafter.addSecurityCookiesProcessor"
-          class="org.craftercms.security.impl.processors.AddSecurityCookiesProcessor">
+          class="org.craftercms.security.processors.impl.AddSecurityCookiesProcessor">
         <property name="ticketCookieFactory" ref="crafter.ticketCookieFactory"/>
         <property name="profileLastModifiedCookieFactory" ref="crafter.profileLastModifiedCookieFactory"/>
     </bean>
 
     <bean id="crafter.tenantNameResolvingProcessor"
-          class="org.craftercms.security.impl.processors.TenantNameResolvingProcessor">
+          class="org.craftercms.security.processors.impl.TenantNameResolvingProcessor">
         <property name="defaultTenantName" value="${crafter.security.tenant.default.name}"/>
     </bean>
 
     <bean id="crafter.currentAuthenticationResolvingProcessor"
-          class="org.craftercms.security.impl.processors.CurrentAuthenticationResolvingProcessor">
+          class="org.craftercms.security.processors.impl.CurrentAuthenticationResolvingProcessor">
         <property name="authenticationManager" ref="crafter.authenticationManager"/>
     </bean>
 
-    <bean id="crafter.loginProcessor" class="org.craftercms.security.impl.processors.LoginProcessor">
+    <bean id="crafter.loginProcessor" class="org.craftercms.security.processors.impl.LoginProcessor">
         <property name="authenticationManager" ref="crafter.authenticationManager"/>
         <property name="loginSuccessHandler" ref="crafter.loginSuccessHandler"/>
         <property name="loginFailureHandler" ref="crafter.loginFailureHandler"/>
     </bean>
 
-    <bean id="crafter.logoutProcessor" class="org.craftercms.security.impl.processors.LogoutProcessor">
+    <bean id="crafter.logoutProcessor" class="org.craftercms.security.processors.impl.LogoutProcessor">
         <property name="authenticationManager" ref="crafter.authenticationManager"/>
         <property name="logoutSuccessHandler" ref="crafter.logoutSuccessHandler"/>
     </bean>
 
     <bean id="crafter.saveRequestAwareProcessor"
-          class="org.craftercms.security.impl.processors.SavedRequestAwareProcessor"/>
+          class="org.craftercms.security.processors.impl.SavedRequestAwareProcessor"/>
 
     <bean id="crafter.securityExceptionProcessor"
-          class="org.craftercms.security.impl.processors.SecurityExceptionProcessor">
+          class="org.craftercms.security.processors.impl.SecurityExceptionProcessor">
         <property name="authenticationRequiredHandler" ref="crafter.authenticationRequiredHandler"/>
         <property name="accessDeniedHandler" ref="crafter.accessDeniedHandler"/>
     </bean>
 
     <bean id="crafter.urlAccessRestrictionCheckingProcessor"
-          class="org.craftercms.security.impl.processors.UrlAccessRestrictionCheckingProcessor">
+          class="org.craftercms.security.processors.impl.UrlAccessRestrictionCheckingProcessor">
         <property name="urlRestrictions" ref="crafter.urlRestrictions"/>
     </bean>
 

@@ -23,6 +23,10 @@ package org.craftercms.security.exception;
  */
 public class BadCredentialsException extends AuthenticationException {
 
+    public BadCredentialsException(String s) {
+        super(s);
+    }
+
     public BadCredentialsException(String s, Throwable throwable) {
         super(s, throwable);
     }
