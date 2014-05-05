@@ -23,6 +23,10 @@ package org.craftercms.security.exception;
  */
 public class DisabledUserException extends AccessDeniedException {
 
+    public DisabledUserException(String s) {
+        super(s);
+    }
+
     public DisabledUserException(String s, Throwable throwable) {
         super(s, throwable);
     }

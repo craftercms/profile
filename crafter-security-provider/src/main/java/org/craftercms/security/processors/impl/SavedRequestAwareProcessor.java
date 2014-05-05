@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.security.impl.processors;
+package org.craftercms.security.processors.impl;
 
 import org.craftercms.commons.http.RequestContext;
-import org.craftercms.security.api.RequestSecurityProcessor;
-import org.craftercms.security.api.RequestSecurityProcessorChain;
+import org.craftercms.security.processors.RequestSecurityProcessor;
+import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;

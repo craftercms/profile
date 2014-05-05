@@ -15,13 +15,25 @@
     -->
     <context:annotation-config/>
 
-    <mvc:annotation-driven>
+    <mvc:annotation-driven content-negotiation-manager="crafter.contentNegotiationManager">
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
                 <property name="objectMapper" ref="crafter.objectMapper"/>
             </bean>
         </mvc:message-converters>
     </mvc:annotation-driven>
+
+    <bean id="crafter.contentNegotiationManager"
+          class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+        <property name="favorPathExtension" value="true"/>
+        <property name="defaultContentType" value="application/json"/>
+        <property name="mediaTypes">
+            <map>
+                <entry key="xml" value="application/xml"/>
+                <entry key="json" value="application/json"/>
+            </map>
+        </property>
+    </bean>
 
     <mvc:interceptors>
         <ref bean="crafter.accessTokenCheckingInterceptor"/>

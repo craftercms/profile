@@ -43,7 +43,6 @@
         <!-- Dependency Version Numbers -->
         <spring.version>4.0.1.RELEASE</spring.version>
         <spring.security.version>3.1.0.RELEASE</spring.security.version>
-        <org.codehaus.jackson.version>1.9.5</org.codehaus.jackson.version>
     </properties>
 
     <dependencies>
@@ -69,7 +68,6 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
             <version>${spring.security.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Crafter Profile -->
@@ -91,12 +89,12 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
-            <version>1.7.2</version>
+            <version>1.8.0</version>
         </dependency>
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-            <version>1.7.2</version>
+            <version>1.8.0</version>
         </dependency>
     </dependencies>
 

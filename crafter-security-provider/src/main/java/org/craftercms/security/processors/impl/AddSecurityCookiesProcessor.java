@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.security.impl.processors;
+package org.craftercms.security.processors.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.http.CookieFactory;
 import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;
-import org.craftercms.security.api.RequestSecurityProcessor;
-import org.craftercms.security.api.RequestSecurityProcessorChain;
+import org.craftercms.security.processors.RequestSecurityProcessor;
+import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.utils.SecurityUtils;
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * {@link org.craftercms.security.api.RequestSecurityProcessor} implementation that adds the ticket and profile
+ * {@link org.craftercms.security.processors.RequestSecurityProcessor} implementation that adds the ticket and profile
  * last update cookies to the response, just before it is sent to the client.
  *
  * @author avasquez
