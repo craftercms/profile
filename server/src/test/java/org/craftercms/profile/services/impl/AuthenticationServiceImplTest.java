@@ -46,13 +46,13 @@ public class AuthenticationServiceImplTest {
 
     private static final String TENANT_NAME = "tenant1";
 
-    private static final ObjectId PROFILE_ID =  new ObjectId("507c7f79bcf86cd7994f6c0e");
+    private static final ObjectId PROFILE_ID =  new ObjectId();
     private static final String USERNAME1 =     "user1";
     private static final String USERNAME2 =     "user2";
     private static final String PASSWORD =      "12345";
 
-    private static final ObjectId NORMAL_TICKET_ID =    new ObjectId("50f1d54e9beb36a0f45c6452");
-    private static final ObjectId EXPIRED_TICKET_ID =   new ObjectId("50f2329d0092b46dae1dc98e");
+    private static final ObjectId NORMAL_TICKET_ID =    new ObjectId();
+    private static final ObjectId EXPIRED_TICKET_ID =   new ObjectId();
     private static final int TICKET_MAX_AGE =           900;
 
     private AuthenticationServiceImpl authenticationService;

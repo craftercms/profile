@@ -16,8 +16,6 @@
  */
 package org.craftercms.security.authentication.impl;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.exceptions.ErrorCode;
@@ -26,6 +24,7 @@ import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.ProfileRestServiceException;
 import org.craftercms.security.authentication.Authentication;
+import org.craftercms.security.authentication.AuthenticationCache;
 import org.craftercms.security.authentication.AuthenticationManager;
 import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.AuthenticationSystemException;
@@ -46,7 +45,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 
     protected AuthenticationService authenticationService;
     protected ProfileService profileService;
-    protected Cache authenticationCache;
+    protected AuthenticationCache authenticationCache;
 
     @Required
     public void setAuthenticationService(AuthenticationService authenticationService) {
@@ -59,7 +58,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
     }
 
     @Required
-    public void setAuthenticationCache(Cache authenticationCache) {
+    public void setAuthenticationCache(AuthenticationCache authenticationCache) {
         this.authenticationCache = authenticationCache;
     }
 
@@ -68,10 +67,15 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
         try {
             Ticket ticket = authenticationService.authenticate(tenant, username, password);
             Profile profile = profileService.getProfile(ticket.getProfileId());
+
+            if (profile == null) {
+                throw new AuthenticationSystemException("No profile found for ID '" + ticket.getProfileId() + "'");
+            }
+
             String ticketId = ticket.getId().toString();
             DefaultAuthentication auth = new DefaultAuthentication(ticketId, profile);
 
-            putAuthenticationInCache(ticketId, auth);
+            authenticationCache.putAuthentication(auth);
 
             logger.debug("Authentication successful for user '{}' (ticket ID = '{}')", username, ticketId);
 
@@ -94,8 +98,13 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 
     @Override
     public Authentication getAuthentication(String ticket, boolean reloadProfile) throws AuthenticationException {
-        DefaultAuthentication auth = getCachedAuthentication(ticket);
-        if (auth == null || reloadProfile) {
+        Authentication auth = null;
+
+        if (!reloadProfile) {
+            auth = authenticationCache.getAuthentication(ticket);
+        }
+
+        if (auth == null) {
             if (reloadProfile) {
                 logger.debug("Profile reload forced for ticket '{}'", ticket);
             } else {
@@ -106,7 +115,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
             if (profile != null) {
                 auth = new DefaultAuthentication(ticket, profile);
 
-                putAuthenticationInCache(ticket, auth);
+                authenticationCache.putAuthentication(auth);
             } else {
                 return null;
             }
@@ -118,7 +127,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
     @Override
     public void invalidateAuthentication(Authentication authentication) {
         try {
-            removeAuthenticationFromCache(authentication.getTicket());
+            authenticationCache.removeAuthentication(authentication.getTicket());
 
             authenticationService.invalidateTicket(authentication.getTicket());
 
@@ -137,7 +146,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 
                 return profile;
             } else {
-                throw new AuthenticationSystemException("No profile found for valid ticket '" + ticketId + "'");
+                throw new AuthenticationSystemException("No profile found for ticket '" + ticketId + "'");
             }
         } catch (ProfileRestServiceException e) {
             if (e.getErrorCode() == ErrorCode.NO_SUCH_TICKET) {
@@ -152,23 +161,6 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
             throw new AuthenticationSystemException("An unexpected error occurred while attempting to retrieve " +
                     "profile for ticket '" + ticketId + "'", e);
         }
-    }
-
-    protected DefaultAuthentication getCachedAuthentication(String ticket) {
-        Element element = authenticationCache.get(ticket);
-        if (element != null) {
-            return (DefaultAuthentication) element.getObjectValue();
-        } else {
-            return null;
-        }
-    }
-
-    protected void putAuthenticationInCache(String ticket, DefaultAuthentication authentication) {
-        authenticationCache.put(new Element(ticket, authentication));
-    }
-
-    protected void removeAuthenticationFromCache(String ticket) {
-        authenticationCache.remove(ticket);
     }
 
 }

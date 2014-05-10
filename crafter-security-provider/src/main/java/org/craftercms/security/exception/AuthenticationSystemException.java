@@ -23,6 +23,9 @@ package org.craftercms.security.exception;
  */
 public class AuthenticationSystemException extends AuthenticationException {
 
+    public AuthenticationSystemException() {
+    }
+
     public AuthenticationSystemException(String s) {
         super(s);
     }

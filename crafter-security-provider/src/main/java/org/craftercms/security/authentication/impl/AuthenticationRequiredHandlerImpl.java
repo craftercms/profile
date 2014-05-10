@@ -23,7 +23,6 @@ import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.SecurityProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 
@@ -58,7 +57,6 @@ public class AuthenticationRequiredHandlerImpl extends BaseHandler implements Au
     /**
      * Sets the URL of the login form page.
      */
-    @Required
     public void setLoginFormUrl(String loginFormUrl) {
         this.loginFormUrl = loginFormUrl;
     }

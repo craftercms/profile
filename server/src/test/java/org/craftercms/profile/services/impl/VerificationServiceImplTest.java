@@ -51,13 +51,13 @@ public class VerificationServiceImplTest {
     private static final String TEMPLATE_NAME = "verification-email.ftl";
     private static final int TOKEN_MAX_AGE =    86400;
 
-    private static final ObjectId PROFILE_ID =  new ObjectId("50f1d54e9beb36a0f45c6452");
+    private static final ObjectId PROFILE_ID =  new ObjectId();
     private static final String PROFILE_EMAIL = "johndoe@gmail.com";
 
     private static final String[] TO = { PROFILE_EMAIL };
 
-    private static final ObjectId NORMAL_TOKEN_ID =     new ObjectId("507c7f79bcf86cd7994f6c0e");
-    private static final ObjectId EXPIRED_TOKEN_ID =    new ObjectId("50f2329d0092b46dae1dc98e");
+    private static final ObjectId NORMAL_TOKEN_ID =     new ObjectId();
+    private static final ObjectId EXPIRED_TOKEN_ID =    new ObjectId();
 
     private static final String VERIFICATION_BASE_URL =                     "http://localhost:8080/verifyProfile";
     private static final Map<String, String> VERIFICATION_TEMPLATE_ARGS =   Collections.singletonMap(

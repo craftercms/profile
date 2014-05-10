@@ -54,8 +54,8 @@ public class ProfileServiceImplTest {
     private static final String TENANT1_NAME =  "tenant1";
     private static final String TENANT2_NAME =  "tenant2";
 
-    private static final ObjectId PROFILE1_ID =             new ObjectId("507c7f79bcf86cd7994f6c0e");
-    private static final ObjectId PROFILE2_ID =             new ObjectId("50f1d54e9beb36a0f45c6452");
+    private static final ObjectId PROFILE1_ID =             new ObjectId();
+    private static final ObjectId PROFILE2_ID =             new ObjectId();
     private static final List<String> TENANT1_PROFILE_IDS = Arrays.asList(PROFILE1_ID.toString());
     private static final String USERNAME1 =                 "user1";
     private static final String USERNAME2 =                 "user2";
@@ -72,16 +72,16 @@ public class ProfileServiceImplTest {
     private static final String GENDER =                    "male";
 
     private static final String VERIFICATION_URL =      "http://localhost:8080/verifyProfile";
-    private static final String VERIFICATION_TOKEN_ID = "000000000000000000000001";
+    private static final String VERIFICATION_TOKEN_ID = new ObjectId().toString();
 
-    private static final ObjectId TICKET_ID = new ObjectId("4d6e5acebcd1b3fac9000002");
+    private static final ObjectId TICKET_ID = new ObjectId();
 
     private static final String SORT_BY =   "username";
     private static final int START =        0;
     private static final int COUNT =        10;
 
     private static final String RESET_PASSWORD_URL =        "http://localhost:8080/resetPassword";
-    private static final String RESET_PASSWORD_TOKEN_ID =   "000000000000000000000002";
+    private static final String RESET_PASSWORD_TOKEN_ID =   new ObjectId().toString();
 
     private ProfileServiceImpl profileService;
     @Mock

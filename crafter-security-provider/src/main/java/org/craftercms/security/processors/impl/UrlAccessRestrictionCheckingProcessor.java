@@ -94,7 +94,7 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
      */
     @Required
     public void setUrlRestrictions(Map<String, String> restrictions) {
-        urlRestrictions = new LinkedHashMap<String, Expression>();
+        urlRestrictions = new LinkedHashMap<>();
 
         ExpressionParser parser = new SpelExpressionParser();
 
