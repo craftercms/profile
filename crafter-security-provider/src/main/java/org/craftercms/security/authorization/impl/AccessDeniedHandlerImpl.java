@@ -72,9 +72,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     }
 
     protected void saveException(RequestContext context, AccessDeniedException e) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Saving access denied exception in request to use after forward");
-        }
+        logger.debug("Saving access denied exception in request to use after forward");
 
         context.getRequest().setAttribute(SecurityUtils.ACCESS_DENIED_EXCEPTION_ATTRIBUTE, e);
     }
@@ -85,9 +83,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
 
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Forwarding to error page at " + errorPageUrl + ", with 403 FORBIDDEN status");
-        }
+        logger.debug("Forwarding to error page at {}, with 403 FORBIDDEN status", errorPageUrl);
 
         RequestDispatcher dispatcher = request.getRequestDispatcher(errorPageUrl);
         try {
@@ -98,9 +94,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     }
 
     protected void sendError(AccessDeniedException e, RequestContext requestContext) throws IOException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Sending 403 FORBIDDEN error");
-        }
+        logger.debug("Sending 403 FORBIDDEN error");
 
         requestContext.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
     }

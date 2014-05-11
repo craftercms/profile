@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.security.authentication.impl;
+package org.craftercms.security.utils.handlers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +36,7 @@ public class BaseHandler {
                                  String relativeUrl) throws IOException {
         String redirectUrl = request.getContextPath() + relativeUrl;
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Redirecting to URL: " + redirectUrl);
-        }
+        logger.debug("Redirecting to URL: {}", redirectUrl);
 
         response.sendRedirect(redirectUrl);
     }

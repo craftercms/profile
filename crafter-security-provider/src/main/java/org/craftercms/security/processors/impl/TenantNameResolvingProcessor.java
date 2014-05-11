@@ -52,9 +52,7 @@ public class TenantNameResolvingProcessor implements RequestSecurityProcessor {
      * @throws Exception
      */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Tenant name resolved for current request: " + defaultTenantName);
-        }
+        logger.debug("Tenant name resolved for current request: {}", defaultTenantName);
 
         SecurityUtils.setTenant(context.getRequest(), defaultTenantName);
 

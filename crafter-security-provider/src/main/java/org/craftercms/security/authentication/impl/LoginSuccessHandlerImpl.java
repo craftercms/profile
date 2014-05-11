@@ -20,6 +20,7 @@ import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.LoginSuccessHandler;
 import org.craftercms.security.exception.SecurityProviderException;
+import org.craftercms.security.utils.handlers.BaseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -52,7 +53,6 @@ public class LoginSuccessHandlerImpl extends BaseHandler implements LoginSuccess
     public LoginSuccessHandlerImpl() {
         super();
         requestCache = new HttpSessionRequestCache();
-
     }
 
     public void setRequestCache(RequestCache requestCache) {
@@ -73,13 +73,7 @@ public class LoginSuccessHandlerImpl extends BaseHandler implements LoginSuccess
     protected void redirectToSavedRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         SavedRequest savedRequest = requestCache.getRequest(request, response);
         if (savedRequest != null) {
-            String redirectUrl = savedRequest.getRedirectUrl();
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Redirecting to saved URL before login: " + redirectUrl);
-            }
-
-            response.sendRedirect(redirectUrl);
+            redirectToUrl(request, response, savedRequest.getRedirectUrl());
         } else {
             redirectToUrl(request, response, defaultTargetUrl);
         }

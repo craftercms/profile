@@ -21,6 +21,7 @@ import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.AuthenticationRequiredHandler;
 import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.SecurityProviderException;
+import org.craftercms.security.utils.handlers.BaseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
@@ -86,17 +87,13 @@ public class AuthenticationRequiredHandlerImpl extends BaseHandler implements Au
     }
 
     protected void saveRequest(RequestContext context) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Saving current request for use after login");
-        }
+        logger.debug("Saving current request for use after login");
 
         requestCache.saveRequest(context.getRequest(), context.getResponse());
     }
 
     protected void sendError(AuthenticationException e, RequestContext context) throws IOException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Sending 401 UNAUTHORIZED error");
-        }
+        logger.debug("Sending 401 UNAUTHORIZED error");
 
         context.getResponse().sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
     }

@@ -39,8 +39,7 @@ import java.util.List;
 
 /**
  * Filter for running security. Uses a list of {@link RequestSecurityProcessor}. The last processor should basically
- * call
- * the filter chain.
+ * call the filter chain.
  *
  * @author Alfonso Vásquez
  */
@@ -60,6 +59,7 @@ public class RequestSecurityFilter extends GenericFilterBean implements Security
     /**
      * Sets if security is enabled or disabled. If disabled, the security processor chain is not run.
      */
+    @Override
     public void setSecurityEnabled(boolean securityEnabled) {
         this.securityEnabled = securityEnabled;
     }
@@ -134,11 +134,7 @@ public class RequestSecurityFilter extends GenericFilterBean implements Security
                 finalSecurityProcessors.iterator());
         try {
             processorChain.processRequest(context);
-        } catch (IOException e) {
-            throw e;
-        } catch (ServletException e) {
-            throw e;
-        } catch (RuntimeException e) {
+        } catch (IOException | ServletException | RuntimeException e) {
             throw e;
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);
