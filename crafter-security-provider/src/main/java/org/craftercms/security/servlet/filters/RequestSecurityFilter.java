@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -75,7 +76,7 @@ public class RequestSecurityFilter extends GenericFilterBean implements Security
     /**
      * Sets the regular expressions used to match the URLs of requests that should be processed by the security chain.
      */
-    public void setUrlsToInclude(String[] urlsToInclude) {
+    public void setUrlsToInclude(String... urlsToInclude) {
         this.urlsToInclude = urlsToInclude;
     }
 
@@ -83,7 +84,7 @@ public class RequestSecurityFilter extends GenericFilterBean implements Security
      * Sets the regular expressions used to match the URLs of requests that should NOT be processed by the security
      * chain.
      */
-    public void setUrlsToExclude(String[] urlsToExclude) {
+    public void setUrlsToExclude(String... urlsToExclude) {
         this.urlsToExclude = urlsToExclude;
     }
 
@@ -130,8 +131,9 @@ public class RequestSecurityFilter extends GenericFilterBean implements Security
         List<RequestSecurityProcessor> finalSecurityProcessors = new ArrayList<>(securityProcessors);
         finalSecurityProcessors.add(getLastProcessorInChain(chain));
 
-        RequestSecurityProcessorChain processorChain = new RequestSecurityProcessorChainImpl(
-                finalSecurityProcessors.iterator());
+        Iterator<RequestSecurityProcessor> processorIter = finalSecurityProcessors.iterator();
+        RequestSecurityProcessorChain processorChain = new RequestSecurityProcessorChainImpl(processorIter);
+
         try {
             processorChain.processRequest(context);
         } catch (IOException | ServletException | RuntimeException e) {
