@@ -68,7 +68,7 @@
         <org.spring-social.version>1.0.1.RELEASE</org.spring-social.version>
         <org.codehaus.jackson.version>1.9.5</org.codehaus.jackson.version>
         <com.thoughtworks.xstream.version>1.4.2</com.thoughtworks.xstream.version>
-        <org.mongodb.java-driver.version>2.7.3</org.mongodb.java-driver.version>
+        <org.mongodb.java-driver.version>2.12.1</org.mongodb.java-driver.version>
 
         <org.bouncycastle.crypto.version>1.46</org.bouncycastle.crypto.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -337,7 +337,18 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-mongodb</artifactId>
             <version>${org.spring-data.mongodb.version}</version>
+            <exclusions>
+                           <exclusion>
+                               <groupId>org.mongodb</groupId>
+                               <artifactId>mongo-java-driver</artifactId>
+                           </exclusion>
+                       </exclusions>
         </dependency>
+        <dependency>
+                    <groupId>org.mongodb</groupId>
+                    <artifactId>mongo-java-driver</artifactId>
+                    <version>${org.mongodb.java-driver.version}</version>
+                </dependency>
 
         <!-- JSON & XML marshallers -->
         <dependency>
