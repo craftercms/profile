@@ -22,11 +22,11 @@
 
     <!-- Default configuration properties -->
 
-    <bean name="crafter.properties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean name="crafter.securityProperties"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="locations">
             <list>
-                <value>classpath:crafter/profile/client-config.properties</value>
                 <value>classpath:crafter/security/security.properties</value>
             </list>
         </property>
