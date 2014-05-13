@@ -62,9 +62,7 @@ public class SavedRequestAwareProcessor implements RequestSecurityProcessor {
         HttpServletRequest wrappedSavedRequest = requestCache.getMatchingRequest(request, response);
 
         if (wrappedSavedRequest != null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("A previously saved request was found, and has been merged with the current request");
-            }
+            logger.debug("A previously saved request was found, and has been merged with the current request");
 
             context.setRequest(wrappedSavedRequest);
         }

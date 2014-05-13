@@ -83,9 +83,7 @@ public class LogoutProcessor implements RequestSecurityProcessor {
      */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         if (isLogoutRequest(context.getRequest())) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Processing logout request");
-            }
+            logger.debug("Processing logout request");
 
             Authentication auth = SecurityUtils.getAuthentication(context.getRequest());
 

@@ -17,17 +17,16 @@
 package org.craftercms.security.processors.impl;
 
 import org.craftercms.commons.http.RequestContext;
-import org.craftercms.security.processors.RequestSecurityProcessor;
-import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.AuthenticationManager;
+import org.craftercms.security.processors.RequestSecurityProcessor;
+import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Obtains and sets the authentication for the current request.
@@ -55,13 +54,11 @@ public class CurrentAuthenticationResolvingProcessor implements RequestSecurityP
      */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         HttpServletRequest request = context.getRequest();
-        HttpServletResponse response = context.getResponse();
         Authentication auth = null;
 
         // Make sure not to run the logic if there's already an authentication
         if (SecurityUtils.getAuthentication(request) == null) {
             String ticket = SecurityUtils.getTicketCookie(request);
-
             if (ticket != null) {
                 auth = authenticationManager.getAuthentication(ticket, false);
                 if (auth != null) {

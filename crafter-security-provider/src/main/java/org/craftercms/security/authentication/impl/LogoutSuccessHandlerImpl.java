@@ -20,6 +20,7 @@ import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.LogoutSuccessHandler;
 import org.craftercms.security.exception.SecurityProviderException;
+import org.craftercms.security.utils.handlers.BaseHandler;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;

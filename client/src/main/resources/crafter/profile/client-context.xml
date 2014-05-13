@@ -6,7 +6,8 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <bean name="crafter.properties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean name="crafter.profileProperties"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="locations">
             <list>
@@ -17,7 +18,7 @@
 
     <!-- REST Template -->
 
-    <util:list id="crafter.messageConverters">
+    <util:list id="crafter.profileMessageConverters">
         <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
         <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
         <bean class="org.springframework.http.converter.ResourceHttpMessageConverter"/>
@@ -25,18 +26,18 @@
         <bean class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter"/>
         <bean class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter"/>
         <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-            <property name="objectMapper" ref="crafter.objectMapper"/>
+            <property name="objectMapper" ref="crafter.profileObjectMapper"/>
         </bean>
     </util:list>
 
     <bean id="crafter.profileRestTemplate" class="org.craftercms.commons.rest.RestTemplate">
-        <property name="messageConverters" ref="crafter.messageConverters"/>
+        <property name="messageConverters" ref="crafter.profileMessageConverters"/>
         <property name="errorResponseType" value="org.craftercms.profile.api.exceptions.ErrorDetails"/>
     </bean>
 
     <!-- Jackson config -->
 
-    <bean id="crafter.objectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper"
+    <bean id="crafter.profileObjectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper"
           init-method="init">
         <property name="serializers">
             <list>

@@ -20,16 +20,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.http.CookieFactory;
 import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;
+import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.processors.RequestSecurityProcessor;
 import org.craftercms.security.processors.RequestSecurityProcessorChain;
-import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,8 +37,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * {@link org.craftercms.security.processors.RequestSecurityProcessor} implementation that adds the ticket and profile
- * last update cookies to the response, just before it is sent to the client.
+ * {@link org.craftercms.security.processors.RequestSecurityProcessor} implementation that creates a wrapper so that
+ * the ticket and profile last update cookies are added to the response, just before it is sent to the client.
  *
  * @author avasquez
  */
@@ -108,13 +107,6 @@ public class AddSecurityCookiesProcessor implements RequestSecurityProcessor {
             addCookies();
 
             return super.getWriter();
-        }
-
-        @Override
-        public ServletResponse getResponse() {
-            addCookies();
-
-            return super.getResponse();
         }
 
         @Override

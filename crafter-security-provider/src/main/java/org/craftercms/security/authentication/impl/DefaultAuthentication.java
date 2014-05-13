@@ -45,6 +45,29 @@ public class DefaultAuthentication implements Authentication {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        DefaultAuthentication auth = (DefaultAuthentication) o;
+
+        if (ticket != null ? !ticket.equals(auth.ticket) : auth.ticket != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return ticket != null ? ticket.hashCode() : 0;
+    }
+
+    @Override
     public String toString() {
         return "DefaultAuthentication{" +
                 "ticket='" + ticket + '\'' +

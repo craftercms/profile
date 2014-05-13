@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Crafter Software Corporation.
+ * Copyright (C) 2007-2014 Crafter Software Corporation.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,24 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.security.exception;
+package org.craftercms.security.authentication;
 
 /**
- * Thrown when user authentication fails because of invalid username/password.
+ * Cache for {@link org.craftercms.security.authentication.Authentication} objects.
  *
- * @author Alfonso Vásquez
+ * @author avasquez
  */
-public class BadCredentialsException extends AuthenticationException {
+public interface AuthenticationCache {
 
-    public BadCredentialsException() {
-    }
+    /**
+     * Returns the cached authentication for the given ticket.
+     */
+    Authentication getAuthentication(String ticket);
 
-    public BadCredentialsException(String s) {
-        super(s);
-    }
+    /**
+     * Puts the specified authentication in the cache.
+     */
+    void putAuthentication(Authentication authentication);
 
-    public BadCredentialsException(String s, Throwable throwable) {
-        super(s, throwable);
-    }
+    /**
+     * Removes the authentication associated to the given ticket from the cache.
+     */
+    void removeAuthentication(String ticket);
 
 }

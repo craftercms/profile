@@ -108,9 +108,7 @@ public class LoginProcessor implements RequestSecurityProcessor {
         HttpServletRequest request = context.getRequest();
 
         if (isLoginRequest(request)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Processing login request");
-            }
+            logger.debug("Processing login request");
 
             String tenant = SecurityUtils.getTenant(request);
             if (StringUtils.isEmpty(tenant)) {
@@ -128,9 +126,7 @@ public class LoginProcessor implements RequestSecurityProcessor {
             }
 
             try {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Authenticating user '" + username + "' for tenant '" + tenant + "'");
-                }
+                logger.debug("Authenticating user '{}' for tenant '{}'", username, tenant);
 
                 Authentication auth = authenticationManager.authenticateUser(tenant, username, password);
 

@@ -16,12 +16,11 @@
  */
 package org.craftercms.security.utils.profile;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.security.authentication.Authentication;
+import org.craftercms.security.authentication.AuthenticationCache;
 import org.craftercms.security.authentication.impl.DefaultAuthentication;
 import org.craftercms.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -35,10 +34,10 @@ import org.springframework.beans.factory.annotation.Required;
 @Aspect
 public class RefreshCurrentAuthenticationOnProfileUpdateAspect {
 
-    protected Cache authenticationCache;
+    protected AuthenticationCache authenticationCache;
 
     @Required
-    public void setAuthenticationCache(Cache authenticationCache) {
+    public void setAuthenticationCache(AuthenticationCache authenticationCache) {
         this.authenticationCache = authenticationCache;
     }
 
@@ -63,7 +62,7 @@ public class RefreshCurrentAuthenticationOnProfileUpdateAspect {
                 auth = new DefaultAuthentication(ticket, updatedProfile);
 
                 // Put updated authentication in cache
-                authenticationCache.put(new Element(ticket, auth));
+                authenticationCache.putAuthentication(auth);
 
                 // Update current authentication object
                 SecurityUtils.setCurrentAuthentication(auth);

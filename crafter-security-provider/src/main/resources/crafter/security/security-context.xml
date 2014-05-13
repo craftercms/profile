@@ -22,11 +22,11 @@
 
     <!-- Default configuration properties -->
 
-    <bean name="crafter.properties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean name="crafter.securityProperties"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="locations">
             <list>
-                <value>classpath:crafter/profile/client-config.properties</value>
                 <value>classpath:crafter/security/security.properties</value>
             </list>
         </property>
@@ -100,9 +100,14 @@
         <property name="timeToIdleSeconds" value="${crafter.security.authentication.cache.timeToIdle}"/>
     </bean>
 
-    <bean id="crafter.authenticationCache" class="org.craftercms.commons.cache.EhCacheFactoryBean">
+    <bean id="crafter.ehCacheAuthenticationCache" class="org.craftercms.commons.cache.EhCacheFactoryBean">
         <property name="configuration" ref="crafter.authenticationCacheConfig"/>
-    </bean>    
+    </bean>
+
+    <bean id="crafter.authenticationCache"
+          class="org.craftercms.security.authentication.impl.EhCacheAuthenticationCache">
+        <property name="cache" ref="crafter.ehCacheAuthenticationCache"/>
+    </bean>
 
     <!-- ////////////////////////////////// -->
     <!--								 	-->

@@ -94,7 +94,7 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
      */
     @Required
     public void setUrlRestrictions(Map<String, String> restrictions) {
-        urlRestrictions = new LinkedHashMap<String, Expression>();
+        urlRestrictions = new LinkedHashMap<>();
 
         ExpressionParser parser = new SpelExpressionParser();
 
@@ -113,9 +113,7 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
      */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         if (MapUtils.isNotEmpty(urlRestrictions)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Checking URL access restrictions");
-            }
+            logger.debug("Checking URL access restrictions");
 
             HttpServletRequest request = context.getRequest();
             String requestUrl = getRequestUrl(context.getRequest());
