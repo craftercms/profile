@@ -19,19 +19,17 @@
         </property>
     </bean>
 
-    <!-- to configure a replica set, use this as the first line of the configuration instead -->
-    <!-- mongo:mongo write-concern="REPLICA_SAFE" replica-set="${mongo.replica.set}"-->
-    <mongo:mongo host="${mongo.host}" port="${mongo.port}" write-concern="SAFE" >
+
+    <mongo:mongo id="mongoConnection" replica-set="${mongo.server.set}" write-concern="${mongo.writeConcern}">
         <mongo:options connections-per-host="${mongo.connectionsPerHost}"
                        threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
                        connect-timeout="${mongo.connectTimeout}" max-wait-time="${mongo.maxWaitTime}"
-                       auto-connect-retry="${mongo.autoConnectRetry}"
-                       socket-keep-alive="${mongo.socketKeepAlive}"
-                       slave-ok="${mongo.slaveOk}" write-number="1"
-                       write-timeout="0" write-fsync="true"/>
+                       auto-connect-retry="${mongo.autoConnectRetry}" socket-keep-alive="${mongo.socketKeepAlive}"
+                       slave-ok="${mongo.slaveOk}"
+                       write-number="1" write-timeout="0" write-fsync="true"/>
     </mongo:mongo>
 
-    <mongo:db-factory dbname="${mongo.db}" mongo-ref="mongo"/>
+    <mongo:db-factory dbname="${mongo.db}" mongo-ref="mongoConnection"/>
 
     <mongo:mapping-converter id="mappingConverter" db-factory-ref="mongoDbFactory">
         <mongo:custom-converters>

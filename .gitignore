@@ -28,4 +28,5 @@ Thumbs.db
 
 # Maven build overlays #
 overlays
-encryption-keys/
+encryption-keys/atlassian-ide-plugin.xml
+atlassian-ide-plugin.xml
