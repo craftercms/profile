@@ -33,10 +33,11 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git://github.com/craftercms/profile/tree/master/crafter-security-provider</connection>
-        <developerConnection>scm:git:git://github.com/craftercms/profile/tree/master/crafter-security-provider
+        <connection>scm:git:git://github.com/craftercms/profile/tree/master/security-provider</connection>
+        <developerConnection>
+            scm:git:git://github.com/craftercms/profile/tree/master/security-provider
         </developerConnection>
-        <url>scm:git:git://github.com/craftercms/profile/tree/master/crafter-security-provider</url>
+        <url>scm:git:git://github.com/craftercms/profile/tree/master/security-provider</url>
     </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
