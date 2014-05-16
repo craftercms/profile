@@ -19,6 +19,8 @@ package org.craftercms.profile.services.impl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.craftercms.commons.collections.IterableUtils;
+import org.craftercms.commons.i10n.I10nLogger;
+import org.craftercms.commons.logging.Logged;
 import org.craftercms.commons.mongo.DuplicateKeyException;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
@@ -46,7 +48,20 @@ import java.util.Set;
  *
  * @author avasquez
  */
+@Logged
 public class TenantServiceImpl implements TenantService {
+
+    private static final I10nLogger logger = new I10nLogger(TenantServiceImpl.class,
+            "crafter.profile.messages.logging");
+
+    public static final String LOG_KEY_TENANT_CREATED =                 "profile.tenant.tenantCreated";
+    public static final String LOG_KEY_TENANT_DELETED =                 "profile.tenant.tenantDeleted";
+    public static final String LOG_KEY_VERIFY_NEW_PROFILES_FLAG_SET =   "profile.tenant.verifyNewProfilesFlagSet";
+    public static final String LOG_KEY_ROLES_ADDED =                    "profile.tenant.rolesAdded";
+    public static final String LOG_KEY_ROLES_REMOVED =                  "profile.tenant.rolesRemoved";
+    public static final String LOG_KEY_ATTRIBUTE_DEFINITIONS_ADDED =    "profile.tenant.attributeDefinitionsAdded";
+    public static final String LOG_KEY_ATTRIBUTE_DEFINITIONS_UPDATED =  "profile.tenant.attributeDefinitionsUpdated";
+    public static final String LOG_KEY_ATTRIBUTE_DEFINITIONS_REMOVED =  "profile.tenant.attributeDefinitionsRemoved";
 
     public static final String ERROR_KEY_CREATE_TENANT_ERROR =      "profile.tenant.createTenantError";
     public static final String ERROR_KEY_GET_TENANT_ERROR =         "profile.tenant.getTenantError";
@@ -95,6 +110,8 @@ public class TenantServiceImpl implements TenantService {
             throw new I10nProfileException(ERROR_KEY_CREATE_TENANT_ERROR, e, tenant.getName());
         }
 
+        logger.debug(LOG_KEY_TENANT_CREATED, tenant);
+
         return tenant;
     }
 
@@ -119,6 +136,8 @@ public class TenantServiceImpl implements TenantService {
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_DELETE_TENANT_ERROR, e, name);
         }
+
+        logger.debug(LOG_KEY_TENANT_DELETED, name);
     }
 
     @Override
@@ -145,7 +164,7 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public Tenant verifyNewProfiles(String tenantName, final boolean verify) throws ProfileException {
-        return updateTenant(tenantName, new UpdateCallback() {
+        Tenant tenant = updateTenant(tenantName, new UpdateCallback() {
 
             @Override
             public void doWithTenant(Tenant tenant) throws ProfileException {
@@ -153,11 +172,15 @@ public class TenantServiceImpl implements TenantService {
             }
 
         });
+
+        logger.debug(LOG_KEY_VERIFY_NEW_PROFILES_FLAG_SET, tenantName, verify);
+
+        return tenant;
     }
 
     @Override
     public Tenant addRoles(String tenantName, final Collection<String> roles) throws ProfileException {
-        return updateTenant(tenantName, new UpdateCallback() {
+        Tenant tenant = updateTenant(tenantName, new UpdateCallback() {
 
             @Override
             public void doWithTenant(Tenant tenant) throws ProfileException {
@@ -165,11 +188,15 @@ public class TenantServiceImpl implements TenantService {
             }
 
         });
+
+        logger.debug(LOG_KEY_ROLES_ADDED, roles, tenantName);
+
+        return tenant;
     }
 
     @Override
     public Tenant removeRoles(String tenantName, final Collection<String> roles) throws ProfileException {
-        return updateTenant(tenantName, new UpdateCallback() {
+        Tenant tenant = updateTenant(tenantName, new UpdateCallback() {
 
             @Override
             public void doWithTenant(Tenant tenant) throws ProfileException {
@@ -177,13 +204,17 @@ public class TenantServiceImpl implements TenantService {
             }
 
         });
+
+        logger.debug(LOG_KEY_ROLES_REMOVED, roles, tenantName);
+
+        return tenant;
     }
 
     @Override
     public Tenant addAttributeDefinitions(final String tenantName,
                                           final Collection<AttributeDefinition> attributeDefinitions)
             throws ProfileException {
-        return updateTenant(tenantName, new UpdateCallback() {
+        Tenant tenant = updateTenant(tenantName, new UpdateCallback() {
 
             @Override
             public void doWithTenant(Tenant tenant) throws ProfileException {
@@ -197,13 +228,17 @@ public class TenantServiceImpl implements TenantService {
             }
 
         });
+
+        logger.debug(LOG_KEY_ATTRIBUTE_DEFINITIONS_ADDED, attributeDefinitions, tenantName);
+
+        return tenant;
     }
 
     @Override
     public Tenant updateAttributeDefinitions(final String tenantName,
                                              final Collection<AttributeDefinition> attributeDefinitions)
             throws ProfileException {
-        return updateTenant(tenantName, new UpdateCallback() {
+        Tenant tenant = updateTenant(tenantName, new UpdateCallback() {
 
             @Override
             public void doWithTenant(Tenant tenant) throws ProfileException {
@@ -227,12 +262,16 @@ public class TenantServiceImpl implements TenantService {
             }
 
         });
+
+        logger.debug(LOG_KEY_ATTRIBUTE_DEFINITIONS_UPDATED, attributeDefinitions, tenantName);
+
+        return tenant;
     }
 
     @Override
     public Tenant removeAttributeDefinitions(final String tenantName,
                                              final Collection<String> attributeNames) throws ProfileException {
-        return updateTenant(tenantName, new UpdateCallback() {
+        Tenant tenant = updateTenant(tenantName, new UpdateCallback() {
 
             @Override
             public void doWithTenant(Tenant tenant) throws ProfileException {
@@ -261,6 +300,10 @@ public class TenantServiceImpl implements TenantService {
             }
 
         });
+
+        logger.debug(LOG_KEY_ATTRIBUTE_DEFINITIONS_REMOVED, attributeNames, tenantName);
+
+        return tenant;
     }
 
     protected void checkIfTenantActionIsAllowed(String tenantName, String action) {

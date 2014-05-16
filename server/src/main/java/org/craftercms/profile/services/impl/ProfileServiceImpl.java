@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.i10n.I10nLogger;
+import org.craftercms.commons.logging.Logged;
 import org.craftercms.commons.mail.EmailUtils;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
@@ -46,13 +47,24 @@ import java.util.*;
  *
  * @author avasquez
  */
+@Logged
 public class ProfileServiceImpl implements ProfileService {
 
     private static final I10nLogger logger = new I10nLogger(ProfileServiceImpl.class,
             "crafter.profile.messages.logging");
 
-    private static final String LOG_KEY_EVALUATING_ATTRIB_ACTION =      "profile.attribute.evaluatingAttributeAction";
-    private static final String LOG_KEY_REMOVING_UNREADABLE_ATTRIB =    "profile.attribute.removingUnreadableAttribute";
+    public static final String LOG_KEY_PROFILE_CREATED =            "profile.profile.profileCreated";
+    public static final String LOG_KEY_PROFILE_UPDATED =            "profile.profile.profileUpdated";
+    public static final String LOG_KEY_PROFILE_VERIFIED =           "profile.profile.profileVerified";
+    public static final String LOG_KEY_PROFILE_ENABLED =            "profile.profile.profileEnabled";
+    public static final String LOG_KEY_PROFILE_DISABLED =           "profile.profile.profileDisabled";
+    public static final String LOG_KEY_PROFILE_ROLES_ADDED =        "profile.profile.rolesAdded";
+    public static final String LOG_KEY_PROFILE_ROLES_REMOVED =      "profile.profile.rolesRemoved";
+    public static final String LOG_KEY_PROFILE_ATTRIBS_UPDATED =    "profile.profile.attributesUpdated";
+    public static final String LOG_KEY_PROFILE_ATTRIBS_REMOVED =    "profile.profile.attributesRemoved";
+    public static final String LOG_KEY_PROFILE_DELETED =            "profile.profile.profileDeleted";
+    public static final String LOG_KEY_EVALUATING_ATTRIB_ACTION =   "profile.attribute.evaluatingAttributeAction";
+    public static final String LOG_KEY_REMOVING_UNREADABLE_ATTRIB = "profile.attribute.removingUnreadableAttribute";
 
     public static final String ERROR_KEY_CREATE_PROFILE_ERROR =             "profile.profile.createProfileError";
     public static final String ERROR_KEY_GET_PROFILE_ERROR =                "profile.profile.getProfileError";
@@ -145,6 +157,8 @@ public class ProfileServiceImpl implements ProfileService {
 
             profileRepository.insert(profile);
 
+            logger.debug(LOG_KEY_PROFILE_CREATED, profile);
+
             if (emailNewProfiles) {
                 newProfileVerificationService.sendEmail(profile, verificationUrl);
             }
@@ -163,7 +177,7 @@ public class ProfileServiceImpl implements ProfileService {
             throw new InvalidEmailAddressException(email);
         }
 
-        return updateProfile(profileId, new UpdateCallback() {
+        Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
@@ -185,6 +199,10 @@ public class ProfileServiceImpl implements ProfileService {
             }
 
         }, attributesToReturn);
+
+        logger.debug(LOG_KEY_PROFILE_UPDATED, profile);
+
+        return profile;
     }
 
     @Override
@@ -210,13 +228,17 @@ public class ProfileServiceImpl implements ProfileService {
 
         };
 
-        return newProfileVerificationService.verifyToken(verificationTokenId, callback);
+        Profile profile = newProfileVerificationService.verifyToken(verificationTokenId, callback);
+
+        logger.debug(LOG_KEY_PROFILE_VERIFIED, profile.getId());
+
+        return profile;
     }
 
     @Override
     public Profile enableProfile(String profileId, String... attributesToReturn)
             throws ProfileException {
-        return updateProfile(profileId, new UpdateCallback() {
+        Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
@@ -224,12 +246,16 @@ public class ProfileServiceImpl implements ProfileService {
             }
 
         }, attributesToReturn);
+
+        logger.debug(LOG_KEY_PROFILE_ENABLED, profileId);
+
+        return profile;
     }
 
     @Override
     public Profile disableProfile(String profileId, String... attributesToReturn)
             throws ProfileException {
-        return updateProfile(profileId, new UpdateCallback() {
+        Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
@@ -237,12 +263,16 @@ public class ProfileServiceImpl implements ProfileService {
             }
 
         }, attributesToReturn);
+
+        logger.debug(LOG_KEY_PROFILE_DISABLED, profileId);
+
+        return profile;
     }
 
     @Override
     public Profile addRoles(String profileId, final Collection<String> roles, String... attributesToReturn)
             throws ProfileException {
-        return updateProfile(profileId, new UpdateCallback() {
+        Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
@@ -250,12 +280,16 @@ public class ProfileServiceImpl implements ProfileService {
             }
 
         }, attributesToReturn);
+
+        logger.debug(LOG_KEY_PROFILE_ROLES_ADDED, roles, profileId);
+
+        return profile;
     }
 
     @Override
     public Profile removeRoles(String profileId, final Collection<String> roles, String... attributesToReturn)
             throws ProfileException {
-        return updateProfile(profileId, new UpdateCallback() {
+        Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
@@ -263,6 +297,10 @@ public class ProfileServiceImpl implements ProfileService {
             }
 
         }, attributesToReturn);
+
+        logger.debug(LOG_KEY_PROFILE_ROLES_REMOVED, roles, profileId);
+
+        return profile;
     }
 
     @Override
@@ -273,7 +311,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile updateAttributes(String profileId, final Map<String, Object> attributes,
                                     String... attributesToReturn) throws ProfileException {
-        return updateProfile(profileId, new UpdateCallback() {
+        Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
@@ -283,12 +321,18 @@ public class ProfileServiceImpl implements ProfileService {
             }
 
         }, attributesToReturn);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug(LOG_KEY_PROFILE_ATTRIBS_UPDATED, attributes.keySet(), profileId);
+        }
+
+        return profile;
     }
 
     @Override
     public Profile removeAttributes(String profileId, final Collection<String> attributeNames,
                                     String... attributesToReturn) throws ProfileException {
-        return updateProfile(profileId, new UpdateCallback() {
+        Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
@@ -302,6 +346,10 @@ public class ProfileServiceImpl implements ProfileService {
             }
 
         }, attributesToReturn);
+
+        logger.debug(LOG_KEY_PROFILE_ATTRIBS_REMOVED, attributeNames, profileId);
+
+        return profile;
     }
 
     @Override
@@ -311,6 +359,8 @@ public class ProfileServiceImpl implements ProfileService {
             if (profile != null) {
                 profileRepository.removeById(profileId);
             }
+
+            logger.debug(LOG_KEY_PROFILE_DELETED, profileId);
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_DELETE_PROFILE_ERROR, e, profileId);
         }

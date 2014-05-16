@@ -14,10 +14,12 @@
     <description>Crafter Profile</description>
     <url>https://github.com/craftercms/profile/tree/master/server</url>
     <packaging>war</packaging>
+
     <organization>
         <name>CrafterCMS</name>
         <url>http://craftercms.org</url>
     </organization>
+
     <licenses>
         <license>
             <name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
@@ -25,68 +27,43 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
     <developers>
         <developer>
             <id>sumerjabri</id>
             <name>Sumer Jabri</name>
             <email>sumer.jabri@craftercms.org</email>
         </developer>
+        <developer>
+            <id>avasquez</id>
+            <name>Alfonso Vásquez</name>
+            <email>alfonso.vasquez@craftercms.org</email>
+        </developer>
     </developers>
+
     <scm>
         <connection>scm:git:git://github.com/craftercms/profile/tree/master/server</connection>
         <developerConnection>scm:git:git://github.com/craftercms/profile/tree/master/server</developerConnection>
         <url>scm:git:git://github.com/craftercms/profile/tree/master/server</url>
     </scm>
+
     <properties>
-        <test.port>12345</test.port>
-        <clover.version>3.1.8</clover.version>
-
-        <jetty.version>8.1.2.v20120308</jetty.version>
-
-        <java.version>1.7</java.version>
-        <org.springframework.version>4.0.3.RELEASE</org.springframework.version>
-        <org.spring-security.version>3.2.0.RELEASE</org.spring-security.version>
-        <org.aspectj.version>1.8.0</org.aspectj.version>
-        <cglib.version>2.2</cglib.version>
-        <org.slf4j.version>1.7.5</org.slf4j.version>
-        <javax.inject.version>1</javax.inject.version>
-        <servlet.api.version>3.0.1</servlet.api.version>
-        <servlet.jsp.api.version>2.2</servlet.jsp.api.version>
-        <servlet.jstl.version>1.2</servlet.jstl.version>
-        <junit.version>4.11</junit.version>
-        <ehcache.version>1.2.3</ehcache.version>
-        <org.hibernate.version>4.2.0.Final</org.hibernate.version>
-        <org.quartz-scheduler>2.2.1</org.quartz-scheduler>
-        <org.apache.commons.fileupload.version>1.3</org.apache.commons.fileupload.version>
-        <org.apache.commons.io.version>2.4</org.apache.commons.io.version>
-        <org.apache.commons.codec.version>1.9</org.apache.commons.codec.version>
-        <com.fasterxml.jackson.version>2.3.3</com.fasterxml.jackson.version>
-        <com.thoughtworks.xstream.version>1.4.2</com.thoughtworks.xstream.version>
-        <org.mongodb.java-driver.version>2.11.3</org.mongodb.java-driver.version>
-
-        <org.bouncycastle.crypto.version>1.46</org.bouncycastle.crypto.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Dependency versions -->
+        <quartz.version>2.2.1</quartz.version>
+        <freemarker.version>2.3.20</freemarker.version>
+        <aspectj.version>1.8.0</aspectj.version>
     </properties>
 
     <dependencies>
+        <!-- Crafter -->
         <dependency>
             <groupId>org.craftercms</groupId>
             <artifactId>crafter-commons-mongo</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.craftercms</groupId>
             <artifactId>crafter-commons-utilities</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>1.9.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.craftercms</groupId>
-            <artifactId>crafter-profile-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -99,16 +76,64 @@
             <artifactId>crafter-profile-access-token-manager</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${servlet.api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Quartz -->
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>${quartz.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>${org.springframework.version}</version>
+            <version>${spring.version}</version>
+            <exclusions>
+                <!-- Exclude Commons Logging in favor of SLF4j -->
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>${org.springframework.version}</version>
+            <version>${spring.version}</version>
             <exclusions>
                 <!-- Exclude Commons Logging in favor of SLF4j -->
                 <exclusion>
@@ -120,7 +145,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>${org.springframework.version}</version>
+            <version>${spring.version}</version>
             <exclusions>
                 <!-- Exclude Commons Logging in favor of SLF4j -->
                 <exclusion>
@@ -131,221 +156,101 @@
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>${org.springframework.version}</version>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-oxm</artifactId>
-            <version>${org.springframework.version}</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <version>${org.springframework.version}</version>
+            <version>${spring.version}</version>
         </dependency>
 
+        <!-- Jackson -->
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-            <version>${org.spring-security.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-            <version>${org.spring-security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-crypto</artifactId>
-            <version>${org.spring-security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-            <version>${org.spring-security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-aspects</artifactId>
-            <version>${org.spring-security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-taglibs</artifactId>
-            <version>${org.spring-security.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
 
+        <!-- XStream -->
         <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-            <version>${org.quartz-scheduler}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjrt</artifactId>
-            <version>${org.aspectj.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <version>${cglib.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>${javax.inject.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4.7</version>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>${xstream.version}</version>
         </dependency>
 
+        <!-- FreeMarker -->
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
-            <version>2.3.19</version>
+            <version>${freemarker.version}</version>
         </dependency>
 
-        <!-- Apache Commons -->
+        <!-- AspectJ -->
         <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${org.apache.commons.io.version}</version>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>${aspectj.version}</version>
         </dependency>
         <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>${org.apache.commons.fileupload.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>${org.apache.commons.codec.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.2.1</version>
-        </dependency>
-
-        <!-- Servlet -->
-        <!-- JSP -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${servlet.api.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.servlet.jsp</groupId>
-            <artifactId>jsp-api</artifactId>
-            <version>${servlet.jsp.api.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet.jsp.jstl</groupId>
-            <artifactId>jstl-api</artifactId>
-            <version>${servlet.jstl.version}</version>
-            <exclusions>
-                <!-- Exclude Commons Logging in favor of SLF4j -->
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
         </dependency>
 
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${org.slf4j.version}</version>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
-            <version>${org.slf4j.version}</version>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.0.13</version>
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.0.13</version>
+            <version>${logback.version}</version>
         </dependency>
-
-        <!-- Test -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${org.springframework.version}</version>
-        </dependency>
-        <!-- END Test -->
-
-        <dependency>
-            <groupId>ehcache</groupId>
-            <artifactId>ehcache</artifactId>
-            <version>${ehcache.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- JSON & XML marshallers -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${com.fasterxml.jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${com.fasterxml.jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${com.fasterxml.jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
-            <version>${com.thoughtworks.xstream.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>${org.hibernate.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk16</artifactId>
-            <version>${org.bouncycastle.crypto.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mindrot</groupId>
-            <artifactId>jbcrypt</artifactId>
-            <version>0.3m</version>
-        </dependency>
-
-
     </dependencies>
+
     <build>
         <outputDirectory>target/classes</outputDirectory>
         <plugins>
@@ -358,7 +263,6 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
-
             <!-- <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
@@ -392,8 +296,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -437,15 +339,9 @@
                     </execution>
                 </executions>
             </plugin-->
-
-
-            <plugin>
-                <groupId>com.atlassian.maven.plugins</groupId>
-                <artifactId>maven-clover2-plugin</artifactId>
-                <version>${clover.version}</version>
-            </plugin>
         </plugins>
     </build>
+
     <profiles>
         <profile>
             <id>Sonar</id>
@@ -547,4 +443,5 @@
             </build>
         </profile>
     </profiles>
+
 </project>

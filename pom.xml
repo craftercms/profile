@@ -7,19 +7,36 @@
         <artifactId>oss-parent</artifactId>
         <version>7</version>
     </parent>
+
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-profile-parent</artifactId>
     <version>2.5.0-SNAPSHOT</version>
-    <name>Crafter Profile</name>
-    <description>Crafter Profile</description>
+    <name>Crafter Profile Parent POM</name>
+    <description>Crafter Profile Parent POM</description>
     <packaging>pom</packaging>
+
     <organization>
         <name>CrafterCMS</name>
         <url>http://craftercms.org</url>
     </organization>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.7</java.version>
+
+        <!-- Dependency versions -->
+        <spring.version>4.0.3.RELEASE</spring.version>
+        <servlet.api.version>3.0.1</servlet.api.version>
+        <junit.version>4.11</junit.version>
+        <mockito.version>1.9.5</mockito.version>
+        <commons.lang.version>3.3.2</commons.lang.version>
+        <commons.collections.version>4.0</commons.collections.version>
+        <jackson.version>2.3.3</jackson.version>
+        <xstream.version>1.4.7</xstream.version>
+        <slf4j.version>1.7.7</slf4j.version>
+        <logback.version>1.0.13</logback.version>
     </properties>
+
     <licenses>
         <license>
             <name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
@@ -27,29 +44,37 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
     <developers>
         <developer>
             <id>sumerjabri</id>
             <name>Sumer Jabri</name>
             <email>sumer.jabri@craftercms.org</email>
         </developer>
+        <developer>
+            <id>avasquez</id>
+            <name>Alfonso Vásquez</name>
+            <email>alfonso.vasquez@craftercms.org</email>
+        </developer>
     </developers>
+
     <scm>
         <connection>scm:git:git://github.com/craftercms/profile/tree/master/server</connection>
         <developerConnection>scm:git:git://github.com/craftercms/profile/tree/master/server</developerConnection>
         <url>scm:git:git://github.com/craftercms/profile/tree/master/server</url>
     </scm>
+
     <modules>
-        <module>server</module>
-        <module>client</module>
-        <module>crafter-security-provider</module>
-        <!--module>admin-console</module-->
         <module>api</module>
         <module>access-token-manager</module>
+        <module>server</module>
+        <module>client</module>
+        <module>security-provider</module>
+        <!--module>admin-console</module-->
         <module>integration-tests</module>
     </modules>
-    <profiles>
 
+    <profiles>
         <profile>
             <id>Sonar</id>
             <properties>
@@ -121,6 +146,7 @@
             </build>
         </profile>
     </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -133,4 +159,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

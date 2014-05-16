@@ -135,6 +135,13 @@ public class AuthenticationServiceImplTest {
         verify(ticketRepository).removeById(EXPIRED_TICKET_ID.toString());
     }
 
+    @Test
+    public void testInvalidateTicket() throws Exception {
+        authenticationService.invalidateTicket(NORMAL_TICKET_ID.toString());
+
+        verify(ticketRepository).removeById(NORMAL_TICKET_ID.toString());
+    }
+
     private Profile getProfile1() {
         Profile profile = new Profile();
         profile.setId(PROFILE_ID);

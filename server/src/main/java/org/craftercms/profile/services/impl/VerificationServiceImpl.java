@@ -17,6 +17,7 @@
 package org.craftercms.profile.services.impl;
 
 import org.craftercms.commons.i10n.I10nLogger;
+import org.craftercms.commons.logging.Logged;
 import org.craftercms.commons.mail.EmailException;
 import org.craftercms.commons.mail.EmailFactory;
 import org.craftercms.commons.mongo.MongoDataException;
@@ -40,6 +41,7 @@ import java.util.Map;
  *
  * @author avasquez
  */
+@Logged
 public class VerificationServiceImpl implements VerificationService {
 
     private static final I10nLogger logger = new I10nLogger(VerificationServiceImpl.class,
@@ -49,6 +51,7 @@ public class VerificationServiceImpl implements VerificationService {
 
     public static final String LOG_KEY_VER_URL_CREATED =    "profile.verification.verificationUrlCreated";
     public static final String LOG_KEY_EMAIL_SENT =         "profile.verification.emailSent";
+    public static final String LOG_KEY_TOKEN_VERIFIED =     "profile.verification.tokenVerified";
 
     public static final String ERROR_KEY_CREATE_TOKEN_ERROR =   "profile.verification.createTokenError";
     public static final String ERROR_KEY_GET_TOKEN_ERROR =      "profile.verification.getTokenError";
@@ -135,6 +138,8 @@ public class VerificationServiceImpl implements VerificationService {
         expirationTime.add(Calendar.SECOND, tokenMaxAge);
 
         if (Calendar.getInstance().before(expirationTime)) {
+            logger.debug(LOG_KEY_TOKEN_VERIFIED, token);
+
             return callback.doOnSuccess(token);
         } else {
             throw new ExpiredVerificationTokenException(tokenId, expirationTime.getTime());
