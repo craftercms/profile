@@ -17,6 +17,8 @@
 package org.craftercms.profile.services.impl;
 
 import org.craftercms.commons.crypto.CipherUtils;
+import org.craftercms.commons.i10n.I10nLogger;
+import org.craftercms.commons.logging.Logged;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
@@ -41,7 +43,16 @@ import java.util.Date;
  *
  * @author avasquez
  */
+@Logged
 public class AuthenticationServiceImpl implements AuthenticationService {
+
+    private static final I10nLogger logger = new I10nLogger(AuthenticationServiceImpl.class,
+            "crafter.profile.messages.logging");
+
+    public static final String LOG_KEY_AUTHENTICATION_SUCCESSFUL =  "profile.auth.authenticationSuccessful";
+    public static final String LOG_KEY_TICKET_REQUESTED =           "profile.auth.ticketRequested";
+    public static final String LOG_KEY_TICKET_EXPIRED =             "profile.auth.ticketExpired";
+    public static final String LOG_KEY_TICKET_INVALIDATED =         "profile.auth.tickedInvalidated";
 
     public static final String ERROR_KEY_CREATE_TICKET_ERROR =  "profile.auth.createTicketError";
     public static final String ERROR_KEY_GET_TICKET_ERROR =     "profile.auth.getTicketError";
@@ -99,6 +110,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             ticketRepository.insert(ticket);
 
+            logger.debug(LOG_KEY_AUTHENTICATION_SUCCESSFUL, username, ticket);
+
             return ticket;
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_CREATE_TICKET_ERROR, username, tenantName);
@@ -130,6 +143,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     throw new I10nProfileException(ERROR_KEY_UPDATE_TICKET_ERROR, ticketId);
                 }
 
+                logger.debug(LOG_KEY_TICKET_REQUESTED, ticket.getId());
+
                 return ticket;
             } else {
                 try {
@@ -137,6 +152,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 } catch (MongoDataException e) {
                     throw new I10nProfileException(ERROR_KEY_DELETE_TICKET_ERROR, ticketId);
                 }
+
+                logger.debug(LOG_KEY_TICKET_EXPIRED, ticket.getId());
             }
         }
 
@@ -151,6 +168,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 checkIfManageTicketsIsAllowed(ticket.getTenant());
 
                 ticketRepository.removeById(ticketId);
+
+                logger.debug(LOG_KEY_TICKET_INVALIDATED, ticket.getId());
             }
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_DELETE_TICKET_ERROR, ticketId);

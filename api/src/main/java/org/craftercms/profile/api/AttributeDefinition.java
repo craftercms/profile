@@ -81,4 +81,14 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
         return name.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return "AttributeDefinition{" +
+                "name='" + name + '\'' +
+                ", owner='" + owner + '\'' +
+                ", metadata=" + metadata +
+                ", permissions=" + permissions +
+                '}';
+    }
+
 }
