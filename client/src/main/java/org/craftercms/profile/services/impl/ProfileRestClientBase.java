@@ -64,7 +64,8 @@ public class ProfileRestClientBase extends RestClientBase {
 
     protected MultiValueMap<String, String> createBaseParams() {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        RestClientUtils.addValue(ProfileConstants.PARAM_ACCESS_TOKEN_ID, accessTokenIdResolver.getAccessTokenId(), params);
+        RestClientUtils.addValue(ProfileConstants.PARAM_ACCESS_TOKEN_ID, accessTokenIdResolver.getAccessTokenId(),
+                params);
 
         return params;
     }
