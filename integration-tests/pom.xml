@@ -76,9 +76,6 @@
                         <goals>
                             <goal>integration-test</goal>
                         </goals>
-                        <configuration>
-                            <forkMode>never</forkMode>
-                        </configuration>
                     </execution>
                     <execution>
                         <id>verify</id>
