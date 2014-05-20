@@ -18,6 +18,7 @@ package org.craftercms.profile.utils;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.jackson.CustomSerializationObjectMapper;
@@ -39,10 +40,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -52,6 +50,9 @@ import static org.mockito.Mockito.*;
  * @author avasquez
  */
 public class AccessTokenManagerCliTest {
+
+    public static final String DATE_FORMAT = "MM/dd/yyyy";
+    public static final String EXPIRES_ON = "01/01/2124";
 
     private AccessTokenRepository tokenRepository;
     private CustomSerializationObjectMapper objectMapper;
@@ -75,7 +76,7 @@ public class AccessTokenManagerCliTest {
         PrintWriter printInputWriter = new PrintWriter(inputWriter);
 
         printInputWriter.println("crafterengine");
-        printInputWriter.println("03/05/2014");
+        printInputWriter.println(EXPIRES_ON);
         printInputWriter.println("corporate");
         printInputWriter.println(StringUtils.join(TenantActions.ALL_ACTIONS, ','));
         printInputWriter.println("n");
@@ -125,9 +126,10 @@ public class AccessTokenManagerCliTest {
         cli.run("-list");
 
         assertEquals("[{\"application\":\"crafterengine\",\"tenantPermissions\":[{\"allowedActions\":[\"update\"," +
-                        "\"count\",\"manageProfiles\",\"manageTickets\",\"delete\",\"read\",\"readAll\",\"create\"]," +
-                        "\"tenant\":\"corporate\"}],\"expiresOn\":\"2014-03-05T06:00:00.000+0000\",\"id\":" +
-                        "\"795b69f0-c044-11e3-8a33-0800200c9a66\"}]", outputWriter.toString().trim());
+                "\"count\",\"manageProfiles\",\"manageTickets\",\"delete\",\"read\",\"readAll\",\"create\"]," +
+                "\"tenant\":\"corporate\"}],\"expiresOn\":\"" + new StdDateFormat().format(new SimpleDateFormat(
+                DATE_FORMAT).parse(EXPIRES_ON)) + "\",\"id\":\"795b69f0-c044-11e3-8a33-0800200c9a66\"}]",
+                outputWriter.toString().trim());
     }
 
     private void createTestAccessTokenRepository() throws MongoDataException {
@@ -182,7 +184,7 @@ public class AccessTokenManagerCliTest {
         AccessToken token = new AccessToken();
         token.setId("795b69f0-c044-11e3-8a33-0800200c9a66");
         token.setApplication("crafterengine");
-        token.setExpiresOn(new SimpleDateFormat("MM/dd/yyyy").parse("03/05/2014"));
+        token.setExpiresOn(new SimpleDateFormat(DATE_FORMAT).parse(EXPIRES_ON));
         token.setTenantPermissions(Arrays.asList(permission));
 
         return token;
