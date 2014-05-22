@@ -14,12 +14,36 @@
     <name>Crafter Profile Integration Tests</name>
     <description>Crafter Profile Integration Tests</description>
     <url>https://github.com/craftercms/profile/tree/master/api</url>
+    <packaging>war</packaging>
 
     <properties>
         <greenmail.version>1.3.1b</greenmail.version>
+
+        <!-- Mongo -->
+        <mongo.port>37017</mongo.port>
+
+        <!-- Cargo -->
+        <cargo.container>jetty9x</cargo.container>
+        <cargo.container.url>http://central.maven.org/maven2/org/eclipse/jetty/jetty-distribution/9.1.5.v20140505/jetty-distribution-9.1.5.v20140505.tar.gz</cargo.container.url>
+        <cargo.container.downloadDir>${user.home}/.m2/cargo/containers</cargo.container.downloadDir>
+        <cargo.output>${basedir}/target/logs/container.log</cargo.output>
+        <cargo.log>${basedir}/target/logs/cargo.log</cargo.log>
+        <cargo.port>8983</cargo.port>
+        <cargo.pingUrl>http://localhost:8983/crafter-profile/index.jsp</cargo.pingUrl>
+        <cargo.pingTimeOut>30000</cargo.pingTimeOut>
+        <cargo.profile.context>crafter-profile</cargo.profile.context>
+
+        <!-- Profile Logging -->
+        <profile.log>${basedir}/target/logs/profile.log</profile.log>
     </properties>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <!-- Run overlay of Crafter Search server to make it the current webapp -->
             <plugin>
@@ -31,30 +55,18 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
-            <!-- Copy profile WAR dependency to target so that it can be used by Jetty later -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>generate-test-resources</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.craftercms</groupId>
-                                    <artifactId>crafter-profile</artifactId>
-                                    <type>war</type>
-                                    <outputDirectory>${basedir}/target</outputDirectory>
-                                    <destFileName>crafter-profile.war</destFileName>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <overlays>
+                        <overlay>
+                            <groupId>org.craftercms</groupId>
+                            <artifactId>crafter-profile</artifactId>
+                        </overlay>
+                    </overlays>
+                </configuration>
             </plugin>
             <!-- Skip Surefire so that our integration tests are not run as unit tests -->
             <plugin>
@@ -65,21 +77,15 @@
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
-            <!-- Run Failsafe plugin ('integration-test' and 'verify') on JUnit test
-            classes -->
+            <!-- Run Failsafe plugin on JUnit test classes -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>integration-test</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                    </execution>
-                    <execution>
                         <id>verify</id>
                         <goals>
+                            <goal>integration-test</goal>
                             <goal>verify</goal>
                         </goals>
                     </execution>
@@ -89,6 +95,7 @@
             <plugin>
                 <groupId>com.github.joelittlejohn.embedmongo</groupId>
                 <artifactId>embedmongo-maven-plugin</artifactId>
+                <version>0.1.10</version>
                 <executions>
                     <execution>
                         <id>start</id>
@@ -97,7 +104,7 @@
                             <goal>start</goal>
                         </goals>
                         <configuration>
-                            <port>37017</port>
+                            <port>${mongo.port}</port>
                         </configuration>
                     </execution>
                     <execution>
@@ -109,35 +116,19 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Use Jetty plugin in pre-integration-test phase to start up Crafter Profile server -->
+            <!-- Use Cargo to startup Jetty with Crafter Profile WAR. Used instead of Jetty plugin because of
+            JaCoCo/Sonar -->
             <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>maven-jetty-plugin</artifactId>
-                <configuration>
-                    <webAppConfig>
-                        <contextPath>/crafter-profile</contextPath>
-                        <extraClasspath>${basedir}/src/test/resources</extraClasspath>
-                    </webAppConfig>
-                    <webApp>${basedir}/target/crafter-profile.war</webApp>
-                    <stopKey>STOP</stopKey>
-                    <stopPort>9999</stopPort>
-                    <connectors>
-                        <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-                            <port>8983</port>
-                        </connector>
-                    </connectors>
-                </configuration>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <version>1.4.8</version>
                 <executions>
                     <execution>
                         <id>start-jetty</id>
                         <phase>pre-integration-test</phase>
                         <goals>
-                            <goal>run-war</goal>
+                            <goal>start</goal>
                         </goals>
-                        <configuration>
-                            <scanIntervalSeconds>0</scanIntervalSeconds>
-                            <daemon>true</daemon>
-                        </configuration>
                     </execution>
                     <execution>
                         <id>stop-jetty</id>
@@ -147,6 +138,32 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <container>
+                        <containerId>${cargo.container}</containerId>
+                        <zipUrlInstaller>
+                            <url>${cargo.container.url}</url>
+                            <downloadDir>${cargo.container.downloadDir}</downloadDir>
+                        </zipUrlInstaller>
+                        <output>${cargo.output}</output>
+                        <log>${cargo.log}</log>
+                    </container>
+                    <configuration>
+                        <properties>
+                            <cargo.servlet.port>${cargo.port}</cargo.servlet.port>
+                            <cargo.jvmargs>${jacoco.agent.arg}</cargo.jvmargs>
+                        </properties>
+                    </configuration>
+                    <deployables>
+                        <deployable>
+                            <pingURL>${cargo.pingUrl}</pingURL>
+                            <pingTimeout>${cargo.pingTimeOut}</pingTimeout>
+                            <properties>
+                                <context>${cargo.profile.context}</context>
+                            </properties>
+                        </deployable>
+                    </deployables>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -196,17 +213,44 @@
 
     <profiles>
         <profile>
-            <id>sonar</id>
-            <!-- Make clover use a custom report descriptor for integration testing with Failsafe -->
+            <id>coverage</id>
+            <activation>
+                <property>
+                    <name>coverage</name>
+                </property>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>com.atlassian.maven.plugins</groupId>
-                        <artifactId>maven-clover2-plugin</artifactId>
-                        <version>${clover.version}</version>
+                        <!-- redo configuration from parent - coverage is done in jetty, not on tests -->
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
                         <configuration>
-                            <reportDescriptor>clover-report.xml</reportDescriptor>
+                            <argLine>-Xmx1024m -Xms256m -XX:MaxPermSize=256m</argLine>
                         </configuration>
+                    </plugin>
+                    <plugin>
+                        <!-- redo configuration from parent - use itReportPath -->
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <configuration>
+                            <destFile>${sonar.jacoco.itReportPath}</destFile>
+                            <dataFile>${sonar.jacoco.itReportPath}</dataFile>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>pre-test</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>post-test</id>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
