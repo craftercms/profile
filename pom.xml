@@ -35,6 +35,13 @@
         <xstream.version>1.4.7</xstream.version>
         <slf4j.version>1.7.7</slf4j.version>
         <logback.version>1.0.13</logback.version>
+
+        <!-- Sonar -->
+        <sonar.language>java</sonar.language>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <sonar.jacoco.reportPath>${basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
+        <sonar.jacoco.itReportPath>${basedir}/../target/itjacoco.exec</sonar.jacoco.itReportPath>
     </properties>
 
     <licenses>
@@ -76,39 +83,54 @@
 
     <profiles>
         <profile>
-            <id>sonar</id>
-            <properties>
-                <clover.version>3.1.8</clover.version>
-                <sonar.core.codeCoveragePlugin>clover</sonar.core.codeCoveragePlugin>
-                <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-                <sonar.clover.reportPath>${project.build.directory}/clover/clover.xml</sonar.clover.reportPath>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>com.cenqua.clover</groupId>
-                    <artifactId>clover</artifactId>
-                    <version>${clover.version}</version>
-                </dependency>
-            </dependencies>
+            <id>coverage</id>
+            <activation>
+                <property>
+                    <name>coverage</name>
+                </property>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>com.atlassian.maven.plugins</groupId>
-                        <artifactId>maven-clover2-plugin</artifactId>
-                        <version>${clover.version}</version>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
                         <configuration>
-                            <license>${clover.license}</license>
-                            <outputDirectory>${project.build.directory}/clover</outputDirectory>
-                            <generateHtml>false</generateHtml>
-                            <generateJson>false</generateJson>
-                            <generatePdf>false</generatePdf>
-                            <generateXml>true</generateXml>
+                            <destFile>${sonar.jacoco.reportPath}</destFile>
+                            <dataFile>${sonar.jacoco.reportPath}</dataFile>
+                            <propertyName>jacoco.agent.arg</propertyName>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>pre-junit-test</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>post-test</id>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <argLine>${jacoco.agent.arg}</argLine>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <argLine>${jacoco.agent.arg}</argLine>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
-
         <profile>
             <id>release-sign-artifacts</id>
             <activation>
@@ -144,6 +166,25 @@
     </profiles>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.7.1.201405082137</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.17</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.17</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
