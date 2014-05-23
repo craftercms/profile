@@ -20,36 +20,35 @@ import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.LogoutSuccessHandler;
 import org.craftercms.security.exception.SecurityProviderException;
-import org.craftercms.security.utils.handlers.HandlerBase;
-import org.springframework.beans.factory.annotation.Required;
+import org.craftercms.security.utils.handlers.RestHandlerBase;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Default implementation for {@link org.craftercms.security.authentication.impl.LogoutSuccessHandlerImpl}, which
- * redirects to a target URL.
+ * Implementation of {@link org.craftercms.security.authentication.LogoutSuccessHandler} for REST based applications,
+ * which just returns a 200 OK status with a simple success message.
  *
  * @author avasquez
  */
-public class LogoutSuccessHandlerImpl extends HandlerBase implements LogoutSuccessHandler {
+public class RestLogoutSuccessHandler extends RestHandlerBase implements LogoutSuccessHandler {
 
-    protected String targetUrl;
+    protected static final String DEFAULT_LOGOUT_SUCCESS_MESSAGE = "Logout successful";
 
-    @Required
-    public void setTargetUrl(String targetUrl) {
-        this.targetUrl = targetUrl;
+    protected String logoutSuccessMessage;
+
+    public RestLogoutSuccessHandler() {
+        logoutSuccessMessage = DEFAULT_LOGOUT_SUCCESS_MESSAGE;
     }
 
-    /**
-     * Redirects to the target URL.
-     *
-     * @param context           the request context
-     * @param authentication    the authentication object, just invalidated
-     */
+    public void setLogoutSuccessMessage(String logoutSuccessMessage) {
+        this.logoutSuccessMessage = logoutSuccessMessage;
+    }
+
     @Override
     public void handle(RequestContext context, Authentication authentication) throws SecurityProviderException,
             IOException {
-        redirectToUrl(context.getRequest(), context.getResponse(), targetUrl);
+        sendMessage(HttpServletResponse.SC_OK, logoutSuccessMessage, context);
     }
 
 }

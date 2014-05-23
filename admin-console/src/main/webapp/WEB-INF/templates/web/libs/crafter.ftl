@@ -12,8 +12,6 @@
     </#if>
 </#macro>
 
-
-
 <#--Adds the servlet mapping to an url-->
 <#macro servletUrl relativeUrl>${springMacroRequestContext.getContextUrl("/web" + relativeUrl)}</#macro>
 
@@ -37,7 +35,6 @@
     </#if>
 </#macro>
 
-
 <#macro formInput path id="" attributes="" fieldType="text" default="">
 <#-- Start of Modified spring.bind -->
     <#if htmlEscape??>
@@ -54,8 +51,8 @@
     <#if id == "">
         <#assign id=spring.status.expression>
     </#if>
-<input type="${fieldType}" id="${id}" name="${spring.status.expression}"
-       value="<#if fieldType!="password">${spring.stringStatusValue}</#if>" ${attributes}<@spring.closeTag/>
+    <input type="${fieldType}" id="${id}" name="${spring.status.expression}"
+           value="<#if fieldType!="password">${spring.stringStatusValue}</#if>" ${attributes}<@spring.closeTag/>
 </#macro>
 
 <#macro formTextarea path id="" attributes="">
@@ -91,7 +88,7 @@
     <#if id == "">
         <#assign id=spring.status.expression>
     </#if>
-<select multiple="multiple" id="${id}" name="${spring.status.expression}" ${attributes}>
+    <select multiple="multiple" id="${id}" name="${spring.status.expression}" ${attributes}>
     <#if options?is_hash>
         <#list options?keys as value>
             <#assign isSelected = spring.contains(spring.status.value![""], value)>

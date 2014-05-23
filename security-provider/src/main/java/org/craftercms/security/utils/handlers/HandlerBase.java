@@ -24,13 +24,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Base for login and logout handlers.
+ * Base for login, logout and access denied handlers.
  *
  * @author avasquez
  */
-public class BaseHandler {
+public class HandlerBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(BaseHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(HandlerBase.class);
 
     protected void redirectToUrl(HttpServletRequest request, HttpServletResponse response,
                                  String relativeUrl) throws IOException {

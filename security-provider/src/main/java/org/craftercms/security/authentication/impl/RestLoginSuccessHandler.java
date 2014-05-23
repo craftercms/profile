@@ -18,38 +18,25 @@ package org.craftercms.security.authentication.impl;
 
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
-import org.craftercms.security.authentication.LogoutSuccessHandler;
+import org.craftercms.security.authentication.LoginSuccessHandler;
 import org.craftercms.security.exception.SecurityProviderException;
-import org.craftercms.security.utils.handlers.HandlerBase;
-import org.springframework.beans.factory.annotation.Required;
+import org.craftercms.security.utils.handlers.RestHandlerBase;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Default implementation for {@link org.craftercms.security.authentication.impl.LogoutSuccessHandlerImpl}, which
- * redirects to a target URL.
+ * Implementation of {@link org.craftercms.security.authentication.LoginSuccessHandler} for REST based applications,
+ * which returns the {@link org.craftercms.security.authentication.Authentication} object as the response body.
  *
  * @author avasquez
  */
-public class LogoutSuccessHandlerImpl extends HandlerBase implements LogoutSuccessHandler {
+public class RestLoginSuccessHandler extends RestHandlerBase implements LoginSuccessHandler {
 
-    protected String targetUrl;
-
-    @Required
-    public void setTargetUrl(String targetUrl) {
-        this.targetUrl = targetUrl;
-    }
-
-    /**
-     * Redirects to the target URL.
-     *
-     * @param context           the request context
-     * @param authentication    the authentication object, just invalidated
-     */
     @Override
     public void handle(RequestContext context, Authentication authentication) throws SecurityProviderException,
             IOException {
-        redirectToUrl(context.getRequest(), context.getResponse(), targetUrl);
+        sendObject(HttpServletResponse.SC_OK, authentication, context);
     }
 
 }
