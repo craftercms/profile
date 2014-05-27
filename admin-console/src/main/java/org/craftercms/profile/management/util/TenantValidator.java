@@ -14,27 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.management.util;
-
-import org.craftercms.profile.client.impl.domain.Tenant;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
-
-/**
- * @author David Escalante
- */
-@Component
-public class TenantValidator implements Validator {
-    @Override
-    public boolean supports(Class<?> aClass) {
-        return Tenant.class.equals(aClass);
-    }
-
-    @Override
-    public void validate(Object target, Errors errors) {
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "tenantName", "tenant.name.validation.error.empty.or" + "" +
-            ".whitespace");
-    }
-}
+//package org.craftercms.profile.management.util;
+//
+//import org.craftercms.profile.client.impl.domain.Tenant;
+//import org.springframework.stereotype.Component;
+//import org.springframework.validation.Errors;
+//import org.springframework.validation.ValidationUtils;
+//import org.springframework.validation.Validator;
+//
+///**
+// * @author David Escalante
+// */
+//@Component
+//public class TenantValidator implements Validator {
+//    @Override
+//    public boolean supports(Class<?> aClass) {
+//        return Tenant.class.equals(aClass);
+//    }
+//
+//    @Override
+//    public void validate(Object target, Errors errors) {
+//        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "tenantName", "tenant.name.validation.error.empty.or" + "" +
+//            ".whitespace");
+//    }
+//}

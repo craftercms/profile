@@ -56,11 +56,11 @@ public class ProfileServiceIT {
 
     private static final String VERIFICATION_EMAIL_REGEX = ".+<a id=\"verificationLink\" href=\".+\\?tokenId=(.+)\">.+";
 
-    private static final String INVALID_ACCESS_TOKEN_ID =           "ab785de0-c327-11e3-9c1a-0800200c9a66";
-    private static final String EXPIRED_ACCESS_TOKEN_ID =           "9161fb80-c329-11e3-9c1a-0800200c9a66";
-    private static final String UNALLOWED_ACCESS_TOKEN_ID =         "f9929b40-c358-11e3-9c1a-0800200c9a66";
-    private static final String ADMIN_CONSOLE_ACCESS_TOKEN_ID =     "e8f5170c-877b-416f-b70f-4b09772f8e2d";
-    private static final String CRAFTER_SOCIAL_ACCESS_TOKEN_ID =    "2ba3ac10-c43e-11e3-9c1a-0800200c9a66";
+    private static final String INVALID_ACCESS_TOKEN_ID =       "ab785de0-c327-11e3-9c1a-0800200c9a66";
+    private static final String EXPIRED_ACCESS_TOKEN_ID =       "9161fb80-c329-11e3-9c1a-0800200c9a66";
+    private static final String UNALLOWED_ACCESS_TOKEN_ID =     "f9929b40-c358-11e3-9c1a-0800200c9a66";
+    private static final String ADMIN_CONSOLE_ACCESS_TOKEN_ID = "e8f5170c-877b-416f-b70f-4b09772f8e2d";
+    private static final String RANDOM_APP_ACCESS_TOKEN_ID =    "f91cdaf0-e5c6-11e3-ac10-0800200c9a66";
 
     private static final String DEFAULT_TENANT = "default";
 
@@ -84,7 +84,8 @@ public class ProfileServiceIT {
     private static final String AVASQUEZ_PASSWORD2 =    "4321";
     private static final String AVASQUEZ_EMAIL1 =       "alfonso.vasquez@craftersoftware.com";
     private static final String AVASQUEZ_EMAIL2 =       "avasquez@rivetlogic.com";
-    private static final Set<String> AVASQUEZ_ROLES1 =  new HashSet<>(Arrays.asList("PROFILE_ADMIN", "SOCIAL_MODERATOR"));
+    private static final Set<String> AVASQUEZ_ROLES1 =  new HashSet<>(Arrays.asList("PROFILE_ADMIN",
+            "SOCIAL_MODERATOR"));
     private static final Set<String> AVASQUEZ_ROLES2 =  new HashSet<>(Arrays.asList("SOCIAL_AUTHOR"));
 
     private static final String VERIFICATION_URL = "http://localhost:8983/crafter-profile" + BASE_URL_PROFILE +
@@ -381,8 +382,6 @@ public class ProfileServiceIT {
     @Test
     @DirtiesContext
     public void testGetAllAttributes() throws Exception {
-        accessTokenIdResolver.setAccessTokenId(CRAFTER_SOCIAL_ACCESS_TOKEN_ID);
-
         // Get all attributes
         ObjectId profileId = profileService.getProfileByUsername(DEFAULT_TENANT, JDOE_USERNAME).getId();
         Map<String, Object> attributes = profileService.getAttributes(profileId.toString());
@@ -400,7 +399,7 @@ public class ProfileServiceIT {
         assertEquals(JDOE_SUBSCRIPTIONS_AUTO_WATCH, subscriptions.get("autoWatch"));
         assertEquals(JDOE_SUBSCRIPTIONS_TARGETS, subscriptions.get("targets"));
 
-        accessTokenIdResolver.setAccessTokenId(ADMIN_CONSOLE_ACCESS_TOKEN_ID);
+        accessTokenIdResolver.setAccessTokenId(RANDOM_APP_ACCESS_TOKEN_ID);
 
         // Get only allowed attributes
         attributes = profileService.getAttributes(profileId.toString());
@@ -427,8 +426,6 @@ public class ProfileServiceIT {
     @Test
     @DirtiesContext
     public void testUpdateAttributes() throws Exception {
-        accessTokenIdResolver.setAccessTokenId(CRAFTER_SOCIAL_ACCESS_TOKEN_ID);
-
         // Update a bunch attributes
         Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
                 AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, VERIFICATION_URL);
@@ -455,7 +452,7 @@ public class ProfileServiceIT {
             assertEquals(JDOE_SUBSCRIPTIONS_AUTO_WATCH, subscriptions.get("autoWatch"));
             assertEquals(JDOE_SUBSCRIPTIONS_TARGETS, subscriptions.get("targets"));
 
-            accessTokenIdResolver.setAccessTokenId(ADMIN_CONSOLE_ACCESS_TOKEN_ID);
+            accessTokenIdResolver.setAccessTokenId(RANDOM_APP_ACCESS_TOKEN_ID);
 
             // Unallowed updates should be rejected
             try {
@@ -473,8 +470,6 @@ public class ProfileServiceIT {
     @Test
     @DirtiesContext
     public void testDeleteAttributes() throws Exception {
-        accessTokenIdResolver.setAccessTokenId(CRAFTER_SOCIAL_ACCESS_TOKEN_ID);
-
         Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
                 AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, VERIFICATION_URL);
         Map<String, Object> attributes = new HashMap<>();
@@ -488,7 +483,7 @@ public class ProfileServiceIT {
 
             profileService.updateAttributes(profile.getId().toString(), attributes);
 
-            accessTokenIdResolver.setAccessTokenId(ADMIN_CONSOLE_ACCESS_TOKEN_ID);
+            accessTokenIdResolver.setAccessTokenId(RANDOM_APP_ACCESS_TOKEN_ID);
 
             // Unallowed deletes should be rejected
             try {
@@ -499,7 +494,7 @@ public class ProfileServiceIT {
                 assertEquals(ErrorCode.ACTION_DENIED, e.getErrorCode());
             }
 
-            accessTokenIdResolver.setAccessTokenId(CRAFTER_SOCIAL_ACCESS_TOKEN_ID);
+            accessTokenIdResolver.setAccessTokenId(ADMIN_CONSOLE_ACCESS_TOKEN_ID);
 
             // Delete an attribute
             profile = profileService.removeAttributes(profile.getId().toString(), Arrays.asList("subscriptions"));
@@ -723,9 +718,16 @@ public class ProfileServiceIT {
         Map<String, Object> attributes = profile.getAttributes();
 
         assertNotNull(attributes);
-        assertEquals(2, attributes.size());
+        assertEquals(3, attributes.size());
         assertEquals(JDOE_FIRST_NAME, attributes.get("firstName"));
         assertEquals(JDOE_LAST_NAME, attributes.get("lastName"));
+
+        Map<String, Object> subscriptions = (Map<String, Object>) attributes.get("subscriptions");
+        assertNotNull(subscriptions);
+        assertEquals(3, subscriptions.size());
+        assertEquals(JDOE_SUBSCRIPTIONS_FREQUENCY, subscriptions.get("frequency"));
+        assertEquals(JDOE_SUBSCRIPTIONS_AUTO_WATCH, subscriptions.get("autoWatch"));
+        assertEquals(JDOE_SUBSCRIPTIONS_TARGETS, subscriptions.get("targets"));
     }
 
 }

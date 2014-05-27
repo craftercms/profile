@@ -24,6 +24,7 @@
 
     <bean name="crafter.securityProperties"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="order" value="100"/>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="locations">
             <list>

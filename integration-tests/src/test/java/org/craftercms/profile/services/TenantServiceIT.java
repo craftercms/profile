@@ -16,8 +16,6 @@
  */
 package org.craftercms.profile.services;
 
-import org.craftercms.commons.collections.IterableUtils;
-import org.craftercms.profile.api.AttributeActions;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.AttributePermission;
 import org.craftercms.profile.api.Tenant;
@@ -38,7 +36,7 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 /**
- * Integration tests for the {@link org.craftercms.profile.services.ProfileService}.
+ * Integration tests for the {@link org.craftercms.profile.api.services.TenantService}.
  *
  * @author avasquez
  */
@@ -49,28 +47,20 @@ public class TenantServiceIT {
     private static final String INVALID_ACCESS_TOKEN_ID =           "ab785de0-c327-11e3-9c1a-0800200c9a66";
     private static final String EXPIRED_ACCESS_TOKEN_ID =           "9161fb80-c329-11e3-9c1a-0800200c9a66";
     private static final String UNALLOWED_ACCESS_TOKEN_ID =         "f9929b40-c358-11e3-9c1a-0800200c9a66";
-    private static final String ADMIN_CONSOLE_ACCESS_TOKEN_ID =     "e8f5170c-877b-416f-b70f-4b09772f8e2d";
-    private static final String CRAFTER_SOCIAL_ACCESS_TOKEN_ID =    "2ba3ac10-c43e-11e3-9c1a-0800200c9a66";
+
+    private static final String DEFAULT_TENANT_NAME =   "default";
+    private static final String CORPORATE_TENANT_NAME = "corporate";
 
     private static final String ADMIN_ROLE =            "ADMIN";
     private static final String USER_ROLE =             "USER";
-    private static final String DEFAULT_TENANT_NAME =   "default";
-    private static final Set<String> DEFAULT_ROLES =    new HashSet<>(Arrays.asList( "PROFILE_ADMIN", "SOCIAL_USER",
+    private static final Set<String> DEFAULT_ROLES =    new HashSet<>(Arrays.asList("PROFILE_ADMIN", "SOCIAL_USER",
             "SOCIAL_MODERATOR", "SOCIAL_AUTHOR", "SOCIAL_ADMIN"));
-    private static final String CORPORATE_TENANT_NAME = "corporate";
     private static final Set<String> CORPORATE_ROLES =  new HashSet<>(Arrays.asList(ADMIN_ROLE));
 
     private static final String FIRST_NAME_ATTRIBUTE_NAME =     "firstName";
-    private static final String FIRST_NAME_ATTRIBUTE_OWNER =    "adminconsole";
-
-    private static final String LAST_NAME_ATTRIBUTE_NAME =  "lastName";
-    private static final String LAST_NAME_ATTRIBUTE_OWNER = "adminconsole";
-
+    private static final String LAST_NAME_ATTRIBUTE_NAME =      "lastName";
     private static final String SUBSCRIPTIONS_ATTRIBUTE_NAME =  "subscriptions";
-    private static final String SUBSCRIPTIONS_ATTRIBUTE_OWNER = "craftersocial";
-
-    private static final String GENDER_ATTRIBUTE_NAME =     "gender";
-    private static final String GENDER_ATTRIBUTE_OWNER =    "adminconsole";
+    private static final String GENDER_ATTRIBUTE_NAME =         "gender";
 
     @Autowired
     private TenantService tenantService;
@@ -190,7 +180,7 @@ public class TenantServiceIT {
 
     @Test
     public void testGetAllTenants() throws Exception {
-        List<Tenant> tenants = IterableUtils.toList(tenantService.getAllTenants());
+        List<Tenant> tenants = tenantService.getAllTenants();
 
         assertNotNull(tenants);
         assertEquals(1, tenants.size());
@@ -278,19 +268,6 @@ public class TenantServiceIT {
         tenantService.createTenant(getCorporateTenant());
         try {
             Collection<String> attributeNames = Arrays.asList(FIRST_NAME_ATTRIBUTE_NAME, LAST_NAME_ATTRIBUTE_NAME);
-
-            accessTokenIdResolver.setAccessTokenId(CRAFTER_SOCIAL_ACCESS_TOKEN_ID);
-
-            try {
-                tenantService.removeAttributeDefinitions(CORPORATE_TENANT_NAME, attributeNames);
-                fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-            } catch (ProfileRestServiceException e) {
-                assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
-                assertEquals(ErrorCode.ACTION_DENIED, e.getErrorCode());
-            }
-
-            accessTokenIdResolver.setAccessTokenId(ADMIN_CONSOLE_ACCESS_TOKEN_ID);
-
             Tenant tenant = tenantService.removeAttributeDefinitions(CORPORATE_TENANT_NAME, attributeNames);
 
             assertNotNull(tenant);
@@ -330,7 +307,6 @@ public class TenantServiceIT {
 
         AttributeDefinition definition = new AttributeDefinition();
         definition.setName(FIRST_NAME_ATTRIBUTE_NAME);
-        definition.setOwner(FIRST_NAME_ATTRIBUTE_OWNER);
         definition.addPermission(permission);
 
         return definition;
@@ -342,22 +318,20 @@ public class TenantServiceIT {
 
         AttributeDefinition definition = new AttributeDefinition();
         definition.setName(LAST_NAME_ATTRIBUTE_NAME);
-        definition.setOwner(LAST_NAME_ATTRIBUTE_OWNER);
         definition.addPermission(permission);
 
         return definition;
     }
 
     private AttributeDefinition getSubscriptionsAttributeDefinition() {
-        AttributePermission permission1 = new AttributePermission("craftersocial");
+        AttributePermission permission1 = new AttributePermission("adminconsole");
         permission1.allow(AttributePermission.ANY_ACTION);
 
-        AttributePermission permission2 = new AttributePermission("crafterengine");
-        permission2.allow(AttributeActions.READ);
+        AttributePermission permission2 = new AttributePermission("craftersocial");
+        permission2.allow(AttributePermission.ANY_ACTION);
 
         AttributeDefinition definition = new AttributeDefinition();
         definition.setName(SUBSCRIPTIONS_ATTRIBUTE_NAME);
-        definition.setOwner(SUBSCRIPTIONS_ATTRIBUTE_OWNER);
         definition.addPermission(permission1);
         definition.addPermission(permission2);
 
@@ -370,13 +344,13 @@ public class TenantServiceIT {
 
         AttributeDefinition definition = new AttributeDefinition();
         definition.setName(GENDER_ATTRIBUTE_NAME);
-        definition.setOwner(GENDER_ATTRIBUTE_OWNER);
         definition.addPermission(permission);
 
         return definition;
     }
 
-    private void assertEqualAttributeDefinitionSets(Set<AttributeDefinition> expected,  Set<AttributeDefinition> actual) {
+    private void assertEqualAttributeDefinitionSets(Set<AttributeDefinition> expected,
+                                                    Set<AttributeDefinition> actual) {
         assertNotNull(expected);
         assertEquals(expected.size(), actual.size());
 
@@ -396,7 +370,6 @@ public class TenantServiceIT {
         List<AttributePermission> actualPermissions = actual.getPermissions();
 
         assertEquals(expected.getName(), actual.getName());
-        assertEquals(expected.getOwner(), actual.getOwner());
         assertNotNull(actualPermissions);
         assertEquals(expectedPermissions.size(), actualPermissions.size());
 

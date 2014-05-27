@@ -32,9 +32,17 @@ public class HandlerBase {
 
     private static final Logger logger = LoggerFactory.getLogger(HandlerBase.class);
 
+    private static final String URL_HTTP_PREFIX = "http://";
+
     protected void redirectToUrl(HttpServletRequest request, HttpServletResponse response,
-                                 String relativeUrl) throws IOException {
-        String redirectUrl = request.getContextPath() + relativeUrl;
+                                 String url) throws IOException {
+        String redirectUrl;
+
+        if (url.startsWith(URL_HTTP_PREFIX)) {
+            redirectUrl = url;
+        } else {
+            redirectUrl = request.getContextPath() + url;
+        }
 
         logger.debug("Redirecting to URL: {}", redirectUrl);
 

@@ -5,8 +5,14 @@
 
     <display-name>Admin Console</display-name>
 
+    <!-- Tell Spring to escape HTML characters in form inputs -->
+    <context-param>
+        <param-name>defaultHtmlEscape</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
     <filter>
-        <filter-name>CharacterEncodingFilter</filter-name>
+        <filter-name>characterEncodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
         <init-param>
             <param-name>encoding</param-name>
@@ -20,7 +26,7 @@
 
     <filter>
         <filter-name>crafter.requestContextBindingFilter</filter-name>
-        <filter-class>org.craftercms.security.servlet.filters.RequestContextBindingFilter</filter-class>
+        <filter-class>org.craftercms.commons.http.RequestContextBindingFilter</filter-class>
     </filter>
 
     <filter>
@@ -29,7 +35,7 @@
     </filter>
 
     <filter-mapping>
-        <filter-name>CharacterEncodingFilter</filter-name>
+        <filter-name>characterEncodingFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
@@ -44,18 +50,19 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>
-            /WEB-INF/classes/applicationContext.xml
-            /WEB-INF/classes/security-context.xml
-        </param-value>
+        <param-value>classpath:crafter/profile/management/services-context.xml</param-value>
     </context-param>
 
     <servlet>
         <servlet-name>spring</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:crafter/profile/management/web-context.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet-mapping>
@@ -64,9 +71,7 @@
     </servlet-mapping>
 
     <listener>
-        <listener-class>
-            org.springframework.web.context.request.RequestContextListener
-        </listener-class>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
 
     <listener>
@@ -75,7 +80,7 @@
 
     <error-page>
         <error-code>500</error-code>
-        <location>/WEB-INF/ftl/error.jsp</location>
+        <location>/error.jsp</location>
     </error-page>
 
 </web-app> 

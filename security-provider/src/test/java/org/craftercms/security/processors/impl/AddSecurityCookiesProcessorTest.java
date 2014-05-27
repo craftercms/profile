@@ -123,14 +123,12 @@ public class AddSecurityCookiesProcessorTest {
 
         assertNotNull(ticketCookie);
         assertEquals("", ticketCookie.getValue());
-        assertEquals("/", ticketCookie.getPath());
         assertEquals(0, ticketCookie.getMaxAge());
 
         profileLastModifiedCookie = response.getCookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME);
 
         assertNotNull(profileLastModifiedCookie);
         assertEquals("", profileLastModifiedCookie.getValue());
-        assertEquals("/", profileLastModifiedCookie.getPath());
         assertEquals(0, profileLastModifiedCookie.getMaxAge());
     }
 

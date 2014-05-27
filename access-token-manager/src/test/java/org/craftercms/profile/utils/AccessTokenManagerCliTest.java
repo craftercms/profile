@@ -26,7 +26,7 @@ import org.craftercms.commons.jackson.ObjectIdDeserializer;
 import org.craftercms.commons.jackson.ObjectIdSerializer;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.AccessToken;
-import org.craftercms.profile.api.TenantActions;
+import org.craftercms.profile.api.TenantAction;
 import org.craftercms.profile.api.TenantPermission;
 import org.craftercms.profile.repositories.AccessTokenRepository;
 import org.junit.Before;
@@ -40,7 +40,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -78,7 +81,7 @@ public class AccessTokenManagerCliTest {
         printInputWriter.println("crafterengine");
         printInputWriter.println(EXPIRES_ON);
         printInputWriter.println("corporate");
-        printInputWriter.println(StringUtils.join(TenantActions.ALL_ACTIONS, ','));
+        printInputWriter.println(StringUtils.join(TenantAction.values(), ','));
         printInputWriter.println("n");
 
         BufferedReader stdIn = new BufferedReader(new StringReader(inputWriter.toString()));
@@ -125,11 +128,11 @@ public class AccessTokenManagerCliTest {
         AccessTokenManagerCli cli = new AccessTokenManagerCli(stdIn, stdOut, tokenRepository, objectMapper);
         cli.run("-list");
 
-        assertEquals("[{\"application\":\"crafterengine\",\"tenantPermissions\":[{\"allowedActions\":[\"update\"," +
-                "\"count\",\"manageProfiles\",\"manageTickets\",\"delete\",\"read\",\"readAll\",\"create\"]," +
-                "\"tenant\":\"corporate\"}],\"expiresOn\":\"" + new StdDateFormat().format(new SimpleDateFormat(
-                DATE_FORMAT).parse(EXPIRES_ON)) + "\",\"id\":\"795b69f0-c044-11e3-8a33-0800200c9a66\"}]",
-                outputWriter.toString().trim());
+        assertEquals("[{\"application\":\"crafterengine\",\"tenantPermissions\":[{\"allowedActions\":[" +
+                        "\"DELETE_TENANT\",\"UPDATE_TENANT\",\"MANAGE_TICKETS\",\"CREATE_TENANT\",\"READ_TENANT\"," +
+                        "\"MANAGE_PROFILES\"],\"tenant\":\"corporate\"}],\"expiresOn\":\"" + new StdDateFormat()
+                        .format(new SimpleDateFormat( DATE_FORMAT).parse(EXPIRES_ON)) + "\",\"id\":" +
+                        "\"795b69f0-c044-11e3-8a33-0800200c9a66\"}]", outputWriter.toString().trim());
     }
 
     private void createTestAccessTokenRepository() throws MongoDataException {
@@ -179,7 +182,10 @@ public class AccessTokenManagerCliTest {
 
     private AccessToken createTestToken() throws ParseException {
         TenantPermission permission = new TenantPermission("corporate");
-        permission.allow(TenantActions.ALL_ACTIONS);
+
+        for (TenantAction action : TenantAction.values()) {
+            permission.allow(action.toString());
+        }
 
         AccessToken token = new AccessToken();
         token.setId("795b69f0-c044-11e3-8a33-0800200c9a66");

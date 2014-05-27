@@ -16,7 +16,7 @@ if (db.accesstoken.count() == 0) {
             "application" : "crafterengine",
             "tenantPermissions" : [
                 {
-                    "allowedActions" : [ "*" ],
+                    "allowedActions" : [ "READ_TENANT", "MANAGE_PROFILES", "MANAGE_TICKETS" ],
                     "tenant" : "*"
                 }
             ],
@@ -27,7 +27,7 @@ if (db.accesstoken.count() == 0) {
             "application" : "craftersocial",
             "tenantPermissions" : [
                 {
-                    "allowedActions" : [ "*" ],
+                    "allowedActions" : [ "READ_TENANT", "MANAGE_PROFILES", "MANAGE_TICKETS" ],
                     "tenant" : "*"
                 }
             ],
@@ -66,12 +66,16 @@ if (db.tenant.count() == 0) {
                 "owner" : "craftersocial",
                 "permissions" : [
                     {
+                        "application" : "adminconsole",
+                        "allowedActions" : [ "*" ]
+                    },
+                    {
                         "application" : "craftersocial",
                         "allowedActions" : [ "*" ]
                     },
                     {
-                        "application" : "crafterengine",
-                        "allowedActions" : [ "read" ]
+                        "application" : "*",
+                        "allowedActions" : [ "READ_ATTRIBUTE" ]
                     }
                 ]
             }

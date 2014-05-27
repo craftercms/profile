@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2013 Crafter Software Corporation.
+ * Copyright (C) 2007-2014 Crafter Software Corporation.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,26 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-//package org.craftercms.profile.management.services;
-//
-//import java.util.List;
-//
-//import org.craftercms.profile.client.exceptions.AppAuthenticationFailedException;
-//import org.craftercms.profile.client.impl.domain.Role;
-//
-//
-///**
-// * @author David Escalante
-// */
-//public interface RoleDAOService {
-//
-//    /**
-//     * Get the list of all Roles
-//     *
-//     * @return
-//     * @throws AppAuthenticationFailedException
-//     *
-//     */
-//    public List<Role> getAllRoles() throws AppAuthenticationFailedException;
-//
-//}
+package org.craftercms.profile.api;
+
+/**
+ * Enum with actions that can be executed on tenants and their user profiles by applications.
+ *
+ * @author avasquez
+ */
+public enum TenantAction {
+
+    CREATE_TENANT,
+    READ_TENANT,
+    UPDATE_TENANT,
+    DELETE_TENANT,
+    MANAGE_PROFILES,
+    MANAGE_TICKETS;
+
+}

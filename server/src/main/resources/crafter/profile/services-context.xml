@@ -168,7 +168,6 @@
         <property name="templateName" value="${crafter.profile.verification.newProfile.mail.templateName}"/>
     </bean>
 
-
     <bean id="crafter.resetPasswordVerificationService" parent="crafter.verificationServiceBase">
         <property name="from" value="${crafter.profile.verification.resetPassword.mail.from}"/>
         <property name="subject" value="${crafter.profile.verification.resetPassword.mail.subject}"/>
@@ -176,20 +175,21 @@
     </bean>
 
     <bean id="crafter.tenantService" class="org.craftercms.profile.services.impl.TenantServiceImpl">
+        <property name="tenantPermissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
+        <property name="attributePermissionEvaluator" ref="crafter.attributePermissionEvaluator"/>
         <property name="tenantRepository" ref="crafter.tenantRepository"/>
         <property name="profileRepository" ref="crafter.profileRepository"/>
-        <property name="permissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
         <property name="profileService" ref="crafter.profileService"/>
     </bean>
 
     <bean id="crafter.profileService" class="org.craftercms.profile.services.impl.ProfileServiceImpl">
+        <property name="tenantPermissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
+        <property name="attributePermissionEvaluator" ref="crafter.attributePermissionEvaluator"/>
         <property name="profileRepository" ref="crafter.profileRepository"/>
         <property name="tenantService" ref="crafter.tenantService"/>
         <property name="authenticationService" ref="crafter.authenticationService"/>
         <property name="newProfileVerificationService" ref="crafter.newProfileVerificationService"/>
         <property name="resetPasswordVerificationService" ref="crafter.resetPasswordVerificationService"/>
-        <property name="tenantPermissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
-        <property name="attributePermissionEvaluator" ref="crafter.attributePermissionEvaluator"/>
     </bean>
 
     <bean id="crafter.authenticationService" class="org.craftercms.profile.services.impl.AuthenticationServiceImpl">
