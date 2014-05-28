@@ -16,7 +16,9 @@
  */
 package org.craftercms.profile.services.impl;
 
-import org.craftercms.commons.rest.RestClientBase;
+import java.net.URI;
+
+import org.craftercms.commons.rest.AbstractRestClientBase;
 import org.craftercms.commons.rest.RestClientUtils;
 import org.craftercms.commons.rest.RestServiceException;
 import org.craftercms.profile.api.ProfileConstants;
@@ -31,14 +33,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.net.URI;
-
 /**
  * Base class for all Profile REST clients.
  *
  * @author avasquez
  */
-public class ProfileRestClientBase extends RestClientBase {
+public class ProfileRestClientBase extends AbstractRestClientBase {
 
     protected AccessTokenIdResolver accessTokenIdResolver;
 

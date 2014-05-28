@@ -75,27 +75,28 @@
         </property>
     </bean>
 
-    <bean id="crafter.jongoRepositoryBase" class="org.craftercms.commons.mongo.JongoRepository" abstract="true">
+    <bean id="crafter.AbstractJongoRepositoryBase" class="org.craftercms.commons.mongo.AbstractJongoRepository"
+          abstract="true">
         <property name="jongo" ref="crafter.jongo"/>
         <property name="queries" ref="crafter.jongoQueries"/>
     </bean>
 
     <bean id="crafter.accessTokenRepository" class="org.craftercms.profile.repositories.impl.AccessTokenRepositoryImpl"
-          parent="crafter.jongoRepositoryBase"/>
+          parent="crafter.AbstractJongoRepositoryBase"/>
 
     <bean id="crafter.profileRepository" class="org.craftercms.profile.repositories.impl.ProfileRepositoryImpl"
-          parent="crafter.jongoRepositoryBase"/>
+          parent="crafter.AbstractJongoRepositoryBase"/>
 
     <bean id="crafter.tenantRepository" class="org.craftercms.profile.repositories.impl.TenantRepositoryImpl"
-          parent="crafter.jongoRepositoryBase"/>
+          parent="crafter.AbstractJongoRepositoryBase"/>
 
     <bean id="crafter.ticketRepository" class="org.craftercms.profile.repositories.impl.TicketRepositoryImpl"
-          parent="crafter.jongoRepositoryBase"/>
+          parent="crafter.AbstractJongoRepositoryBase"/>
 
     <bean id="crafter.verificationTokenRepository"
           class="org.craftercms.profile.repositories.impl.VerificationTokenRepositoryImpl"
-          parent="crafter.jongoRepositoryBase"/>
-    
+          parent="crafter.AbstractJongoRepositoryBase"/>
+
     <bean id="crafter.mongoInitScriptRunner" class="org.craftercms.commons.mongo.MongoScriptRunner">
         <property name="mongo" ref="crafter.mongoClient"/>
         <property name="dbName" value="${crafter.profile.mongodb.connection.dbName}"/>
@@ -122,9 +123,10 @@
         </property>
     </bean>
 
-    <bean id="crafter.mailFreeMarkerConfig" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
-        <property name="templateLoaderPaths" value="${crafter.profile.mail.templates.path}" />
-        <property name="defaultEncoding" value="UTF-8" />
+    <bean id="crafter.mailFreeMarkerConfig"
+          class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
+        <property name="templateLoaderPaths" value="${crafter.profile.mail.templates.path}"/>
+        <property name="defaultEncoding" value="UTF-8"/>
     </bean>
 
     <bean id="crafter.emailFactory" class="org.craftercms.commons.mail.impl.EmailFactoryImpl">

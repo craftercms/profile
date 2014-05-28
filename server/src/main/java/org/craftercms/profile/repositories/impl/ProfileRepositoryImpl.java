@@ -16,11 +16,14 @@
  */
 package org.craftercms.profile.repositories.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mongodb.MongoException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
-import org.craftercms.commons.mongo.JongoRepository;
+import org.craftercms.commons.mongo.AbstractJongoRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.ProfileConstants;
@@ -31,29 +34,25 @@ import org.jongo.FindOne;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Default implementation of {@link org.craftercms.profile.repositories.ProfileRepository}.
  *
  * @author avasquez
  */
-public class ProfileRepositoryImpl extends JongoRepository<Profile> implements ProfileRepository {
+public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> implements ProfileRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(ProfileRepositoryImpl.class);
 
-    public static final String KEY_DEFAULT_FIELDS =                     "profile.profile.defaultFields";
-    public static final String KEY_FIND_BY_TENANT_AND_USERNAME_QUERY =  "profile.profile.byTenantAndUsername";
-    public static final String KEY_COUNT_BY_TENANT_QUERY =              "profile.profile.countByTenant";
-    public static final String KEY_REMOVE_BY_TENANT_QUERY =             "profile.profile.removeByTenant";
-    public static final String KEY_FIND_BY_IDS_QUERY =                  "profile.profile.byIds";
-    public static final String KEY_FIND_BY_TENANT_QUERY =               "profile.profile.byTenant";
-    public static final String KEY_FIND_BY_TENANT_AND_ROLE_QUERY =      "profile.profile.byTenantAndRole";
-    public static final String KEY_FIND_BY_TENANT_AND_EXISTING_ATTRIB_QUERY =
-            "profile.profile.byTenantAndExistingAttribute";
-    public static final String KEY_FIND_BY_TENANT_AND_ATTRIB_VALUE_QUERY =
-            "profile.profile.byTenantAndAttributeValue";
+    public static final String KEY_DEFAULT_FIELDS = "profile.profile.defaultFields";
+    public static final String KEY_FIND_BY_TENANT_AND_USERNAME_QUERY = "profile.profile.byTenantAndUsername";
+    public static final String KEY_COUNT_BY_TENANT_QUERY = "profile.profile.countByTenant";
+    public static final String KEY_REMOVE_BY_TENANT_QUERY = "profile.profile.removeByTenant";
+    public static final String KEY_FIND_BY_IDS_QUERY = "profile.profile.byIds";
+    public static final String KEY_FIND_BY_TENANT_QUERY = "profile.profile.byTenant";
+    public static final String KEY_FIND_BY_TENANT_AND_ROLE_QUERY = "profile.profile.byTenantAndRole";
+    public static final String KEY_FIND_BY_TENANT_AND_EXISTING_ATTRIB_QUERY = "profile.profile" +
+        ".byTenantAndExistingAttribute";
+    public static final String KEY_FIND_BY_TENANT_AND_ATTRIB_VALUE_QUERY = "profile.profile.byTenantAndAttributeValue";
 
     public static final String ATTRIBUTE_FIELD_PREFIX = "attributes.";
 
@@ -152,8 +151,8 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
 
     @Override
     public Iterable<Profile> findByTenantAndExistingAttribute(String tenantName, String attributeName, String sortBy,
-                                                              SortOrder sortOrder, String... attributesToReturn)
-            throws MongoDataException {
+                                                              SortOrder sortOrder,
+                                                              String... attributesToReturn) throws MongoDataException {
         try {
             String query = getQueryFor(KEY_FIND_BY_TENANT_AND_EXISTING_ATTRIB_QUERY);
             Find find = getCollection().find(query, tenantName, attributeName);
@@ -171,9 +170,8 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
 
     @Override
     public Iterable<Profile> findByTenantAndAttributeValue(String tenantName, String attributeName,
-                                                           String attributeValue, String sortBy,
-                                                           SortOrder sortOrder, String... attributesToReturn)
-            throws MongoDataException {
+                                                           String attributeValue, String sortBy, SortOrder sortOrder,
+                                                           String... attributesToReturn) throws MongoDataException {
         try {
             String query = getQueryFor(KEY_FIND_BY_TENANT_AND_ATTRIB_VALUE_QUERY);
             Find find = getCollection().find(query, tenantName, attributeName, attributeValue);
@@ -184,15 +182,15 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
             return find.as(Profile.class);
         } catch (MongoException ex) {
             String msg = "Unable to find profiles for attribute " + attributeName + " = " + attributeValue +
-                    " and tenant '" + tenantName + "'";
+                " and tenant '" + tenantName + "'";
             logger.error(msg, ex);
             throw new MongoDataException(msg, ex);
         }
     }
 
     @Override
-    public Profile findByTenantAndUsername(String tenantName, String username, String... attributesToReturn)
-            throws MongoDataException {
+    public Profile findByTenantAndUsername(String tenantName, String username, String... attributesToReturn) throws
+        MongoDataException {
         try {
             String query = getQueryFor(KEY_FIND_BY_TENANT_AND_USERNAME_QUERY);
             FindOne findOne = getCollection().findOne(query, tenantName, username);
@@ -221,7 +219,7 @@ public class ProfileRepositoryImpl extends JongoRepository<Profile> implements P
 
     protected Find addSort(Find find, String sortBy, SortOrder sortOrder) {
         if (StringUtils.isNotEmpty(sortBy)) {
-            find = find.sort("{" + sortBy + ": " + (sortOrder == SortOrder.ASC ? "1" : "-1") + "}");
+            find = find.sort("{" + sortBy + ": " + (sortOrder == SortOrder.ASC? "1": "-1") + "}");
         }
 
         return find;

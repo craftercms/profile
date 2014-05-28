@@ -16,24 +16,24 @@
  */
 package org.craftercms.profile.repositories.impl;
 
-import org.craftercms.commons.mongo.JongoRepository;
+import javax.annotation.PostConstruct;
+
+import org.craftercms.commons.mongo.AbstractJongoRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.repositories.TenantRepository;
-
-import javax.annotation.PostConstruct;
 
 /**
  * Default implementation of {@link org.craftercms.profile.repositories.TenantRepository}.
  *
  * @author avasquez
  */
-public class TenantRepositoryImpl extends JongoRepository<Tenant> implements TenantRepository {
+public class TenantRepositoryImpl extends AbstractJongoRepository<Tenant> implements TenantRepository {
 
-    public static final String KEY_NAME_INDEX_KEYS =        "profile.tenant.nameIndex.keys";
-    public static final String KEY_NAME_INDEX_OPTIONS =     "profile.tenant.nameIndex.options";
-    public static final String KEY_FIND_BY_NAME_QUERY =     "profile.tenant.byName";
-    public static final String KEY_REMOVE_BY_NAME_QUERY =   "profile.tenant.removeByName";
+    public static final String KEY_NAME_INDEX_KEYS = "profile.tenant.nameIndex.keys";
+    public static final String KEY_NAME_INDEX_OPTIONS = "profile.tenant.nameIndex.options";
+    public static final String KEY_FIND_BY_NAME_QUERY = "profile.tenant.byName";
+    public static final String KEY_REMOVE_BY_NAME_QUERY = "profile.tenant.removeByName";
 
     public TenantRepositoryImpl() throws MongoDataException {
         super();
