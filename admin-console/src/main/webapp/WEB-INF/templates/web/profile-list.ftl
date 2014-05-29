@@ -1,62 +1,34 @@
-<#import "spring.ftl" as spring />
-<#import "common/components.ftl" as components />
+<#import "spring.ftl" as spring/>
+<#import "layouts/main-layout.ftl" as main/>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <@components.head "Crafter Admin Console - Profile List"/>
-</head>
-<body>
-<div id="content">
-    <@components.header "Manage Profiles"/>
+<@main.layout "Crafter Profile Admin Console - Profile List", "Profile List">
+<form class="form-inline" role="form">
+    <div class="form-group">
+        <label for="tenant">Tenant:</label>
+        <select id="tenant" name="tenant" class="form-control" style="margin-left: 10px; width: 200px;">
+            <#list tenants as t>
+                <#if currentTenant == t.name>
+                    <#assign selected = true>
+                <#else>
+                    <#assign selected = false>
+                </#if>
+                <option value="${t.name}"<#if selected>selected="selected"</#if>>
+                ${t.name}
+                </option>
+            </#list>
+        </select>
+    </div>
+</form>
 
-    <form id="form-list" accept-charset="UTF-8">
-        <div class="top">
-            <div class="pad">
-                <nav>
-                    <ul class="main-nav clearfix">
-                        <li>
-                            <a id="newProfile" type="submit" href="<@spring.url '/profile/new'/>">
-                                New Profile
-                            </a>
-                        </li>
-                        <li>
-                            <a id="manageTenants" type="submit" href="<@spring.url '/tenant/all'/>">
-                                Manage Tenants
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="page-actions">
-                        <li>
-                            <label id="tenantLabel" for="tenant" style="width: 50px;">Tenant:</label>
-                            <select style="width:150px;" id="tenant" name="tenant">
-                            <#list tenants as t>
-                                <#if currentTenant == t.name>
-                                    <#assign selected = true>
-                                <#else>
-                                    <#assign selected = false>
-                                </#if>
-                                <option value="${t.name}"<#if selected>selected="selected"</#if>>
-                                ${t.name}
-                                </option>
-                            </#list>
-                            </select>
-                        </li>
-                        <#--li>
-                            <@spring.formInput "", "style=width:120px", "text"/>
-                            <a type="submit" id="search">Search</a>
-                        </li-->
-                        <li><a type="submit" id="previous">&lt;&lt;</a></li>
-                        <li><a type="submit" id="next">&gt;&gt;</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-        <table id="mytable">
+<div id="profiles" class="table-responsive">
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <th scope="col">Username</th>
-                <th scope="col">Enabled</th>
+                <th>Username</th>
+                <th>Enabled</th>
             </tr>
+        </thead>
+        <tbody>
             <#list profiles as p>
             <tr>
                 <td>
@@ -67,10 +39,7 @@
                 </td>
             </tr>
             </#list>
-        </table>
-    </form>
+        </tbody>
+    </table>
 </div>
-
-<@components.footer/>
-</body>
-</html> 
+</@main.layout>
