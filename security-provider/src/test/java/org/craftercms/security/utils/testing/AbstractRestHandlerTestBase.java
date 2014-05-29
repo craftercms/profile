@@ -38,7 +38,7 @@ import java.util.Map;
  *
  * @author avasquez
  */
-public class RestHandlerTestBase {
+public abstract class AbstractRestHandlerTestBase {
 
     protected HttpMessageConvertingResponseWriter createResponseWriter() {
         ContentNegotiationManagerFactoryBean factoryBean = new ContentNegotiationManagerFactoryBean();

@@ -16,7 +16,7 @@
  */
 package org.craftercms.profile.services.impl;
 
-import org.craftercms.commons.rest.RestClientBase;
+import org.craftercms.commons.rest.AbstractRestClientBase;
 import org.craftercms.commons.rest.RestClientUtils;
 import org.craftercms.commons.rest.RestServiceException;
 import org.craftercms.profile.api.ProfileConstants;
@@ -38,7 +38,7 @@ import java.net.URI;
  *
  * @author avasquez
  */
-public class ProfileRestClientBase extends RestClientBase {
+public abstract class AbstractProfileRestClientBase extends AbstractRestClientBase {
 
     protected AccessTokenIdResolver accessTokenIdResolver;
 

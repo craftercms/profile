@@ -20,7 +20,7 @@ import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.LoginSuccessHandler;
 import org.craftercms.security.exception.SecurityProviderException;
-import org.craftercms.security.utils.handlers.HandlerBase;
+import org.craftercms.security.utils.handlers.AbstractHandlerBase;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
@@ -41,7 +41,7 @@ import java.io.IOException;
  *
  * @author Alfonso Vásquez
  */
-public class LoginSuccessHandlerImpl extends HandlerBase implements LoginSuccessHandler {
+public class LoginSuccessHandlerImpl extends AbstractHandlerBase implements LoginSuccessHandler {
 
     protected RequestCache requestCache;
     protected String defaultTargetUrl;

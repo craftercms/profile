@@ -18,7 +18,7 @@ package org.craftercms.security.authentication.impl;
 
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.exception.AuthenticationRequiredException;
-import org.craftercms.security.utils.testing.RestHandlerTestBase;
+import org.craftercms.security.utils.testing.AbstractRestHandlerTestBase;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author avasquez
  */
-public class RestAuthenticationRequiredHandlerTest extends RestHandlerTestBase {
+public class RestAuthenticationRequiredHandlerTest extends AbstractRestHandlerTestBase {
 
     private static final String ERROR_MESSAGE =             "Access denied: user needs to be authenticated";
     private static final String EXPECTED_RESPONSE_CONTENT = "{\"message\":\"" + ERROR_MESSAGE + "\"}";

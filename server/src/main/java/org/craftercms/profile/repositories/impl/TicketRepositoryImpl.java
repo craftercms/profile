@@ -16,23 +16,23 @@
  */
 package org.craftercms.profile.repositories.impl;
 
-import org.craftercms.commons.mongo.JongoRepository;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import org.craftercms.commons.mongo.AbstractJongoRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.repositories.TicketRepository;
-
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Default implementation of {@link org.craftercms.profile.repositories.TicketRepository}.
  *
  * @author avasquez
  */
-public class TicketRepositoryImpl extends JongoRepository<Ticket> implements TicketRepository {
+public class TicketRepositoryImpl extends AbstractJongoRepository<Ticket> implements TicketRepository {
 
-    public static final String KEY_REMOVE_WITH_LAST_REQUEST_TIME_OLDER_THAN_QUERY =
-            "profile.ticket.removeWithLastRequestTimeOlderThan";
+    public static final String KEY_REMOVE_WITH_LAST_REQUEST_TIME_OLDER_THAN_QUERY = "profile.ticket" +
+        ".removeWithLastRequestTimeOlderThan";
 
     /**
      * Creates a instance of a Jongo Repository.

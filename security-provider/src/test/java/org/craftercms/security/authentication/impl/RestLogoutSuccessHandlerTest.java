@@ -18,7 +18,7 @@ package org.craftercms.security.authentication.impl;
 
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
-import org.craftercms.security.utils.testing.RestHandlerTestBase;
+import org.craftercms.security.utils.testing.AbstractRestHandlerTestBase;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.*;
  *
  * @author avasquez
  */
-public class RestLogoutSuccessHandlerTest extends RestHandlerTestBase {
+public class RestLogoutSuccessHandlerTest extends AbstractRestHandlerTestBase {
 
     private static final String EXPECTED_RESPONSE_CONTENT = "{\"message\":\"Logout successful\"}";
 

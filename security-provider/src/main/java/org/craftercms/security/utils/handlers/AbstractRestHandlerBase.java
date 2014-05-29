@@ -33,9 +33,9 @@ import java.util.Collections;
  *
  * @author avasquez
  */
-public class RestHandlerBase {
+public abstract class AbstractRestHandlerBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(RestHandlerBase.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractRestHandlerBase.class);
 
     protected HttpMessageConvertingResponseWriter responseWriter;
 

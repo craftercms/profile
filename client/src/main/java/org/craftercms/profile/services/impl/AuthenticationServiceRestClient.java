@@ -13,7 +13,7 @@ import static org.craftercms.profile.api.ProfileConstants.*;
  *
  * @author avasquez
  */
-public class AuthenticationServiceRestClient extends ProfileRestClientBase implements AuthenticationService {
+public class AuthenticationServiceRestClient extends AbstractProfileRestClientBase implements AuthenticationService {
 
     @Override
     public Ticket authenticate(String tenantName, String username, String password) throws ProfileException {

@@ -21,7 +21,7 @@ import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.LoginFailureHandler;
 import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.SecurityProviderException;
-import org.craftercms.security.utils.handlers.HandlerBase;
+import org.craftercms.security.utils.handlers.AbstractHandlerBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ import java.io.IOException;
  *
  * @author Alfonso Vásquez
  */
-public class LoginFailureHandlerImpl extends HandlerBase implements LoginFailureHandler {
+public class LoginFailureHandlerImpl extends AbstractHandlerBase implements LoginFailureHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginFailureHandlerImpl.class);
 

@@ -18,7 +18,7 @@ package org.craftercms.security.authentication.impl;
 
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.exception.BadCredentialsException;
-import org.craftercms.security.utils.testing.RestHandlerTestBase;
+import org.craftercms.security.utils.testing.AbstractRestHandlerTestBase;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author avasquez
  */
-public class RestLoginFailureHandlerTest extends RestHandlerTestBase {
+public class RestLoginFailureHandlerTest extends AbstractRestHandlerTestBase {
 
     private static final String ERROR_MESSAGE =             "Invalid username and/or password";
     private static final String EXPECTED_RESPONSE_CONTENT = "{\"message\":\"" + ERROR_MESSAGE + "\"}";

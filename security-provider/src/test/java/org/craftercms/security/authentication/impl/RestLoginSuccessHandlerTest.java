@@ -20,7 +20,7 @@ import org.bson.types.ObjectId;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.security.authentication.Authentication;
-import org.craftercms.security.utils.testing.RestHandlerTestBase;
+import org.craftercms.security.utils.testing.AbstractRestHandlerTestBase;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author avasquez
  */
-public class RestLoginSuccessHandlerTest extends RestHandlerTestBase {
+public class RestLoginSuccessHandlerTest extends AbstractRestHandlerTestBase {
 
     private RestLoginSuccessHandler handler;
 

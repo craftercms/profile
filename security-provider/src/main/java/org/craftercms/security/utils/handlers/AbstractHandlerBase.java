@@ -28,9 +28,9 @@ import java.io.IOException;
  *
  * @author avasquez
  */
-public class HandlerBase {
+public abstract class AbstractHandlerBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(HandlerBase.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractHandlerBase.class);
 
     private static final String URL_HTTP_PREFIX = "http://";
 

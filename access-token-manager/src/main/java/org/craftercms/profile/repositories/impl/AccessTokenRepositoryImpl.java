@@ -16,7 +16,7 @@
  */
 package org.craftercms.profile.repositories.impl;
 
-import org.craftercms.commons.mongo.JongoRepository;
+import org.craftercms.commons.mongo.AbstractJongoRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.repositories.AccessTokenRepository;
@@ -26,7 +26,7 @@ import org.craftercms.profile.repositories.AccessTokenRepository;
  *
  * @author avasquez
  */
-public class AccessTokenRepositoryImpl extends JongoRepository<AccessToken> implements AccessTokenRepository {
+public class AccessTokenRepositoryImpl extends AbstractJongoRepository<AccessToken> implements AccessTokenRepository {
 
     public static final String FIND_BY_ID_QUERY_KEY =   "accessToken.byId";
     public static final String REMOVE_BY_ID_QUERY_KEY = "accessToken.removeById";

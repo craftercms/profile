@@ -36,7 +36,7 @@ import static org.craftercms.profile.api.ProfileConstants.*;
  *
  * @author avasquez
  */
-public class ProfileServiceRestClient extends ProfileRestClientBase implements ProfileService {
+public class ProfileServiceRestClient extends AbstractProfileRestClientBase implements ProfileService {
 
     public static final ParameterizedTypeReference<List<Profile>> profileListTypeRef =
             new ParameterizedTypeReference<List<Profile>>() {};

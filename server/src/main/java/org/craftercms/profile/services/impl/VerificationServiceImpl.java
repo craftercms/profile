@@ -44,18 +44,16 @@ import java.util.Map;
 @Logged
 public class VerificationServiceImpl implements VerificationService {
 
-    private static final I10nLogger logger = new I10nLogger(VerificationServiceImpl.class,
-            "crafter.profile.messages.logging");
-
     public static final String VERIFICATION_LINK_TEMPLATE_ARG = "verificationLink";
+    public static final String LOG_KEY_VER_URL_CREATED = "profile.verification.verificationUrlCreated";
+    public static final String LOG_KEY_EMAIL_SENT = "profile.verification.emailSent";
+    public static final String LOG_KEY_TOKEN_VERIFIED = "profile.verification.tokenVerified";
+    public static final String ERROR_KEY_CREATE_TOKEN_ERROR = "profile.verification.createTokenError";
+    public static final String ERROR_KEY_GET_TOKEN_ERROR = "profile.verification.getTokenError";
+    public static final String ERROR_KEY_EMAIL_ERROR = "profile.verification.emailError";
 
-    public static final String LOG_KEY_VER_URL_CREATED =    "profile.verification.verificationUrlCreated";
-    public static final String LOG_KEY_EMAIL_SENT =         "profile.verification.emailSent";
-    public static final String LOG_KEY_TOKEN_VERIFIED =     "profile.verification.tokenVerified";
-
-    public static final String ERROR_KEY_CREATE_TOKEN_ERROR =   "profile.verification.createTokenError";
-    public static final String ERROR_KEY_GET_TOKEN_ERROR =      "profile.verification.getTokenError";
-    public static final String ERROR_KEY_EMAIL_ERROR =          "profile.verification.emailError";
+    private static final I10nLogger logger = new I10nLogger(VerificationServiceImpl.class,
+        "crafter.profile.messages.logging");
 
     protected VerificationTokenRepository tokenRepository;
     protected EmailFactory emailFactory;
@@ -109,7 +107,7 @@ public class VerificationServiceImpl implements VerificationService {
         logger.debug(LOG_KEY_VER_URL_CREATED, profile.getId(), verificationUrl);
 
         Map<String, String> templateArgs = Collections.singletonMap(VERIFICATION_LINK_TEMPLATE_ARG, verificationUrl);
-        String[] to = new String[] { profile.getEmail() };
+        String[] to = new String[] {profile.getEmail()};
 
         try {
             emailFactory.getEmail(from, to, null, null, subject, templateName, templateArgs, true).send();
@@ -121,7 +119,7 @@ public class VerificationServiceImpl implements VerificationService {
     }
 
     @Override
-    public Profile verifyToken(String tokenId, VerificationSuccessCallback callback) throws ProfileException  {
+    public Profile verifyToken(String tokenId, VerificationSuccessCallback callback) throws ProfileException {
         VerificationToken token;
         try {
             token = tokenRepository.findById(tokenId);

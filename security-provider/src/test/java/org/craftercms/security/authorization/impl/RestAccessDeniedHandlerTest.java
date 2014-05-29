@@ -18,7 +18,7 @@ package org.craftercms.security.authorization.impl;
 
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.exception.AccessDeniedException;
-import org.craftercms.security.utils.testing.RestHandlerTestBase;
+import org.craftercms.security.utils.testing.AbstractRestHandlerTestBase;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author avasquez
  */
-public class RestAccessDeniedHandlerTest extends RestHandlerTestBase {
+public class RestAccessDeniedHandlerTest extends AbstractRestHandlerTestBase {
 
     private static final String ERROR_MESSAGE =             "Access denied: user is not allowed to access resource";
     private static final String EXPECTED_RESPONSE_CONTENT = "{\"message\":\"" + ERROR_MESSAGE + "\"}";
