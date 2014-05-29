@@ -16,6 +16,7 @@
  */
 package org.craftercms.security.processors.impl;
 
+import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.processors.RequestSecurityProcessor;
 import org.craftercms.security.processors.RequestSecurityProcessorChain;
@@ -98,8 +99,8 @@ public class LogoutProcessor implements RequestSecurityProcessor {
     }
 
     protected boolean isLogoutRequest(HttpServletRequest request) {
-        return request.getRequestURI().equals(request.getContextPath() + logoutUrl) && request.getMethod()
-                .equals(logoutMethod);
+        return HttpUtils.getRequestUriWithoutContextPath(request).equals(logoutUrl) && request.getMethod().equals(
+                logoutMethod);
     }
 
     protected void onLogoutSuccess(Authentication authentication, RequestContext context) throws IOException {

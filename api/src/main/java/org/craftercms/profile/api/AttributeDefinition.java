@@ -13,7 +13,6 @@ import java.util.Map;
 public class AttributeDefinition extends SecuredObjectBase<AttributePermission> {
 
     private String name;
-    private String owner;
     private Map<String, Object> metadata;
 
     /**
@@ -28,20 +27,6 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
      */
     public void setName(final String name) {
         this.name = name;
-    }
-
-    /**
-     * Returns the owner (application) of the attribute definition.
-     */
-    public String getOwner() {
-        return owner;
-    }
-
-    /**
-     * Sets the owner (application) of the attribute definition.
-     */
-    public void setOwner(final String owner) {
-        this.owner = owner;
     }
 
     /**
@@ -85,7 +70,6 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
     public String toString() {
         return "AttributeDefinition{" +
                 "name='" + name + '\'' +
-                ", owner='" + owner + '\'' +
                 ", metadata=" + metadata +
                 ", permissions=" + permissions +
                 '}';

@@ -14,26 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.management.services;
-
-import java.util.List;
-
-import org.craftercms.profile.client.exceptions.AppAuthenticationFailedException;
-import org.craftercms.profile.client.impl.domain.Role;
-
-
-/**
- * @author David Escalante
- */
-public interface RoleDAOService {
-
-    /**
-     * Get the list of all Roles
-     *
-     * @return
-     * @throws AppAuthenticationFailedException
-     *
-     */
-    public List<Role> getAllRoles() throws AppAuthenticationFailedException;
-
-}
+//package org.craftercms.profile.management.services;
+//
+//import java.util.List;
+//
+//import org.craftercms.profile.client.exceptions.AppAuthenticationFailedException;
+//import org.craftercms.profile.client.impl.domain.Role;
+//
+//
+///**
+// * @author David Escalante
+// */
+//public interface RoleDAOService {
+//
+//    /**
+//     * Get the list of all Roles
+//     *
+//     * @return
+//     * @throws AppAuthenticationFailedException
+//     *
+//     */
+//    public List<Role> getAllRoles() throws AppAuthenticationFailedException;
+//
+//}

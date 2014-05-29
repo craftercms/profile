@@ -21,10 +21,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.AccessToken;
-import org.craftercms.profile.api.TenantActions;
+import org.craftercms.profile.api.TenantAction;
 import org.craftercms.profile.api.TenantPermission;
 import org.craftercms.profile.repositories.AccessTokenRepository;
 import org.springframework.context.ApplicationContext;
@@ -233,18 +234,16 @@ public class AccessTokenManagerCli {
         while (true) {
             String tenant = readLineCheckingForEmpty("Enter tenant name (use * for any tenant): ");
             String[] actions = readLineCheckingForEmpty("Enter allowed actions, separated by comma (valid actions " +
-                    "are " + StringUtils.join(TenantActions.ALL_ACTIONS, ", ") + " or * for any action): ").split(",");
+                    "are " + StringUtils.join(TenantAction.values(), ", ") + " or * for any action): ").split(",");
             boolean validActions = true;
 
             if (!ArrayUtils.contains(actions, "*")) {
                 for (String action : actions) {
-                    if (!ArrayUtils.contains(TenantActions.ALL_ACTIONS, action)) {
+                    if (!EnumUtils.isValidEnum(TenantAction.class, action)) {
                         stdOut.println("ERROR: Unrecognized tenant action '" + action + "'");
                         stdOut.flush();
 
                         validActions = false;
-
-                        break;
                     }
                 }
             }

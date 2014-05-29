@@ -90,6 +90,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <forkMode>never</forkMode>
+                </configuration>
             </plugin>
             <!-- Start up Embedded Mongo DB -->
             <plugin>

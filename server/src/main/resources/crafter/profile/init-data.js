@@ -16,7 +16,7 @@ if (db.accesstoken.count() == 0) {
             "application" : "crafterengine",
             "tenantPermissions" : [
                 {
-                    "allowedActions" : [ "*" ],
+                    "allowedActions" : [ "READ_TENANT", "MANAGE_PROFILES", "MANAGE_TICKETS" ],
                     "tenant" : "*"
                 }
             ],
@@ -27,7 +27,7 @@ if (db.accesstoken.count() == 0) {
             "application" : "craftersocial",
             "tenantPermissions" : [
                 {
-                    "allowedActions" : [ "*" ],
+                    "allowedActions" : [ "READ_TENANT", "MANAGE_PROFILES", "MANAGE_TICKETS" ],
                     "tenant" : "*"
                 }
             ],
@@ -39,11 +39,10 @@ if (db.tenant.count() == 0) {
     db.tenant.insert({
         "name" : "default",
         "verifyNewProfiles" : false,
-        "roles" : [ "PROFILE_ADMIN", "SOCIAL_USER", "SOCIAL_MODERATOR", "SOCIAL_AUTHOR", "SOCIAL_ADMIN" ],
+        "availableRoles" : [ "PROFILE_ADMIN", "SOCIAL_USER", "SOCIAL_MODERATOR", "SOCIAL_AUTHOR", "SOCIAL_ADMIN" ],
         "attributeDefinitions" : [
             {
                 "name" : "firstName",
-                "owner" : "adminconsole",
                 "permissions" : [
                     {
                         "application" : "*",
@@ -53,28 +52,31 @@ if (db.tenant.count() == 0) {
             },
             {
                 "name" : "lastName",
-                "owner" : "adminconsole",
                 "permissions" : [
                     {
                         "application" : "*",
                         "allowedActions" : [ "*" ]
                     }
                 ]
-            },
+            }/*,
             {
                 "name" : "subscriptions",
                 "owner" : "craftersocial",
                 "permissions" : [
                     {
+                        "application" : "adminconsole",
+                        "allowedActions" : [ "*" ]
+                    },
+                    {
                         "application" : "craftersocial",
                         "allowedActions" : [ "*" ]
                     },
                     {
-                        "application" : "crafterengine",
-                        "allowedActions" : [ "read" ]
+                        "application" : "*",
+                        "allowedActions" : [ "READ_ATTRIBUTE" ]
                     }
                 ]
-            }
+            }*/
         ]
     });
 }

@@ -31,7 +31,7 @@ public class ProfileConstants {
 
     // ********** REST Constants **********
 
-    public static final String BASE_URL_REST_API =          "/api/3";
+    public static final String BASE_URL_REST_API =          "/api/1";
     public static final String BASE_URL_TENANT =            BASE_URL_REST_API + "/tenant";
     public static final String BASE_URL_PROFILE =           BASE_URL_REST_API + "/profile";
     public static final String BASE_URL_AUTHENTICATION =    BASE_URL_REST_API + "/authentication";

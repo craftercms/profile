@@ -16,7 +16,6 @@
  */
 package org.craftercms.profile.services.impl;
 
-import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.*;
 import org.craftercms.profile.api.services.ProfileService;
@@ -42,16 +41,15 @@ import static org.mockito.Mockito.*;
  */
 public class TenantServiceImplTest {
 
-    private static final String TENANT1_NAME =          "tenant1";
-    private static final String TENANT2_NAME =          "tenant2";
-    private static final String ROLE1 =                  "role1";
-    private static final String ROLE2 =                  "role2";
-    private static final Set<String> ROLES =             new HashSet<>(Arrays.asList(ROLE1));
+    private static final String TENANT1_NAME =  "tenant1";
+    private static final String TENANT2_NAME =  "tenant2";
+    private static final String ROLE1 =         "role1";
+    private static final String ROLE2 =         "role2";
+    private static final Set<String> ROLES =    new HashSet<>(Arrays.asList(ROLE1));
 
-    private static final String ATTRIB1_NAME =   "attrib1";
-    private static final String ATTRIB2_NAME =   "attrib2";
-    private static final String APP1_NAME =      "app1";
-    private static final String APP2_NAME =      "app2";
+    private static final String ATTRIB1_NAME =  "attrib1";
+    private static final String ATTRIB2_NAME =  "attrib2";
+    private static final String APP_NAME =      "app";
 
     private TenantServiceImpl tenantService;
     @Mock
@@ -78,7 +76,7 @@ public class TenantServiceImplTest {
                 .NO_ATTRIBUTE)).thenReturn(Arrays.asList(mock(Profile.class)));
 
         tenantService = new TenantServiceImpl();
-        tenantService.setPermissionEvaluator(permissionEvaluator);
+        tenantService.setTenantPermissionEvaluator(permissionEvaluator);
         tenantService.setTenantRepository(tenantRepository);
         tenantService.setProfileRepository(profileRepository);
         tenantService.setProfileService(profileService);
@@ -151,7 +149,7 @@ public class TenantServiceImplTest {
     @Test
     public void testAddRoles() throws Exception {
         Tenant expected = getTenant1();
-        expected.getRoles().add(ROLE2);
+        expected.getAvailableRoles().add(ROLE2);
 
         Tenant actual = tenantService.addRoles(TENANT1_NAME, Arrays.asList(ROLE2));
 
@@ -164,7 +162,7 @@ public class TenantServiceImplTest {
     @Test
     public void testRemoveRoles() throws Exception {
         Tenant expected = getTenant1();
-        expected.getRoles().remove("role1");
+        expected.getAvailableRoles().remove("role1");
 
         Tenant actual = tenantService.removeRoles(TENANT1_NAME, Arrays.asList("role1"));
 
@@ -178,7 +176,6 @@ public class TenantServiceImplTest {
     public void testAddAttributeDefinitions() throws Exception {
         AttributeDefinition def = new AttributeDefinition();
         def.setName(ATTRIB2_NAME);
-        def.setOwner(APP1_NAME);
 
         Tenant expected = getTenant1();
         expected.getAttributeDefinitions().add(def);
@@ -197,7 +194,6 @@ public class TenantServiceImplTest {
     public void testAddRepeatedAttributeDefinition() throws Exception {
         AttributeDefinition def = new AttributeDefinition();
         def.setName(ATTRIB1_NAME);
-        def.setOwner(APP1_NAME);
 
         try {
             tenantService.addAttributeDefinitions(TENANT1_NAME, Arrays.asList(def));
@@ -208,7 +204,7 @@ public class TenantServiceImplTest {
 
     @Test
     public void testRemoveAttributeDefinitions() throws Exception {
-        Application.setCurrent(new Application(APP1_NAME, Collections.<TenantPermission>emptyList()));
+        Application.setCurrent(new Application(APP_NAME, Collections.<TenantPermission>emptyList()));
 
         Tenant expected = getTenant1();
         expected.getAttributeDefinitions().clear();
@@ -224,21 +220,8 @@ public class TenantServiceImplTest {
     }
 
     @Test
-    public void testRemoveAttributeDefinitionNotOwned() throws Exception {
-        Application.setCurrent(new Application(APP2_NAME, Collections.<TenantPermission>emptyList()));
-
-        try {
-            tenantService.removeAttributeDefinitions(TENANT1_NAME, Arrays.asList(ATTRIB1_NAME));
-            fail("Expected " + ActionDeniedException.class.getSimpleName() + " exception");
-        } catch (ActionDeniedException e) {
-        }
-
-        Application.clear();
-    }
-
-    @Test
     public void testRemoveAttributeDefinitionStillUsed() throws Exception {
-        Application.setCurrent(new Application(APP1_NAME, Collections.<TenantPermission>emptyList()));
+        Application.setCurrent(new Application(APP_NAME, Collections.<TenantPermission>emptyList()));
 
         try {
             tenantService.removeAttributeDefinitions(TENANT2_NAME, Arrays.asList(ATTRIB1_NAME));
@@ -250,12 +233,11 @@ public class TenantServiceImplTest {
     private Tenant getTenant1() {
         AttributeDefinition def = new AttributeDefinition();
         def.setName(ATTRIB1_NAME);
-        def.setOwner(APP1_NAME);
 
         Tenant tenant = new Tenant();
         tenant.setName(TENANT1_NAME);
         tenant.setVerifyNewProfiles(true);
-        tenant.setRoles(ROLES);
+        tenant.setAvailableRoles(ROLES);
         tenant.setAttributeDefinitions(new HashSet<>(Arrays.asList(def)));
 
         return tenant;
@@ -264,12 +246,11 @@ public class TenantServiceImplTest {
     private Tenant getTenant2() {
         AttributeDefinition def = new AttributeDefinition();
         def.setName(ATTRIB1_NAME);
-        def.setOwner(APP1_NAME);
 
         Tenant tenant = new Tenant();
         tenant.setName(TENANT2_NAME);
         tenant.setVerifyNewProfiles(true);
-        tenant.setRoles(ROLES);
+        tenant.setAvailableRoles(ROLES);
         tenant.setAttributeDefinitions(new HashSet<>(Arrays.asList(def)));
 
         return tenant;
@@ -279,7 +260,7 @@ public class TenantServiceImplTest {
         assertNotNull(actual);
         assertEquals(expected.getName(), actual.getName());
         assertEquals(expected.isVerifyNewProfiles(), actual.isVerifyNewProfiles());
-        assertEquals(expected.getRoles(), actual.getRoles());
+        assertEquals(expected.getAvailableRoles(), actual.getAvailableRoles());
         assertEquals(expected.getAttributeDefinitions(), actual.getAttributeDefinitions());
     }
 

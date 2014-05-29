@@ -20,7 +20,7 @@ import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.LogoutSuccessHandler;
 import org.craftercms.security.exception.SecurityProviderException;
-import org.craftercms.security.utils.handlers.BaseHandler;
+import org.craftercms.security.utils.handlers.AbstractHandlerBase;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
@@ -31,7 +31,7 @@ import java.io.IOException;
  *
  * @author avasquez
  */
-public class LogoutSuccessHandlerImpl extends BaseHandler implements LogoutSuccessHandler {
+public class LogoutSuccessHandlerImpl extends AbstractHandlerBase implements LogoutSuccessHandler {
 
     protected String targetUrl;
 

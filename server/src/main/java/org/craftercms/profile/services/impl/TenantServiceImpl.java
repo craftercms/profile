@@ -25,10 +25,7 @@ import org.craftercms.commons.mongo.DuplicateKeyException;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
-import org.craftercms.profile.api.AttributeDefinition;
-import org.craftercms.profile.api.ProfileConstants;
-import org.craftercms.profile.api.Tenant;
-import org.craftercms.profile.api.TenantActions;
+import org.craftercms.profile.api.*;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.api.services.TenantService;
@@ -70,14 +67,21 @@ public class TenantServiceImpl implements TenantService {
     public static final String ERROR_KEY_GET_TENANT_COUNT_ERROR =   "profile.tenant.getTenantCountError";
     public static final String ERROR_KEY_GET_ALL_TENANTS_ERROR =    "profile.tenant.getAllTenantsError";
 
-    protected PermissionEvaluator<Application, String> permissionEvaluator;
+    protected PermissionEvaluator<Application, String> tenantPermissionEvaluator;
+    protected PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator;
     protected TenantRepository tenantRepository;
     protected ProfileRepository profileRepository;
     protected ProfileService profileService;
 
     @Required
-    public void setPermissionEvaluator(PermissionEvaluator<Application, String> permissionEvaluator) {
-        this.permissionEvaluator = permissionEvaluator;
+    public void setTenantPermissionEvaluator(PermissionEvaluator<Application, String> tenantPermissionEvaluator) {
+        this.tenantPermissionEvaluator = tenantPermissionEvaluator;
+    }
+
+    @Required
+    public void setAttributePermissionEvaluator(
+            PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator) {
+        this.attributePermissionEvaluator = attributePermissionEvaluator;
     }
 
     @Required
@@ -97,7 +101,7 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public Tenant createTenant(Tenant tenant) throws ProfileException {
-        checkIfTenantActionIsAllowed(null, TenantActions.CREATE);
+        checkIfTenantActionIsAllowed(null, TenantAction.CREATE_TENANT);
 
         // Make sure ID is null, we want it auto-generated
         tenant.setId(null);
@@ -117,7 +121,7 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public Tenant getTenant(String name) throws ProfileException {
-        checkIfTenantActionIsAllowed(name, TenantActions.READ);
+        checkIfTenantActionIsAllowed(name, TenantAction.READ_TENANT);
 
         try {
             return tenantRepository.findByName(name);
@@ -128,7 +132,7 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public void deleteTenant(String name) throws ProfileException {
-        checkIfTenantActionIsAllowed(name, TenantActions.DELETE);
+        checkIfTenantActionIsAllowed(name, TenantAction.DELETE_TENANT);
 
         try {
             profileRepository.removeAllForTenant(name);
@@ -142,7 +146,7 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public long getTenantCount() throws ProfileException  {
-        checkIfTenantActionIsAllowed(null, TenantActions.COUNT);
+        checkIfTenantActionIsAllowed(null, TenantAction.READ_TENANT);
 
         try {
             return tenantRepository.count();
@@ -153,7 +157,7 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public List<Tenant> getAllTenants() throws ProfileException {
-        checkIfTenantActionIsAllowed(null, TenantActions.READ_ALL);
+        checkIfTenantActionIsAllowed(null, TenantAction.READ_TENANT);
 
         try {
             return IterableUtils.toList(tenantRepository.findAll());
@@ -184,7 +188,7 @@ public class TenantServiceImpl implements TenantService {
 
             @Override
             public void doWithTenant(Tenant tenant) throws ProfileException {
-                tenant.getRoles().addAll(roles);
+                tenant.getAvailableRoles().addAll(roles);
             }
 
         });
@@ -200,7 +204,7 @@ public class TenantServiceImpl implements TenantService {
 
             @Override
             public void doWithTenant(Tenant tenant) throws ProfileException {
-                tenant.getRoles().removeAll(roles);
+                tenant.getAvailableRoles().removeAll(roles);
             }
 
         });
@@ -243,17 +247,12 @@ public class TenantServiceImpl implements TenantService {
             @Override
             public void doWithTenant(Tenant tenant) throws ProfileException {
                 Set<AttributeDefinition> allDefinitions = tenant.getAttributeDefinitions();
-                String currentApp = Application.getCurrent().getName();
 
                 for (AttributeDefinition updatedDefinition : attributeDefinitions) {
                     String attributeName = updatedDefinition.getName();
                     AttributeDefinition originalDefinition = findAttributeDefinition(allDefinitions, attributeName);
                     if (originalDefinition != null) {
-                        if (!originalDefinition.getOwner().equals(currentApp)) {
-                            throw new ActionDeniedException("update", originalDefinition);
-                        }
-
-                        originalDefinition.setOwner(updatedDefinition.getOwner());
+                        originalDefinition.setPermissions(updatedDefinition.getPermissions());
                         originalDefinition.setMetadata(updatedDefinition.getMetadata());
                     } else {
                         throw new AttributeNotDefinedException(attributeName, tenantName);
@@ -276,18 +275,14 @@ public class TenantServiceImpl implements TenantService {
             @Override
             public void doWithTenant(Tenant tenant) throws ProfileException {
                 Set<AttributeDefinition> allDefinitions = tenant.getAttributeDefinitions();
-                String currentApp = Application.getCurrent().getName();
 
                 for (String attributeName : attributeNames) {
                     for (Iterator<AttributeDefinition> iter = allDefinitions.iterator(); iter.hasNext();) {
                         AttributeDefinition attributeDefinition = iter.next();
                         if (attributeDefinition.getName().equals(attributeName)) {
-                            if (!attributeDefinition.getOwner().equals(currentApp)) {
-                                throw new ActionDeniedException("remove", attributeDefinition);
-                            }
-
                             int attributeCount = IterableUtils.count(profileService.getProfilesByExistingAttribute(
                                     tenantName, attributeName, null, null, ProfileConstants.NO_ATTRIBUTE));
+
                             if (attributeCount > 0) {
                                 throw new AttributeDefinitionStillUsedException(attributeName, tenantName);
                             }
@@ -306,12 +301,12 @@ public class TenantServiceImpl implements TenantService {
         return tenant;
     }
 
-    protected void checkIfTenantActionIsAllowed(String tenantName, String action) {
-        if (!permissionEvaluator.isAllowed(tenantName, action)) {
+    protected void checkIfTenantActionIsAllowed(String tenantName, TenantAction action) {
+        if (!tenantPermissionEvaluator.isAllowed(tenantName, action.toString())) {
             if (tenantName != null) {
-                throw new ActionDeniedException(action, "tenant \"" + tenantName + "\"");
+                throw new ActionDeniedException(action.toString(), "tenant \"" + tenantName + "\"");
             } else {
-                throw new ActionDeniedException(action);
+                throw new ActionDeniedException(action.toString());
             }
         }
     }
@@ -319,7 +314,7 @@ public class TenantServiceImpl implements TenantService {
     protected Tenant updateTenant(String tenantName, UpdateCallback callback) throws ProfileException {
         Tenant tenant = getTenant(tenantName);
         if (tenant != null) {
-            checkIfTenantActionIsAllowed(tenantName, TenantActions.UPDATE);
+            checkIfTenantActionIsAllowed(tenantName, TenantAction.UPDATE_TENANT);
 
             callback.doWithTenant(tenant);
 
@@ -338,7 +333,7 @@ public class TenantServiceImpl implements TenantService {
     }
 
     protected Tenant updateTenant(Tenant tenant) throws ProfileException {
-        checkIfTenantActionIsAllowed(tenant.getName(), TenantActions.UPDATE);
+        checkIfTenantActionIsAllowed(tenant.getName(), TenantAction.UPDATE_TENANT);
 
         try {
             tenantRepository.save(tenant);

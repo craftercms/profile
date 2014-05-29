@@ -63,8 +63,6 @@ public class ProfileServiceImpl implements ProfileService {
     public static final String LOG_KEY_PROFILE_ATTRIBS_UPDATED =    "profile.profile.attributesUpdated";
     public static final String LOG_KEY_PROFILE_ATTRIBS_REMOVED =    "profile.profile.attributesRemoved";
     public static final String LOG_KEY_PROFILE_DELETED =            "profile.profile.profileDeleted";
-    public static final String LOG_KEY_EVALUATING_ATTRIB_ACTION =   "profile.attribute.evaluatingAttributeAction";
-    public static final String LOG_KEY_REMOVING_UNREADABLE_ATTRIB = "profile.attribute.removingUnreadableAttribute";
 
     public static final String ERROR_KEY_CREATE_PROFILE_ERROR =             "profile.profile.createProfileError";
     public static final String ERROR_KEY_GET_PROFILE_ERROR =                "profile.profile.getProfileError";
@@ -315,7 +313,7 @@ public class ProfileServiceImpl implements ProfileService {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
-                rejectAttributesIfActionNotAllowed(profile, attributes.keySet(), AttributeActions.WRITE);
+                rejectAttributesIfActionNotAllowed(profile, attributes.keySet(), AttributeAction.WRITE_ATTRIBUTE);
 
                 profile.getAttributes().putAll(attributes);
             }
@@ -336,7 +334,7 @@ public class ProfileServiceImpl implements ProfileService {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
-                rejectAttributesIfActionNotAllowed(profile, attributeNames, AttributeActions.DELETE);
+                rejectAttributesIfActionNotAllowed(profile, attributeNames, AttributeAction.REMOVE_ATTRIBUTE);
 
                 Map<String, Object> attributes = profile.getAttributes();
 
@@ -540,8 +538,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     protected void checkIfManageProfilesIsAllowed(String tenantName) {
-        if (!tenantPermissionEvaluator.isAllowed(tenantName, TenantActions.MANAGE_PROFILES)) {
-            throw new ActionDeniedException(TenantActions.MANAGE_PROFILES, "tenant \"" + tenantName + "\"");
+        if (!tenantPermissionEvaluator.isAllowed(tenantName, TenantAction.MANAGE_PROFILES.toString())) {
+            throw new ActionDeniedException(TenantAction.MANAGE_PROFILES.toString(), "tenant \"" + tenantName + "\"");
         }
     }
 
@@ -600,8 +598,8 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
-    protected void rejectAttributesIfActionNotAllowed(Profile profile, Collection<String> attributeNames, String action)
-            throws ProfileException {
+    protected void rejectAttributesIfActionNotAllowed(Profile profile, Collection<String> attributeNames,
+                                                      AttributeAction action) throws ProfileException {
         if (profile != null) {
             Tenant tenant = getTenant(profile.getTenant());
             Set<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
@@ -615,31 +613,26 @@ public class ProfileServiceImpl implements ProfileService {
     protected void filterAttributeIfReadNotAllowed(Tenant tenant, Iterator<String> attributeNamesIter,
                                                    Set<AttributeDefinition> attributeDefinitions)
             throws PermissionException, AttributeNotDefinedException {
+        String tenantName = tenant.getName();
         String attributeName = attributeNamesIter.next();
         AttributeDefinition definition = findAttributeDefinition(attributeDefinitions, attributeName);
 
         if (definition != null) {
-            logger.debug(LOG_KEY_EVALUATING_ATTRIB_ACTION, AttributeActions.READ, attributeName, tenant.getName());
-
-            if (!attributePermissionEvaluator.isAllowed(definition, AttributeActions.READ)) {
-                logger.debug(LOG_KEY_REMOVING_UNREADABLE_ATTRIB, attributeName, tenant.getName());
-
+            if (!attributePermissionEvaluator.isAllowed(definition, AttributeAction.READ_ATTRIBUTE.toString())) {
                 attributeNamesIter.remove();
             }
         } else {
-            throw new AttributeNotDefinedException(attributeName, tenant.getName());
+            throw new AttributeNotDefinedException(attributeName, tenantName);
         }
     }
 
-    protected void rejectAttributeIfActionNotAllowed(Tenant tenant, String attributeName, String action,
+    protected void rejectAttributeIfActionNotAllowed(Tenant tenant, String attributeName, AttributeAction action,
                                                      Set<AttributeDefinition> attributeDefinitions)
             throws PermissionException, AttributeNotDefinedException {
         AttributeDefinition definition = findAttributeDefinition(attributeDefinitions, attributeName);
         if (definition != null) {
-            logger.debug(LOG_KEY_EVALUATING_ATTRIB_ACTION, action, attributeName, tenant.getName());
-
-            if (!attributePermissionEvaluator.isAllowed(definition, action)) {
-                throw new ActionDeniedException(action, "attribute \"" + attributeName + "\"");
+            if (!attributePermissionEvaluator.isAllowed(definition, action.toString())) {
+                throw new ActionDeniedException(action.toString(), "attribute \"" + attributeName + "\"");
             }
         } else {
             throw new AttributeNotDefinedException(attributeName, tenant.getName());

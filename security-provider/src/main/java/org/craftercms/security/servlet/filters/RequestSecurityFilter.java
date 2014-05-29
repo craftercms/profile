@@ -17,6 +17,7 @@
 package org.craftercms.security.servlet.filters;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.processors.RequestSecurityProcessor;
 import org.craftercms.security.processors.RequestSecurityProcessorChain;
@@ -149,7 +150,7 @@ public class RequestSecurityFilter extends GenericFilterBean implements Security
     protected boolean excludeRequest(HttpServletRequest request) {
         if (ArrayUtils.isNotEmpty(urlsToExclude)) {
             for (String pathPattern : urlsToExclude) {
-                if (pathMatcher.match(pathPattern, request.getRequestURI())) {
+                if (pathMatcher.match(pathPattern, HttpUtils.getRequestUriWithoutContextPath(request))) {
                     return true;
                 }
             }
@@ -164,7 +165,7 @@ public class RequestSecurityFilter extends GenericFilterBean implements Security
     protected boolean includeRequest(HttpServletRequest request) {
         if (ArrayUtils.isNotEmpty(urlsToInclude)) {
             for (String pathPattern : urlsToInclude) {
-                if (pathMatcher.match(pathPattern, request.getRequestURI())) {
+                if (pathMatcher.match(pathPattern, HttpUtils.getRequestUriWithoutContextPath(request))) {
                     return true;
                 }
             }

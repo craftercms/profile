@@ -17,7 +17,7 @@
 package org.craftercms.security.processors.impl;
 
 import org.bson.types.ObjectId;
-import org.craftercms.commons.http.CookieFactory;
+import org.craftercms.commons.http.CookieManager;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.security.authentication.Authentication;
@@ -49,8 +49,8 @@ public class AddSecurityCookiesProcessorTest {
     @Before
     public void setUp() throws Exception {
         processor = new AddSecurityCookiesProcessor();
-        processor.setTicketCookieFactory(new CookieFactory());
-        processor.setProfileLastModifiedCookieFactory(new CookieFactory());
+        processor.setTicketCookieManager(new CookieManager());
+        processor.setProfileLastModifiedCookieManager(new CookieManager());
     }
 
     @Test
@@ -122,15 +122,13 @@ public class AddSecurityCookiesProcessorTest {
         ticketCookie = response.getCookie(SecurityUtils.TICKET_COOKIE_NAME);
 
         assertNotNull(ticketCookie);
-        assertEquals("", ticketCookie.getValue());
-        assertEquals("/", ticketCookie.getPath());
+        assertEquals(null, ticketCookie.getValue());
         assertEquals(0, ticketCookie.getMaxAge());
 
         profileLastModifiedCookie = response.getCookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME);
 
         assertNotNull(profileLastModifiedCookie);
-        assertEquals("", profileLastModifiedCookie.getValue());
-        assertEquals("/", profileLastModifiedCookie.getPath());
+        assertEquals(null, profileLastModifiedCookie.getValue());
         assertEquals(0, profileLastModifiedCookie.getMaxAge());
     }
 

@@ -23,7 +23,7 @@ import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.Profile;
-import org.craftercms.profile.api.TenantActions;
+import org.craftercms.profile.api.TenantAction;
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AuthenticationService;
@@ -177,8 +177,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     protected void checkIfManageTicketsIsAllowed(String tenantName) {
-        if (!permissionEvaluator.isAllowed(tenantName, TenantActions.MANAGE_TICKETS)) {
-            throw new ActionDeniedException(TenantActions.MANAGE_TICKETS, "tenant \"" + tenantName + "\"");
+        if (!permissionEvaluator.isAllowed(tenantName, TenantAction.MANAGE_TICKETS.toString())) {
+            throw new ActionDeniedException(TenantAction.MANAGE_TICKETS.toString(), "tenant \"" + tenantName + "\"");
         }
     }
 

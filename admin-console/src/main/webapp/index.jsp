@@ -1,3 +1,3 @@
-<jsp:forward page="/get"/>
+<jsp:forward page="/profile/all"/>
    
  

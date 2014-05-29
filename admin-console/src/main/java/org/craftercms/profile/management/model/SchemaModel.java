@@ -14,31 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.management.model;
-
-import org.craftercms.profile.client.impl.domain.Schema;
-
-public class SchemaModel extends Schema {
-
-    private String id;
-
-    private String tenantName;
-
-    public SchemaModel() {
-    }
-
-    public SchemaModel(Schema schema, String tenantName) {
-        super();
-        this.setAttributes(schema.getAttributes());
-        //this.id = tenantId;
-        this.tenantName = tenantName;
-    }
-
-    public String getTenantName() {
-        return tenantName;
-    }
-
-    public void setTenantName(String tenantName) {
-        this.tenantName = tenantName;
-    }
-}
+//package org.craftercms.profile.management.model;
+//
+//import org.craftercms.profile.client.impl.domain.Schema;
+//
+//public class SchemaModel extends Schema {
+//
+//    private String id;
+//
+//    private String tenantName;
+//
+//    public SchemaModel() {
+//    }
+//
+//    public SchemaModel(Schema schema, String tenantName) {
+//        super();
+//        this.setAttributes(schema.getAttributes());
+//        //this.id = tenantId;
+//        this.tenantName = tenantName;
+//    }
+//
+//    public String getTenantName() {
+//        return tenantName;
+//    }
+//
+//    public void setTenantName(String tenantName) {
+//        this.tenantName = tenantName;
+//    }
+//}

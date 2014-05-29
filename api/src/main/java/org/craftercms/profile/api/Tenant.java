@@ -15,7 +15,7 @@ public class Tenant {
     private ObjectId _id;
     private String name;
     private boolean verifyNewProfiles;
-    private Set<String> roles;
+    private Set<String> availableRoles;
     private Set<AttributeDefinition> attributeDefinitions;
 
     /**
@@ -67,23 +67,23 @@ public class Tenant {
     }
 
     /**
-     * Returns the roles that can be assigned to users of this tenant.
+     * Returns the available roles that can be assigned to users of this tenant.
      */
-    public Set<String> getRoles() {
-        if (roles == null) {
-            roles = new HashSet<>();
+    public Set<String> getAvailableRoles() {
+        if (availableRoles == null) {
+            availableRoles = new HashSet<>();
         }
 
-        return roles;
+        return availableRoles;
     }
 
     /**
-     * Sets the roles that can be assigned to users of this tenant.
+     * Sets the available roles that can be assigned to users of this tenant.
      *
-     * @param roles the available roles for users of the tenant.
+     * @param availableRoles the available roles for users of the tenant.
      */
-    public void setRoles(Set<String> roles) {
-        this.roles = roles;
+    public void setAvailableRoles(Set<String> availableRoles) {
+        this.availableRoles = availableRoles;
     }
 
     /**
@@ -135,7 +135,7 @@ public class Tenant {
                 "id=" + _id +
                 ", name='" + name + '\'' +
                 ", verifyNewProfiles=" + verifyNewProfiles +
-                ", roles=" + roles +
+                ", roles=" + availableRoles +
                 ", attributeDefinitions=" + attributeDefinitions +
                 '}';
     }

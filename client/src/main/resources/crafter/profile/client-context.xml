@@ -8,6 +8,7 @@
 
     <bean name="crafter.profileProperties"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="order" value="1000"/>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="locations">
             <list>

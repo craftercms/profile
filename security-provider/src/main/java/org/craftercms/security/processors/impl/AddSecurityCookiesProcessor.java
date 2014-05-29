@@ -17,8 +17,7 @@
 package org.craftercms.security.processors.impl;
 
 import org.apache.commons.lang3.StringUtils;
-import org.craftercms.commons.http.CookieFactory;
-import org.craftercms.commons.http.HttpUtils;
+import org.craftercms.commons.http.CookieManager;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.processors.RequestSecurityProcessor;
@@ -29,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -46,17 +44,17 @@ public class AddSecurityCookiesProcessor implements RequestSecurityProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(AddSecurityCookiesProcessor.class);
 
-    protected CookieFactory ticketCookieFactory;
-    protected CookieFactory profileLastModifiedCookieFactory;
+    protected CookieManager ticketCookieManager;
+    protected CookieManager profileLastModifiedCookieManager;
 
     @Required
-    public void setTicketCookieFactory(CookieFactory ticketCookieFactory) {
-        this.ticketCookieFactory = ticketCookieFactory;
+    public void setTicketCookieManager(CookieManager ticketCookieManager) {
+        this.ticketCookieManager = ticketCookieManager;
     }
 
     @Required
-    public void setProfileLastModifiedCookieFactory(CookieFactory profileLastModifiedCookieFactory) {
-        this.profileLastModifiedCookieFactory = profileLastModifiedCookieFactory;
+    public void setProfileLastModifiedCookieManager(CookieManager profileLastModifiedCookieManager) {
+        this.profileLastModifiedCookieManager = profileLastModifiedCookieManager;
     }
 
     /**
@@ -173,29 +171,20 @@ public class AddSecurityCookiesProcessor implements RequestSecurityProcessor {
         }
 
         protected void addTicketCookie(String ticket) {
-            Cookie cookie = ticketCookieFactory.createCookie(SecurityUtils.TICKET_COOKIE_NAME, ticket);
-
-            logger.debug("Adding ticket cookie to response");
-
-            super.addCookie(cookie);
+            ticketCookieManager.addCookie(SecurityUtils.TICKET_COOKIE_NAME, ticket, this);
         }
 
         protected void addProfileLastModifiedCookie(long lastModified) {
-            Cookie cookie = profileLastModifiedCookieFactory.createCookie(
-                    SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME, String.valueOf(lastModified));
-
-            logger.debug("Adding profile last modified cookie to response");
-
-            super.addCookie(cookie);
+            profileLastModifiedCookieManager.addCookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME,
+                    String.valueOf(lastModified), this);
         }
 
         protected void deleteTicketCookie() {
-            HttpUtils.deleteCookie(SecurityUtils.TICKET_COOKIE_NAME, (HttpServletResponse) getResponse());
+            ticketCookieManager.deleteCookie(SecurityUtils.TICKET_COOKIE_NAME, this);
         }
 
         protected void deleteProfileLastModifiedCookie() {
-            HttpUtils.deleteCookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME, (HttpServletResponse)
-                    getResponse());
+            profileLastModifiedCookieManager.deleteCookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME, this);
         }
 
     }

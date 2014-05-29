@@ -14,27 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.management.util;
-
-import java.util.Comparator;
-
-import org.craftercms.profile.client.impl.domain.Attribute;
-
-public class AttributeFieldsComparator implements Comparator {
-
-    private int compareProfilePropertyForm(Attribute obj1, Attribute obj2) {
-
-        int x = obj1.getOrder();
-        int y = obj2.getOrder();
-        return (x < y)? -1: ((x == y)? 0: 1);
-    }
-
-    @Override
-    public int compare(Object o1, Object o2) {
-        if (o1 instanceof Attribute && o2 instanceof Attribute) {
-            return compareProfilePropertyForm((Attribute)o1, (Attribute)o2);
-        }
-        return -1;
-    }
-
-}
+//package org.craftercms.profile.management.util;
+//
+//import java.util.Comparator;
+//
+//import org.craftercms.profile.client.impl.domain.Attribute;
+//
+//public class AttributeFieldsComparator implements Comparator {
+//
+//    private int compareProfilePropertyForm(Attribute obj1, Attribute obj2) {
+//
+//        int x = obj1.getOrder();
+//        int y = obj2.getOrder();
+//        return (x < y)? -1: ((x == y)? 0: 1);
+//    }
+//
+//    @Override
+//    public int compare(Object o1, Object o2) {
+//        if (o1 instanceof Attribute && o2 instanceof Attribute) {
+//            return compareProfilePropertyForm((Attribute)o1, (Attribute)o2);
+//        }
+//        return -1;
+//    }
+//
+//}

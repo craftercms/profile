@@ -16,11 +16,6 @@
  */
 package org.craftercms.profile.services.impl;
 
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
-
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.logging.Logged;
 import org.craftercms.commons.mail.EmailException;
@@ -35,6 +30,11 @@ import org.craftercms.profile.repositories.VerificationTokenRepository;
 import org.craftercms.profile.services.VerificationService;
 import org.craftercms.profile.services.VerificationSuccessCallback;
 import org.springframework.beans.factory.annotation.Required;
+
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * Default implementation of {@link org.craftercms.profile.services.VerificationService}.
@@ -51,8 +51,10 @@ public class VerificationServiceImpl implements VerificationService {
     public static final String ERROR_KEY_CREATE_TOKEN_ERROR = "profile.verification.createTokenError";
     public static final String ERROR_KEY_GET_TOKEN_ERROR = "profile.verification.getTokenError";
     public static final String ERROR_KEY_EMAIL_ERROR = "profile.verification.emailError";
+
     private static final I10nLogger logger = new I10nLogger(VerificationServiceImpl.class,
         "crafter.profile.messages.logging");
+
     protected VerificationTokenRepository tokenRepository;
     protected EmailFactory emailFactory;
     protected String from;

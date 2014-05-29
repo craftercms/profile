@@ -85,7 +85,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
                 case DISABLED_PROFILE:
                     throw new DisabledUserException("User '" + username + "' is disabled", e);
                 case BAD_CREDENTIALS:
-                    throw new BadCredentialsException("Invalid username or password", e);
+                    throw new BadCredentialsException("Invalid username and/or password", e);
                 default:
                     throw new AuthenticationSystemException("An unexpected error occurred while attempting " +
                             "authentication for user '" + username + "'", e);

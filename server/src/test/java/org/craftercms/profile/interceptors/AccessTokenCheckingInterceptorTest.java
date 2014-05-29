@@ -18,12 +18,11 @@ package org.craftercms.profile.interceptors;
 
 import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.ProfileConstants;
-import org.craftercms.profile.api.TenantActions;
 import org.craftercms.profile.api.TenantPermission;
-import org.craftercms.profile.repositories.AccessTokenRepository;
 import org.craftercms.profile.exceptions.ExpiredAccessTokenException;
 import org.craftercms.profile.exceptions.MissingAccessTokenIdParamException;
 import org.craftercms.profile.permissions.Application;
+import org.craftercms.profile.repositories.AccessTokenRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -76,7 +75,7 @@ public class AccessTokenCheckingInterceptorTest {
         Application app = Application.getCurrent();
 
         TenantPermission permission = new TenantPermission();
-        permission.allow(TenantActions.ALL_ACTIONS);
+        permission.allow("*");
 
         assertNotNull(app);
         assertEquals(APPLICATION, app.getName());
@@ -104,7 +103,7 @@ public class AccessTokenCheckingInterceptorTest {
 
     private AccessToken getNormalToken() {
         TenantPermission permission = new TenantPermission();
-        permission.allow(TenantActions.ALL_ACTIONS);
+        permission.allow("*");
 
         AccessToken token = new AccessToken();
         token.setId(NORMAL_TOKEN_ID);
@@ -117,7 +116,7 @@ public class AccessTokenCheckingInterceptorTest {
 
     private AccessToken getExpiredToken() {
         TenantPermission permission = new TenantPermission();
-        permission.allow(TenantActions.ALL_ACTIONS);
+        permission.allow("*");
 
         AccessToken token = new AccessToken();
         token.setId(EXPIRED_TOKEN_ID);

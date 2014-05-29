@@ -14,43 +14,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.profile.management.services.impl;
-
-import java.util.List;
-
-import org.craftercms.profile.client.exceptions.AppAuthenticationException;
-import org.craftercms.profile.client.exceptions.AppAuthenticationFailedException;
-import org.craftercms.profile.client.impl.domain.Role;
-import org.craftercms.profile.management.services.RoleDAOService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-/**
- * @author David Escalante
- */
-@Service
-public class RoleDAOServiceImpl implements RoleDAOService {
-
-    private static final Logger log = LoggerFactory.getLogger(RoleDAOServiceImpl.class);
-
-    @Override
-    public List<Role> getAllRoles() throws AppAuthenticationFailedException {
-        if (!ProfileServiceManager.isAppTokenInit()) {
-            ProfileServiceManager.setAppToken();
-        }
-        try {
-            return ProfileServiceManager.getProfileClient().getAllRoles(ProfileServiceManager.getAppToken());
-        } catch (AppAuthenticationException e) {
-            try {
-
-                ProfileServiceManager.setAppToken();
-
-            } catch (AppAuthenticationFailedException e1) {
-                log.error("could not get an AppToken", e);
-            }
-            return ProfileServiceManager.getProfileClient().getAllRoles(ProfileServiceManager.getAppToken());
-        }
-    }
-
-}
+//package org.craftercms.profile.management.services.impl;
+//
+//import java.util.List;
+//
+//import org.craftercms.profile.client.exceptions.AppAuthenticationException;
+//import org.craftercms.profile.client.exceptions.AppAuthenticationFailedException;
+//import org.craftercms.profile.client.impl.domain.Role;
+//import org.craftercms.profile.management.services.RoleDAOService;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+//import org.springframework.stereotype.Service;
+//
+///**
+// * @author David Escalante
+// */
+//@Service
+//public class RoleDAOServiceImpl implements RoleDAOService {
+//
+//    private static final Logger log = LoggerFactory.getLogger(RoleDAOServiceImpl.class);
+//
+//    @Override
+//    public List<Role> getAllRoles() throws AppAuthenticationFailedException {
+//        if (!ProfileServiceManager.isAppTokenInit()) {
+//            ProfileServiceManager.setAppToken();
+//        }
+//        try {
+//            return ProfileServiceManager.getProfileClient().getAllRoles(ProfileServiceManager.getAppToken());
+//        } catch (AppAuthenticationException e) {
+//            try {
+//
+//                ProfileServiceManager.setAppToken();
+//
+//            } catch (AppAuthenticationFailedException e1) {
+//                log.error("could not get an AppToken", e);
+//            }
+//            return ProfileServiceManager.getProfileClient().getAllRoles(ProfileServiceManager.getAppToken());
+//        }
+//    }
+//
+//}

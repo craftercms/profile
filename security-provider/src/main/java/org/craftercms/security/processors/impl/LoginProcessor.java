@@ -17,6 +17,7 @@
 package org.craftercms.security.processors.impl;
 
 import org.apache.commons.lang3.StringUtils;
+import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.processors.RequestSecurityProcessor;
 import org.craftercms.security.processors.RequestSecurityProcessorChain;
@@ -140,8 +141,8 @@ public class LoginProcessor implements RequestSecurityProcessor {
     }
 
     protected boolean isLoginRequest(HttpServletRequest request) {
-        return request.getRequestURI().equals(request.getContextPath() + loginUrl) && request.getMethod()
-                .equals(loginMethod);
+        return HttpUtils.getRequestUriWithoutContextPath(request).equals(loginUrl) && request.getMethod().equals(
+                loginMethod);
     }
 
     protected String getUsername(HttpServletRequest request) {

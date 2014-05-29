@@ -49,9 +49,6 @@
 
     <properties>
         <!-- Dependency versions -->
-        <quartz.version>2.2.1</quartz.version>
-        <freemarker.version>2.3.20</freemarker.version>
-        <aspectj.version>1.8.0</aspectj.version>
         <javax.mail.version>1.4.7</javax.mail.version>
     </properties>
 
