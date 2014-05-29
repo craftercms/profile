@@ -1,44 +1,37 @@
 <#import "spring.ftl" as spring />
+<#import "common/components.ftl" as components />
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Crafter Admin Console Profile List</title>
-    <link href="resources/image/favicon.ico" rel="Shortcut Icon">
-    <link rel="stylesheet" href="resources/css/profile.css">
+    <@components.head "Crafter Admin Console - Profile List"/>
 </head>
 <body>
 <div id="content">
-    <div id="header">
-        <a class="logo" href="index.jsp" title="Crafter Profile Admin Console"></a>
-        <ul class="page-actions">
-            <li><a type="submit" href="crafter-security-logout" id="logout">Logout</a>
-            </li>
-            <li>
-                <a style="float:right" id="loggedInUser"
-                   href="profile?userId=${loggedInUser.id}&tenant=${loggedInUser.tenant}">
-                    User: ${loggedInUser.username!""}
-                </a>
-            </li>
-        </ul>
-        <h1 class="mainTitle">Manage Profiles</h1>
-    </div>
+    <@components.header "Manage Profiles"/>
 
     <form id="form-list" accept-charset="UTF-8">
         <div class="top">
             <div class="pad">
                 <nav>
                     <ul class="main-nav clearfix">
-                        <li><a id="newProfile" type="submit" href="profile/new">New Profile</a></li>
-                        <li><a id="manageTenants" type="submit" href="tenant/all">Manage Tenants</a></li>
+                        <li>
+                            <a id="newProfile" type="submit" href="<@spring.url '/profile/new'/>">
+                                New Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a id="manageTenants" type="submit" href="<@spring.url '/tenant/all'/>">
+                                Manage Tenants
+                            </a>
+                        </li>
                     </ul>
                     <ul class="page-actions">
                         <li>
-                            <label id="tenantLabel" for="selectedTenantName" style="width: 50px;">Tenant:</label>
+                            <label id="tenantLabel" for="tenant" style="width: 50px;">Tenant:</label>
                             <select style="width:150px;" id="tenant" name="tenant">
                             <#list tenants as t>
-                                <#if (tenant == t.name) >
+                                <#if currentTenant == t.name>
                                     <#assign selected = true>
                                 <#else>
                                     <#assign selected = false>
@@ -61,13 +54,13 @@
         </div>
         <table id="mytable">
             <tr>
-                <th scope="col">User Name</th>
+                <th scope="col">Username</th>
                 <th scope="col">Enabled</th>
             </tr>
         <#list profiles as p>
             <tr>
                 <td>
-                    <a name="username" href="profile?userId=${p.id}&tenant=${p.tenant}">
+                    <a name="username" href="<@spring.url '/profile/${p.id}'/>">
                     ${p.username!""}
                     </a>
                 </td>
@@ -84,6 +77,6 @@
     </form>
 </div>
 
-<#include "common/footer.ftl"/>
+<@components.footer/>
 </body>
 </html> 

@@ -81,12 +81,14 @@
     <!--									-->
     <!-- ////////////////////////////////// -->
 
-    <bean id="crafter.ticketCookieFactory" class="org.craftercms.commons.http.CookieFactory">
+    <bean id="crafter.ticketCookieManager" class="org.craftercms.commons.http.CookieManager">
         <property name="maxAge" value="${crafter.security.cookie.ticket.maxAge}"/>
+        <property name="path" value="/"/>
     </bean>
 
-    <bean id="crafter.profileLastModifiedCookieFactory" class="org.craftercms.commons.http.CookieFactory">
+    <bean id="crafter.profileLastModifiedCookieManager" class="org.craftercms.commons.http.CookieManager">
         <property name="maxAge" value="${crafter.security.cookie.ticket.maxAge}"/>
+        <property name="path" value="/"/>
     </bean>
 
     <!-- ////////////////////////////////// -->
@@ -118,8 +120,8 @@
 
     <bean id="crafter.addSecurityCookiesProcessor"
           class="org.craftercms.security.processors.impl.AddSecurityCookiesProcessor">
-        <property name="ticketCookieFactory" ref="crafter.ticketCookieFactory"/>
-        <property name="profileLastModifiedCookieFactory" ref="crafter.profileLastModifiedCookieFactory"/>
+        <property name="ticketCookieManager" ref="crafter.ticketCookieManager"/>
+        <property name="profileLastModifiedCookieManager" ref="crafter.profileLastModifiedCookieManager"/>
     </bean>
 
     <bean id="crafter.tenantNameResolvingProcessor"

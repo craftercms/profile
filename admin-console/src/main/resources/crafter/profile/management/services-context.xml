@@ -25,6 +25,10 @@
         <entry key="/**" value="hasRole('PROFILE_ADMIN')"/>
     </util:map>
 
+    <bean id="crafter.messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename" value="${crafter.profile.management.validation.messages.bundle.baseName}"/>
+    </bean>
+
     <import resource="classpath*:crafter/profile/management/extension/services-context.xml"/>
 
 </beans>

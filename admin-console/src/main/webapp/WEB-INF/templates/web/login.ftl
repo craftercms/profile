@@ -1,21 +1,22 @@
+<#import "spring.ftl" as spring />
+<#import "common/components.ftl" as components />
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Login</title>
-    <link href="resources/image/favicon.ico" rel="Shortcut Icon">
-    <link rel="stylesheet" href="resources/css/profile.css">
+    <@components.head "Login"/>
 </head>
 
 <body>
 <div id="content">
     <div id="header">
-        <a class="logo" href="index.jsp" title="Crafter Profile Admin Console"></a>
+        <a class="logo" href="<@spring.url '/'/>" title="Crafter Profile Admin Console"></a>
 
         <h1 class="mainTitle">Crafter Profile Admin Console</h1>
     </div>
 
-    <form class="login-form" action="crafter-security-login" method="post" accept-charset="UTF-8" id="loginForm">
+    <form id="loginForm" action="<@spring.url '/crafter-security-login'/>" method="post"
+          accept-charset="UTF-8">
         <div class="box pad mt40 style-inputs">
             <p>
                 <label for="username">Username:</label>
@@ -49,6 +50,6 @@
     </form>
 </div>
 
-<#include "common/footer.ftl"/>
+<@components.footer/>
 </body>
 </html>

@@ -61,11 +61,10 @@ if (db.tenant.count() == 0) {
 	db.tenant.insert({
 		"name" : "default",
 		"verifyNewProfiles" : false,
-		"roles" : [ "PROFILE_ADMIN", "SOCIAL_USER", "SOCIAL_MODERATOR", "SOCIAL_AUTHOR", "SOCIAL_ADMIN" ],
+		"availableRoles" : [ "PROFILE_ADMIN", "SOCIAL_USER", "SOCIAL_MODERATOR", "SOCIAL_AUTHOR", "SOCIAL_ADMIN" ],
         "attributeDefinitions" : [
             {
                 "name" : "firstName",
-                "owner" : "adminconsole",
                 "permissions" : [
                     {
                         "application" : "*",
@@ -75,7 +74,6 @@ if (db.tenant.count() == 0) {
             },
             {
                 "name" : "lastName",
-                "owner" : "adminconsole",
                 "permissions" : [
                     {
                         "application" : "*",
@@ -85,7 +83,6 @@ if (db.tenant.count() == 0) {
             },
             {
                 "name" : "subscriptions",
-                "owner" : "craftersocial",
                 "permissions" : [
                     {
                         "application" : "adminconsole",

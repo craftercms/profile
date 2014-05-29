@@ -188,7 +188,7 @@ public class TenantServiceImpl implements TenantService {
 
             @Override
             public void doWithTenant(Tenant tenant) throws ProfileException {
-                tenant.getRoles().addAll(roles);
+                tenant.getAvailableRoles().addAll(roles);
             }
 
         });
@@ -204,7 +204,7 @@ public class TenantServiceImpl implements TenantService {
 
             @Override
             public void doWithTenant(Tenant tenant) throws ProfileException {
-                tenant.getRoles().removeAll(roles);
+                tenant.getAvailableRoles().removeAll(roles);
             }
 
         });

@@ -131,7 +131,7 @@ public class TenantServiceIT {
         assertNotNull(tenant.getId());
         assertEquals(CORPORATE_TENANT_NAME, tenant.getName());
         assertEquals(false, tenant.isVerifyNewProfiles());
-        assertEquals(CORPORATE_ROLES, tenant.getRoles());
+        assertEquals(CORPORATE_ROLES, tenant.getAvailableRoles());
 
         try {
             tenantService.createTenant(getCorporateTenant());
@@ -152,7 +152,7 @@ public class TenantServiceIT {
         assertNotNull(tenant.getId());
         assertEquals(DEFAULT_TENANT_NAME, tenant.getName());
         assertEquals(false, tenant.isVerifyNewProfiles());
-        assertEquals(DEFAULT_ROLES, tenant.getRoles());
+        assertEquals(DEFAULT_ROLES, tenant.getAvailableRoles());
         assertEqualAttributeDefinitionSets(getAttributeDefinitions(), tenant.getAttributeDefinitions());
     }
 
@@ -186,7 +186,7 @@ public class TenantServiceIT {
         assertEquals(1, tenants.size());
         assertEquals(DEFAULT_TENANT_NAME, tenants.get(0).getName());
         assertEquals(false, tenants.get(0).isVerifyNewProfiles());
-        assertEquals(DEFAULT_ROLES, tenants.get(0).getRoles());
+        assertEquals(DEFAULT_ROLES, tenants.get(0).getAvailableRoles());
         assertEqualAttributeDefinitionSets(getAttributeDefinitions(), tenants.get(0).getAttributeDefinitions());
     }
 
@@ -213,7 +213,7 @@ public class TenantServiceIT {
             expectedRoles.add(USER_ROLE);
 
             assertNotNull(tenant);
-            assertEquals(expectedRoles, tenant.getRoles());
+            assertEquals(expectedRoles, tenant.getAvailableRoles());
         } finally {
             tenantService.deleteTenant(CORPORATE_TENANT_NAME);
         }
@@ -229,7 +229,7 @@ public class TenantServiceIT {
             expectedRoles.remove(ADMIN_ROLE);
 
             assertNotNull(tenant);
-            assertEquals(expectedRoles, tenant.getRoles());
+            assertEquals(expectedRoles, tenant.getAvailableRoles());
         } finally {
             tenantService.deleteTenant(CORPORATE_TENANT_NAME);
         }
@@ -289,7 +289,7 @@ public class TenantServiceIT {
     private Tenant getCorporateTenant() {
         Tenant tenant = new Tenant();
         tenant.setName(CORPORATE_TENANT_NAME);
-        tenant.setRoles(CORPORATE_ROLES);
+        tenant.setAvailableRoles(CORPORATE_ROLES);
         tenant.setVerifyNewProfiles(false);
         tenant.setAttributeDefinitions(getAttributeDefinitions());
 

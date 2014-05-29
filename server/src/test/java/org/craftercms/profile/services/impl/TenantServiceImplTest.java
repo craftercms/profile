@@ -149,7 +149,7 @@ public class TenantServiceImplTest {
     @Test
     public void testAddRoles() throws Exception {
         Tenant expected = getTenant1();
-        expected.getRoles().add(ROLE2);
+        expected.getAvailableRoles().add(ROLE2);
 
         Tenant actual = tenantService.addRoles(TENANT1_NAME, Arrays.asList(ROLE2));
 
@@ -162,7 +162,7 @@ public class TenantServiceImplTest {
     @Test
     public void testRemoveRoles() throws Exception {
         Tenant expected = getTenant1();
-        expected.getRoles().remove("role1");
+        expected.getAvailableRoles().remove("role1");
 
         Tenant actual = tenantService.removeRoles(TENANT1_NAME, Arrays.asList("role1"));
 
@@ -237,7 +237,7 @@ public class TenantServiceImplTest {
         Tenant tenant = new Tenant();
         tenant.setName(TENANT1_NAME);
         tenant.setVerifyNewProfiles(true);
-        tenant.setRoles(ROLES);
+        tenant.setAvailableRoles(ROLES);
         tenant.setAttributeDefinitions(new HashSet<>(Arrays.asList(def)));
 
         return tenant;
@@ -250,7 +250,7 @@ public class TenantServiceImplTest {
         Tenant tenant = new Tenant();
         tenant.setName(TENANT2_NAME);
         tenant.setVerifyNewProfiles(true);
-        tenant.setRoles(ROLES);
+        tenant.setAvailableRoles(ROLES);
         tenant.setAttributeDefinitions(new HashSet<>(Arrays.asList(def)));
 
         return tenant;
@@ -260,7 +260,7 @@ public class TenantServiceImplTest {
         assertNotNull(actual);
         assertEquals(expected.getName(), actual.getName());
         assertEquals(expected.isVerifyNewProfiles(), actual.isVerifyNewProfiles());
-        assertEquals(expected.getRoles(), actual.getRoles());
+        assertEquals(expected.getAvailableRoles(), actual.getAvailableRoles());
         assertEquals(expected.getAttributeDefinitions(), actual.getAttributeDefinitions());
     }
 
