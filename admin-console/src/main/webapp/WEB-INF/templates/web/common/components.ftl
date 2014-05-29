@@ -14,12 +14,15 @@
 <div id="header">
     <a class="logo" href="<@spring.url '/'/>" title="Crafter Profile Admin Console"></a>
     <ul class="page-actions">
-        <li><a type="submit" href="<@spring.url '/crafter-security-login'/>" id="logout">Logout</a>
+        <li><a type="submit" href="<@spring.url '/crafter-security-logout'/>" id="logout">Logout</a>
         </li>
         <li>
-            <a style="float:right" id="loggedInUser" href="<@spring.url '/profile/${loggedInUser.id}'/>">
-                User: ${loggedInUser.username!""}
-            </a>
+            <div style="float:right">
+                User:
+                <a id="loggedInUser" href="<@spring.url '/profile/${loggedInUser.id}'/>">
+                    ${loggedInUser.username!""}
+                </a>
+            </div>
         </li>
     </ul>
     <h1 class="mainTitle">${mainTitle}</h1>

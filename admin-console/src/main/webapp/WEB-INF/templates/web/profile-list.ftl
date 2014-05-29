@@ -57,22 +57,16 @@
                 <th scope="col">Username</th>
                 <th scope="col">Enabled</th>
             </tr>
-        <#list profiles as p>
+            <#list profiles as p>
             <tr>
                 <td>
-                    <a name="username" href="<@spring.url '/profile/${p.id}'/>">
-                    ${p.username!""}
-                    </a>
+                    <a href="<@spring.url '/profile/${p.id}'/>">${p.username}</a>
                 </td>
                 <td>
-                    <#if p.enabled>
-                        Yes
-                    <#else>
-                        No
-                    </#if>
+                    <#if p.enabled>Yes<#else>No</#if>
                 </td>
             </tr>
-        </#list>
+            </#list>
         </table>
     </form>
 </div>

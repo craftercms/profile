@@ -46,6 +46,10 @@
         <property name="profileService" ref="crafter.profileServiceRestClient"/>
     </bean>
 
+    <bean id="crafter.tenantController" class="org.craftercms.profile.management.web.controllers.TenantController">
+        <property name="tenantService" ref="crafter.tenantServiceRestClient"/>
+    </bean>
+
     <!-- Freemarker Config -->
     <bean id="crafter.freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
         <property name="templateLoaderPath" value="/WEB-INF/templates/web"/>

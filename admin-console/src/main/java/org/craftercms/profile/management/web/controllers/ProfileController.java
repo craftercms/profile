@@ -17,6 +17,7 @@
 package org.craftercms.profile.management.web.controllers;
 
 import org.apache.commons.lang3.StringUtils;
+import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.Tenant;
@@ -42,22 +43,30 @@ import java.util.*;
  * @author avasquez
  */
 @Controller
-@RequestMapping("/profile")
+@RequestMapping(ProfileController.URL_PROFILE_BASE)
 public class ProfileController {
 
-    private static final String VIEW_PROFILE_LIST = "profile-list";
-    private static final String VIEW_NEW_PROFILE =  "new-profile";
-    private static final String VIEW_PROFILE =      "profile";
+    public static final String PATH_VAR_ID = "id";
+    
+    public static final String URL_PROFILE_BASE =               "/profile";
+    public static final String URL_LIST_ALL_PROFILES =          "/all";
+    public static final String URL_SHOW_NEW_PROFILE_FORM =      "/new";
+    public static final String URL_CREATE_NEW_PROFILE =         "/new";
+    public static final String URL_SHOW_UPDATE_PROFILE_FORM =   "/{" + PATH_VAR_ID + "}";
+    public static final String URL_UPDATE_PROFILE =             "/{" + PATH_VAR_ID + "}";
+    public static final String URL_VERIFY_PROFILE =             "/verify";
 
-    private static final String PATH_VAR_ID = "id";
+    public static final String VIEW_PROFILE_LIST = "profile-list";
+    public static final String VIEW_NEW_PROFILE =  "new-profile";
+    public static final String VIEW_PROFILE =      "profile"; 
 
-    private static final String PARAM_TENANT_NAME = "tenantName";
+    public static final String PARAM_TENANT_NAME = "tenantName";
 
-    private static final String MODEL_TENANTS =         "tenants";
-    private static final String MODEL_CURRENT_TENANT =  "currentTenant";
-    private static final String MODEL_PROFILES =        "profiles";
-    private static final String MODEL_PROFILE =         "profile";
-    private static final String MODEL_AVAILABLE_ROLES = "availableRoles";
+    public static final String MODEL_TENANTS =         "tenants";
+    public static final String MODEL_CURRENT_TENANT =  "currentTenant";
+    public static final String MODEL_PROFILES =        "profiles";
+    public static final String MODEL_PROFILE =         "profile";
+    public static final String MODEL_AVAILABLE_ROLES = "availableRoles";
 
     private String defaultSortBy;
     private SortOrder defaultSortOrder;
@@ -97,7 +106,7 @@ public class ProfileController {
         this.tenantService = tenantService;
     }
 
-    @RequestMapping(value = "/all", method = RequestMethod.GET)
+    @RequestMapping(value = URL_LIST_ALL_PROFILES, method = RequestMethod.GET)
     public ModelAndView listAllProfiles(@RequestParam(value = PARAM_TENANT_NAME, required = false) String tenantName,
                                         HttpServletRequest request) throws ProfileException {
         if (StringUtils.isEmpty(tenantName)) {
@@ -119,8 +128,8 @@ public class ProfileController {
         return mav;
     }
 
-    @RequestMapping(value = "/new", method = RequestMethod.GET)
-    public ModelAndView showNewProfile() throws ProfileException {
+    @RequestMapping(value = URL_SHOW_NEW_PROFILE_FORM, method = RequestMethod.GET)
+    public ModelAndView showNewProfileForm() throws ProfileException {
         ModelAndView mav = new ModelAndView(VIEW_NEW_PROFILE);
         mav.addObject(MODEL_TENANTS, tenantService.getAllTenants());
         mav.addObject(MODEL_PROFILE, new ProfileForm());
@@ -128,8 +137,29 @@ public class ProfileController {
         return mav;
     }
 
-    @RequestMapping(value = "/{" + PATH_VAR_ID + "}", method = RequestMethod.GET)
-    public ModelAndView showProfile(@PathVariable(PATH_VAR_ID) String id) throws ProfileException {
+    @RequestMapping(value = URL_CREATE_NEW_PROFILE, method = RequestMethod.POST)
+    public String createNewProfile(@ModelAttribute(MODEL_PROFILE) ProfileForm profile, BindingResult result,
+                                   Model model, HttpServletRequest request) throws ProfileException {
+        if (!result.hasErrors()) {
+            profileService.createProfile(
+                    profile.getTenant(),
+                    profile.getUsername(),
+                    profile.getPassword(),
+                    profile.getEmail(),
+                    profile.isEnabled(),
+                    profile.getRoles(),
+                    HttpUtils.getFullUrl(request, URL_PROFILE_BASE + URL_VERIFY_PROFILE));
+
+            return "redirect:/";
+        } else {
+            model.addAttribute(MODEL_PROFILE, profile);
+
+            return VIEW_PROFILE;
+        }
+    }
+
+    @RequestMapping(value = URL_SHOW_UPDATE_PROFILE_FORM, method = RequestMethod.GET)
+    public ModelAndView showUpdateProfileForm(@PathVariable(PATH_VAR_ID) String id) throws ProfileException {
         ProfileForm profile = getProfile(id);
         Tenant tenant = tenantService.getTenant(profile.getTenant());
 
@@ -140,7 +170,7 @@ public class ProfileController {
         return mav;
     }
 
-    @RequestMapping(value = "/{" + PATH_VAR_ID + "}", method = RequestMethod.POST)
+    @RequestMapping(value = URL_UPDATE_PROFILE, method = RequestMethod.POST)
     public String updateProfile(@PathVariable(PATH_VAR_ID) String id,
                                 @ModelAttribute(MODEL_PROFILE) ProfileForm profile, BindingResult result,
                                 Model model) throws ProfileException {

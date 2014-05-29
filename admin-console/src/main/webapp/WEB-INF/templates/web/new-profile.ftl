@@ -51,13 +51,13 @@
 
             <p>
                 <label for="password">Password:</label>
-                <@spring.formInput "profile.password", "password"/>
+                <@spring.formInput "profile.password", "", "password"/>
                 <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
 
             <p>
                 <label for="confirmPassword">Confirm Password:</label>
-                <@spring.formInput "profile.confirmPassword", "password"/>
+                <@spring.formInput "profile.confirmPassword", "", "password"/>
                 <@crafter.showErrors "error-msg", "mbs", ""/>
             </p>
 
@@ -85,8 +85,8 @@
 
             <p>
                 <label>&nbsp;</label>
-                <button class="btn btn-info" id="update" type="submit" value="accept">Accept</button>
-                <button class="btn btn-info" id="cancel" type="button" value="cancel">Cancel</button>
+                <button class="btn btn-info" id="accept" type="submit">Accept</button>
+                <button class="btn btn-info" id="cancel" type="button">Cancel</button>
             </p>
         </div>
     </form>
