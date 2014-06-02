@@ -8,18 +8,41 @@
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <!--
-    Activates various annotations to be detected in bean classes: Spring's @Required and @Autowired, as well as JSR
-    250's @PostConstruct, @PreDestroy and @Resource (if available), JAX-WS's @WebServiceRef (if available), EJB3's @EJB
-    (if available), and JPA's @PersistenceContext and @PersistenceUnit (if available).
-    -->
     <context:annotation-config/>
 
-    <mvc:annotation-driven/>
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper" ref="crafter.profileObjectMapper"/>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <bean id="crafter.profileObjectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper"
+          init-method="init">
+        <property name="serializers">
+            <list>
+                <bean class="org.craftercms.commons.jackson.ObjectIdSerializer"/>
+            </list>
+        </property>
+        <property name="deserializers">
+            <map>
+                <entry key="org.bson.types.ObjectId">
+                    <bean class="org.craftercms.commons.jackson.ObjectIdDeserializer"/>
+                </entry>
+            </map>
+        </property>
+        <property name="dateFormat">
+            <bean class="java.text.SimpleDateFormat">
+                <constructor-arg value="${crafter.profile.management.date.format}"/>
+            </bean>
+        </property>
+    </bean>
 
     <mvc:resources mapping="/resources/**" location="/resources/"/>
 
     <mvc:view-controller path="/login" view-name="login"/>
+    <mvc:view-controller path="/" view-name="main"/>
 
     <bean name="crafter.adminConsoleProperties"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -34,15 +57,13 @@
 
     <!-- Controllers -->
 
-    <bean id="crafter.commonControllerAdvice"
-          class="org.craftercms.profile.management.web.controllers.CommonControllerAdvice"/>
+    <bean id="crafter.mainController" class="org.craftercms.profile.management.web.controllers.MainController"/>
 
     <bean id="crafter.profileController" class="org.craftercms.profile.management.web.controllers.ProfileController">
         <property name="defaultStart" value="${crafter.profile.management.paging.start.default}"/>
         <property name="defaultLimit" value="${crafter.profile.management.paging.limit.default}"/>
         <property name="defaultSortBy" value="${crafter.profile.management.paging.sortBy.default}"/>
         <property name="defaultSortOrder" value="${crafter.profile.management.paging.sortOrder.default}"/>
-        <property name="tenantService" ref="crafter.tenantServiceRestClient"/>
         <property name="profileService" ref="crafter.profileServiceRestClient"/>
     </bean>
 
@@ -65,6 +86,7 @@
         <property name="prefix" value=""/>
         <property name="suffix" value=".ftl"/>
         <property name="exposeSpringMacroHelpers" value="true"/>
+        <property name="requestContextAttribute" value="requestContext"/>
     </bean>
 
     <import resource="classpath*:crafter/profile/management/extension/web-context.xml"/>

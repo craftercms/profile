@@ -1,22 +1,20 @@
 <#import "/spring.ftl" as spring />
 
 <#macro head title>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${title}</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${title}</title>
 
-    <!-- Bootstrap -->
-    <link href="<@spring.url '/resources/css/bootstrap.min.css'/>" rel="stylesheet">
+<!-- Bootstrap -->
+<link href="<@spring.url '/resources/css/bootstrap.min.css'/>" rel="stylesheet">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-</head>
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
 </#macro>
 
 <#macro navBar>
@@ -29,7 +27,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="<@spring.url '/'/>">Crafter Profile Admin Console</a>
+            <a class="navbar-brand" href="#/">Crafter Profile Admin Console</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
@@ -38,7 +36,7 @@
                 </li>
                 <li>
                     <span class="navbar-text">
-                        Signed in as: <a href="<@spring.url '/profile/${loggedInUser.id}'/>">${loggedInUser.username}</a>
+                        Signed in as: <a href="#/profile/${loggedInUser.id}">${loggedInUser.username}</a>
                     </span>
                 </li>
             </ul>
@@ -47,7 +45,26 @@
 </div>
 </#macro>
 
+<#macro navSidebar>
+<div class="col-sm-3 col-md-2 sidebar">
+    <ul class="nav nav-sidebar">
+        <li><a href="#/profile/list">Show Profiles</a></li>
+        <li><a href="#/profile/new">New Profile</a></li>
+    </ul>
+    <ul class="nav nav-sidebar">
+        <li><a href="#/tenant/list">Show Tenants</a></li>
+        <li><a href="#/tenant/new">New Tenant</a></li>
+    </ul>
+</div>
+</#macro>
+
 <#macro scripts>
-<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-route.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="<@spring.url '/resources/js/bootstrap.min.js'/>"></script>
+<script src="<@spring.url '/resources/js/app.js'/>"></script>
+<script type="text/javascript">
+    var contextPath = "${requestContext.contextPath}";
+</script>
 </#macro>

@@ -1,46 +1,15 @@
-<#import "spring.ftl" as spring />
-<#import "common/components.ftl" as components />
+<#import "spring.ftl" as spring/>
+<#import "layouts/main-layout.ftl" as main/>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <@components.head "Crafter Admin Console - Tenant List"/>
-</head>
-<body>
-<div id="content">
-    <@components.header "Manage Tenants"/>
-
-    <form id="form-list" accept-charset="UTF-8">
-        <div class="top">
-            <div class="pad">
-                <nav>
-                    <ul class="main-nav clearfix">
-                        <li>
-                            <a id="newTenant" href="<@spring.url '/tenant/new'/>">
-                                New Tenant
-                            </a>
-                        </li>
-                        <li>
-                            <a id="backToProfiles" href="<@spring.url '/'/>">
-                                Back to Profiles
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="page-actions">
-                        <#--li>
-                            <@spring.formInput "", "style=width:120px", "text"/>
-                            <a type="submit" id="search">Search</a>
-                        </li-->
-                        <li><a type="submit" id="previous">&lt;&lt;</a></li>
-                        <li><a type="submit" id="next">&gt;&gt;</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-        <table id="mytable">
-            <tr>
-                <th scope="col">Tenant Name</th>
-            </tr>
+<@main.layout "Crafter Profile Admin Console - Tenant List", "Tenant List">
+<div id="profiles" class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Tenant Name</th>
+        </tr>
+        </thead>
+        <tbody>
             <#list tenants as t>
             <tr>
                 <td>
@@ -48,10 +17,7 @@
                 </td>
             </tr>
             </#list>
-        </table>
-    </form>
+        </tbody>
+    </table>
 </div>
-
-<@components.footer/>
-</body>
-</html> 
+</@main.layout>

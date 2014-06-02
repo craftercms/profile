@@ -1,99 +1,65 @@
-<#import "spring.ftl" as spring />
-<#import "common/crafter.ftl" as crafter />
-<#import "common/components.ftl" as components />
+<h1 class="page-header">Update Profile</h1>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <@components.head "Crafter Admin Console - Update Profile"/>
-</head>
+<form role="form">
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input name="username" type="text" class="form-control" disabled="disabled" ng-model="profile.username"/>
+    </div>
 
-<body>
-<div id="content">
-    <@components.header "Manage Profiles > Update Profile"/>
+    <div class="form-group">
+        <label for="tenant">Tenant</label>
+        <input name="tenant" type="text" class="form-control" disabled="disabled" ng-model="profile.tenant"/>
+    </div>
 
-    <form action="<@spring.url '/profile/${profile.id}'/>" method="post" accept-charset="UTF-8">
-        <div class="box pad mt40 style-inputs">
-            <p>
-                <label for="username">Username:</label>
-                <@spring.formInput "profile.username", "disabled='disabled'"/>
-            </p>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input name="email" type="text" class="form-control" ng-model="profile.email"/>
+    </div>
 
-            <p>
-                <label for="tenant">Tenant:</label>
-                <@spring.formInput "profile.tenant", "disabled='disabled'"/>
-            </p>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input name="password" type="password" class="form-control" ng-model="profile.password"/>
+    </div>
 
-            <p>
-                <label for="email">Email:</label>
-                <@spring.formInput "profile.email"/>
-                <@crafter.showErrors "error-msg", "mbs", ""/>
-            </p>
+    <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input name="confirmPassword" type="password" class="form-control" ng-model="profile.confirmPassword"/>
+    </div>
 
-            <p>
-                <label for="password">Password:</label>
-                <@spring.formInput "profile.password", "", "password"/>
-                <@crafter.showErrors "error-msg", "mbs", ""/>
-            </p>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" ng-model="profile.enabled"/> Enabled
+        </label>
+    </div>
 
-            <p>
-                <label for="confirmPassword">Confirm Password:</label>
-                <@spring.formInput "profile.confirmPassword", "", "password"/>
-                <@crafter.showErrors "error-msg", "mbs", ""/>
-            </p>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" disabled="disabled" ng-model="profile.verified"/> Verified
+        </label>
+    </div>
 
-            <p>
-                <label for="enabled">Enabled:</label>
-                <@spring.formCheckbox "profile.enabled"/>
-                <@crafter.showErrors "error-msg", "mbs", ""/>
-            </p>
+    <div class="form-group">
+        <label for="createdOn">Created On</label>
+        <input name="createdOn" type="text" class="form-control" disabled="disabled" ng-model="profile.createdOn"/>
+    </div>
 
-            <p>
-                <label for="verified">Verified:</label>
-                <@spring.formCheckbox "profile.verified", "disabled='disabled'"/>
-            </p>
+    <div class="form-group">
+        <label for="lastModified">Last Modified On</label>
+        <input name="lastModified" type="text" class="form-control" disabled="disabled" ng-model="profile.lastModified"/>
+    </div>
 
-            <p>
-                <label for="createdOn">Created On:</label>
-                <@spring.formInput "profile.createdOn", "disabled='disabled'"/>
-            </p>
+    <div class="form-group">
+        <label>Roles</label>
+        <br />
+        <label class="checkbox-inline" ng-repeat="role in availableRoles">
+            <input name="roles[]"
+                   type="checkbox"
+                   value="{{role}}"
+                   ng-checked="profile.roles.indexOf(role) > -1"
+                   ng-click="toggleRole(role)"/> {{role}}
+        </label>
+    </div>
 
-            <p>
-                <label for="lastModified">Last Modified On:</label>
-                <@spring.formInput "profile.lastModified", "disabled='disabled'"/>
-            </p>
-
-            <p>
-                <label for="roles">Roles:</label>
-                <@spring.bind "profile.roles"/>
-                <select multiple="multiple" id="roles" name="roles">
-                    <#list availableRoles as role>
-                        <#assign isSelected = spring.contains(profile.roles, role)>
-                        <option value="${role}"<#if isSelected> selected="selected"</#if>>${role?html}</option>
-                    </#list>
-                </select>
-                <@crafter.showErrors "error-msg", "mbs", ""/>
-            </p>
-
-            <#--#list profile.attributes?keys as attributeName>
-                <label for="attributes['${attributeName}']">${attributeName}</label>
-                <@spring.formInput "profile.attributes['${attributeName}']", "style='width: 270'"/>
-                <@crafter.showErrors "error-msg", "mbs", ""/>
-            </#list-->
-
-            <p>
-                <span class="hintField">* Required fields mark</span>
-            </p>
-
-            <p>
-                <label>&nbsp;</label>
-                <button class="btn btn-info" id="accept" type="submit">Accept</button>
-                <button class="btn btn-info" id="cancel" type="button">Cancel</button>
-            </p>
-        </div>
-    </form>
-</div>
-
-<@components.footer/>
-</body>
-</html>
+    <button class="btn btn-default" type="button" ng-click="updateProfile(profile)">Accept</button>
+    <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+</form>
