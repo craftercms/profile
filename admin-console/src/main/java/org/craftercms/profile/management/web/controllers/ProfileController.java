@@ -17,6 +17,7 @@
 package org.craftercms.profile.management.web.controllers;
 
 import org.apache.commons.lang3.StringUtils;
+import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.exceptions.ProfileException;
@@ -45,12 +46,15 @@ public class ProfileController {
     
     public static final String BASE_URL_PROFILE = "/profile";
 
-    public static final String URL_VIEW_PROFILE_LIST =  "/list/view";
-    public static final String URL_VIEW_PROFILE =       "/view";
+    public static final String URL_VIEW_PROFILE_LIST =      "/list/view";
+    public static final String URL_VIEW_NEW_PROFILE =       "/new/view";
+    public static final String URL_VIEW_UPDATE_PROFILE =    "/update/view";
 
     public static final String URL_GET_PROFILE_LIST =   "/list";
     public static final String URL_GET_PROFILE =        "/{" + PATH_VAR_ID + "}";
-    public static final String URL_UPDATE_PROFILE =     "";
+    public static final String URL_CREATE_PROFILE =     "/new";
+    public static final String URL_UPDATE_PROFILE =     "/update";
+    public static final String URL_VERIFY_PROFILE =     "/verify";
 
     public static final String PARAM_TENANT_NAME =  "tenantName";
     public static final String PARAM_SORT_BY =      "sortBy";
@@ -58,8 +62,14 @@ public class ProfileController {
     public static final String PARAM_START =        "start";
     public static final String PARAM_LIMIT =        "limit";
 
-    public static final String VIEW_PROFILE =       "profile";
-    public static final String VIEW_PROFILE_LIST =  "profile-list";
+    public static final String VIEW_PROFILE_LIST =      "profile-list";
+    public static final String VIEW_NEW_PROFILE =       "new-profile";
+    public static final String VIEW_UPDATE_PROFILE =    "update-profile";
+
+    public static final String MODEL_MESSAGE = "message";
+
+    public static final String MSG_PROFILE_CREATED_FORMAT = "Profile '%s' created";
+    public static final String MSG_PROFILE_UPDATED_FORMAT = "Profile '%s' updated";
 
     private String defaultSortBy;
     private SortOrder defaultSortOrder;
@@ -98,9 +108,14 @@ public class ProfileController {
         return VIEW_PROFILE_LIST;
     }
 
-    @RequestMapping(value = URL_VIEW_PROFILE, method = RequestMethod.GET)
-    public String viewProfile() {
-        return VIEW_PROFILE;
+    @RequestMapping(value = URL_VIEW_NEW_PROFILE, method = RequestMethod.GET)
+    public String viewNewProfile() {
+        return VIEW_NEW_PROFILE;
+    }
+
+    @RequestMapping(value = URL_VIEW_UPDATE_PROFILE, method = RequestMethod.GET)
+    public String viewUpdateProfile() {
+        return VIEW_UPDATE_PROFILE;
     }
 
     @RequestMapping(value = URL_GET_PROFILE_LIST, method = RequestMethod.GET)
@@ -141,73 +156,25 @@ public class ProfileController {
         }
     }
 
+    @RequestMapping(value = URL_CREATE_PROFILE, method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, String> createProfile(@RequestBody Profile profile,
+                                             HttpServletRequest request) throws ProfileException {
+        String verificationUrl = HttpUtils.getFullUrl(request, BASE_URL_PROFILE + URL_VERIFY_PROFILE);
+
+        profile = profileService.createProfile(profile.getTenant(), profile.getUsername(), profile.getPassword(),
+                profile.getEmail(), profile.isEnabled(), profile.getRoles(), verificationUrl);
+
+        return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_PROFILE_CREATED_FORMAT, profile.getId()));
+    }
+
     @RequestMapping(value = URL_UPDATE_PROFILE, method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> updateProfile(@RequestBody Profile profile) throws ProfileException {
-        profileService.updateProfile(
-                profile.getId().toString(),
-                profile.getUsername(),
-                profile.getPassword(),
-                profile.getEmail(),
-                profile.isEnabled(),
-                profile.getRoles());
+        profile = profileService.updateProfile(profile.getId().toString(), profile.getUsername(),
+                profile.getPassword(), profile.getEmail(), profile.isEnabled(), profile.getRoles());
 
-        return Collections.singletonMap("message", "Profile successfully updated");
+        return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_PROFILE_UPDATED_FORMAT, profile.getId()));
     }
-
-//    @RequestMapping(value = URL_CREATE_NEW_PROFILE, method = RequestMethod.POST)
-//    public String createNewProfile(@ModelAttribute(MODEL_PROFILE) ProfileForm profile, BindingResult result,
-//                                   Model model, HttpServletRequest request) throws ProfileException {
-//        if (!result.hasErrors()) {
-//            profileService.createProfile(
-//                    profile.getTenant(),
-//                    profile.getUsername(),
-//                    profile.getPassword(),
-//                    profile.getEmail(),
-//                    profile.isEnabled(),
-//                    profile.getRoles(),
-//                    HttpUtils.getFullUrl(request, BASE_URL_PROFILE + URL_VERIFY_PROFILE));
-//
-//            return "redirect:/";
-//        } else {
-//            model.addAttribute(MODEL_PROFILE, profile);
-//
-//            return VIEW_PROFILE;
-//        }
-//    }
-//
-//    @RequestMapping(value = URL_SHOW_UPDATE_PROFILE_FORM, method = RequestMethod.GET)
-//    public ModelAndView showUpdateProfileForm(@PathVariable(PATH_VAR_ID) String id) throws ProfileException {
-//        ProfileForm profile = getProfile(id);
-//        Tenant tenant = tenantService.getTenant(profile.getTenant());
-//
-//        ModelAndView mav = new ModelAndView(VIEW_PROFILE);
-//        mav.addObject(MODEL_PROFILE, profile);
-//        mav.addObject(MODEL_AVAILABLE_ROLES, tenant.getAvailableRoles());
-//
-//        return mav;
-//    }
-//
-//    @RequestMapping(value = URL_UPDATE_PROFILE, method = RequestMethod.POST)
-//    public String updateProfile(@PathVariable(PATH_VAR_ID) String id,
-//                                @ModelAttribute(MODEL_PROFILE) ProfileForm profile, BindingResult result,
-//                                Model model) throws ProfileException {
-//        if (!result.hasErrors()) {
-//            profileService.updateProfile(
-//                    id,
-//                    profile.getUsername(),
-//                    profile.getPassword(),
-//                    profile.getEmail(),
-//                    profile.isEnabled(),
-//                    profile.getRoles());
-//
-//            return "redirect:/";
-//        } else {
-//            model.addAttribute(MODEL_PROFILE, profile);
-//
-//            return VIEW_PROFILE;
-//        }
-//    }
-//
 
 }

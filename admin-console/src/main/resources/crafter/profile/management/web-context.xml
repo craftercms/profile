@@ -8,6 +8,17 @@
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
+    <bean name="crafter.adminConsoleProperties"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="locations">
+            <list>
+                <value>classpath:crafter/profile/management/server-config.properties</value>
+                <value>classpath*:crafter/profile/management/extension/server-config.properties</value>
+            </list>
+        </property>
+    </bean>
+
     <context:annotation-config/>
 
     <mvc:annotation-driven>
@@ -41,17 +52,13 @@
 
     <mvc:resources mapping="/resources/**" location="/resources/"/>
 
-    <mvc:view-controller path="/login" view-name="login"/>
-    <mvc:view-controller path="/" view-name="main"/>
+    <!-- Handler mappings -->
 
-    <bean name="crafter.adminConsoleProperties"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="ignoreUnresolvablePlaceholders" value="true"/>
-        <property name="locations">
-            <list>
-                <value>classpath:crafter/profile/management/server-config.properties</value>
-                <value>classpath*:crafter/profile/management/extension/server-config.properties</value>
-            </list>
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="urlMap">
+            <map>
+                <entry key="/**" value-ref="crafter.fallbackController"/>
+            </map>
         </property>
     </bean>
 
@@ -70,6 +77,8 @@
     <bean id="crafter.tenantController" class="org.craftercms.profile.management.web.controllers.TenantController">
         <property name="tenantService" ref="crafter.tenantServiceRestClient"/>
     </bean>
+
+    <bean id="crafter.fallbackController" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
 
     <!-- Freemarker Config -->
     <bean id="crafter.freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">

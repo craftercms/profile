@@ -1,66 +1,40 @@
-<#import "spring.ftl" as spring />
-<#import "common/crafter.ftl" as crafter />
-<#import "common/components.ftl" as components />
-<#import "layouts/main-layout.ftl" as main/>
+<h1 class="page-header">New Profile</h1>
 
-<#assign scripts>
-<script src="<@spring.url '/resources/js/new-profile.js'/>"></script>
-<script type="text/javascript">
-    var allAvailableRoles = {
-        <#list tenants as tenant>
-            "${tenant.name}" : [
-                <#list tenant.availableRoles as role>
-                    "${role}"<#if role_has_next>,</#if>
-                </#list>
-            ]<#if tenant_has_next>,</#if>
-        </#list>
-    }
-</script>
-</#assign>
-
-<@main.layout "Crafter Profile Admin Console - New Profile", "New Profile", "", scripts>
-<form action="<@spring.url '/profile/new'/>" method="post" role="form">
+<form role="form">
     <div class="form-group">
         <label for="username">Username</label>
-        <@spring.formInput "profile.username", "class='form-control'"/>
+        <input name="username" type="text" class="form-control" ng-model="profile.username"/>
     </div>
 
     <div class="form-group">
         <label for="tenant">Tenant</label>
-        <@spring.bind "profile.tenant"/>
-        <select id="tenant" name="tenant"class="form-control">
-            <#list tenants as tenant>
-                <option value="${tenant.name}">${tenant.name?html}</option>
-            </#list>
-        </select>
+        <select name="tenant" class="form-control" ng-model="profile.tenant"
+                ng-options="tenant for tenant in tenants" ng-change="fetchAvailableRoles(selectedTenant)"></select>
     </div>
 
     <div class="form-group">
         <label for="email">Email</label>
-        <@spring.formInput "profile.email", "class='form-control'"/>
+        <input name="email" type="email" class="form-control" ng-model="profile.email"/>
     </div>
 
     <div class="form-group">
         <label for="password">Password</label>
-        <@spring.formInput "profile.password", "class='form-control'", "password"/>
+        <input name="password" type="password" class="form-control" ng-model="profile.password"/>
     </div>
 
     <div class="form-group">
         <label for="confirmPassword">Confirm Password</label>
-        <@spring.formInput "profile.confirmPassword", "class='form-control'", "password"/>
+        <input name="confirmPassword" type="password" class="form-control" ng-model="profile.confirmPassword"/>
     </div>
 
     <div class="checkbox">
-        <label for="enabled">Enabled</label>
-        <@spring.formCheckbox "profile.enabled"/>
+        <label>
+            <input type="checkbox" ng-model="profile.enabled"/> Enabled
+        </label>
     </div>
 
-    <div class="form-group">
-        <label for="roles">Roles</label>
-        <@spring.formMultiSelect "profile.roles", {}, "class='form-control'"/>
-    </div>
+    <roles selected-roles="profile.roles" available-roles="availableRoles"></roles>
 
-    <button class="btn btn-default" id="accept" type="submit">Accept</button>
-    <button class="btn btn-default" id="cancel" type="button">Cancel</button>
+    <button class="btn btn-default" type="button" ng-click="createProfile(profile)">Accept</button>
+    <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
 </form>
-</@main.layout>

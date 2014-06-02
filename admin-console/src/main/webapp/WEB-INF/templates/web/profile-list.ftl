@@ -11,28 +11,28 @@
 <div class="table-responsive" style="margin-top: 20px;">
     <table class="table table-striped">
         <thead>
-        <tr>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Enabled</th>
-            <th>Roles</th>
-        </tr>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Enabled</th>
+                <th>Roles</th>
+            </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="profile in profiles">
-            <td>
-                <a href="#/profile/{{profile.id}}">{{profile.username}}</a>
-            </td>
-            <td>
-                {{profile.email}}
-            </td>
-            <td>
-                {{profile.enabled ? 'Yes' : 'No'}}
-            </td>
-            <td>
-                {{profile.roles.join(', ')}}
-            </td>
-        </tr>
+            <tr ng-repeat="profile in profiles">
+                <td>
+                    <a href="#/profile/update/{{profile.id}}">{{profile.username}}</a>
+                </td>
+                <td>
+                    {{profile.email}}
+                </td>
+                <td>
+                    {{profile.enabled ? 'Yes' : 'No'}}
+                </td>
+                <td>
+                    {{profile.roles.join(', ')}}
+                </td>
+            </tr>
         </tbody>
     </table>
 </div>

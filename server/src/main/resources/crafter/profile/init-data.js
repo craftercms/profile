@@ -43,6 +43,10 @@ if (db.tenant.count() == 0) {
         "attributeDefinitions" : [
             {
                 "name" : "firstName",
+                "metadata": {
+                    "label": "First Name",
+                    "type": "text"
+                },
                 "permissions" : [
                     {
                         "application" : "*",
@@ -52,6 +56,10 @@ if (db.tenant.count() == 0) {
             },
             {
                 "name" : "lastName",
+                "metadata": {
+                    "label": "Last Name",
+                    "type": "text"
+                },
                 "permissions" : [
                     {
                         "application" : "*",

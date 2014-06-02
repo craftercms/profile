@@ -1,23 +1,18 @@
-<#import "spring.ftl" as spring/>
-<#import "layouts/main-layout.ftl" as main/>
+<h1 class="page-header">Tenant List</h1>
 
-<@main.layout "Crafter Profile Admin Console - Tenant List", "Tenant List">
-<div id="profiles" class="table-responsive">
+<div class="table-responsive">
     <table class="table table-striped">
         <thead>
-        <tr>
-            <th>Tenant Name</th>
-        </tr>
+            <tr>
+                <th>Tenant Name</th>
+            </tr>
         </thead>
         <tbody>
-            <#list tenants as t>
-            <tr>
+            <tr ng-repeat="tenant in tenants">
                 <td>
-                    <a href="<@spring.url '/tenant/${t.name}'/>">${t.name}</a>
+                    <a href="#/tenant/update/{{tenant}}">{{tenant}}</a>
                 </td>
             </tr>
-            </#list>
         </tbody>
     </table>
-</div>
-</@main.layout>
+</div

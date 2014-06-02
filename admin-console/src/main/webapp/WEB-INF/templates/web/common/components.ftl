@@ -36,7 +36,7 @@
                 </li>
                 <li>
                     <span class="navbar-text">
-                        Signed in as: <a href="#/profile/${loggedInUser.id}">${loggedInUser.username}</a>
+                        Signed in as: <a href="#/profile/update/${loggedInUser.id}">${loggedInUser.username}</a>
                     </span>
                 </li>
             </ul>

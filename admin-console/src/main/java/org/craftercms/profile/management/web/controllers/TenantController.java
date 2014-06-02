@@ -37,20 +37,19 @@ public class TenantController {
 
     public static final String PATH_VAR_NAME = "name";
 
-    public static final String BASE_URL_TENANT =            "/tenant";
+    public static final String BASE_URL_TENANT = "/tenant";
 
-    public static final String URL_VIEW_TENANT_LIST =       "/list/view";
-    public static final String URL_VIEW_TENANT =            "/view";
+    public static final String URL_VIEW_TENANT_LIST =   "/list/view";
+    public static final String URL_VIEW_UPDATE_TENANT = "/update/view";
 
     public static final String URL_GET_TENANT_NAMES =       "/names";
     public static final String URL_GET_AVAILABLE_ROLES =    "/available_roles";
-    public static final String URL_GET_TENANT_LIST =        "/list";
     public static final String URL_GET_TENANT =             "/{" + PATH_VAR_NAME + "}";
 
     public static final String PARAM_TENANT_NAME = "tenantName";
 
     public static final String VIEW_TENANT_LIST =   "tenant-list";
-    public static final String VIEW_TENANT =        "tenant";
+    public static final String VIEW_UPDATE_TENANT = "update-tenant";
 
     private TenantService tenantService;
 
@@ -64,9 +63,9 @@ public class TenantController {
         return VIEW_TENANT_LIST;
     }
 
-    @RequestMapping(value = URL_VIEW_TENANT, method = RequestMethod.GET)
-    public String viewTenant() throws ProfileException {
-        return VIEW_TENANT;
+    @RequestMapping(value = URL_VIEW_UPDATE_TENANT, method = RequestMethod.GET)
+    public String viewUpdateTenant() throws ProfileException {
+        return VIEW_UPDATE_TENANT;
     }
 
     @RequestMapping(value = URL_GET_TENANT_NAMES, method = RequestMethod.GET)
@@ -82,29 +81,10 @@ public class TenantController {
         return tenantNames;
     }
 
-    @RequestMapping(value = URL_GET_AVAILABLE_ROLES, method = RequestMethod.GET, params = PARAM_TENANT_NAME)
+    @RequestMapping(value = URL_GET_AVAILABLE_ROLES, method = RequestMethod.GET)
     @ResponseBody
     public Set<String> getAvailableRoles(@RequestParam(PARAM_TENANT_NAME) String tenantName) throws ProfileException {
         return getTenant(tenantName).getAvailableRoles();
-    }
-
-    @RequestMapping(value = URL_GET_AVAILABLE_ROLES, method = RequestMethod.GET)
-    @ResponseBody
-    public Map<String, Set<String>> getAvailableRoles() throws ProfileException {
-        List<Tenant> tenants = tenantService.getAllTenants();
-        Map<String, Set<String>> availableRoles = new LinkedHashMap<>(tenants.size());
-
-        for (Tenant tenant : tenants) {
-            availableRoles.put(tenant.getName(), tenant.getAvailableRoles());
-        }
-
-        return availableRoles;
-    }
-
-    @RequestMapping(value = URL_GET_TENANT_LIST, method = RequestMethod.GET)
-    @ResponseBody
-    public List<Tenant> getTenantList() throws ProfileException {
-        return tenantService.getAllTenants();
     }
 
     @RequestMapping(value = URL_GET_TENANT, method = RequestMethod.GET)

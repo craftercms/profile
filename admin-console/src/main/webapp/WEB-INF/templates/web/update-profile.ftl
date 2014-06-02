@@ -13,7 +13,7 @@
 
     <div class="form-group">
         <label for="email">Email</label>
-        <input name="email" type="text" class="form-control" ng-model="profile.email"/>
+        <input name="email" type="email" class="form-control" ng-model="profile.email"/>
     </div>
 
     <div class="form-group">
@@ -48,17 +48,7 @@
         <input name="lastModified" type="text" class="form-control" disabled="disabled" ng-model="profile.lastModified"/>
     </div>
 
-    <div class="form-group">
-        <label>Roles</label>
-        <br />
-        <label class="checkbox-inline" ng-repeat="role in availableRoles">
-            <input name="roles[]"
-                   type="checkbox"
-                   value="{{role}}"
-                   ng-checked="profile.roles.indexOf(role) > -1"
-                   ng-click="toggleRole(role)"/> {{role}}
-        </label>
-    </div>
+    <roles selected-roles="profile.roles" available-roles="availableRoles"></roles>
 
     <button class="btn btn-default" type="button" ng-click="updateProfile(profile)">Accept</button>
     <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>

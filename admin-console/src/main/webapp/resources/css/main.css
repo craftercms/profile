@@ -92,3 +92,15 @@ body {
     display: inline-block;
     border-radius: 50%;
 }
+
+
+/*
+ * Others
+ */
+.form-panel-title {
+    font-weight: 700;
+}
+.form-panel-table {
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
