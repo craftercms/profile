@@ -6,6 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${title}</title>
 
+<!-- Favicon -->
+<link rel="shortcut icon" href="<@spring.url '/resources/image/favicon.ico'/>">
+
 <!-- Bootstrap -->
 <link href="<@spring.url '/resources/css/bootstrap.min.css'/>" rel="stylesheet">
 
@@ -48,11 +51,11 @@
 <#macro navSidebar>
 <div class="col-sm-3 col-md-2 sidebar">
     <ul class="nav nav-sidebar">
-        <li><a href="#/profile/list">Show Profiles</a></li>
+        <li><a href="#/profile/list">List Profiles</a></li>
         <li><a href="#/profile/new">New Profile</a></li>
     </ul>
     <ul class="nav nav-sidebar">
-        <li><a href="#/tenant/list">Show Tenants</a></li>
+        <li><a href="#/tenant/list">List Tenants</a></li>
         <li><a href="#/tenant/new">New Tenant</a></li>
     </ul>
 </div>

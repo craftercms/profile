@@ -19,11 +19,12 @@
             </div>
             <div class="panel-body">
                 <div class="input-group">
-                    <input type="text" class="form-control" ng-model="roleToAdd">
+                    <input type="text" class="form-control" placeholder="Enter role to add" ng-model="roleToAdd"/>
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="button" ng-click="addRole(roleToAdd)">Add</button>
                     </span>
                 </div>
+
                 <table class="table table-striped form-panel-table">
                     <tr ng-repeat="role in tenant.availableRoles">
                         <td>
@@ -44,7 +45,8 @@
                 <span class="form-panel-title">Attribute Definitions</span>
             </div>
             <div class="panel-body">
-                <button class="btn btn-default" type="button">New definition</button>
+                <button class="btn btn-default" type="button"
+                        ng-click="showAttributeDefinitionModal(definition, -1)">New definition</button>
                 <table class="table table-striped form-panel-table">
                     <thead>
                         <tr>
@@ -57,7 +59,7 @@
                     <tbody>
                         <tr ng-repeat="definition in tenant.attributeDefinitions">
                             <td>
-                                <a ng-click="showAttributeDefModal(definition)">{{definition.name}}</a>
+                                <a ng-click="showAttributeDefinitionModal(definition, $index)">{{definition.name}}</a>
                             </td>
                             <td>
                                 {{definition.metadata.label}}
@@ -66,7 +68,7 @@
                                 {{definition.metadata.type}}
                             </td>
                             <td>
-                                <a>Delete</a>
+                                <a ng-click="deleteAttributeDefinitionAt($index)">Delete</a>
                             </td>
                         </tr>
                     </tbody>
@@ -76,7 +78,7 @@
     </div>
 </form>
 
-<div id="attributeDefModal" class="modal fade" tabindex="-1">
+<div id="attributeDefinitionModal" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -86,27 +88,78 @@
             <div class="modal-body">
                 <form role="form">
                     <div class="form-group">
-                        <label for="attributeDefName">Name</label>
-                        <input name="attributeDefName" type="text" class="form-control"
-                               ng-model="selectedDefinition.name" />
+                        <label for="name">Name</label>
+                        <input name="name" type="text" class="form-control"
+                               ng-model="currentDefinition.name" />
                     </div>
 
                     <div class="form-group">
-                        <label for="attributeDefLabel">Label</label>
-                        <input name="attributeDefLabel" type="text" class="form-control"
-                               ng-model="selectedDefinition.metadata.label" />
+                        <label for="attribDefLabel">Label</label>
+                        <input name="label" type="text" class="form-control"
+                               ng-model="currentDefinition.metadata.label" />
                     </div>
 
                     <div class="form-group">
-                        <label for="attributeDefType">Type</label>
-                        <input name="attributeDefType" type="text" class="form-control"
-                               ng-model="selectedDefinition.metadata.type" />
+                        <label for="type">Type</label>
+                        <select name="type" class="form-control" ng-model="currentDefinition.metadata.type"
+                                ng-options="attributeType for attributeType in attributeTypes"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <span class="form-panel-title">Attribute Permissions</span>
+                            </div>
+                            <div class="panel-body">
+                                <div class="input-group">
+                                    <input type="text"
+                                           class="form-control"
+                                           placeholder="Enter application name (* for any)"
+                                           ng-model="application"/>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"
+                                                ng-click="addPermission(currentDefinition, application)">Add</button>
+                                    </span>
+                                </div>
+                                <table class="table form-panel-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Application</th>
+                                            <th class="col-centered"
+                                                ng-repeat="(actionName, actionLabel) in attributeActions">
+                                                {{actionLabel}}
+                                            </th>
+                                            <th class="col-centered"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="permission in currentDefinition.permissions">
+                                            <td>
+                                                {{permission.application}}
+                                            </td>
+                                            <td class="col-centered"
+                                                ng-repeat="(actionName, actionLabel) in attributeActions">
+                                                <input name="actions[]"
+                                                       type="checkbox"
+                                                       value="{{actionName}}"
+                                                       ng-checked="hasAction(permission, actionName)"
+                                                       ng-click="toggleAction(permission, actionName)"/>
+                                            </td>
+                                            <td class="col-centered">
+                                                <a ng-click="deletePermissionAt(currentDefinition, $index)">Delete</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-primary"
+                        ng-click="saveAttributeDefinition(currentDefinition, currentDefinitionIndex)">Save changes</button>
             </div>
         </div>
     </div><

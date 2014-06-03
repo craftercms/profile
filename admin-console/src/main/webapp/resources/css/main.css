@@ -7,6 +7,9 @@ body {
     padding-top: 50px;
 }
 
+a {
+    cursor: pointer;
+}
 
 /*
  * Global add-ons
@@ -76,26 +79,7 @@ body {
 
 
 /*
- * Placeholder dashboard ideas
- */
-.placeholders {
-    margin-bottom: 30px;
-    text-align: center;
-}
-.placeholders h4 {
-    margin-bottom: 0;
-}
-.placeholder {
-    margin-bottom: 20px;
-}
-.placeholder img {
-    display: inline-block;
-    border-radius: 50%;
-}
-
-
-/*
- * Others
+ * Panels
  */
 .form-panel-title {
     font-weight: 700;
@@ -103,4 +87,8 @@ body {
 .form-panel-table {
     margin-top: 10px;
     margin-bottom: 0px;
+}
+
+.col-centered {
+    text-align: center;
 }
