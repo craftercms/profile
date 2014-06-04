@@ -17,17 +17,16 @@
 package org.craftercms.profile.exceptions;
 
 /**
- * Thrown if an attribute definition is to be removed from a tenant but there are some profiles still with the
- * attribute.
+ * Thrown if a role is to be removed from a tenant but there are some profiles still with the attribute.
  *
  * @author avasquez
  */
-public class AttributeDefinitionStillUsedException extends I10nProfileException {
+public class RoleStillUsedException extends I10nProfileException {
 
-    public static final String KEY = "profile.attribute.attributeDefinitionStillUsed";
+    public static final String KEY = "profile.role.roleStillUsed";
 
-    public AttributeDefinitionStillUsedException(String attributeName, String tenant) {
-        super(KEY, attributeName, tenant);
+    public RoleStillUsedException(String role, String tenant) {
+        super(KEY, role, tenant);
     }
 
 }

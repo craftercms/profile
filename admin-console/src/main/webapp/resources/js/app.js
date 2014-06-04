@@ -1,24 +1,29 @@
-var attributeTypes = [
-    'text',
-    'number',
-    'boolean',
-    'object'
-];
+var attributeTypes = {
+    'TEXT': 'Text',
+    'LARGE_TEXT': 'Large Text',
+    'NUMBER': 'Number',
+    'BOOLEAN': 'Boolean',
+    'STRING_ARRAY': 'String Array'
+};
 
 var attributeActions = {
     'READ_ATTRIBUTE' : 'Read',
     'WRITE_ATTRIBUTE' : 'Write',
     'REMOVE_ATTRIBUTE' : 'Remove'
-}
+};
 
 var app = angular.module('CrafterAdminConsole', ['ngRoute']);
+
+function postObject(url, obj, $http, $location) {
+    $http.post(url, obj).success(function(){
+        $location.path('#/');
+    });
+}
 
 function postProfile(url, profile, $http, $location) {
     delete profile.confirmPassword;
 
-    $http.post(url, profile).success(function(){
-        $location.path('#/');
-    });
+    postObject(url, profile, $http, $location);
 }
 
 function cancel($location) {
@@ -44,14 +49,14 @@ app.config(function($routeProvider) {
         templateUrl: contextPath + '/profile/list/view'
     });
 
-    $routeProvider.when('/profile/update/:id', {
-        controller: 'UpdateProfileController',
-        templateUrl: contextPath + '/profile/update/view'
-    });
-
     $routeProvider.when('/profile/new', {
         controller: 'NewProfileController',
         templateUrl: contextPath + '/profile/new/view'
+    });
+
+    $routeProvider.when('/profile/update/:id', {
+        controller: 'UpdateProfileController',
+        templateUrl: contextPath + '/profile/update/view'
     });
 
     $routeProvider.when('/tenant/list', {
@@ -59,8 +64,13 @@ app.config(function($routeProvider) {
         templateUrl: contextPath + '/tenant/list/view'
     });
 
+    $routeProvider.when('/tenant/new', {
+        controller: 'TenantController',
+        templateUrl: contextPath + '/tenant/new/view'
+    });
+
     $routeProvider.when('/tenant/update/:id', {
-        controller: 'UpdateTenantController',
+        controller: 'TenantController',
         templateUrl: contextPath + '/tenant/update/view'
     });
 
@@ -90,34 +100,6 @@ app.controller('ProfileListController', function($scope, $http) {
     };
 
     $scope.fetchTenantNames();
-});
-
-app.controller('UpdateProfileController', function($scope, $routeParams, $http, $location) {
-    $scope.fetchProfile = function() {
-        $http.get(contextPath + '/profile/' + $routeParams.id).success(function(profile){
-            $scope.profile = profile;
-            $scope.profile.password = null;
-            $scope.profile.confirmPassword = null;
-
-            $scope.fetchAvailableRoles($scope.profile.tenant);
-        });
-    };
-
-    $scope.fetchAvailableRoles = function(tenantName) {
-        $http.get(contextPath + '/tenant/available_roles?tenantName=' + tenantName).success(function(availableRoles){
-            $scope.availableRoles = availableRoles;
-        });
-    };
-
-    $scope.updateProfile = function(profile) {
-        postProfile(contextPath + '/profile/update', profile, $http, $location);
-    };
-
-    $scope.cancel = function() {
-        cancel($location);
-    };
-
-    $scope.fetchProfile();
 });
 
 app.controller('NewProfileController', function($scope, $http, $location) {
@@ -163,6 +145,34 @@ app.controller('NewProfileController', function($scope, $http, $location) {
     $scope.fetchTenantNames();
 });
 
+app.controller('UpdateProfileController', function($scope, $routeParams, $http, $location) {
+    $scope.fetchProfile = function() {
+        $http.get(contextPath + '/profile/' + $routeParams.id).success(function(profile){
+            $scope.profile = profile;
+            $scope.profile.password = null;
+            $scope.profile.confirmPassword = null;
+
+            $scope.fetchAvailableRoles($scope.profile.tenant);
+        });
+    };
+
+    $scope.fetchAvailableRoles = function(tenantName) {
+        $http.get(contextPath + '/tenant/available_roles?tenantName=' + tenantName).success(function(availableRoles){
+            $scope.availableRoles = availableRoles;
+        });
+    };
+
+    $scope.updateProfile = function(profile) {
+        postProfile(contextPath + '/profile/update', profile, $http, $location);
+    };
+
+    $scope.cancel = function() {
+        cancel($location);
+    };
+
+    $scope.fetchProfile();
+});
+
 app.controller('TenantListController', function($scope, $http) {
     $scope.fetchTenantNames = function() {
         $http.get(contextPath + '/tenant/names').success(function(tenants){
@@ -173,14 +183,34 @@ app.controller('TenantListController', function($scope, $http) {
     $scope.fetchTenantNames();
 });
 
-app.controller('UpdateTenantController', function($scope, $routeParams, $http) {
+app.controller('TenantController', function($scope, $routeParams, $http, $location) {
+    var newTenant = false;
+
+    if ($location.hash() == '/tenant/new') {
+        newTenant = true;
+    }
+
+    if (!newTenant) {
+        // Tenant's names can't be changed after being created
+        $('#name').attr('disabled', 'disabled');
+    }
+
     $scope.attributeTypes = attributeTypes;
     $scope.attributeActions = attributeActions;
 
-    $scope.fetchTenant = function() {
-        $http.get(contextPath + '/tenant/' + $routeParams.id).success(function(tenant){
-            $scope.tenant = tenant;
-        });
+    $scope.initTenant = function() {
+        if (newTenant) {
+            $scope.tenant = {
+                'name': null,
+                'verifyNewProfiles': false,
+                'availableRoles': [],
+                'attributeDefinitions': []
+            };
+        } else {
+            $http.get(contextPath + '/tenant/' + $routeParams.id).success(function(tenant){
+                $scope.tenant = tenant;
+            });
+        }
     };
 
     $scope.deleteRoleAt = function(index) {
@@ -194,6 +224,8 @@ app.controller('UpdateTenantController', function($scope, $routeParams, $http) {
     $scope.showAttributeDefinitionModal = function(definition, index) {
         if (index > -1) {
             $scope.currentDefinition = angular.copy(definition);
+
+            $('#attribName').attr('disabled', 'disabled');
         } else {
             $scope.currentDefinition = {
                 'name': null,
@@ -277,7 +309,23 @@ app.controller('UpdateTenantController', function($scope, $routeParams, $http) {
         }
     };
 
-    $scope.fetchTenant();
+    $scope.saveTenant = function(tenant) {
+        var url;
+
+        if (newTenant) {
+            url = contextPath + '/tenant/new';
+        } else {
+            url = contextPath + '/tenant/update';
+        }
+
+        postObject(url, tenant, $http, $location);
+    };
+
+    $scope.cancel = function() {
+        cancel($location);
+    };
+
+    $scope.initTenant();
 });
 
 /**

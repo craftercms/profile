@@ -23,6 +23,7 @@ import org.craftercms.profile.management.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.*;
 
@@ -40,16 +41,28 @@ public class TenantController {
     public static final String BASE_URL_TENANT = "/tenant";
 
     public static final String URL_VIEW_TENANT_LIST =   "/list/view";
+    public static final String URL_VIEW_CREATE_TENANT = "/new/view";
     public static final String URL_VIEW_UPDATE_TENANT = "/update/view";
 
     public static final String URL_GET_TENANT_NAMES =       "/names";
     public static final String URL_GET_AVAILABLE_ROLES =    "/available_roles";
     public static final String URL_GET_TENANT =             "/{" + PATH_VAR_NAME + "}";
+    public static final String URL_CREATE_TENANT =          "/new";
+    public static final String URL_UPDATE_TENANT =          "/update";
 
     public static final String PARAM_TENANT_NAME = "tenantName";
 
     public static final String VIEW_TENANT_LIST =   "tenant-list";
-    public static final String VIEW_UPDATE_TENANT = "update-tenant";
+    public static final String VIEW_TENANT =        "tenant";
+
+    public static final String MODEL_PAGE_HEADER =  "pageHeader";
+    public static final String MODEL_MESSAGE =      "message";
+
+    public static final String PAGE_HEADER_CREATE = "New Tenant";
+    public static final String PAGE_HEADER_UPDATE = "Update Tenant";
+
+    public static final String MSG_TENANT_CREATED_FORMAT = "Tenant '%s' created";
+    public static final String MSG_TENANT_UPDATED_FORMAT = "Tenant '%s' updated";
 
     private TenantService tenantService;
 
@@ -63,9 +76,14 @@ public class TenantController {
         return VIEW_TENANT_LIST;
     }
 
+    @RequestMapping(value = URL_VIEW_CREATE_TENANT, method = RequestMethod.GET)
+    public ModelAndView viewCreateTenant() throws ProfileException {
+        return new ModelAndView(VIEW_TENANT, MODEL_PAGE_HEADER, PAGE_HEADER_CREATE);
+    }
+
     @RequestMapping(value = URL_VIEW_UPDATE_TENANT, method = RequestMethod.GET)
-    public String viewUpdateTenant() throws ProfileException {
-        return VIEW_UPDATE_TENANT;
+    public ModelAndView viewUpdateTenant() throws ProfileException {
+        return new ModelAndView(VIEW_TENANT, MODEL_PAGE_HEADER, PAGE_HEADER_UPDATE);
     }
 
     @RequestMapping(value = URL_GET_TENANT_NAMES, method = RequestMethod.GET)
@@ -96,6 +114,22 @@ public class TenantController {
         } else {
             throw new ResourceNotFoundException("No tenant found with name '" + name + "'");
         }
+    }
+
+    @RequestMapping(value = URL_CREATE_TENANT, method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, String> createTenant(@RequestBody Tenant tenant) throws ProfileException {
+        tenant = tenantService.createTenant(tenant);
+
+        return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_CREATED_FORMAT, tenant.getName()));
+    }
+
+    @RequestMapping(value = URL_UPDATE_TENANT, method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, String> updateTenant(@RequestBody Tenant tenant) throws ProfileException {
+        tenant = tenantService.updateTenant(tenant);
+
+        return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_UPDATED_FORMAT, tenant.getName()));
     }
 
 }

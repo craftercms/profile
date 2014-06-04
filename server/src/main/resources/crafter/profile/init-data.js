@@ -45,7 +45,7 @@ if (db.tenant.count() == 0) {
                 "name" : "firstName",
                 "metadata": {
                     "label": "First Name",
-                    "type": "text"
+                    "type": "TEXT"
                 },
                 "permissions" : [
                     {
@@ -58,7 +58,7 @@ if (db.tenant.count() == 0) {
                 "name" : "lastName",
                 "metadata": {
                     "label": "Last Name",
-                    "type": "text"
+                    "type": "TEXT"
                 },
                 "permissions" : [
                     {

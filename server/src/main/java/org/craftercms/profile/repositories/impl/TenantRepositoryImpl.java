@@ -16,8 +16,6 @@
  */
 package org.craftercms.profile.repositories.impl;
 
-import javax.annotation.PostConstruct;
-
 import org.craftercms.commons.mongo.AbstractJongoRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.Tenant;
@@ -35,12 +33,9 @@ public class TenantRepositoryImpl extends AbstractJongoRepository<Tenant> implem
     public static final String KEY_FIND_BY_NAME_QUERY = "profile.tenant.byName";
     public static final String KEY_REMOVE_BY_NAME_QUERY = "profile.tenant.removeByName";
 
-    public TenantRepositoryImpl() throws MongoDataException {
-        super();
-    }
+    public void init() throws Exception {
+        super.init();
 
-    @PostConstruct
-    public void init() {
         getCollection().ensureIndex(getQueryFor(KEY_NAME_INDEX_KEYS), getQueryFor(KEY_NAME_INDEX_OPTIONS));
     }
 

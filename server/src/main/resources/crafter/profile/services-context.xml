@@ -76,7 +76,7 @@
     </bean>
 
     <bean id="crafter.AbstractJongoRepositoryBase" class="org.craftercms.commons.mongo.AbstractJongoRepository"
-          abstract="true">
+          init-method="init" abstract="true">
         <property name="jongo" ref="crafter.jongo"/>
         <property name="queries" ref="crafter.jongoQueries"/>
     </bean>

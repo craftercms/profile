@@ -16,6 +16,7 @@
  */
 package org.craftercms.profile.services;
 
+import org.craftercms.commons.collections.SetUtils;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.AttributePermission;
 import org.craftercms.profile.api.Tenant;
@@ -51,11 +52,12 @@ public class TenantServiceIT {
     private static final String DEFAULT_TENANT_NAME =   "default";
     private static final String CORPORATE_TENANT_NAME = "corporate";
 
+    private static final String PROFILE_ADMIN_ROLE =    "PROFILE_ADMIN";
     private static final String ADMIN_ROLE =            "ADMIN";
     private static final String USER_ROLE =             "USER";
-    private static final Set<String> DEFAULT_ROLES =    new HashSet<>(Arrays.asList("PROFILE_ADMIN", "SOCIAL_USER",
-            "SOCIAL_MODERATOR", "SOCIAL_AUTHOR", "SOCIAL_ADMIN"));
-    private static final Set<String> CORPORATE_ROLES =  new HashSet<>(Arrays.asList(ADMIN_ROLE));
+    private static final Set<String> DEFAULT_ROLES =    SetUtils.asSet("PROFILE_ADMIN", "SOCIAL_USER",
+            "SOCIAL_MODERATOR", "SOCIAL_AUTHOR", "SOCIAL_ADMIN");
+    private static final Set<String> CORPORATE_ROLES =  SetUtils.asSet(ADMIN_ROLE);
 
     private static final String FIRST_NAME_ATTRIBUTE_NAME =     "firstName";
     private static final String LAST_NAME_ATTRIBUTE_NAME =      "lastName";
@@ -157,6 +159,50 @@ public class TenantServiceIT {
     }
 
     @Test
+    public void testUpdateTenant() throws Exception {
+        Tenant tenant = tenantService.createTenant(getCorporateTenant());
+        try {
+            tenant.setVerifyNewProfiles(true);
+            tenant.getAvailableRoles().remove(ADMIN_ROLE);
+            tenant.getAvailableRoles().add(USER_ROLE);
+            tenant.getAttributeDefinitions().remove(getSubscriptionsAttributeDefinition());
+            tenant.getAttributeDefinitions().add(getGenderAttributeDefinition());
+
+            Tenant result = tenantService.updateTenant(tenant);
+
+            assertNotNull(result);
+            assertEquals(tenant.isVerifyNewProfiles(), result.isVerifyNewProfiles());
+            assertEquals(tenant.getAvailableRoles(), result.getAvailableRoles());
+            assertEquals(tenant.getAvailableRoles(), result.getAvailableRoles());
+            assertEquals(tenant.getAttributeDefinitions(), result.getAttributeDefinitions());
+
+            tenant = tenantService.getTenant(DEFAULT_TENANT_NAME);
+            tenant.getAvailableRoles().remove(PROFILE_ADMIN_ROLE);
+
+            try {
+                tenantService.updateTenant(tenant);
+                fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+            } catch (ProfileRestServiceException e) {
+                assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
+                assertEquals(ErrorCode.ROLE_STILL_USED, e.getErrorCode());
+            }
+
+            tenant.getAvailableRoles().add(PROFILE_ADMIN_ROLE);
+            tenant.getAttributeDefinitions().remove(getLastNameAttributeDefinition());
+
+            try {
+                tenantService.updateTenant(tenant);
+                fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+            } catch (ProfileRestServiceException e) {
+                assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
+                assertEquals(ErrorCode.ATTRIBUTE_DEFINITION_STILL_USED, e.getErrorCode());
+            }
+        } finally {
+            tenantService.deleteTenant(CORPORATE_TENANT_NAME);
+        }
+    }
+
+    @Test
     public void testDeleteTenant() throws Exception {
         tenantService.createTenant(getCorporateTenant());
 
@@ -230,6 +276,14 @@ public class TenantServiceIT {
 
             assertNotNull(tenant);
             assertEquals(expectedRoles, tenant.getAvailableRoles());
+
+            try {
+                tenantService.removeRoles(DEFAULT_TENANT_NAME, Arrays.asList(PROFILE_ADMIN_ROLE));
+                fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+            } catch (ProfileRestServiceException e) {
+                assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
+                assertEquals(ErrorCode.ROLE_STILL_USED, e.getErrorCode());
+            }
         } finally {
             tenantService.deleteTenant(CORPORATE_TENANT_NAME);
         }

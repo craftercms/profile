@@ -1,9 +1,9 @@
-<h1 class="page-header">Update Tenant</h1>
+<h1 class="page-header">${pageHeader}</h1>
 
 <form role="form">
     <div class="form-group">
         <label for="name">Name</label>
-        <input name="name" type="text" class="form-control" disabled="disabled" ng-model="tenant.name" />
+        <input id="name" name="name" type="text" class="form-control" ng-model="tenant.name" />
     </div>
 
     <div class="checkbox">
@@ -76,6 +76,9 @@
             </div>
         </div>
     </div>
+
+    <button class="btn btn-default" type="button" ng-click="saveTenant(tenant)">Accept</button>
+    <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
 </form>
 
 <div id="attributeDefinitionModal" class="modal fade" tabindex="-1">
@@ -89,12 +92,12 @@
                 <form role="form">
                     <div class="form-group">
                         <label for="name">Name</label>
-                        <input name="name" type="text" class="form-control"
+                        <input id="attribName" name="name" type="text" class="form-control"
                                ng-model="currentDefinition.name" />
                     </div>
 
                     <div class="form-group">
-                        <label for="attribDefLabel">Label</label>
+                        <label for="label">Label</label>
                         <input name="label" type="text" class="form-control"
                                ng-model="currentDefinition.metadata.label" />
                     </div>
@@ -102,7 +105,7 @@
                     <div class="form-group">
                         <label for="type">Type</label>
                         <select name="type" class="form-control" ng-model="currentDefinition.metadata.type"
-                                ng-options="attributeType for attributeType in attributeTypes"></select>
+                                ng-options="typeLabel for (typeValue, typeLabel) in attributeTypes"></select>
                     </div>
 
                     <div class="form-group">
