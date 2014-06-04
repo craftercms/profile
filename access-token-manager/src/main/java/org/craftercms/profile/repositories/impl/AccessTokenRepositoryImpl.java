@@ -31,13 +31,6 @@ public class AccessTokenRepositoryImpl extends AbstractJongoRepository<AccessTok
     public static final String FIND_BY_ID_QUERY_KEY =   "accessToken.byId";
     public static final String REMOVE_BY_ID_QUERY_KEY = "accessToken.removeById";
 
-    /**
-     * Default constructor.
-     */
-    public AccessTokenRepositoryImpl() throws MongoDataException {
-        super();
-    }
-
     @Override
     public AccessToken findById(String id) throws MongoDataException {
         return findOne(getQueryFor(FIND_BY_ID_QUERY_KEY), id);

@@ -1,15 +1,14 @@
-<h1 class="page-header">New Profile</h1>
+<h1 class="page-header">Update Profile</h1>
 
 <form role="form">
     <div class="form-group">
         <label for="username">Username</label>
-        <input name="username" type="text" class="form-control" ng-model="profile.username"/>
+        <input name="username" type="text" class="form-control" disabled="disabled" ng-model="profile.username"/>
     </div>
 
     <div class="form-group">
         <label for="tenant">Tenant</label>
-        <select name="tenant" class="form-control" ng-model="profile.tenant"
-                ng-options="tenant for tenant in tenants" ng-change="fetchAvailableRoles(selectedTenant)"></select>
+        <input name="tenant" type="text" class="form-control" disabled="disabled" ng-model="profile.tenant"/>
     </div>
 
     <div class="form-group">
@@ -33,8 +32,24 @@
         </label>
     </div>
 
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" disabled="disabled" ng-model="profile.verified"/> Verified
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label for="createdOn">Created On</label>
+        <input name="createdOn" type="text" class="form-control" disabled="disabled" ng-model="profile.createdOn"/>
+    </div>
+
+    <div class="form-group">
+        <label for="lastModified">Last Modified On</label>
+        <input name="lastModified" type="text" class="form-control" disabled="disabled" ng-model="profile.lastModified"/>
+    </div>
+
     <roles selected-roles="profile.roles" available-roles="availableRoles"></roles>
 
-    <button class="btn btn-default" type="button" ng-click="createProfile(profile)">Accept</button>
+    <button class="btn btn-default" type="button" ng-click="updateProfile(profile)">Accept</button>
     <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
 </form>

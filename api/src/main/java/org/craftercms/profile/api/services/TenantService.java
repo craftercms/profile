@@ -33,6 +33,15 @@ public interface TenantService {
     Tenant getTenant(String name) throws ProfileException;
 
     /**
+     * Updates the given tenant.
+     *
+     * @param tenant the tenant to update
+     *
+     * @return the updated tenant
+     */
+    Tenant updateTenant(Tenant tenant) throws ProfileException;
+
+    /**
      * Deletes a tenant.
      *
      * @param name  the tenant's name

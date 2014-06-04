@@ -16,9 +16,6 @@
  */
 package org.craftercms.profile.repositories.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mongodb.MongoException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +30,9 @@ import org.jongo.Find;
 import org.jongo.FindOne;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Default implementation of {@link org.craftercms.profile.repositories.ProfileRepository}.
@@ -55,13 +55,6 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
     public static final String KEY_FIND_BY_TENANT_AND_ATTRIB_VALUE_QUERY = "profile.profile.byTenantAndAttributeValue";
 
     public static final String ATTRIBUTE_FIELD_PREFIX = "attributes.";
-
-    /**
-     * Creates a instance of a Jongo Repository.
-     */
-    public ProfileRepositoryImpl() throws MongoDataException {
-        super();
-    }
 
     @Override
     public Profile findById(String id, String... attributesToReturn) throws MongoDataException {

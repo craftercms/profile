@@ -1,82 +1,38 @@
-<#import "spring.ftl" as spring />
-<#import "common/components.ftl" as components />
+<h1 class="page-header">Profile List</h1>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <@components.head "Crafter Admin Console - Profile List"/>
-</head>
-<body>
-<div id="content">
-    <@components.header "Manage Profiles"/>
+<form class="form-inline" role="form">
+    <div class="form-group">
+        <label for="tenant">Tenant:</label>
+        <select name="tenant" class="form-control" style="margin-left: 10px; width: 175px;" ng-model="selectedTenant"
+                ng-options="tenant for tenant in tenants" ng-change="fetchProfileList()"></select>
+    </div>
+</form>
 
-    <form id="form-list" accept-charset="UTF-8">
-        <div class="top">
-            <div class="pad">
-                <nav>
-                    <ul class="main-nav clearfix">
-                        <li>
-                            <a id="newProfile" type="submit" href="<@spring.url '/profile/new'/>">
-                                New Profile
-                            </a>
-                        </li>
-                        <li>
-                            <a id="manageTenants" type="submit" href="<@spring.url '/tenant/all'/>">
-                                Manage Tenants
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="page-actions">
-                        <li>
-                            <label id="tenantLabel" for="tenant" style="width: 50px;">Tenant:</label>
-                            <select style="width:150px;" id="tenant" name="tenant">
-                            <#list tenants as t>
-                                <#if currentTenant == t.name>
-                                    <#assign selected = true>
-                                <#else>
-                                    <#assign selected = false>
-                                </#if>
-                                <option value="${t.name}"<#if selected>selected="selected"</#if>>
-                                ${t.name}
-                                </option>
-                            </#list>
-                            </select>
-                        </li>
-                        <#--li>
-                            <@spring.formInput "", "style=width:120px", "text"/>
-                            <a type="submit" id="search">Search</a>
-                        </li-->
-                        <li><a type="submit" id="previous">&lt;&lt;</a></li>
-                        <li><a type="submit" id="next">&gt;&gt;</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-        <table id="mytable">
+<div class="table-responsive" style="margin-top: 20px;">
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <th scope="col">Username</th>
-                <th scope="col">Enabled</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Enabled</th>
+                <th>Roles</th>
             </tr>
-        <#list profiles as p>
-            <tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="profile in profiles">
                 <td>
-                    <a name="username" href="<@spring.url '/profile/${p.id}'/>">
-                    ${p.username!""}
-                    </a>
+                    <a href="#/profile/update/{{profile.id}}">{{profile.username}}</a>
                 </td>
                 <td>
-                    <#if p.enabled>
-                        Yes
-                    <#else>
-                        No
-                    </#if>
+                    {{profile.email}}
+                </td>
+                <td>
+                    {{profile.enabled ? 'Yes' : 'No'}}
+                </td>
+                <td>
+                    {{profile.roles.join(', ')}}
                 </td>
             </tr>
-        </#list>
-        </table>
-    </form>
+        </tbody>
+    </table>
 </div>
-
-<@components.footer/>
-</body>
-</html> 

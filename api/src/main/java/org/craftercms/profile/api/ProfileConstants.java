@@ -41,6 +41,7 @@ public class ProfileConstants {
 
     public static final String URL_TENANT_CREATE =                          "/create";
     public static final String URL_TENANT_GET =                             "/{name}";
+    public static final String URL_TENANT_UPDATE =                          "/update";
     public static final String URL_TENANT_DELETE =                          "/{name}/delete";
     public static final String URL_TENANT_COUNT =                           "/count";
     public static final String URL_TENANT_GET_ALL =                         "/all";

@@ -16,11 +16,13 @@
  */
 package org.craftercms.profile.services.impl;
 
+import org.craftercms.commons.collections.SetUtils;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.*;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.AttributeAlreadyDefinedException;
 import org.craftercms.profile.exceptions.AttributeDefinitionStillUsedException;
+import org.craftercms.profile.exceptions.RoleStillUsedException;
 import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TenantRepository;
@@ -45,7 +47,6 @@ public class TenantServiceImplTest {
     private static final String TENANT2_NAME =  "tenant2";
     private static final String ROLE1 =         "role1";
     private static final String ROLE2 =         "role2";
-    private static final Set<String> ROLES =    new HashSet<>(Arrays.asList(ROLE1));
 
     private static final String ATTRIB1_NAME =  "attrib1";
     private static final String ATTRIB2_NAME =  "attrib2";
@@ -72,8 +73,10 @@ public class TenantServiceImplTest {
         when(tenantRepository.findAll()).thenReturn(Arrays.asList(getTenant1(), getTenant2()));
         when(tenantRepository.count()).thenReturn(2L);
 
-        when(profileService.getProfilesByExistingAttribute(TENANT2_NAME, ATTRIB1_NAME, null, null, ProfileConstants
-                .NO_ATTRIBUTE)).thenReturn(Arrays.asList(mock(Profile.class)));
+        when(profileService.getProfilesByRole(TENANT2_NAME, ROLE1, null, null,
+                ProfileConstants.NO_ATTRIBUTE)).thenReturn(Arrays.asList(mock(Profile.class)));
+        when(profileService.getProfilesByExistingAttribute(TENANT2_NAME, ATTRIB1_NAME, null, null,
+                ProfileConstants.NO_ATTRIBUTE)).thenReturn(Arrays.asList(mock(Profile.class)));
 
         tenantService = new TenantServiceImpl();
         tenantService.setTenantPermissionEvaluator(permissionEvaluator);
@@ -100,6 +103,34 @@ public class TenantServiceImplTest {
         assertEqualTenants(expected, actual);
 
         verify(tenantRepository).findByName(TENANT1_NAME);
+    }
+
+    @Test
+    public void testUpdateTenant() throws Exception {
+        AttributeDefinition def = new AttributeDefinition();
+        def.setName(ATTRIB1_NAME);
+
+        Tenant expected = getTenant1();
+        expected.getAvailableRoles().remove(ROLE1);
+        expected.getAttributeDefinitions().remove(def);
+
+        Tenant actual = tenantService.updateTenant(expected);
+
+        assertEqualTenants(expected, actual);
+
+        verify(tenantRepository).save(actual);
+    }
+
+    @Test
+    public void testUpdateTenantRemoveRoleStillUsed() throws Exception {
+        Tenant tenant = getTenant2();
+        tenant.getAvailableRoles().remove(ROLE1);
+
+        try {
+            tenantService.updateTenant(tenant);
+            fail("Expected " + RoleStillUsedException.class.getSimpleName() + " exception");
+        } catch (RoleStillUsedException e) {
+        }
     }
 
     @Test
@@ -162,14 +193,23 @@ public class TenantServiceImplTest {
     @Test
     public void testRemoveRoles() throws Exception {
         Tenant expected = getTenant1();
-        expected.getAvailableRoles().remove("role1");
+        expected.getAvailableRoles().remove(ROLE1);
 
-        Tenant actual = tenantService.removeRoles(TENANT1_NAME, Arrays.asList("role1"));
+        Tenant actual = tenantService.removeRoles(TENANT1_NAME, Arrays.asList(ROLE1));
 
         assertEqualTenants(expected, actual);
 
         verify(tenantRepository).findByName(TENANT1_NAME);
         verify(tenantRepository).save(actual);
+    }
+
+    @Test
+    public void testRemoveRolesStillUsed() throws Exception {
+        try {
+            tenantService.removeRoles(TENANT2_NAME, Arrays.asList(ROLE1));
+            fail("Expected " + RoleStillUsedException.class.getSimpleName() + " exception");
+        } catch (RoleStillUsedException e) {
+        }
     }
 
     @Test
@@ -237,8 +277,8 @@ public class TenantServiceImplTest {
         Tenant tenant = new Tenant();
         tenant.setName(TENANT1_NAME);
         tenant.setVerifyNewProfiles(true);
-        tenant.setAvailableRoles(ROLES);
-        tenant.setAttributeDefinitions(new HashSet<>(Arrays.asList(def)));
+        tenant.setAvailableRoles(SetUtils.asSet(ROLE1, ROLE2));
+        tenant.setAttributeDefinitions(SetUtils.asSet(def));
 
         return tenant;
     }
@@ -250,8 +290,8 @@ public class TenantServiceImplTest {
         Tenant tenant = new Tenant();
         tenant.setName(TENANT2_NAME);
         tenant.setVerifyNewProfiles(true);
-        tenant.setAvailableRoles(ROLES);
-        tenant.setAttributeDefinitions(new HashSet<>(Arrays.asList(def)));
+        tenant.setAvailableRoles(SetUtils.asSet(ROLE1, ROLE2));
+        tenant.setAttributeDefinitions(SetUtils.asSet(def));
 
         return tenant;
     }

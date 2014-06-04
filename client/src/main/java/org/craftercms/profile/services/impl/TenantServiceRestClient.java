@@ -54,6 +54,13 @@ public class TenantServiceRestClient extends AbstractProfileRestClientBase imple
     }
 
     @Override
+    public Tenant updateTenant(Tenant tenant) throws ProfileException {
+        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_UPDATE);
+
+        return doPostForObject(url, tenant, Tenant.class);
+    }
+
+    @Override
     public void deleteTenant(String name) throws ProfileException {
         String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_DELETE);
 

@@ -131,6 +131,36 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
+    public Tenant updateTenant(final Tenant tenant) throws ProfileException {
+        final String tenantName = tenant.getName();
+
+        return updateTenant(tenant.getName(), new UpdateCallback() {
+
+            @Override
+            public void doWithTenant(Tenant originalTenant) throws ProfileException {
+                Collection<String> removedRoles = CollectionUtils.subtract(
+                        originalTenant.getAvailableRoles(),
+                        tenant.getAvailableRoles());
+                Collection<AttributeDefinition> removedDefinitions = CollectionUtils.subtract(
+                        originalTenant.getAttributeDefinitions(),
+                        tenant.getAttributeDefinitions());
+
+                for (String removedRole : removedRoles) {
+                    checkIfRoleNotUsed(tenantName, removedRole);
+                }
+                for (AttributeDefinition removedDefinition : removedDefinitions) {
+                    checkIfAttributeDefinitionNotUsed(tenantName, removedDefinition);
+                }
+
+                originalTenant.setVerifyNewProfiles(tenant.isVerifyNewProfiles());
+                originalTenant.setAvailableRoles(tenant.getAvailableRoles());
+                originalTenant.setAttributeDefinitions(tenant.getAttributeDefinitions());
+            }
+
+        });
+    }
+
+    @Override
     public void deleteTenant(String name) throws ProfileException {
         checkIfTenantActionIsAllowed(name, TenantAction.DELETE_TENANT);
 
@@ -199,11 +229,15 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public Tenant removeRoles(String tenantName, final Collection<String> roles) throws ProfileException {
+    public Tenant removeRoles(final String tenantName, final Collection<String> roles) throws ProfileException {
         Tenant tenant = updateTenant(tenantName, new UpdateCallback() {
 
             @Override
             public void doWithTenant(Tenant tenant) throws ProfileException {
+                for (String role : roles) {
+                    checkIfRoleNotUsed(tenantName, role);
+                }
+
                 tenant.getAvailableRoles().removeAll(roles);
             }
 
@@ -278,14 +312,9 @@ public class TenantServiceImpl implements TenantService {
 
                 for (String attributeName : attributeNames) {
                     for (Iterator<AttributeDefinition> iter = allDefinitions.iterator(); iter.hasNext();) {
-                        AttributeDefinition attributeDefinition = iter.next();
-                        if (attributeDefinition.getName().equals(attributeName)) {
-                            int attributeCount = IterableUtils.count(profileService.getProfilesByExistingAttribute(
-                                    tenantName, attributeName, null, null, ProfileConstants.NO_ATTRIBUTE));
-
-                            if (attributeCount > 0) {
-                                throw new AttributeDefinitionStillUsedException(attributeName, tenantName);
-                            }
+                        AttributeDefinition definition = iter.next();
+                        if (definition.getName().equals(attributeName)) {
+                            checkIfAttributeDefinitionNotUsed(tenantName, definition);
 
                             iter.remove();
                             break;
@@ -318,7 +347,11 @@ public class TenantServiceImpl implements TenantService {
 
             callback.doWithTenant(tenant);
 
-            updateTenant(tenant);
+            try {
+                tenantRepository.save(tenant);
+            } catch (MongoDataException e) {
+                throw new I10nProfileException(ERROR_KEY_UPDATE_TENANT_ERROR, e, tenant.getName());
+            }
         } else {
             throw new NoSuchTenantException(tenantName);
         }
@@ -332,18 +365,6 @@ public class TenantServiceImpl implements TenantService {
 
     }
 
-    protected Tenant updateTenant(Tenant tenant) throws ProfileException {
-        checkIfTenantActionIsAllowed(tenant.getName(), TenantAction.UPDATE_TENANT);
-
-        try {
-            tenantRepository.save(tenant);
-        } catch (MongoDataException e) {
-            throw new I10nProfileException(ERROR_KEY_UPDATE_TENANT_ERROR, e, tenant.getName());
-        }
-
-        return tenant;
-    }
-
     protected AttributeDefinition findAttributeDefinition(Iterable<AttributeDefinition> definitions,
                                                           final String attributeName) {
         return CollectionUtils.find(definitions, new Predicate<AttributeDefinition>() {
@@ -354,6 +375,23 @@ public class TenantServiceImpl implements TenantService {
             }
 
         });
+    }
+
+    protected void checkIfRoleNotUsed(String tenantName, String role) throws ProfileException {
+        int count = profileService.getProfilesByRole(tenantName, role, null, null, ProfileConstants.NO_ATTRIBUTE)
+                .size();
+        if (count > 0) {
+            throw new RoleStillUsedException(role, tenantName);
+        }
+    }
+
+    protected void checkIfAttributeDefinitionNotUsed(String tenantName, AttributeDefinition definition)
+            throws ProfileException {
+        int count = profileService.getProfilesByExistingAttribute(tenantName, definition.getName(), null, null,
+                ProfileConstants.NO_ATTRIBUTE).size();
+        if (count > 0) {
+            throw new AttributeDefinitionStillUsedException(definition.getName(), tenantName);
+        }
     }
 
 }

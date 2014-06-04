@@ -105,6 +105,11 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.PERMISSION_ERROR, request);
     }
 
+    @ExceptionHandler(RoleStillUsedException.class)
+    public ResponseEntity<Object> handleRoleStillUsedException(RoleStillUsedException e, WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.ROLE_STILL_USED, request);
+    }
+
     @ExceptionHandler(AttributeAlreadyDefinedException.class)
     public ResponseEntity<Object> handleAttributeAlreadyDefinedException(AttributeAlreadyDefinedException e,
                                                                          WebRequest request) {
