@@ -65,7 +65,7 @@
                                 {{definition.metadata.label}}
                             </td>
                             <td>
-                                {{definition.metadata.type}}
+                                {{getLabelForAttributeType(definition.metadata.type)}}
                             </td>
                             <td>
                                 <a ng-click="deleteAttributeDefinitionAt($index)">Delete</a>
@@ -105,7 +105,8 @@
                     <div class="form-group">
                         <label for="type">Type</label>
                         <select name="type" class="form-control" ng-model="currentDefinition.metadata.type"
-                                ng-options="typeLabel for (typeValue, typeLabel) in attributeTypes"></select>
+                                ng-options="type.name as type.label for type in attributeTypes">
+                        </select>
                     </div>
 
                     <div class="form-group">
@@ -128,9 +129,8 @@
                                     <thead>
                                         <tr>
                                             <th>Application</th>
-                                            <th class="col-centered"
-                                                ng-repeat="(actionName, actionLabel) in attributeActions">
-                                                {{actionLabel}}
+                                            <th class="col-centered" ng-repeat="action in attributeActions">
+                                                {{action.label}}
                                             </th>
                                             <th class="col-centered"></th>
                                         </tr>
@@ -140,13 +140,12 @@
                                             <td>
                                                 {{permission.application}}
                                             </td>
-                                            <td class="col-centered"
-                                                ng-repeat="(actionName, actionLabel) in attributeActions">
+                                            <td class="col-centered" ng-repeat="action in attributeActions">
                                                 <input name="actions[]"
                                                        type="checkbox"
-                                                       value="{{actionName}}"
-                                                       ng-checked="hasAction(permission, actionName)"
-                                                       ng-click="toggleAction(permission, actionName)"/>
+                                                       value="{{action.name}}"
+                                                       ng-checked="hasAction(permission, action.name)"
+                                                       ng-click="toggleAction(permission, action.name)"/>
                                             </td>
                                             <td class="col-centered">
                                                 <a ng-click="deletePermissionAt(currentDefinition, $index)">Delete</a>

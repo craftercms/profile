@@ -9,7 +9,7 @@
     <div class="form-group">
         <label for="tenant">Tenant</label>
         <select name="tenant" class="form-control" ng-model="profile.tenant"
-                ng-options="tenant for tenant in tenants" ng-change="fetchAvailableRoles(selectedTenant)"></select>
+                ng-options="tenant for tenant in tenants" ng-change="getAvailableRoles(profile.tenant)"></select>
     </div>
 
     <div class="form-group">

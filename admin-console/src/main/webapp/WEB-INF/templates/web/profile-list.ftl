@@ -4,7 +4,7 @@
     <div class="form-group">
         <label for="tenant">Tenant:</label>
         <select name="tenant" class="form-control" style="margin-left: 10px; width: 175px;" ng-model="selectedTenant"
-                ng-options="tenant for tenant in tenants" ng-change="fetchProfileList()"></select>
+                ng-options="tenant for tenant in tenants" ng-change="getProfileList(selectedTenant)"></select>
     </div>
 </form>
 
