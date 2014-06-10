@@ -48,7 +48,11 @@
         <input name="lastModified" type="text" class="form-control" disabled="disabled" ng-model="profile.lastModified"/>
     </div>
 
-    <roles selected-roles="profile.roles" available-roles="availableRoles"></roles>
+    <div class="form-group">
+        <checkbox-list name="Roles" selected="profile.roles" options="tenant.availableRoles"></checkbox-list>
+    </div>
+
+    <attributes definitions="tenant.attributeDefinitions" attributes="profile.attributes"></attributes>
 
     <button class="btn btn-default" type="button" ng-click="updateProfile(profile)">Accept</button>
     <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>

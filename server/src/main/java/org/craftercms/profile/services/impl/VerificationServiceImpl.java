@@ -24,7 +24,7 @@ import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.ExpiredVerificationTokenException;
-import org.craftercms.profile.exceptions.I10nProfileException;
+import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
 import org.craftercms.profile.repositories.VerificationTokenRepository;
 import org.craftercms.profile.services.VerificationService;

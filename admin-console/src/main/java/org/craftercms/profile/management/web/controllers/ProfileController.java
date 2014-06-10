@@ -17,7 +17,6 @@
 package org.craftercms.profile.management.web.controllers;
 
 import org.apache.commons.lang3.StringUtils;
-import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.exceptions.ProfileException;
@@ -158,12 +157,9 @@ public class ProfileController {
 
     @RequestMapping(value = URL_CREATE_PROFILE, method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, String> createProfile(@RequestBody Profile profile,
-                                             HttpServletRequest request) throws ProfileException {
-        String verificationUrl = HttpUtils.getFullUrl(request, BASE_URL_PROFILE + URL_VERIFY_PROFILE);
-
+    public Map<String, String> createProfile(@RequestBody Profile profile) throws ProfileException {
         profile = profileService.createProfile(profile.getTenant(), profile.getUsername(), profile.getPassword(),
-                profile.getEmail(), profile.isEnabled(), profile.getRoles(), verificationUrl);
+                profile.getEmail(), profile.isEnabled(), profile.getRoles(), profile.getAttributes(), null);
 
         return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_PROFILE_CREATED_FORMAT, profile.getId()));
     }
@@ -172,7 +168,8 @@ public class ProfileController {
     @ResponseBody
     public Map<String, String> updateProfile(@RequestBody Profile profile) throws ProfileException {
         profile = profileService.updateProfile(profile.getId().toString(), profile.getUsername(),
-                profile.getPassword(), profile.getEmail(), profile.isEnabled(), profile.getRoles());
+                profile.getPassword(), profile.getEmail(), profile.isEnabled(), profile.getRoles(),
+                profile.getAttributes());
 
         return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_PROFILE_UPDATED_FORMAT, profile.getId()));
     }

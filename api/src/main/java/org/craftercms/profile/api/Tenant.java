@@ -87,7 +87,7 @@ public class Tenant {
     }
 
     /**
-     * Returns the definitions of attributes that user of this tenant can contain.
+     * Returns the definitions of attributes that users of this tenant can have.
      */
     public Set<AttributeDefinition> getAttributeDefinitions() {
         if (attributeDefinitions == null) {
@@ -98,7 +98,7 @@ public class Tenant {
     }
 
     /**
-     * Sets the definitions of attributes that users of this tenant can contain.
+     * Sets the definitions of attributes that users of this tenant can have.
      *
      * @param attributeDefinitions  the available attribute definitions for users of the tenant
      */

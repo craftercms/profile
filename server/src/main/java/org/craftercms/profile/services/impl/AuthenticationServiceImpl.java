@@ -30,7 +30,7 @@ import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.BadCredentialsException;
 import org.craftercms.profile.exceptions.DisabledProfileException;
-import org.craftercms.profile.exceptions.I10nProfileException;
+import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.springframework.beans.factory.annotation.Required;

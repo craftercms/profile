@@ -9,7 +9,8 @@
     <div class="form-group">
         <label for="tenant">Tenant</label>
         <select name="tenant" class="form-control" ng-model="profile.tenant"
-                ng-options="tenant for tenant in tenants" ng-change="getAvailableRoles(profile.tenant)"></select>
+                ng-options="tenantName for tenantName in tenantNames" ng-change="getAvailableRoles(profile.tenant)">
+        </select>
     </div>
 
     <div class="form-group">
@@ -33,7 +34,11 @@
         </label>
     </div>
 
-    <roles selected-roles="profile.roles" available-roles="availableRoles"></roles>
+    <div class="form-group">
+        <checkbox-list name="Roles" selected="profile.roles" options="tenant.availableRoles"></checkbox-list>
+    </div>
+
+    <attributes definitions="tenant.attributeDefinitions" attributes="profile.attributes"></attributes>
 
     <button class="btn btn-default" type="button" ng-click="createProfile(profile)">Accept</button>
     <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>

@@ -71,6 +71,7 @@
 
     <bean id="crafter.profileController" class="org.craftercms.profile.controllers.rest.ProfileController">
         <property name="profileService" ref="crafter.profileService"/>
+        <property name="objectMapper" ref="crafter.objectMapper"/>
     </bean>
 
     <bean id="crafter.authenticationController"

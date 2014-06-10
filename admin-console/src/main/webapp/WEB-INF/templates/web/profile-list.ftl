@@ -3,8 +3,9 @@
 <form class="form-inline" role="form">
     <div class="form-group">
         <label for="tenant">Tenant:</label>
-        <select name="tenant" class="form-control" style="margin-left: 10px; width: 175px;" ng-model="selectedTenant"
-                ng-options="tenant for tenant in tenants" ng-change="getProfileList(selectedTenant)"></select>
+        <select name="tenant" class="form-control" style="margin-left: 10px; width: 175px;" ng-model="selectedTenantName"
+                ng-options="tenantName for tenantName in tenantNames" ng-change="getProfileList(selectedTenantName)">
+        </select>
     </div>
 </form>
 

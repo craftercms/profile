@@ -8,9 +8,9 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="tenant in tenants">
+            <tr ng-repeat="tenantName in tenantNames">
                 <td>
-                    <a href="#/tenant/update/{{tenant}}">{{tenant}}</a>
+                    <a href="#/tenant/update/{{tenantName}}">{{tenantName}}</a>
                 </td>
             </tr>
         </tbody>

@@ -81,7 +81,7 @@ app.config(function($routeProvider) {
         controller: 'ProfileListController',
         templateUrl: contextPath + '/profile/list/view',
         resolve: {
-            tenants: function(tenantService) {
+            tenantNames: function(tenantService) {
                 return tenantService.getTenantNames();
             }
         }
@@ -91,7 +91,7 @@ app.config(function($routeProvider) {
         controller: 'ProfileListController',
         templateUrl: contextPath + '/profile/list/view',
         resolve: {
-            tenants: function(tenantService) {
+            tenantNames: function(tenantService) {
                 return tenantService.getTenantNames();
             }
         }
@@ -101,7 +101,7 @@ app.config(function($routeProvider) {
         controller: 'NewProfileController',
         templateUrl: contextPath + '/profile/new/view',
         resolve: {
-            tenants: function(tenantService) {
+            tenantNames: function(tenantService) {
                 return tenantService.getTenantNames();
             },
             profile: function() {
@@ -137,7 +137,7 @@ app.config(function($routeProvider) {
         controller: 'TenantListController',
         templateUrl: contextPath + '/tenant/list/view',
         resolve: {
-            tenants: function(tenantService) {
+            tenantNames: function(tenantService) {
                 return tenantService.getTenantNames();
             }
         }
@@ -183,9 +183,9 @@ app.config(function($routeProvider) {
  * Controllers
  */
 
-app.controller('ProfileListController', function($scope, tenants, profileService) {
-    $scope.tenants = tenants;
-    $scope.selectedTenant = $scope.tenants[0];
+app.controller('ProfileListController', function($scope, tenantNames, profileService) {
+    $scope.tenantNames = tenantNames;
+    $scope.selectedTenantName = $scope.tenantNames[0];
 
     $scope.getProfileList = function(tenantName) {
         profileService.getProfileList(tenantName).then(function(profiles) {
@@ -193,20 +193,21 @@ app.controller('ProfileListController', function($scope, tenants, profileService
         });
     };
 
-    $scope.getProfileList($scope.selectedTenant);
+    $scope.getProfileList($scope.selectedTenantName);
 });
 
-app.controller('NewProfileController', function($scope, $location, tenants, profile, tenantService, profileService) {
-    $scope.tenants = tenants;
+app.controller('NewProfileController', function($scope, $location, tenantNames, profile, tenantService, profileService) {
+    $scope.tenantNames = tenantNames;
     $scope.profile = profile;
     $scope.profile.password = null;
     $scope.profile.confirmPassword = null;
-    $scope.profile.tenant = $scope.tenants[0];
+    $scope.profile.tenant = $scope.tenantNames[0];
 
-    $scope.getAvailableRoles = function(tenantName) {
-        tenantService.getAvailableRoles(tenantName).then(function(availableRoles) {
+    $scope.getTenant = function(tenantName) {
+        tenantService.getTenant(tenantName).then(function(tenant) {
             $scope.profile.roles = [];
-            $scope.availableRoles = availableRoles;
+            $scope.attributes = {};
+            $scope.tenant = tenant;
         });
     };
 
@@ -222,7 +223,7 @@ app.controller('NewProfileController', function($scope, $location, tenants, prof
         $location.path('#/');
     };
 
-    $scope.getAvailableRoles($scope.profile.tenant);
+    $scope.getTenant($scope.profile.tenant);
 });
 
 app.controller('UpdateProfileController', function($scope, $location, profile, tenantService, profileService) {
@@ -230,9 +231,9 @@ app.controller('UpdateProfileController', function($scope, $location, profile, t
     $scope.profile.password = null;
     $scope.profile.confirmPassword = null;
 
-    $scope.getAvailableRoles = function(tenantName) {
-        tenantService.getAvailableRoles(tenantName).then(function(availableRoles) {
-            $scope.availableRoles = availableRoles;
+    $scope.getTenant = function(tenantName) {
+        tenantService.getTenant(tenantName).then(function(tenant) {
+            $scope.tenant = tenant;
         });
     };
 
@@ -248,11 +249,11 @@ app.controller('UpdateProfileController', function($scope, $location, profile, t
         $location.path('#/');
     };
 
-    $scope.getAvailableRoles($scope.profile.tenant);
+    $scope.getTenant($scope.profile.tenant);
 });
 
-app.controller('TenantListController', function($scope, tenants) {
-    $scope.tenants = tenants;
+app.controller('TenantListController', function($scope, tenantNames) {
+    $scope.tenantNames = tenantNames;
 });
 
 app.controller('TenantController', function($scope, $location, tenant, newTenant, tenantService) {
@@ -274,14 +275,6 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
         }
 
         return null;
-    };
-
-    $scope.deleteRoleAt = function(index) {
-        $scope.tenant.availableRoles.splice(index, 1);
-    };
-
-    $scope.addRole = function(role) {
-        $scope.tenant.availableRoles.push(role);
     };
 
     $scope.showAttributeDefinitionModal = function(definition, index) {
@@ -397,24 +390,58 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
  * Directives
  */
 
-app.directive('roles', function() {
+app.directive('checkboxList', function() {
     return {
         restrict: 'E',
         scope: {
-            selectedRoles: '=',
-            availableRoles: '='
+            name: '@',
+            selected: '=',
+            options: '='
         },
         controller: function($scope) {
-            $scope.toggleRole = function(role) {
-                var index = $scope.selectedRoles.indexOf(role);
+            $scope.toggleOption = function(option) {
+                var index = $scope.selected.indexOf(option);
                 if (index > -1) {
-                    $scope.selectedRoles.splice(index, 1);
+                    $scope.selected.splice(index, 1);
                 } else {
-                    $scope.selectedRoles.push(role);
+                    $scope.selected.push(option);
                 }
             };
         },
-        templateUrl: contextPath + '/directives/roles',
+        templateUrl: contextPath + '/directives/checkbox-list',
+        replace: true
+    };
+});
+app.directive('editableList', function() {
+    return {
+        restrict: 'E',
+        scope: {
+            name: '@',
+            items: '='
+        },
+        controller: function($scope) {
+            $scope.addItem = function(item) {
+                $scope.items.push(item);
+            };
+
+            $scope.deleteItemAt = function(index) {
+                $scope.items.splice(index, 1);
+            };
+        },
+        templateUrl: contextPath + '/directives/editable-list',
+        replace: true
+    };
+});
+app.directive('attributes', function() {
+    return {
+        restrict: 'E',
+        scope: {
+            definitions: '=',
+            attributes: '='
+        },
+        controller: function($scope) {
+        },
+        templateUrl: contextPath + '/directives/attributes',
         replace: true
     };
 });

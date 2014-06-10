@@ -66,25 +66,7 @@ if (db.tenant.count() == 0) {
                         "allowedActions" : [ "*" ]
                     }
                 ]
-            }/*,
-            {
-                "name" : "subscriptions",
-                "owner" : "craftersocial",
-                "permissions" : [
-                    {
-                        "application" : "adminconsole",
-                        "allowedActions" : [ "*" ]
-                    },
-                    {
-                        "application" : "craftersocial",
-                        "allowedActions" : [ "*" ]
-                    },
-                    {
-                        "application" : "*",
-                        "allowedActions" : [ "READ_ATTRIBUTE" ]
-                    }
-                ]
-            }*/
+            }
         ]
     });
 }

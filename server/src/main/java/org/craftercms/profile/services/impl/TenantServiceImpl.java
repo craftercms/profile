@@ -26,6 +26,7 @@ import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.*;
+import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.api.services.TenantService;
@@ -138,12 +139,10 @@ public class TenantServiceImpl implements TenantService {
 
             @Override
             public void doWithTenant(Tenant originalTenant) throws ProfileException {
-                Collection<String> removedRoles = CollectionUtils.subtract(
-                        originalTenant.getAvailableRoles(),
+                Collection<String> removedRoles = CollectionUtils.subtract(originalTenant.getAvailableRoles(),
                         tenant.getAvailableRoles());
-                Collection<AttributeDefinition> removedDefinitions = CollectionUtils.subtract(
-                        originalTenant.getAttributeDefinitions(),
-                        tenant.getAttributeDefinitions());
+                Collection<AttributeDefinition> removedDefinitions = CollectionUtils.subtract(originalTenant
+                        .getAttributeDefinitions(), tenant.getAttributeDefinitions());
 
                 for (String removedRole : removedRoles) {
                     checkIfRoleNotUsed(tenantName, removedRole);

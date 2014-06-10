@@ -128,6 +128,12 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.ATTRIBUTE_DEFINITION_STILL_USED, request);
     }
 
+    @ExceptionHandler(AttributesDeserializationException.class)
+    public ResponseEntity<Object> handleAttributesDeserializationException(AttributesDeserializationException e,
+                                                                           WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.ATTRIBUTES_DESERIALIZATION_ERROR, request);
+    }
+
     @ExceptionHandler(TenantExistsException.class)
     public ResponseEntity<Object> handleTenantExistsException(TenantExistsException e, WebRequest request) {
         return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.TENANT_EXISTS, request);
@@ -135,13 +141,13 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ProfileException.class)
     public ResponseEntity<Object> handleProfileException(ProfileException e, WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.GENERAL_ERROR, request);
+        return handleExceptionInternal(e, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.OTHER, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
                                                              HttpStatus status, WebRequest request) {
-        return handleExceptionInternal(ex, headers, status, ErrorCode.GENERAL_ERROR, request);
+        return handleExceptionInternal(ex, headers, status, ErrorCode.OTHER, request);
     }
 
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpStatus status,

@@ -1,14 +1,13 @@
-package org.craftercms.profile.exceptions;
+package org.craftercms.profile.api.exceptions;
 
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.i10n.I10nUtils;
-import org.craftercms.profile.api.exceptions.ProfileException;
 
 import java.util.ResourceBundle;
 
 /**
  * Localized version of {@link org.craftercms.profile.api.exceptions.ProfileException}. Follows the same strategy
- * as {@link org.craftercms.commons.i10n.I10nException}.
+ * as {@link org.craftercms.commons.i10n.AbstractI10nException}.
  *
  * @author avasquez
  */

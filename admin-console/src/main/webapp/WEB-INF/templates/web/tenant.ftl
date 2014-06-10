@@ -13,30 +13,7 @@
     </div>
 
     <div class="form-group">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <span class="form-panel-title">Available Roles</span>
-            </div>
-            <div class="panel-body">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Enter role to add" ng-model="roleToAdd"/>
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="button" ng-click="addRole(roleToAdd)">Add</button>
-                    </span>
-                </div>
-
-                <table class="table table-striped form-panel-table">
-                    <tr ng-repeat="role in tenant.availableRoles">
-                        <td>
-                            {{role}}
-                        </td>
-                        <td>
-                            <a ng-click="deleteRoleAt($index)">Delete</a>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+        <editable-list name="Available Roles" items="tenant.availableRoles"></editable-list>
     </div>
 
     <div class="form-group">

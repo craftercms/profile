@@ -88,6 +88,7 @@ public class ProfileConstants {
     public static final String PARAM_PASSWORD =                 "password";
     public static final String PARAM_EMAIL =                    "email";
     public static final String PARAM_ENABLED =                  "enabled";
+    public static final String PARAM_ATTRIBUTES =               "attributes";
     public static final String PARAM_ID =                       "id";
     public static final String PARAM_VERIFICATION_URL =         "verificationUrl";
     public static final String PARAM_VERIFICATION_TOKEN_ID =    "verificationTokenId";

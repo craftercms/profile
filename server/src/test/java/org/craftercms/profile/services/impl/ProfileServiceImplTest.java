@@ -17,6 +17,7 @@
 package org.craftercms.profile.services.impl;
 
 import org.bson.types.ObjectId;
+import org.craftercms.commons.collections.SetUtils;
 import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.*;
@@ -152,7 +153,7 @@ public class ProfileServiceImplTest {
         expected.setTenant(TENANT1_NAME);
 
         Profile actual = profileService.createProfile(TENANT1_NAME, USERNAME2, PASSWORD2, EMAIL2, true, ROLES2,
-                VERIFICATION_URL);
+                getAttributes(), VERIFICATION_URL);
 
         assertEqualProfiles(expected, actual);
         assertTrue(CipherUtils.matchPassword(actual.getPassword(), PASSWORD2));
@@ -168,7 +169,8 @@ public class ProfileServiceImplTest {
     @Test
     public void testCreateProfileInvalidEmail() throws Exception {
         try {
-            profileService.createProfile(TENANT1_NAME, USERNAME2, PASSWORD2, "a.com", true, ROLES2, VERIFICATION_URL);
+            profileService.createProfile(TENANT1_NAME, USERNAME2, PASSWORD2, "a.com", true, ROLES2, null,
+                    VERIFICATION_URL);
             fail("Exception " + InvalidEmailAddressException.class.getName() + " expected");
         } catch (InvalidEmailAddressException e) {
         }
@@ -180,7 +182,7 @@ public class ProfileServiceImplTest {
         expected.setEnabled(true);
 
         Profile actual = profileService.createProfile(TENANT2_NAME, USERNAME2, PASSWORD2, EMAIL2, true, ROLES2,
-                VERIFICATION_URL);
+                getAttributes(), VERIFICATION_URL);
 
         assertEqualProfiles(expected, actual);
         assertTrue(CipherUtils.matchPassword(actual.getPassword(), PASSWORD2));
@@ -204,11 +206,11 @@ public class ProfileServiceImplTest {
         expected.setRoles(ROLES2);
         expected.setVerified(true);
         expected.setEnabled(false);
-        expected.getAttributes().put(ATTRIB_NAME_FIRST_NAME, FIRST_NAME);
-        expected.getAttributes().put(ATTRIB_NAME_LAST_NAME, LAST_NAME);
+        expected.setAttributes(getAttributes());
+        expected.getAttributes().put(ATTRIB_NAME_GENDER, GENDER);
 
         Profile actual = profileService.updateProfile(PROFILE1_ID.toString(), USERNAME2, PASSWORD2,
-                EMAIL2, false, ROLES2);
+                EMAIL2, false, ROLES2, Collections.<String, Object>singletonMap(ATTRIB_NAME_GENDER, GENDER));
 
         assertEqualProfiles(expected, actual);
 
@@ -221,7 +223,7 @@ public class ProfileServiceImplTest {
     public void testUpdateProfileInvalidEmail() throws Exception {
         try {
             profileService.updateProfile(PROFILE1_ID.toString(), USERNAME2, PASSWORD2, "a.com", false,
-                    ROLES2);
+                    ROLES2, null);
             fail("Exception " + InvalidEmailAddressException.class.getName() + " expected");
         } catch (InvalidEmailAddressException e) {
         }
@@ -474,6 +476,24 @@ public class ProfileServiceImplTest {
     }
 
     private Tenant getTenant1() {
+        Tenant tenant = new Tenant();
+        tenant.setName(TENANT1_NAME);
+        tenant.setVerifyNewProfiles(true);
+        tenant.setAttributeDefinitions(getAttributeDefinitions());
+
+        return tenant;
+    }
+
+    private Tenant getTenant2() {
+        Tenant tenant = new Tenant();
+        tenant.setName(TENANT2_NAME);
+        tenant.setVerifyNewProfiles(false);
+        tenant.setAttributeDefinitions(getAttributeDefinitions());
+
+        return tenant;
+    }
+
+    private Set<AttributeDefinition> getAttributeDefinitions() {
         AttributePermission anyAppCanDoAnything = new AttributePermission(AttributePermission.ANY_APPLICATION);
         anyAppCanDoAnything.allow(AttributePermission.ANY_ACTION);
 
@@ -489,22 +509,7 @@ public class ProfileServiceImplTest {
         genderDefinition.setName(ATTRIB_NAME_GENDER);
         genderDefinition.addPermission(anyAppCanDoAnything);
 
-        Tenant tenant = new Tenant();
-        tenant.setName(TENANT1_NAME);
-        tenant.setVerifyNewProfiles(true);
-        tenant.getAttributeDefinitions().add(firstNameDefinition);
-        tenant.getAttributeDefinitions().add(lastNameDefinition);
-        tenant.getAttributeDefinitions().add(genderDefinition);
-
-        return tenant;
-    }
-
-    private Tenant getTenant2() {
-        Tenant tenant = new Tenant();
-        tenant.setName(TENANT2_NAME);
-        tenant.setVerifyNewProfiles(false);
-
-        return tenant;
+        return SetUtils.asSet(firstNameDefinition, lastNameDefinition, genderDefinition);
     }
 
     private Profile getTenant1Profile() {
@@ -517,8 +522,7 @@ public class ProfileServiceImplTest {
         profile.setRoles(ROLES1);
         profile.setVerified(true);
         profile.setEnabled(true);
-        profile.getAttributes().put(ATTRIB_NAME_FIRST_NAME, FIRST_NAME);
-        profile.getAttributes().put(ATTRIB_NAME_LAST_NAME, LAST_NAME);
+        profile.setAttributes(getAttributes());
 
         return profile;
     }
@@ -551,8 +555,17 @@ public class ProfileServiceImplTest {
         profile.setRoles(ROLES2);
         profile.setVerified(false);
         profile.setEnabled(false);
+        profile.setAttributes(getAttributes());
 
         return profile;
+    }
+
+    private Map<String, Object> getAttributes() {
+        Map<String, Object> attributes = new LinkedHashMap<>(2);
+        attributes.put(ATTRIB_NAME_FIRST_NAME, FIRST_NAME);
+        attributes.put(ATTRIB_NAME_LAST_NAME, LAST_NAME);
+
+        return attributes;
     }
 
     private Ticket getTicket() {

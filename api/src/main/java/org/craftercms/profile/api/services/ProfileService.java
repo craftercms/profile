@@ -25,28 +25,32 @@ public interface ProfileService {
      * @param email             the profile's email
      * @param enabled           if the profile is enabled or not
      * @param roles             the profile's roles (optional)
+     * @param attributes        the additional attributes to add to the profile (optional)
      * @param verificationUrl   the URL (sans token) the user needs to go in case it needs to verify the created
-     *                          profile (verification depends on tenant).
+     *                          profile (verification depends on tenant) (optional).
      * @return the newly created profile
      */
     Profile createProfile(String tenantName, String username, String password, String email, boolean enabled,
-                          Set<String> roles, String verificationUrl) throws ProfileException;
+                          Set<String> roles, Map<String, Object> attributes, String verificationUrl)
+            throws ProfileException;
 
     /**
      * Update the profile's info.
      *
      * @param profileId             the profile's ID
-     * @param username              the profile's username
-     * @param password              the new password for the profile, or null if the password shouldn't be updated
-     * @param email                 the new email for the profile, or null if the email shouldn't be updated
-     * @param enabled               if the profile should be enabled or not
+     * @param username              the profile's username, or null if it shouldn't be updated
+     * @param password              the new password for the profile, or null if it shouldn't be updated
+     * @param email                 the new email for the profile, or null if it shouldn't be updated
+     * @param enabled               if the profile should be enabled or not, or null if it shouldn't be updated
      * @param roles                 the new roles for the profile, or null if the roles shouldn't be updated
+     * @param attributes            the attributes to update, or null if no attribute should be updated
      * @param attributesToReturn    the names of the attributes to return (null to return all attributes)
      *
      * @return the updated profile
      */
     Profile updateProfile(String profileId, String username, String password, String email, Boolean enabled,
-                          Set<String> roles, String... attributesToReturn) throws ProfileException;
+                          Set<String> roles, Map<String, Object> attributes, String... attributesToReturn)
+            throws ProfileException;
 
     /**
      * Sets the profile as verified if the verification token is valid.
