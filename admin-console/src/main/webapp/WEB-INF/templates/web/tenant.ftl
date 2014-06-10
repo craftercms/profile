@@ -30,6 +30,7 @@
                             <th>Name</th>
                             <th>Label</th>
                             <th>Type</th>
+                            <th>Display Order</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -43,6 +44,9 @@
                             </td>
                             <td>
                                 {{getLabelForAttributeType(definition.metadata.type)}}
+                            </td>
+                            <td>
+                                {{definition.metadata.displayOrder}}
                             </td>
                             <td>
                                 <a ng-click="deleteAttributeDefinitionAt($index)">Delete</a>
@@ -84,6 +88,12 @@
                         <select name="type" class="form-control" ng-model="currentDefinition.metadata.type"
                                 ng-options="type.name as type.label for type in attributeTypes">
                         </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="displayOrder">Display Order</label>
+                        <input name="displayOrder" type="number" class="form-control"
+                               ng-model="currentDefinition.metadata.displayOrder" />
                     </div>
 
                     <div class="form-group">

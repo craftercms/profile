@@ -1,4 +1,4 @@
-<div ng-repeat="definition in definitions" ng-switch="definition.metadata.type">
+<div ng-repeat="definition in definitions | orderBy:predicate" ng-switch="definition.metadata.type">
     <div class="form-group" ng-switch-when="LARGE_TEXT">
         <label for="{{definition.name}}">{{definition.metadata.label}}</label>
         <textarea name="{{definition.name}}" class="form-control" ng-model="attributes[definition.name]"/>

@@ -437,9 +437,10 @@ app.directive('attributes', function() {
         restrict: 'E',
         scope: {
             definitions: '=',
-            attributes: '='
+            attributes: '=',
         },
         controller: function($scope) {
+            $scope.predicate = '+metadata.displayOrder';
         },
         templateUrl: contextPath + '/directives/attributes',
         replace: true
