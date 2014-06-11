@@ -12,7 +12,7 @@
             <input type="checkbox" ng-model="attributes[definition.name]"/> {{definition.metadata.label}}
         </label>
     </div>
-    <div class="form-group" ng-switch-when="STRING_ARRAY">
+    <div class="form-group" ng-switch-when="STRING_LIST">
         <editable-list name="{{definition.metadata.label}}" items="attributes[definition.name]"></editable-list>
     </div>
     <div class="form-group" ng-switch-default>

@@ -92,3 +92,14 @@ a {
 .col-centered {
     text-align: center;
 }
+
+
+/*
+ * Validation Errors
+ */
+.error-message {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    color: #a94442;
+}

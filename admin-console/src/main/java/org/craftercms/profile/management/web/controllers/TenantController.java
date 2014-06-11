@@ -44,13 +44,10 @@ public class TenantController {
     public static final String URL_VIEW_CREATE_TENANT = "/new/view";
     public static final String URL_VIEW_UPDATE_TENANT = "/update/view";
 
-    public static final String URL_GET_TENANT_NAMES =       "/names";
-    public static final String URL_GET_AVAILABLE_ROLES =    "/available_roles";
-    public static final String URL_GET_TENANT =             "/{" + PATH_VAR_NAME + "}";
-    public static final String URL_CREATE_TENANT =          "/new";
-    public static final String URL_UPDATE_TENANT =          "/update";
-
-    public static final String PARAM_TENANT_NAME = "tenantName";
+    public static final String URL_GET_TENANT_NAMES =   "/names";
+    public static final String URL_GET_TENANT =         "/{" + PATH_VAR_NAME + "}";
+    public static final String URL_CREATE_TENANT =      "/new";
+    public static final String URL_UPDATE_TENANT =      "/update";
 
     public static final String VIEW_TENANT_LIST =   "tenant-list";
     public static final String VIEW_TENANT =        "tenant";
@@ -97,12 +94,6 @@ public class TenantController {
         }
 
         return tenantNames;
-    }
-
-    @RequestMapping(value = URL_GET_AVAILABLE_ROLES, method = RequestMethod.GET)
-    @ResponseBody
-    public Set<String> getAvailableRoles(@RequestParam(PARAM_TENANT_NAME) String tenantName) throws ProfileException {
-        return getTenant(tenantName).getAvailableRoles();
     }
 
     @RequestMapping(value = URL_GET_TENANT, method = RequestMethod.GET)

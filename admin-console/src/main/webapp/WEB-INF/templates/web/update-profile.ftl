@@ -1,6 +1,8 @@
 <h1 class="page-header">Update Profile</h1>
 
-<form role="form">
+<form role="form" name="form" novalidate>
+    <div class="alert alert-info">Fields with * are required</div>
+
     <div class="form-group">
         <label for="username">Username</label>
         <input name="username" type="text" class="form-control" disabled="disabled" ng-model="profile.username"/>
@@ -11,9 +13,11 @@
         <input name="tenant" type="text" class="form-control" disabled="disabled" ng-model="profile.tenant"/>
     </div>
 
-    <div class="form-group">
-        <label for="email">Email</label>
-        <input name="email" type="email" class="form-control" ng-model="profile.email"/>
+    <div class="form-group" ng-class="{'has-error': form.email.$invalid}">
+        <label for="email">Email *</label>
+        <input name="email" type="email" class="form-control" ng-model="profile.email" required/>
+        <span class="error-message" ng-show="form.email.$error.required">Email is required</span>
+        <span class="error-message" ng-show="form.email.$error.email">Not a valid email</span>
     </div>
 
     <div class="form-group">
@@ -21,9 +25,13 @@
         <input name="password" type="password" class="form-control" ng-model="profile.password"/>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" ng-class="{'has-error': form.confirmPassword.$invalid}">
         <label for="confirmPassword">Confirm Password</label>
-        <input name="confirmPassword" type="password" class="form-control" ng-model="profile.confirmPassword"/>
+        <input name="confirmPassword" type="password" class="form-control" ng-model="profile.confirmPassword"
+               equals="profile.password"/>
+        <span class="error-message" ng-show="form.confirmPassword.$error.equals">
+            Passwords don't match
+        </span>
     </div>
 
     <div class="checkbox">
@@ -54,6 +62,8 @@
 
     <attributes definitions="tenant.attributeDefinitions" attributes="profile.attributes"></attributes>
 
-    <button class="btn btn-default" type="button" ng-click="updateProfile(profile)">Accept</button>
+    <button class="btn btn-default" type="button" ng-disabled="form.$invalid" ng-click="updateProfile(profile)">
+        Accept
+    </button>
     <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
 </form>

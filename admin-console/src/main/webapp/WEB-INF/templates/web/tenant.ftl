@@ -1,9 +1,15 @@
 <h1 class="page-header">${pageHeader}</h1>
 
-<form role="form">
-    <div class="form-group">
-        <label for="name">Name</label>
-        <input id="name" name="name" type="text" class="form-control" ng-model="tenant.name" />
+<form role="form" name="form" novalidate>
+    <div class="alert alert-info">Fields with * are required</div>
+
+    <div class="form-group" ng-class="{'has-error': form.name.$dirty && form.name.$invalid}">
+        <label for="name">Name{{newTenant ? ' *' : ''}}</label>
+        <input id="name" name="name" type="text" class="form-control" ng-model="tenant.name" ng-disabled="!newTenant"
+               ng-required="newTenant"/>
+        <span class="error-message" ng-show="form.name.$dirty && form.name.$error.required">
+            Name is required
+        </span>
     </div>
 
     <div class="checkbox">
@@ -58,7 +64,9 @@
         </div>
     </div>
 
-    <button class="btn btn-default" type="button" ng-click="saveTenant(tenant)">Accept</button>
+    <button class="btn btn-default" type="button" ng-disabled="form.$invalid" ng-click="saveTenant(tenant)">
+        Accept
+    </button>
     <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
 </form>
 
@@ -70,17 +78,27 @@
                 <h4 class="modal-title">Attribute Definition</h4>
             </div>
             <div class="modal-body">
-                <form role="form">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input id="attribName" name="name" type="text" class="form-control"
-                               ng-model="currentDefinition.name" />
+                <form role="form" name="definitionForm" novalidate>
+                    <div class="form-group"
+                         ng-class="{'has-error': definitionForm.name.$dirty && definitionForm.name.$invalid}">
+                        <label for="name">Name{{newDefinition ? ' *' : ''}}</label>
+                        <input name="name" type="text" class="form-control" ng-model="currentDefinition.name"
+                               ng-disabled="!newDefinition" ng-required="newDefinition"/>
+                        <span class="error-message"
+                              ng-show="definitionForm.name.$dirty && definitionForm.name.$error.required">
+                            Name is required
+                        </span>
                     </div>
 
-                    <div class="form-group">
-                        <label for="label">Label</label>
+                    <div class="form-group"
+                         ng-class="{'has-error': definitionForm.label.$dirty && definitionForm.label.$invalid}">
+                        <label for="label">Label *</label>
                         <input name="label" type="text" class="form-control"
-                               ng-model="currentDefinition.metadata.label" />
+                               ng-model="currentDefinition.metadata.label" required/>
+                        <span class="error-message"
+                              ng-show="definitionForm.label.$dirty && definitionForm.label.$error.required">
+                            Label is required
+                        </span>
                     </div>
 
                     <div class="form-group">
@@ -90,10 +108,23 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label for="displayOrder">Display Order</label>
+                    <div class="form-group"
+                         ng-class="{'has-error': definitionForm.displayOrder.$dirty && definitionForm.displayOrder.$invalid}">
+                        <label for="displayOrder">Display Order *</label>
                         <input name="displayOrder" type="number" class="form-control"
-                               ng-model="currentDefinition.metadata.displayOrder" />
+                               ng-model="currentDefinition.metadata.displayOrder" min="0" required/>
+                        <span class="error-message"
+                              ng-show="definitionForm.displayOrder.$dirty && definitionForm.displayOrder.$error.required">
+                            Display Order is required and must be a number
+                        </span>
+                        <span class="error-message"
+                              ng-show="definitionForm.displayOrder.$dirty && definitionForm.displayOrder.$error.number">
+                            Not a number
+                        </span>
+                        <span class="error-message"
+                              ng-show="definitionForm.displayOrder.$dirty && definitionForm.displayOrder.$error.min">
+                            Min value is 0
+                        </span>
                     </div>
 
                     <div class="form-group">
@@ -128,8 +159,7 @@
                                                 {{permission.application}}
                                             </td>
                                             <td class="col-centered" ng-repeat="action in attributeActions">
-                                                <input name="actions[]"
-                                                       type="checkbox"
+                                                <input type="checkbox"
                                                        value="{{action.name}}"
                                                        ng-checked="hasAction(permission, action.name)"
                                                        ng-click="toggleAction(permission, action.name)"/>
@@ -147,7 +177,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary"
+                <button type="button" class="btn btn-primary" ng-disabled="definitionForm.$invalid"
                         ng-click="saveAttributeDefinition(currentDefinition, currentDefinitionIndex)">Save changes</button>
             </div>
         </div>

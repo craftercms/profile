@@ -3,7 +3,7 @@ var attributeTypes = [
     { name: 'LARGE_TEXT', label: 'Large Text'},
     { name: 'NUMBER', label: 'Number' },
     { name: 'BOOLEAN', label: 'Boolean' },
-    { name: 'STRING_ARRAY', label: 'String Array' }
+    { name: 'STRING_LIST', label: 'String List' }
 ];
 
 var attributeActions = [
@@ -26,8 +26,18 @@ function postObject(url, obj, $http) {
     });
 }
 
-function allActionsAllowed(actions) {
+function hasAllActionsWildcard(actions) {
     return actions.indexOf('*') > -1;
+}
+
+function getAllActions() {
+    var actions = [];
+
+    for (var i = 0; i < attributeActions.length; i++) {
+        actions.push(attributeActions[i].name);
+    }
+
+    return actions;
 }
 
 /**
@@ -38,9 +48,6 @@ app.factory('tenantService', function($http) {
     return {
         getTenantNames: function() {
             return getObject('/tenant/names', $http);
-        },
-        getAvailableRoles: function(tenantName) {
-            return getObject('/tenant/available_roles?tenantName=' + tenantName, $http);
         },
         getTenant: function(tenantName) {
             return getObject('/tenant/' + tenantName, $http);
@@ -199,9 +206,21 @@ app.controller('ProfileListController', function($scope, tenantNames, profileSer
 app.controller('NewProfileController', function($scope, $location, tenantNames, profile, tenantService, profileService) {
     $scope.tenantNames = tenantNames;
     $scope.profile = profile;
-    $scope.profile.password = null;
-    $scope.profile.confirmPassword = null;
+    $scope.profile.password = "";
+    $scope.profile.confirmPassword = "";
     $scope.profile.tenant = $scope.tenantNames[0];
+
+    $scope.validate = function(profile, validationState) {
+        var valid = true;
+
+        if (!profile.username) {
+            validationState.username.error = true;
+            validationState.username.message = 'Field is missing';
+        }
+        if (!profile.email) {
+            validationState.u
+        }
+    };
 
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
@@ -228,8 +247,8 @@ app.controller('NewProfileController', function($scope, $location, tenantNames, 
 
 app.controller('UpdateProfileController', function($scope, $location, profile, tenantService, profileService) {
     $scope.profile = profile;
-    $scope.profile.password = null;
-    $scope.profile.confirmPassword = null;
+    $scope.profile.password = "";
+    $scope.profile.confirmPassword = "";
 
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
@@ -258,11 +277,7 @@ app.controller('TenantListController', function($scope, tenantNames) {
 
 app.controller('TenantController', function($scope, $location, tenant, newTenant, tenantService) {
     $scope.tenant = tenant;
-
-    if (!newTenant) {
-        // Tenant's names can't be changed after being created
-        $('#name').attr('disabled', 'disabled');
-    }
+    $scope.newTenant = newTenant;
 
     $scope.attributeTypes = attributeTypes;
     $scope.attributeActions = attributeActions;
@@ -283,20 +298,33 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
 
             $('#attribName').attr('disabled', 'disabled');
         } else {
+            var allActions = [];
+            for (var action in attributeActions) {
+                allActions.push(action);
+            }
+
             $scope.currentDefinition = {
                 name: null,
                 metadata: {
                     label: null,
                     type: $scope.attributeTypes[0].name
                 },
-                permissions: []
+                permissions: [
+                    {
+                        application: '*',
+                        allowedActions: getAllActions()
+                    }
+                ]
             };
 
             $('#attribName').removeAttr('disabled');
         }
 
         $scope.currentDefinitionIndex = index;
+        $scope.newDefinition = index < 0;
         $scope.application = null;
+
+        $scope.definitionForm.$setPristine();
 
         $('#attributeDefinitionModal').modal('show');
     };
@@ -336,7 +364,7 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
         if (!permission.allowedActions) {
             return false;
         }
-        if (allActionsAllowed(permission.allowedActions)) {
+        if (hasAllActionsWildcard(permission.allowedActions)) {
             return true;
         }
         if (permission.allowedActions.indexOf(action) > -1) {
@@ -349,7 +377,7 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
             permission.allowedActions = [];
         }
 
-        if (allActionsAllowed(permission.allowedActions)) {
+        if (hasAllActionsWildcard(permission.allowedActions)) {
             permission.allowedActions = [];
 
             for (var attributeAction in $scope.attributeActions) {
@@ -412,6 +440,7 @@ app.directive('checkboxList', function() {
         replace: true
     };
 });
+
 app.directive('editableList', function() {
     return {
         restrict: 'E',
@@ -420,6 +449,10 @@ app.directive('editableList', function() {
             items: '='
         },
         controller: function($scope) {
+            if ($scope.items === undefined || $scope.items === null) {
+                $scope.items = [];
+            }
+
             $scope.addItem = function(item) {
                 $scope.items.push(item);
             };
@@ -432,17 +465,35 @@ app.directive('editableList', function() {
         replace: true
     };
 });
+
 app.directive('attributes', function() {
     return {
         restrict: 'E',
         scope: {
             definitions: '=',
-            attributes: '=',
+            attributes: '='
         },
         controller: function($scope) {
             $scope.predicate = '+metadata.displayOrder';
         },
         templateUrl: contextPath + '/directives/attributes',
         replace: true
+    };
+});
+
+app.directive('equals', function () {
+    return {
+        require: 'ngModel',
+        restrict: 'A',
+        scope: {
+            equals: '='
+        },
+        link: function(scope, elem, attrs, ctrl) {
+            scope.$watch(function() {
+                return scope.equals == ctrl.$modelValue;
+            }, function(currentValue) {
+                ctrl.$setValidity('equals', currentValue);
+            });
+        }
     };
 });
