@@ -39,13 +39,14 @@
 
     <div class="form-group" ng-class="{'has-error': form.confirmPassword.$dirty && form.confirmPassword.$invalid}">
         <label for="confirmPassword">Confirm Password *</label>
-        <input name="confirmPassword" type="password" class="form-control" ng-model="profile.confirmPassword"
+        <input name="confirmPassword" type="password" class="form-control" ng-model="confirmPassword"
                equals="profile.password" required/>
         <span class="error-message" ng-show="form.confirmPassword.$dirty && form.confirmPassword.$error.required">
             Confirm Password is required
         </span>
         <span class="error-message"
-              ng-show="form.confirmPassword.$dirty && form.confirmPassword.$error.equals && !form.confirmPassword.$error.required">
+              ng-show="form.confirmPassword.$dirty && form.confirmPassword.$error.equals &&
+              !form.confirmPassword.$error.required">
             Passwords don't match
         </span>
     </div>

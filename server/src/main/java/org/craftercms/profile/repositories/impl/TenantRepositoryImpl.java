@@ -28,15 +28,15 @@ import org.craftercms.profile.repositories.TenantRepository;
  */
 public class TenantRepositoryImpl extends AbstractJongoRepository<Tenant> implements TenantRepository {
 
-    public static final String KEY_NAME_INDEX_KEYS = "profile.tenant.nameIndex.keys";
-    public static final String KEY_NAME_INDEX_OPTIONS = "profile.tenant.nameIndex.options";
-    public static final String KEY_FIND_BY_NAME_QUERY = "profile.tenant.byName";
-    public static final String KEY_REMOVE_BY_NAME_QUERY = "profile.tenant.removeByName";
+    public static final String KEY_INDEX_KEYS =             "profile.tenant.index.keys";
+    public static final String KEY_INDEX_OPTIONS =          "profile.tenant.index.options";
+    public static final String KEY_FIND_BY_NAME_QUERY =     "profile.tenant.byName";
+    public static final String KEY_REMOVE_BY_NAME_QUERY =   "profile.tenant.removeByName";
 
     public void init() throws Exception {
         super.init();
 
-        getCollection().ensureIndex(getQueryFor(KEY_NAME_INDEX_KEYS), getQueryFor(KEY_NAME_INDEX_OPTIONS));
+        getCollection().ensureIndex(getQueryFor(KEY_INDEX_KEYS), getQueryFor(KEY_INDEX_OPTIONS));
     }
 
     @Override

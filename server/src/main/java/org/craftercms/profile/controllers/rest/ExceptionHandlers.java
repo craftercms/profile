@@ -139,6 +139,11 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.TENANT_EXISTS, request);
     }
 
+    @ExceptionHandler(ProfileExistsException.class)
+    public ResponseEntity<Object> handleProfileExistsException(ProfileExistsException e, WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.PROFILE_EXISTS, request);
+    }
+
     @ExceptionHandler(ProfileException.class)
     public ResponseEntity<Object> handleProfileException(ProfileException e, WebRequest request) {
         return handleExceptionInternal(e, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.OTHER, request);

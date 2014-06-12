@@ -25,6 +25,7 @@ import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.logging.Logged;
 import org.craftercms.commons.mail.EmailUtils;
+import org.craftercms.commons.mongo.DuplicateKeyException;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.exception.PermissionException;
@@ -171,6 +172,8 @@ public class ProfileServiceImpl implements ProfileService {
             }
 
             return profile;
+        } catch (DuplicateKeyException e) {
+            throw new ProfileExistsException(tenantName, username);
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_CREATE_PROFILE_ERROR, e, username, tenantName);
         }

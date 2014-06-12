@@ -28,14 +28,20 @@ var paginationConfig = {
 /**
  * Global functions
  */
-function getObject(url, $http, $location) {
+function getObject(url, $http) {
     return $http.get(contextPath + url).then(function(result){
         return result.data;
     });
 }
 
-function postObject(url, obj, $http, $location) {
+function postObject(url, obj, $http) {
     return $http.post(contextPath + url, obj).then(function(result){
+        return result.data;
+    });
+}
+
+function deleteObject(url, $http) {
+    return $http.delete(contextPath + url).then(function(result){
         return result.data;
     });
 }
@@ -67,7 +73,7 @@ app.factory('httpErrorHandler', function ($q) {
             } else {
                 message = 'Server responded with ' + rejection.status + ' error';
                 if (rejection.data.message) {
-                    message += ': ' + rejection.data.message;
+                    message += ': <strong>' + rejection.data.message + '</strong>';
                 }
 
                 message += '. Please contact IT support for more information';
@@ -75,7 +81,7 @@ app.factory('httpErrorHandler', function ($q) {
 
             $.growl(message, {
                 type: 'danger',
-                pauseOnMouseover: true,
+                pause_on_mouseover: true,
                 position: {
                     from: 'top',
                     align: 'center'
@@ -96,28 +102,31 @@ app.config(['$httpProvider', function($httpProvider) {
  * Services
  */
 
-app.factory('tenantService', function($http, $location) {
+app.factory('tenantService', function($http) {
     return {
         getTenantNames: function() {
-            return getObject('/tenant/names', $http, $location);
+            return getObject('/tenant/names', $http);
         },
         getTenant: function(tenantName) {
-            return getObject('/tenant/' + tenantName, $http, $location);
+            return getObject('/tenant/' + tenantName, $http);
         },
         createTenant: function(tenant) {
-            return postObject('/tenant/new', tenant, $http, $location);
+            return postObject('/tenant/new', tenant, $http);
         },
         updateTenant: function(tenant) {
-            return postObject('/tenant/update', tenant, $http, $location);
+            return postObject('/tenant/update', tenant, $http);
+        },
+        deleteTenant: function(tenantName) {
+            return deleteObject('/tenant/' + tenantName + '/delete', $http);
         }
     }
 
 });
 
-app.factory('profileService', function($http, $location) {
+app.factory('profileService', function($http) {
     return {
         getProfileCount: function(tenantName) {
-            return getObject('/profile/count?tenantName=' + tenantName, $http, $location);
+            return getObject('/profile/count?tenantName=' + tenantName, $http);
         },
         getProfileList: function(tenantName, start, count) {
             var url ='/profile/list?tenantName=' + tenantName;
@@ -128,16 +137,19 @@ app.factory('profileService', function($http, $location) {
                 url += '&count=' + count;
             }
 
-            return getObject(url, $http, $location);
+            return getObject(url, $http);
         },
         getProfile: function(id) {
-            return getObject('/profile/' + id, $http, $location);
+            return getObject('/profile/' + id, $http);
         },
         createProfile: function(profile) {
-            return postObject('/profile/new', profile, $http, $location);
+            return postObject('/profile/new', profile, $http);
         },
         updateProfile: function(profile) {
-            return postObject('/profile/update', profile, $http, $location);
+            return postObject('/profile/update', profile, $http);
+        },
+        deleteProfile: function(id) {
+            return deleteObject('/profile/' + id + '/delete', $http);
         }
     }
 });
@@ -178,7 +190,6 @@ app.config(function($routeProvider) {
                     id: null,
                     username: null,
                     password: null,
-                    confirmPassword: null,
                     email: null,
                     verified: false,
                     enabled: false,
@@ -323,6 +334,23 @@ app.controller('ProfileListController', function($scope, tenantNames, profileSer
         });
     };
 
+    $scope.showDeleteConfirmationDialog = function(profile, profileIndex) {
+        $scope.profileToDelete = {};
+        $scope.profileToDelete.id = profile.id;
+        $scope.profileToDelete.username = profile.username;
+        $scope.profileToDelete.index = profileIndex;
+
+        $('#deleteConfirmationDialog').modal('show');
+    };
+
+    $scope.deleteProfile = function(id, index) {
+        profileService.deleteProfile(id).then(function() {
+            $scope.profiles.splice(index, 1);
+
+            $('#deleteConfirmationDialog').modal('hide');
+        });
+    };
+
     $scope.initPaginationAndGetProfileList($scope.selectedTenantName);
 });
 
@@ -334,9 +362,9 @@ app.controller('NewProfileController', function($scope, $location, tenantNames, 
 
     $scope.tenantNames = tenantNames;
     $scope.profile = profile;
-    $scope.profile.password = "";
-    $scope.profile.confirmPassword = "";
     $scope.profile.tenant = $scope.tenantNames[0];
+    $scope.profile.password = "";
+    $scope.confirmPassword = "";
 
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
@@ -349,8 +377,6 @@ app.controller('NewProfileController', function($scope, $location, tenantNames, 
     };
 
     $scope.createProfile = function(profile) {
-        delete profile.confirmPassword;
-
         profileService.createProfile(profile).then(function() {
             $location.path('#/');
         });
@@ -371,7 +397,7 @@ app.controller('UpdateProfileController', function($scope, $location, profile, t
 
     $scope.profile = profile;
     $scope.profile.password = "";
-    $scope.profile.confirmPassword = "";
+    $scope.confirmPassword = "";
 
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
@@ -380,8 +406,6 @@ app.controller('UpdateProfileController', function($scope, $location, profile, t
     };
 
     $scope.updateProfile = function(profile) {
-        delete profile.confirmPassword;
-
         profileService.updateProfile(profile).then(function() {
             $location.path('#/');
         });
@@ -394,13 +418,29 @@ app.controller('UpdateProfileController', function($scope, $location, profile, t
     $scope.getTenant($scope.profile.tenant);
 });
 
-app.controller('TenantListController', function($scope, tenantNames) {
+app.controller('TenantListController', function($scope, tenantNames, tenantService) {
     // Abort if tenantNames is null or empty. It means there was a server error
     if (!tenantNames) {
         return;
     }
 
     $scope.tenantNames = tenantNames;
+
+    $scope.showDeleteConfirmationDialog = function(tenantName, tenantIndex) {
+        $scope.tenantToDelete = {};
+        $scope.tenantToDelete.name = tenantName;
+        $scope.tenantToDelete.index = tenantIndex;
+
+        $('#deleteConfirmationDialog').modal('show');
+    };
+
+    $scope.deleteTenant = function(name, index) {
+        tenantService.deleteTenant(name).then(function() {
+            $scope.tenantNames.splice(index, 1);
+
+            $('#deleteConfirmationDialog').modal('hide');
+        });
+    };
 });
 
 app.controller('TenantController', function($scope, $location, tenant, newTenant, tenantService) {

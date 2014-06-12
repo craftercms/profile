@@ -55,6 +55,7 @@ public class ProfileController {
     public static final String URL_GET_PROFILE =        "/{" + PATH_VAR_ID + "}";
     public static final String URL_CREATE_PROFILE =     "/new";
     public static final String URL_UPDATE_PROFILE =     "/update";
+    public static final String URL_DELETE_PROFILE =     "/{" + PATH_VAR_ID + "}/delete";
 
     public static final String PARAM_TENANT_NAME =  "tenantName";
     public static final String PARAM_SORT_BY =      "sortBy";
@@ -70,6 +71,7 @@ public class ProfileController {
 
     public static final String MSG_PROFILE_CREATED_FORMAT = "Profile '%s' created";
     public static final String MSG_PROFILE_UPDATED_FORMAT = "Profile '%s' updated";
+    public static final String MSG_PROFILE_DELETED_FORMAT = "Profile '%s' deleted";
 
     private String defaultSortBy;
     private SortOrder defaultSortOrder;
@@ -190,6 +192,14 @@ public class ProfileController {
                 profile.getAttributes(), ProfileConstants.NO_ATTRIBUTE);
 
         return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_PROFILE_UPDATED_FORMAT, profile.getId()));
+    }
+
+    @RequestMapping(value = URL_DELETE_PROFILE, method = RequestMethod.DELETE)
+    @ResponseBody
+    public Map<String, String> deleteProfile(@PathVariable(PATH_VAR_ID) String id) throws ProfileException {
+        profileService.deleteProfile(id);
+
+        return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_PROFILE_DELETED_FORMAT, id));
     }
 
 }

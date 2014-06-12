@@ -27,7 +27,7 @@
 
     <div class="form-group" ng-class="{'has-error': form.confirmPassword.$invalid}">
         <label for="confirmPassword">Confirm Password</label>
-        <input name="confirmPassword" type="password" class="form-control" ng-model="profile.confirmPassword"
+        <input name="confirmPassword" type="password" class="form-control" ng-model="confirmPassword"
                equals="profile.password"/>
         <span class="error-message" ng-show="form.confirmPassword.$error.equals">
             Passwords don't match

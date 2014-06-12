@@ -43,18 +43,28 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
 
     private static final Logger logger = LoggerFactory.getLogger(ProfileRepositoryImpl.class);
 
-    public static final String KEY_DEFAULT_FIELDS = "profile.profile.defaultFields";
-    public static final String KEY_FIND_BY_TENANT_AND_USERNAME_QUERY = "profile.profile.byTenantAndUsername";
-    public static final String KEY_COUNT_BY_TENANT_QUERY = "profile.profile.countByTenant";
-    public static final String KEY_REMOVE_BY_TENANT_QUERY = "profile.profile.removeByTenant";
-    public static final String KEY_FIND_BY_IDS_QUERY = "profile.profile.byIds";
-    public static final String KEY_FIND_BY_TENANT_QUERY = "profile.profile.byTenant";
-    public static final String KEY_FIND_BY_TENANT_AND_ROLE_QUERY = "profile.profile.byTenantAndRole";
-    public static final String KEY_FIND_BY_TENANT_AND_EXISTING_ATTRIB_QUERY = "profile.profile" +
-        ".byTenantAndExistingAttribute";
-    public static final String KEY_FIND_BY_TENANT_AND_ATTRIB_VALUE_QUERY = "profile.profile.byTenantAndAttributeValue";
+    public static final String KEY_INDEX_KEYS =                                 "profile.profile.index.keys";
+    public static final String KEY_INDEX_OPTIONS =                              "profile.profile.index.options";
+    public static final String KEY_DEFAULT_FIELDS =                             "profile.profile.defaultFields";
+    public static final String KEY_FIND_BY_TENANT_AND_USERNAME_QUERY =          "profile.profile.byTenantAndUsername";
+    public static final String KEY_COUNT_BY_TENANT_QUERY =                      "profile.profile.countByTenant";
+    public static final String KEY_REMOVE_BY_TENANT_QUERY =                     "profile.profile.removeByTenant";
+    public static final String KEY_FIND_BY_IDS_QUERY =                          "profile.profile.byIds";
+    public static final String KEY_FIND_BY_TENANT_QUERY =                       "profile.profile.byTenant";
+    public static final String KEY_FIND_BY_TENANT_AND_ROLE_QUERY =              "profile.profile.byTenantAndRole";
+    public static final String KEY_FIND_BY_TENANT_AND_EXISTING_ATTRIB_QUERY =   "profile.profile" +
+            ".byTenantAndExistingAttribute";
+    public static final String KEY_FIND_BY_TENANT_AND_ATTRIB_VALUE_QUERY =      "profile.profile" +
+            ".byTenantAndAttributeValue";
 
     public static final String ATTRIBUTE_FIELD_PREFIX = "attributes.";
+
+    @Override
+    public void init() throws Exception {
+        super.init();
+
+        getCollection().ensureIndex(getQueryFor(KEY_INDEX_KEYS), getQueryFor(KEY_INDEX_OPTIONS));
+    }
 
     @Override
     public Profile findById(String id, String... attributesToReturn) throws MongoDataException {
