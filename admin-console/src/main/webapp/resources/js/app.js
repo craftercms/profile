@@ -1,3 +1,11 @@
+/**
+ * Angular Module
+ */
+var app = angular.module('CrafterAdminConsole', ['ngRoute']);
+
+/**
+ * Global variables
+ */
 var attributeTypes = [
     { name: 'TEXT', label: 'Text' },
     { name: 'LARGE_TEXT', label: 'Large Text'},
@@ -12,15 +20,21 @@ var attributeActions = [
     { name: 'REMOVE_ATTRIBUTE', label: 'Remove' }
 ];
 
-var app = angular.module('CrafterAdminConsole', ['ngRoute']);
+var paginationConfig = {
+    size: 5,
+    itemsPerPage: 10
+};
 
- function getObject(url, $http) {
-     return $http.get(contextPath + url).then(function(result){
-         return result.data;
-     });
- }
+/**
+ * Global functions
+ */
+function getObject(url, $http, $location) {
+    return $http.get(contextPath + url).then(function(result){
+        return result.data;
+    });
+}
 
-function postObject(url, obj, $http) {
+function postObject(url, obj, $http, $location) {
     return $http.post(contextPath + url, obj).then(function(result){
         return result.data;
     });
@@ -41,40 +55,89 @@ function getAllActions() {
 }
 
 /**
+ * Http Interceptors
+ */
+app.factory('httpErrorHandler', function ($q) {
+    return {
+        'responseError': function(rejection) {
+            var message;
+
+            if (rejection.status == 0) {
+                message = 'Unable to communicate with the server. Please try again later or contact IT support';
+            } else {
+                message = 'Server responded with ' + rejection.status + ' error';
+                if (rejection.data.message) {
+                    message += ': ' + rejection.data.message;
+                }
+
+                message += '. Please contact IT support for more information';
+            }
+
+            $.growl(message, {
+                type: 'danger',
+                pauseOnMouseover: true,
+                position: {
+                    from: 'top',
+                    align: 'center'
+                },
+                offset: 40
+            });
+
+            return $q.reject(rejection);
+        }
+    };
+});
+
+app.config(['$httpProvider', function($httpProvider) {
+    $httpProvider.interceptors.push('httpErrorHandler');
+}]);
+
+/**
  * Services
  */
 
-app.factory('tenantService', function($http) {
+app.factory('tenantService', function($http, $location) {
     return {
         getTenantNames: function() {
-            return getObject('/tenant/names', $http);
+            return getObject('/tenant/names', $http, $location);
         },
         getTenant: function(tenantName) {
-            return getObject('/tenant/' + tenantName, $http);
+            return getObject('/tenant/' + tenantName, $http, $location);
         },
         createTenant: function(tenant) {
-            return postObject('/tenant/new', tenant, $http);
+            return postObject('/tenant/new', tenant, $http, $location);
         },
         updateTenant: function(tenant) {
-            return postObject('/tenant/update', tenant, $http);
+            return postObject('/tenant/update', tenant, $http, $location);
         }
     }
 
 });
 
-app.factory('profileService', function($http) {
+app.factory('profileService', function($http, $location) {
     return {
-        getProfileList: function(tenantName) {
-            return getObject('/profile/list?tenantName=' + tenantName, $http);
+        getProfileCount: function(tenantName) {
+            return getObject('/profile/count?tenantName=' + tenantName, $http, $location);
+        },
+        getProfileList: function(tenantName, start, count) {
+            var url ='/profile/list?tenantName=' + tenantName;
+            if (start != undefined && start != null) {
+                url += '&start=' + start;
+            }
+            if (count != undefined && count != null) {
+                url += '&count=' + count;
+            }
+
+            return getObject(url, $http, $location);
         },
         getProfile: function(id) {
-            return getObject('/profile/' + id, $http);
+            return getObject('/profile/' + id, $http, $location);
         },
         createProfile: function(profile) {
-            return postObject('/profile/new', profile, $http);
+            return postObject('/profile/new', profile, $http, $location);
         },
         updateProfile: function(profile) {
-            return postObject('/profile/update', profile, $http);
+            return postObject('/profile/update', profile, $http, $location);
         }
     }
 });
@@ -82,7 +145,6 @@ app.factory('profileService', function($http) {
 /**
  * Routing
  */
-
 app.config(function($routeProvider) {
     $routeProvider.when('/', {
         controller: 'ProfileListController',
@@ -189,44 +251,100 @@ app.config(function($routeProvider) {
 /**
  * Controllers
  */
-
 app.controller('ProfileListController', function($scope, tenantNames, profileService) {
+    // Abort if tenantNames is null or empty. It means there was a server error
+    if (!tenantNames) {
+        return;
+    }
+
     $scope.tenantNames = tenantNames;
     $scope.selectedTenantName = $scope.tenantNames[0];
 
-    $scope.getProfileList = function(tenantName) {
-        profileService.getProfileList(tenantName).then(function(profiles) {
+    $scope.initPaginationAndGetProfileList = function(tenantName) {
+        profileService.getProfileCount(tenantName).then(function(totalProfiles) {
+            $scope.pagination = {};
+            $scope.pagination.first = 0;
+            $scope.pagination.current = 0;
+            $scope.pagination.size = paginationConfig.size;
+            $scope.pagination.itemsPerPage = paginationConfig.itemsPerPage;
+            $scope.pagination.total = Math.ceil(totalProfiles / $scope.pagination.itemsPerPage);
+
+            if ($scope.pagination.total < $scope.pagination.size) {
+                $scope.pagination.size = $scope.pagination.total;
+            }
+
+            $scope.pagination.displayed = $scope.getDisplayedPages();
+
+            $scope.getProfileList(tenantName, $scope.pagination.current, $scope.pagination.itemsPerPage);
+        });
+    };
+
+    $scope.prevPage = function() {
+        if ($scope.pagination.current == $scope.pagination.first) {
+            $scope.pagination.first--;
+            $scope.pagination.displayed = $scope.getDisplayedPages();
+        }
+
+        $scope.pagination.current--;
+
+        $scope.getProfileList($scope.selectedTenantName, $scope.pagination.current, $scope.pagination.itemsPerPage);
+    };
+
+    $scope.nextPage = function() {
+        if ($scope.pagination.current == ($scope.pagination.first + $scope.pagination.size - 1)) {
+            $scope.pagination.first++;
+            $scope.pagination.displayed = $scope.getDisplayedPages();
+        }
+
+        $scope.pagination.current++;
+
+        $scope.getProfileList($scope.selectedTenantName, $scope.pagination.current, $scope.pagination.itemsPerPage);
+    };
+
+    $scope.currentPage = function(page) {
+        $scope.pagination.current = page;
+
+        $scope.getProfileList($scope.selectedTenantName, $scope.pagination.current, $scope.pagination.itemsPerPage);
+    };
+
+    $scope.getDisplayedPages = function() {
+        var displayedPages = [];
+
+        for (var i = $scope.pagination.first; i < ($scope.pagination.first + $scope.pagination.size); i++) {
+            displayedPages.push(i);
+        }
+
+        return displayedPages;
+    };
+
+    $scope.getProfileList = function(tenantName, start, count) {
+        profileService.getProfileList(tenantName, start, count).then(function(profiles) {
             $scope.profiles = profiles;
         });
     };
 
-    $scope.getProfileList($scope.selectedTenantName);
+    $scope.initPaginationAndGetProfileList($scope.selectedTenantName);
 });
 
 app.controller('NewProfileController', function($scope, $location, tenantNames, profile, tenantService, profileService) {
+    // Abort if tenantNames is null or empty. It means there was a server error
+    if (!tenantNames) {
+        return;
+    }
+
     $scope.tenantNames = tenantNames;
     $scope.profile = profile;
     $scope.profile.password = "";
     $scope.profile.confirmPassword = "";
     $scope.profile.tenant = $scope.tenantNames[0];
 
-    $scope.validate = function(profile, validationState) {
-        var valid = true;
-
-        if (!profile.username) {
-            validationState.username.error = true;
-            validationState.username.message = 'Field is missing';
-        }
-        if (!profile.email) {
-            validationState.u
-        }
-    };
-
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
-            $scope.profile.roles = [];
-            $scope.attributes = {};
             $scope.tenant = tenant;
+
+            // Different tenant, Different roles and attributes
+            $scope.profile.roles = [];
+            $scope.profile.attributes = {};
         });
     };
 
@@ -246,6 +364,11 @@ app.controller('NewProfileController', function($scope, $location, tenantNames, 
 });
 
 app.controller('UpdateProfileController', function($scope, $location, profile, tenantService, profileService) {
+    // Abort if profile is null or empty. It means there was a server error
+    if (!profile) {
+        return;
+    }
+
     $scope.profile = profile;
     $scope.profile.password = "";
     $scope.profile.confirmPassword = "";
@@ -272,10 +395,20 @@ app.controller('UpdateProfileController', function($scope, $location, profile, t
 });
 
 app.controller('TenantListController', function($scope, tenantNames) {
+    // Abort if tenantNames is null or empty. It means there was a server error
+    if (!tenantNames) {
+        return;
+    }
+
     $scope.tenantNames = tenantNames;
 });
 
 app.controller('TenantController', function($scope, $location, tenant, newTenant, tenantService) {
+    // Abort if tenant is null or empty. It means there was a server error
+    if (!tenant) {
+        return;
+    }
+
     $scope.tenant = tenant;
     $scope.newTenant = newTenant;
 
@@ -323,7 +456,6 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
         $scope.currentDefinitionIndex = index;
         $scope.newDefinition = index < 0;
         $scope.application = null;
-
         $scope.definitionForm.$setPristine();
 
         $('#attributeDefinitionModal').modal('show');
@@ -417,7 +549,6 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
 /**
  * Directives
  */
-
 app.directive('checkboxList', function() {
     return {
         restrict: 'E',

@@ -18,6 +18,7 @@ package org.craftercms.profile.management.web.controllers;
 
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
@@ -49,17 +50,17 @@ public class ProfileController {
     public static final String URL_VIEW_NEW_PROFILE =       "/new/view";
     public static final String URL_VIEW_UPDATE_PROFILE =    "/update/view";
 
+    public static final String URL_GET_PROFILE_COUNT =  "/count";
     public static final String URL_GET_PROFILE_LIST =   "/list";
     public static final String URL_GET_PROFILE =        "/{" + PATH_VAR_ID + "}";
     public static final String URL_CREATE_PROFILE =     "/new";
     public static final String URL_UPDATE_PROFILE =     "/update";
-    public static final String URL_VERIFY_PROFILE =     "/verify";
 
     public static final String PARAM_TENANT_NAME =  "tenantName";
     public static final String PARAM_SORT_BY =      "sortBy";
     public static final String PARAM_SORT_ORDER =   "sortOrder";
     public static final String PARAM_START =        "start";
-    public static final String PARAM_LIMIT =        "limit";
+    public static final String PARAM_COUNT =        "count";
 
     public static final String VIEW_PROFILE_LIST =      "profile-list";
     public static final String VIEW_NEW_PROFILE =       "new-profile";
@@ -73,7 +74,8 @@ public class ProfileController {
     private String defaultSortBy;
     private SortOrder defaultSortOrder;
     private int defaultStart;
-    private int defaultLimit;
+    private int defaultCount;
+    private String verificationUrl;
 
     private ProfileService profileService;
 
@@ -93,8 +95,12 @@ public class ProfileController {
     }
 
     @Required
-    public void setDefaultLimit(int defaultLimit) {
-        this.defaultLimit = defaultLimit;
+    public void setDefaultCount(int defaultCount) {
+        this.defaultCount = defaultCount;
+    }
+
+    public void setVerificationUrl(String verificationUrl) {
+        this.verificationUrl = verificationUrl;
     }
 
     @Required
@@ -117,13 +123,24 @@ public class ProfileController {
         return VIEW_UPDATE_PROFILE;
     }
 
+    @RequestMapping(value = URL_GET_PROFILE_COUNT, method = RequestMethod.GET)
+    @ResponseBody
+    public long getProfileCount(@RequestParam(value = PARAM_TENANT_NAME, required = false) String tenantName,
+                                HttpServletRequest request) throws ProfileException {
+        if (StringUtils.isEmpty(tenantName)) {
+            tenantName = SecurityUtils.getTenant(request);
+        }
+
+        return profileService.getProfileCount(tenantName);
+    }
+
     @RequestMapping(value = URL_GET_PROFILE_LIST, method = RequestMethod.GET)
     @ResponseBody
     public List<Profile> getProfileList(@RequestParam(value = PARAM_TENANT_NAME, required = false) String tenantName,
                                         @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
                                         @RequestParam(value = PARAM_SORT_ORDER, required = false) SortOrder sortOrder,
                                         @RequestParam(value = PARAM_START, required = false) Integer start,
-                                        @RequestParam(value = PARAM_LIMIT, required = false) Integer limit,
+                                        @RequestParam(value = PARAM_COUNT, required = false) Integer limit,
                                         HttpServletRequest request) throws ProfileException {
         if (StringUtils.isEmpty(tenantName)) {
             tenantName = SecurityUtils.getTenant(request);
@@ -138,7 +155,7 @@ public class ProfileController {
             start = defaultStart;
         }
         if (limit == null) {
-            limit = defaultLimit;
+            limit = defaultCount;
         }
 
         return profileService.getProfileRange(tenantName, sortBy, sortOrder, start, limit);
@@ -158,8 +175,9 @@ public class ProfileController {
     @RequestMapping(value = URL_CREATE_PROFILE, method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> createProfile(@RequestBody Profile profile) throws ProfileException {
-        profile = profileService.createProfile(profile.getTenant(), profile.getUsername(), profile.getPassword(),
-                profile.getEmail(), profile.isEnabled(), profile.getRoles(), profile.getAttributes(), null);
+        profile = profileService.createProfile(profile.getTenant(), profile.getUsername(),
+                profile.getPassword(), profile.getEmail(), profile.isEnabled(), profile.getRoles(),
+                profile.getAttributes(), verificationUrl);
 
         return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_PROFILE_CREATED_FORMAT, profile.getId()));
     }
@@ -169,7 +187,7 @@ public class ProfileController {
     public Map<String, String> updateProfile(@RequestBody Profile profile) throws ProfileException {
         profile = profileService.updateProfile(profile.getId().toString(), profile.getUsername(),
                 profile.getPassword(), profile.getEmail(), profile.isEnabled(), profile.getRoles(),
-                profile.getAttributes());
+                profile.getAttributes(), ProfileConstants.NO_ATTRIBUTE);
 
         return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_PROFILE_UPDATED_FORMAT, profile.getId()));
     }

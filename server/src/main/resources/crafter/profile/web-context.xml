@@ -63,7 +63,7 @@
 
     <!-- Controllers -->
 
-    <bean id="crafter.restControllerAdvice" class="org.craftercms.profile.controllers.rest.RestControllerAdvice"/>
+    <bean id="crafter.exceptionHandlers" class="org.craftercms.profile.controllers.rest.ExceptionHandlers"/>
 
     <bean id="crafter.tenantController" class="org.craftercms.profile.controllers.rest.TenantController">
         <property name="tenantService" ref="crafter.tenantService"/>

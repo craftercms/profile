@@ -64,13 +64,16 @@
 
     <!-- Controllers -->
 
+    <bean id="crafter.exceptionHandlers" class="org.craftercms.profile.management.web.controllers.ExceptionHandlers"/>
+
     <bean id="crafter.mainController" class="org.craftercms.profile.management.web.controllers.MainController"/>
 
     <bean id="crafter.profileController" class="org.craftercms.profile.management.web.controllers.ProfileController">
         <property name="defaultStart" value="${crafter.profile.management.paging.start.default}"/>
-        <property name="defaultLimit" value="${crafter.profile.management.paging.limit.default}"/>
+        <property name="defaultCount" value="${crafter.profile.management.paging.count.default}"/>
         <property name="defaultSortBy" value="${crafter.profile.management.paging.sortBy.default}"/>
         <property name="defaultSortOrder" value="${crafter.profile.management.paging.sortOrder.default}"/>
+        <property name="verificationUrl" value="${crafter.profile.management.profile.verificationUrl}"/>
         <property name="profileService" ref="crafter.profileServiceRestClient"/>
     </bean>
 

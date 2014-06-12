@@ -3,9 +3,23 @@
 <form class="form-inline" role="form">
     <div class="form-group">
         <label for="tenant">Tenant:</label>
-        <select name="tenant" class="form-control" style="margin-left: 10px; width: 175px;" ng-model="selectedTenantName"
-                ng-options="tenantName for tenantName in tenantNames" ng-change="getProfileList(selectedTenantName)">
+        <select name="tenant" class="form-control" style="margin-left: 10px; width: 175px;"
+                ng-model="selectedTenantName" ng-options="tenantName for tenantName in tenantNames"
+                ng-change="initPaginationAndGetProfileList(selectedTenantName)">
         </select>
+    </div>
+    <div class="form-group" style="float: right;">
+        <ul class="pagination" style="margin: 0px;">
+            <li ng-class="{'disabled': pagination.current == 0}">
+                <a ng-click="prevPage()">&laquo;</a>
+            </li>
+            <li ng-repeat="p in pagination.displayed" ng-class="{'active': pagination.current == p}">
+                <a ng-click="currentPage(p)">{{p + 1}}</a>
+            </li>
+            <li ng-class="{'disabled': pagination.current == (pagination.total - 1)}">
+                <a ng-click="nextPage()">&raquo;</a>
+            </li>
+        </ul>
     </div>
 </form>
 

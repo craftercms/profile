@@ -33,15 +33,15 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /**
- * {@link org.springframework.web.bind.annotation.ControllerAdvice} for REST controllers that includes exception
- * handling for all controllers.
+ * {@link org.springframework.web.bind.annotation.ControllerAdvice} for controllers that includes exception
+ * handling for all exceptions.
  *
  * @author avasquez
  */
 @ControllerAdvice
-public class RestControllerAdvice extends ResponseEntityExceptionHandler {
+public class ExceptionHandlers extends ResponseEntityExceptionHandler {
 
-    private static final I10nLogger logger = new I10nLogger(RestControllerAdvice.class,
+    private static final I10nLogger logger = new I10nLogger(ExceptionHandlers.class,
             "crafter.profile.messages.logging");
 
     private static final String LOG_KEY_REST_ERROR = "profile.rest.error";
