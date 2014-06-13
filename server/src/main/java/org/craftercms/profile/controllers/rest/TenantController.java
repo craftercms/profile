@@ -64,7 +64,7 @@ public class TenantController {
     }
 
     @RequestMapping(value = URL_TENANT_DELETE, method = RequestMethod.POST)
-    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseStatus(HttpStatus.OK)
     public void deleteTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
         tenantService.deleteTenant(name);
     }

@@ -23,7 +23,7 @@ import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.repositories.AccessTokenRepository;
 import org.craftercms.profile.exceptions.ExpiredAccessTokenException;
-import org.craftercms.profile.exceptions.I10nProfileException;
+import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.exceptions.MissingAccessTokenIdParamException;
 import org.craftercms.profile.exceptions.NoSuchAccessTokenIdException;
 import org.craftercms.profile.permissions.Application;

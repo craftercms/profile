@@ -16,6 +16,8 @@
  */
 package org.craftercms.profile.exceptions;
 
+import org.craftercms.profile.api.exceptions.I10nProfileException;
+
 /**
  * Thrown if an attribute has already been defined.
  *

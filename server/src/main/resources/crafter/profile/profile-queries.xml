@@ -43,6 +43,18 @@
 
     <!-- Profile Queries -->
 
+    <entry key="profile.profile.index.keys">
+        {tenant: 1, username: 1}
+    </entry>
+
+    <entry key="profile.profile.index.options">
+        {unique: true}
+    </entry>
+
+    <entry key="profile.profile.byTenantAndUsername">
+        {tenant: #, username: #}
+    </entry>
+
     <entry key="profile.profile.byTenantAndUsername">
         {tenant: #, username: #}
     </entry>
@@ -77,11 +89,11 @@
 
     <!-- Tenant Queries -->
 
-    <entry key="profile.tenant.nameIndex.keys">
+    <entry key="profile.tenant.index.keys">
         {name: 1}
     </entry>
 
-    <entry key="profile.tenant.nameIndex.options">
+    <entry key="profile.tenant.index.options">
         {unique: true}
     </entry>
 

@@ -16,6 +16,8 @@
  */
 package org.craftercms.profile.exceptions;
 
+import org.craftercms.profile.api.exceptions.I10nProfileException;
+
 /**
  * Thrown if no profile with a specified ID was found.
  *

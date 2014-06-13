@@ -1,9 +1,15 @@
 <h1 class="page-header">${pageHeader}</h1>
 
-<form role="form">
-    <div class="form-group">
-        <label for="name">Name</label>
-        <input id="name" name="name" type="text" class="form-control" ng-model="tenant.name" />
+<form role="form" name="form" novalidate>
+    <div class="alert alert-info">Fields with * are required</div>
+
+    <div class="form-group" ng-class="{'has-error': form.name.$dirty && form.name.$invalid}">
+        <label for="name">Name{{newTenant ? ' *' : ''}}</label>
+        <input id="name" name="name" type="text" class="form-control" ng-model="tenant.name" ng-disabled="!newTenant"
+               ng-required="newTenant"/>
+        <span class="error-message" ng-show="form.name.$dirty && form.name.$error.required">
+            Name is required
+        </span>
     </div>
 
     <div class="checkbox">
@@ -13,30 +19,7 @@
     </div>
 
     <div class="form-group">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <span class="form-panel-title">Available Roles</span>
-            </div>
-            <div class="panel-body">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Enter role to add" ng-model="roleToAdd"/>
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="button" ng-click="addRole(roleToAdd)">Add</button>
-                    </span>
-                </div>
-
-                <table class="table table-striped form-panel-table">
-                    <tr ng-repeat="role in tenant.availableRoles">
-                        <td>
-                            {{role}}
-                        </td>
-                        <td>
-                            <a ng-click="deleteRoleAt($index)">Delete</a>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+        <editable-list name="Available Roles" items="tenant.availableRoles"></editable-list>
     </div>
 
     <div class="form-group">
@@ -53,6 +36,7 @@
                             <th>Name</th>
                             <th>Label</th>
                             <th>Type</th>
+                            <th>Display Order</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -65,7 +49,10 @@
                                 {{definition.metadata.label}}
                             </td>
                             <td>
-                                {{definition.metadata.type}}
+                                {{getLabelForAttributeType(definition.metadata.type)}}
+                            </td>
+                            <td>
+                                {{definition.metadata.displayOrder}}
                             </td>
                             <td>
                                 <a ng-click="deleteAttributeDefinitionAt($index)">Delete</a>
@@ -77,7 +64,9 @@
         </div>
     </div>
 
-    <button class="btn btn-default" type="button" ng-click="saveTenant(tenant)">Accept</button>
+    <button class="btn btn-default" type="button" ng-disabled="form.$invalid" ng-click="saveTenant(tenant)">
+        Accept
+    </button>
     <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
 </form>
 
@@ -89,23 +78,53 @@
                 <h4 class="modal-title">Attribute Definition</h4>
             </div>
             <div class="modal-body">
-                <form role="form">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input id="attribName" name="name" type="text" class="form-control"
-                               ng-model="currentDefinition.name" />
+                <form role="form" name="definitionForm" novalidate>
+                    <div class="form-group"
+                         ng-class="{'has-error': definitionForm.name.$dirty && definitionForm.name.$invalid}">
+                        <label for="name">Name{{newDefinition ? ' *' : ''}}</label>
+                        <input name="name" type="text" class="form-control" ng-model="currentDefinition.name"
+                               ng-disabled="!newDefinition" ng-required="newDefinition"/>
+                        <span class="error-message"
+                              ng-show="definitionForm.name.$dirty && definitionForm.name.$error.required">
+                            Name is required
+                        </span>
                     </div>
 
-                    <div class="form-group">
-                        <label for="label">Label</label>
+                    <div class="form-group"
+                         ng-class="{'has-error': definitionForm.label.$dirty && definitionForm.label.$invalid}">
+                        <label for="label">Label *</label>
                         <input name="label" type="text" class="form-control"
-                               ng-model="currentDefinition.metadata.label" />
+                               ng-model="currentDefinition.metadata.label" required/>
+                        <span class="error-message"
+                              ng-show="definitionForm.label.$dirty && definitionForm.label.$error.required">
+                            Label is required
+                        </span>
                     </div>
 
                     <div class="form-group">
                         <label for="type">Type</label>
                         <select name="type" class="form-control" ng-model="currentDefinition.metadata.type"
-                                ng-options="typeLabel for (typeValue, typeLabel) in attributeTypes"></select>
+                                ng-options="type.name as type.label for type in attributeTypes">
+                        </select>
+                    </div>
+
+                    <div class="form-group"
+                         ng-class="{'has-error': definitionForm.displayOrder.$dirty && definitionForm.displayOrder.$invalid}">
+                        <label for="displayOrder">Display Order *</label>
+                        <input name="displayOrder" type="number" class="form-control"
+                               ng-model="currentDefinition.metadata.displayOrder" min="0" required/>
+                        <span class="error-message"
+                              ng-show="definitionForm.displayOrder.$dirty && definitionForm.displayOrder.$error.required">
+                            Display Order is required and must be a number
+                        </span>
+                        <span class="error-message"
+                              ng-show="definitionForm.displayOrder.$dirty && definitionForm.displayOrder.$error.number">
+                            Not a number
+                        </span>
+                        <span class="error-message"
+                              ng-show="definitionForm.displayOrder.$dirty && definitionForm.displayOrder.$error.min">
+                            Min value is 0
+                        </span>
                     </div>
 
                     <div class="form-group">
@@ -128,9 +147,8 @@
                                     <thead>
                                         <tr>
                                             <th>Application</th>
-                                            <th class="col-centered"
-                                                ng-repeat="(actionName, actionLabel) in attributeActions">
-                                                {{actionLabel}}
+                                            <th class="col-centered" ng-repeat="action in attributeActions">
+                                                {{action.label}}
                                             </th>
                                             <th class="col-centered"></th>
                                         </tr>
@@ -140,13 +158,11 @@
                                             <td>
                                                 {{permission.application}}
                                             </td>
-                                            <td class="col-centered"
-                                                ng-repeat="(actionName, actionLabel) in attributeActions">
-                                                <input name="actions[]"
-                                                       type="checkbox"
-                                                       value="{{actionName}}"
-                                                       ng-checked="hasAction(permission, actionName)"
-                                                       ng-click="toggleAction(permission, actionName)"/>
+                                            <td class="col-centered" ng-repeat="action in attributeActions">
+                                                <input type="checkbox"
+                                                       value="{{action.name}}"
+                                                       ng-checked="hasAction(permission, action.name)"
+                                                       ng-click="toggleAction(permission, action.name)"/>
                                             </td>
                                             <td class="col-centered">
                                                 <a ng-click="deletePermissionAt(currentDefinition, $index)">Delete</a>
@@ -161,7 +177,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary"
+                <button type="button" class="btn btn-primary" ng-disabled="definitionForm.$invalid"
                         ng-click="saveAttributeDefinition(currentDefinition, currentDefinitionIndex)">Save changes</button>
             </div>
         </div>

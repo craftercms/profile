@@ -44,13 +44,11 @@ public class TenantController {
     public static final String URL_VIEW_CREATE_TENANT = "/new/view";
     public static final String URL_VIEW_UPDATE_TENANT = "/update/view";
 
-    public static final String URL_GET_TENANT_NAMES =       "/names";
-    public static final String URL_GET_AVAILABLE_ROLES =    "/available_roles";
-    public static final String URL_GET_TENANT =             "/{" + PATH_VAR_NAME + "}";
-    public static final String URL_CREATE_TENANT =          "/new";
-    public static final String URL_UPDATE_TENANT =          "/update";
-
-    public static final String PARAM_TENANT_NAME = "tenantName";
+    public static final String URL_GET_TENANT_NAMES =   "/names";
+    public static final String URL_GET_TENANT =         "/{" + PATH_VAR_NAME + "}";
+    public static final String URL_CREATE_TENANT =      "/new";
+    public static final String URL_UPDATE_TENANT =      "/update";
+    public static final String URL_DELETE_TENANT =      "/{" + PATH_VAR_NAME + "}/delete";
 
     public static final String VIEW_TENANT_LIST =   "tenant-list";
     public static final String VIEW_TENANT =        "tenant";
@@ -63,6 +61,7 @@ public class TenantController {
 
     public static final String MSG_TENANT_CREATED_FORMAT = "Tenant '%s' created";
     public static final String MSG_TENANT_UPDATED_FORMAT = "Tenant '%s' updated";
+    public static final String MSG_TENANT_DELETED_FORMAT = "Tenant '%s' deleted";
 
     private TenantService tenantService;
 
@@ -99,12 +98,6 @@ public class TenantController {
         return tenantNames;
     }
 
-    @RequestMapping(value = URL_GET_AVAILABLE_ROLES, method = RequestMethod.GET)
-    @ResponseBody
-    public Set<String> getAvailableRoles(@RequestParam(PARAM_TENANT_NAME) String tenantName) throws ProfileException {
-        return getTenant(tenantName).getAvailableRoles();
-    }
-
     @RequestMapping(value = URL_GET_TENANT, method = RequestMethod.GET)
     @ResponseBody
     public Tenant getTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
@@ -130,6 +123,14 @@ public class TenantController {
         tenant = tenantService.updateTenant(tenant);
 
         return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_UPDATED_FORMAT, tenant.getName()));
+    }
+
+    @RequestMapping(value = URL_DELETE_TENANT, method = RequestMethod.DELETE)
+    @ResponseBody
+    public Map<String, String> deleteTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
+        tenantService.deleteTenant(name);
+
+        return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_DELETED_FORMAT, name));
     }
 
 }

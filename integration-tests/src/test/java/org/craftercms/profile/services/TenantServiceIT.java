@@ -173,8 +173,7 @@ public class TenantServiceIT {
             assertNotNull(result);
             assertEquals(tenant.isVerifyNewProfiles(), result.isVerifyNewProfiles());
             assertEquals(tenant.getAvailableRoles(), result.getAvailableRoles());
-            assertEquals(tenant.getAvailableRoles(), result.getAvailableRoles());
-            assertEquals(tenant.getAttributeDefinitions(), result.getAttributeDefinitions());
+            assertEqualAttributeDefinitionSets(tenant.getAttributeDefinitions(), result.getAttributeDefinitions());
 
             tenant = tenantService.getTenant(DEFAULT_TENANT_NAME);
             tenant.getAvailableRoles().remove(PROFILE_ADMIN_ROLE);
@@ -424,6 +423,8 @@ public class TenantServiceIT {
         List<AttributePermission> actualPermissions = actual.getPermissions();
 
         assertEquals(expected.getName(), actual.getName());
+        assertEquals(expected.getMetadata(), actual.getMetadata());
+
         assertNotNull(actualPermissions);
         assertEquals(expectedPermissions.size(), actualPermissions.size());
 

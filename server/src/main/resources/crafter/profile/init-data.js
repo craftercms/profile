@@ -45,7 +45,8 @@ if (db.tenant.count() == 0) {
                 "name" : "firstName",
                 "metadata": {
                     "label": "First Name",
-                    "type": "TEXT"
+                    "type": "TEXT",
+                    "displayOrder": 0
                 },
                 "permissions" : [
                     {
@@ -58,7 +59,8 @@ if (db.tenant.count() == 0) {
                 "name" : "lastName",
                 "metadata": {
                     "label": "Last Name",
-                    "type": "TEXT"
+                    "type": "TEXT",
+                    "displayOrder": 1
                 },
                 "permissions" : [
                     {
@@ -66,25 +68,7 @@ if (db.tenant.count() == 0) {
                         "allowedActions" : [ "*" ]
                     }
                 ]
-            }/*,
-            {
-                "name" : "subscriptions",
-                "owner" : "craftersocial",
-                "permissions" : [
-                    {
-                        "application" : "adminconsole",
-                        "allowedActions" : [ "*" ]
-                    },
-                    {
-                        "application" : "craftersocial",
-                        "allowedActions" : [ "*" ]
-                    },
-                    {
-                        "application" : "*",
-                        "allowedActions" : [ "READ_ATTRIBUTE" ]
-                    }
-                ]
-            }*/
+            }
         ]
     });
 }

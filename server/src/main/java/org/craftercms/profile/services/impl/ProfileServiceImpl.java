@@ -17,6 +17,7 @@
 package org.craftercms.profile.services.impl;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.collections.IterableUtils;
@@ -24,11 +25,13 @@ import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.logging.Logged;
 import org.craftercms.commons.mail.EmailUtils;
+import org.craftercms.commons.mongo.DuplicateKeyException;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.exception.PermissionException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.*;
+import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.api.services.ProfileService;
@@ -125,7 +128,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Profile createProfile(String tenantName, String username, String password, String email, boolean enabled,
-                                 Set<String> roles, String verificationUrl)
+                                 Set<String> roles, Map<String, Object> attributes, String verificationUrl)
             throws ProfileException {
         checkIfManageProfilesIsAllowed(tenantName);
 
@@ -134,6 +137,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         try {
+            Tenant tenant = getTenant(tenantName);
             Date now = new Date();
 
             Profile profile = new Profile();
@@ -143,25 +147,33 @@ public class ProfileServiceImpl implements ProfileService {
             profile.setEmail(email);
             profile.setCreatedOn(now);
             profile.setLastModified(now);
-            profile.setRoles(roles);
             profile.setVerified(false);
 
-            Tenant tenant = getTenant(tenantName);
             boolean emailNewProfiles = tenant.isVerifyNewProfiles();
-
-            if (!emailNewProfiles) {
+            if (!emailNewProfiles || StringUtils.isEmpty(verificationUrl)) {
                 profile.setEnabled(enabled);
+            }
+
+            if (CollectionUtils.isNotEmpty(roles)) {
+                profile.setRoles(roles);
+            }
+            if (MapUtils.isNotEmpty(attributes)) {
+                rejectAttributesIfActionNotAllowed(tenant, attributes.keySet(), AttributeAction.WRITE_ATTRIBUTE);
+
+                profile.setAttributes(attributes);
             }
 
             profileRepository.insert(profile);
 
             logger.debug(LOG_KEY_PROFILE_CREATED, profile);
 
-            if (emailNewProfiles) {
+            if (emailNewProfiles && StringUtils.isNotEmpty(verificationUrl)) {
                 newProfileVerificationService.sendEmail(profile, verificationUrl);
             }
 
             return profile;
+        } catch (DuplicateKeyException e) {
+            throw new ProfileExistsException(tenantName, username);
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_CREATE_PROFILE_ERROR, e, username, tenantName);
         }
@@ -170,7 +182,8 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile updateProfile(final String profileId, final String username, final String password,
                                  final String email, final Boolean enabled, final Set<String> roles,
-                                 String... attributesToReturn) throws ProfileException {
+                                 final Map<String, Object> attributes , String... attributesToReturn)
+            throws ProfileException {
         if (StringUtils.isNotEmpty(email) && !EmailUtils.validateEmail(email)) {
             throw new InvalidEmailAddressException(email);
         }
@@ -193,6 +206,14 @@ public class ProfileServiceImpl implements ProfileService {
                 }
                 if (CollectionUtils.isNotEmpty(roles)) {
                     profile.setRoles(roles);
+                }
+                if (MapUtils.isNotEmpty(attributes)) {
+                    String tenantName = profile.getTenant();
+
+                    rejectAttributesIfActionNotAllowed(tenantName, attributes.keySet(), AttributeAction
+                            .WRITE_ATTRIBUTE);
+
+                    profile.getAttributes().putAll(attributes);
                 }
             }
 
@@ -313,7 +334,9 @@ public class ProfileServiceImpl implements ProfileService {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
-                rejectAttributesIfActionNotAllowed(profile, attributes.keySet(), AttributeAction.WRITE_ATTRIBUTE);
+                String tenantName = profile.getTenant();
+
+                rejectAttributesIfActionNotAllowed(tenantName, attributes.keySet(), AttributeAction.WRITE_ATTRIBUTE);
 
                 profile.getAttributes().putAll(attributes);
             }
@@ -334,7 +357,9 @@ public class ProfileServiceImpl implements ProfileService {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
-                rejectAttributesIfActionNotAllowed(profile, attributeNames, AttributeAction.REMOVE_ATTRIBUTE);
+                String tenantName = profile.getTenant();
+
+                rejectAttributesIfActionNotAllowed(tenantName, attributeNames, AttributeAction.REMOVE_ATTRIBUTE);
 
                 Map<String, Object> attributes = profile.getAttributes();
 
@@ -598,15 +623,17 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
-    protected void rejectAttributesIfActionNotAllowed(Profile profile, Collection<String> attributeNames,
+    protected void rejectAttributesIfActionNotAllowed(String tenantName, Collection<String> attributeNames,
                                                       AttributeAction action) throws ProfileException {
-        if (profile != null) {
-            Tenant tenant = getTenant(profile.getTenant());
-            Set<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
+        rejectAttributesIfActionNotAllowed(getTenant(tenantName), attributeNames, action);
+    }
 
-            for (String attributeName : attributeNames) {
-                rejectAttributeIfActionNotAllowed(tenant, attributeName, action, attributeDefinitions);
-            }
+    protected void rejectAttributesIfActionNotAllowed(Tenant tenant, Collection<String> attributeNames,
+                                                      AttributeAction action) throws ProfileException {
+        Set<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
+
+        for (String attributeName : attributeNames) {
+            rejectAttributeIfActionNotAllowed(tenant, attributeName, action, attributeDefinitions);
         }
     }
 

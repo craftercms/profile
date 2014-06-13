@@ -16,6 +16,8 @@
  */
 package org.craftercms.profile.exceptions;
 
+import org.craftercms.profile.api.exceptions.I10nProfileException;
+
 /**
  * Thrown if an attribute definition is to be removed from a tenant but there are some profiles still with the
  * attribute.

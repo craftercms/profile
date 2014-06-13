@@ -16,10 +16,14 @@
  */
 package org.craftercms.profile.controllers.rest;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
+import org.craftercms.profile.exceptions.AttributesDeserializationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -41,11 +45,20 @@ import static org.craftercms.profile.api.ProfileConstants.*;
 @RequestMapping(BASE_URL_PROFILE)
 public class ProfileController {
 
+    private static final TypeReference<Map<String, Object>> ATTRIBUTES_TYPE_REFERENCE =
+            new TypeReference<Map<String, Object>>() { };
+
     protected ProfileService profileService;
+    protected ObjectMapper objectMapper;
 
     @Required
     public void setProfileService(ProfileService profileService) {
         this.profileService = profileService;
+    }
+
+    @Required
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     @RequestMapping(value = URL_PROFILE_CREATE, method = RequestMethod.POST)
@@ -56,9 +69,13 @@ public class ProfileController {
                                  @RequestParam(PARAM_EMAIL) String email,
                                  @RequestParam(PARAM_ENABLED) boolean enabled,
                                  @RequestParam(value = PARAM_ROLE, required = false) Set<String> roles,
-                                 @RequestParam(value = PARAM_VERIFICATION_URL) String verificationUrl)
+                                 @RequestParam(value = PARAM_ATTRIBUTES, required = false) String serializedAttributes,
+                                 @RequestParam(value = PARAM_VERIFICATION_URL, required = false) String verificationUrl)
             throws ProfileException {
-        return profileService.createProfile(tenantName, username, password, email, enabled, roles, verificationUrl);
+        Map<String, Object> attributes = deserializeAttributes(serializedAttributes);
+
+        return profileService.createProfile(tenantName, username, password, email, enabled, roles, attributes,
+                verificationUrl);
     }
 
     @RequestMapping(value = URL_PROFILE_UPDATE, method = RequestMethod.POST)
@@ -69,10 +86,14 @@ public class ProfileController {
                                  @RequestParam(value = PARAM_EMAIL, required = false) String email,
                                  @RequestParam(value = PARAM_ENABLED, required = false) Boolean enabled,
                                  @RequestParam(value = PARAM_ROLE, required = false) Set<String> roles,
+                                 @RequestParam(value = PARAM_ATTRIBUTES, required = false) String serializedAttributes,
                                  @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                  String[] attributesToReturn)
             throws ProfileException {
-        return profileService.updateProfile(profileId, username, password, email, enabled, roles, attributesToReturn);
+        Map<String, Object> attributes = deserializeAttributes(serializedAttributes);
+
+        return profileService.updateProfile(profileId, username, password, email, enabled, roles, attributes,
+                attributesToReturn);
     }
 
     @RequestMapping(value = URL_PROFILE_ENABLE, method = RequestMethod.POST)
@@ -148,7 +169,7 @@ public class ProfileController {
     }
 
     @RequestMapping(value = URL_PROFILE_DELETE_PROFILE, method = RequestMethod.POST)
-    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseStatus(HttpStatus.OK)
     public void deleteProfile(@PathVariable(PATH_VAR_ID) String profileId) throws ProfileException {
         profileService.deleteProfile(profileId);
     }
@@ -267,6 +288,20 @@ public class ProfileController {
                                  @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                  String[] attributesToReturn) throws ProfileException {
         return profileService.resetPassword(resetTokenId, newPassword, attributesToReturn);
+    }
+
+    protected Map<String, Object> deserializeAttributes(String serializedAttributes)
+            throws AttributesDeserializationException {
+        Map<String, Object> attributes = null;
+        if (StringUtils.isNotEmpty(serializedAttributes)) {
+            try {
+                attributes = objectMapper.readValue(serializedAttributes, ATTRIBUTES_TYPE_REFERENCE);
+            } catch (Exception e) {
+                throw new AttributesDeserializationException(e);
+            }
+        }
+
+        return attributes;
     }
 
 }

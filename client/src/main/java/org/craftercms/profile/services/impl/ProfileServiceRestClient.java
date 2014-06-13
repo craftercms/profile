@@ -16,11 +16,15 @@
  */
 package org.craftercms.profile.services.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.collections4.MapUtils;
 import org.craftercms.commons.rest.RestClientUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
+import org.craftercms.profile.exceptions.AttributesSerializationException;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.util.MultiValueMap;
 
@@ -41,9 +45,17 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public static final ParameterizedTypeReference<List<Profile>> profileListTypeRef =
             new ParameterizedTypeReference<List<Profile>>() {};
 
+    private ObjectMapper objectMapper;
+
+    @Required
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     @Override
     public Profile createProfile(String tenantName, String username, String password, String email, boolean enabled,
-                                 Set<String> roles, String verificationUrl) throws ProfileException {
+                                 Set<String> roles, Map<String, Object> attributes, String verificationUrl)
+            throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
         RestClientUtils.addValue(PARAM_USERNAME, username, params);
@@ -51,6 +63,9 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         RestClientUtils.addValue(PARAM_EMAIL, email, params);
         RestClientUtils.addValue(PARAM_ENABLED, enabled, params);
         RestClientUtils.addValues(PARAM_ROLE, roles, params);
+        if (MapUtils.isNotEmpty(attributes)) {
+            RestClientUtils.addValue(PARAM_ATTRIBUTES, serializeAttributes(attributes), params);
+        }
         RestClientUtils.addValue(PARAM_VERIFICATION_URL, verificationUrl, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_CREATE);
@@ -60,13 +75,17 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
 
     @Override
     public Profile updateProfile(String profileId, String username, String password, String email, Boolean enabled,
-                                 Set<String> roles, String... attributesToReturn) throws ProfileException {
+                                 Set<String> roles, Map<String, Object> attributes, String... attributesToReturn)
+            throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_USERNAME, username, params);
         RestClientUtils.addValue(PARAM_PASSWORD, password, params);
         RestClientUtils.addValue(PARAM_EMAIL, email, params);
         RestClientUtils.addValue(PARAM_ENABLED, enabled, params);
         RestClientUtils.addValues(PARAM_ROLE, roles, params);
+        if (MapUtils.isNotEmpty(attributes)) {
+            RestClientUtils.addValue(PARAM_ATTRIBUTES, serializeAttributes(attributes), params);
+        }
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_UPDATE);
@@ -325,6 +344,14 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_RESET_PASSWORD);
 
         return doPostForObject(url, params, Profile.class);
+    }
+
+    protected String serializeAttributes(Map<String, Object> attributes) throws AttributesSerializationException {
+        try {
+            return objectMapper.writeValueAsString(attributes);
+        } catch (Exception e) {
+            throw new AttributesSerializationException(e);
+        }
     }
 
 }

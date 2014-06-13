@@ -74,6 +74,7 @@
         <property name="extension" value="${crafter.profile.rest.client.url.extension}"/>
         <property name="restTemplate" ref="crafter.profileRestTemplate"/>
         <property name="accessTokenIdResolver" ref="crafter.accessTokenIdResolver"/>
+        <property name="objectMapper" ref="crafter.profileObjectMapper"/>
     </bean>
 
     <bean id="crafter.authenticationServiceRestClient"

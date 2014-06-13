@@ -3,8 +3,23 @@
 <form class="form-inline" role="form">
     <div class="form-group">
         <label for="tenant">Tenant:</label>
-        <select name="tenant" class="form-control" style="margin-left: 10px; width: 175px;" ng-model="selectedTenant"
-                ng-options="tenant for tenant in tenants" ng-change="fetchProfileList()"></select>
+        <select name="tenant" class="form-control" style="margin-left: 10px; width: 175px;"
+                ng-model="selectedTenantName" ng-options="tenantName for tenantName in tenantNames"
+                ng-change="initPaginationAndGetProfileList(selectedTenantName)">
+        </select>
+    </div>
+    <div class="form-group" style="float: right;">
+        <ul class="pagination" style="margin: 0px;">
+            <li ng-class="{'disabled': pagination.current == 0}">
+                <a ng-click="prevPage()">&laquo;</a>
+            </li>
+            <li ng-repeat="p in pagination.displayed" ng-class="{'active': pagination.current == p}">
+                <a ng-click="currentPage(p)">{{p + 1}}</a>
+            </li>
+            <li ng-class="{'disabled': pagination.current == (pagination.total - 1)}">
+                <a ng-click="nextPage()">&raquo;</a>
+            </li>
+        </ul>
     </div>
 </form>
 
@@ -16,6 +31,7 @@
                 <th>Email</th>
                 <th>Enabled</th>
                 <th>Roles</th>
+                <th class="col-centered"></th>
             </tr>
         </thead>
         <tbody>
@@ -32,7 +48,30 @@
                 <td>
                     {{profile.roles.join(', ')}}
                 </td>
+                <td>
+                    <a ng-click="showDeleteConfirmationDialog(profile, $index)">Delete</a>
+                </td>
             </tr>
         </tbody>
     </table>
+</div>
+
+<div id="deleteConfirmationDialog" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Delete</h4>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete profile <strong>{{profileToDelete.username}}</strong>?
+                    You can't undo this action later.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary"
+                        ng-click="deleteProfile(profileToDelete.id, profileToDelete.index)">Ok</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
 </div>

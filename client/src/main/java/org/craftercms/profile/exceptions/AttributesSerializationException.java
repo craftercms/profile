@@ -19,17 +19,16 @@ package org.craftercms.profile.exceptions;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 
 /**
- * Thrown when an attribute definition is being updated or when an attribute value is being set but not attribute
- * definition was found.
+ * Thrown when the attributes map can't be serialized correctly to JSON.
  *
  * @author avasquez
  */
-public class AttributeNotDefinedException extends I10nProfileException {
+public class AttributesSerializationException extends I10nProfileException {
 
-    public static final String KEY = "profile.attribute.attributeNotDefined";
+    public static final String KEY = "profile.attributes.serializationError";
 
-    public AttributeNotDefinedException(String attributeName, String tenant) {
-        super(KEY, attributeName, tenant);
+    public AttributesSerializationException(Throwable cause) {
+        super(KEY, cause);
     }
 
 }

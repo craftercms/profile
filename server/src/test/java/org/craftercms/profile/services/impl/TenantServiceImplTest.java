@@ -22,6 +22,7 @@ import org.craftercms.profile.api.*;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.AttributeAlreadyDefinedException;
 import org.craftercms.profile.exceptions.AttributeDefinitionStillUsedException;
+import org.craftercms.profile.exceptions.AttributeNotDefinedException;
 import org.craftercms.profile.exceptions.RoleStillUsedException;
 import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.ProfileRepository;
@@ -43,13 +44,17 @@ import static org.mockito.Mockito.*;
  */
 public class TenantServiceImplTest {
 
+    private static final String LABEL_KEY = "label";
+
     private static final String TENANT1_NAME =  "tenant1";
     private static final String TENANT2_NAME =  "tenant2";
     private static final String ROLE1 =         "role1";
     private static final String ROLE2 =         "role2";
 
     private static final String ATTRIB1_NAME =  "attrib1";
+    private static final String ATTRIB1_LABEL = "Attribute #1";
     private static final String ATTRIB2_NAME =  "attrib2";
+    private static final String ATTRIB2_LABEL = "Attribute #2";
     private static final String APP_NAME =      "app";
 
     private TenantServiceImpl tenantService;
@@ -214,8 +219,7 @@ public class TenantServiceImplTest {
 
     @Test
     public void testAddAttributeDefinitions() throws Exception {
-        AttributeDefinition def = new AttributeDefinition();
-        def.setName(ATTRIB2_NAME);
+        AttributeDefinition def = getAttribute2Definition();
 
         Tenant expected = getTenant1();
         expected.getAttributeDefinitions().add(def);
@@ -226,8 +230,6 @@ public class TenantServiceImplTest {
 
         verify(tenantRepository).findByName(TENANT1_NAME);
         verify(tenantRepository).save(actual);
-
-
     }
 
     @Test
@@ -239,6 +241,35 @@ public class TenantServiceImplTest {
             tenantService.addAttributeDefinitions(TENANT1_NAME, Arrays.asList(def));
             fail("Expected " + AttributeAlreadyDefinedException.class.getSimpleName() + " exception");
         } catch (AttributeAlreadyDefinedException e) {
+        }
+    }
+
+    @Test
+    public void testUpdateAttributeDefinitions() throws Exception {
+        AttributeDefinition def = getAttribute2Definition();
+        def.setName(ATTRIB1_NAME);
+
+        Tenant expected = getTenant1();
+        expected.getAttributeDefinitions().clear();
+        expected.getAttributeDefinitions().add(def);
+
+        Tenant actual = tenantService.updateAttributeDefinitions(TENANT1_NAME, Arrays.asList(def));
+
+        assertEqualTenants(expected, actual);
+
+        verify(tenantRepository).findByName(TENANT1_NAME);
+        verify(tenantRepository).save(actual);
+    }
+
+    @Test
+    public void testUpdateNonExistingAttributeDefinition() throws Exception {
+        AttributeDefinition def = new AttributeDefinition();
+        def.setName(ATTRIB2_NAME);
+
+        try {
+            tenantService.updateAttributeDefinitions(TENANT1_NAME, Arrays.asList(def));
+            fail("Expected " + AttributeNotDefinedException.class.getSimpleName() + " exception");
+        } catch (AttributeNotDefinedException e) {
         }
     }
 
@@ -271,29 +302,47 @@ public class TenantServiceImplTest {
     }
 
     private Tenant getTenant1() {
-        AttributeDefinition def = new AttributeDefinition();
-        def.setName(ATTRIB1_NAME);
-
         Tenant tenant = new Tenant();
         tenant.setName(TENANT1_NAME);
         tenant.setVerifyNewProfiles(true);
         tenant.setAvailableRoles(SetUtils.asSet(ROLE1, ROLE2));
-        tenant.setAttributeDefinitions(SetUtils.asSet(def));
+        tenant.setAttributeDefinitions(SetUtils.asSet(getAttribute1Definition()));
 
         return tenant;
     }
 
     private Tenant getTenant2() {
-        AttributeDefinition def = new AttributeDefinition();
-        def.setName(ATTRIB1_NAME);
-
         Tenant tenant = new Tenant();
         tenant.setName(TENANT2_NAME);
         tenant.setVerifyNewProfiles(true);
         tenant.setAvailableRoles(SetUtils.asSet(ROLE1, ROLE2));
-        tenant.setAttributeDefinitions(SetUtils.asSet(def));
+        tenant.setAttributeDefinitions(SetUtils.asSet(getAttribute1Definition()));
 
         return tenant;
+    }
+
+    private AttributeDefinition getAttribute1Definition() {
+        AttributePermission permission = new AttributePermission();
+        permission.allow(AttributePermission.ANY_ACTION);
+
+        AttributeDefinition def = new AttributeDefinition();
+        def.setName(ATTRIB1_NAME);
+        def.setMetadata(Collections.<String, Object>singletonMap(LABEL_KEY, ATTRIB1_LABEL));
+        def.addPermission(permission);
+
+        return def;
+    }
+
+    private AttributeDefinition getAttribute2Definition() {
+        AttributePermission permission = new AttributePermission(APP_NAME);
+        permission.allow(AttributePermission.ANY_ACTION);
+
+        AttributeDefinition def = new AttributeDefinition();
+        def.setName(ATTRIB2_NAME);
+        def.setMetadata(Collections.<String, Object>singletonMap(LABEL_KEY, ATTRIB2_LABEL));
+        def.addPermission(permission);
+
+        return def;
     }
 
     private void assertEqualTenants(Tenant expected, Tenant actual) {
@@ -301,7 +350,42 @@ public class TenantServiceImplTest {
         assertEquals(expected.getName(), actual.getName());
         assertEquals(expected.isVerifyNewProfiles(), actual.isVerifyNewProfiles());
         assertEquals(expected.getAvailableRoles(), actual.getAvailableRoles());
-        assertEquals(expected.getAttributeDefinitions(), actual.getAttributeDefinitions());
+        assertEqualAttributeDefinitionSets(expected.getAttributeDefinitions(), actual.getAttributeDefinitions());
+    }
+
+    private void assertEqualAttributeDefinitionSets(Set<AttributeDefinition> expected,
+                                                    Set<AttributeDefinition> actual) {
+        assertNotNull(expected);
+        assertEquals(expected.size(), actual.size());
+
+        Iterator<AttributeDefinition> expectedIter = expected.iterator();
+        Iterator<AttributeDefinition> actualIter = actual.iterator();
+
+        while (expectedIter.hasNext()) {
+            AttributeDefinition expectedDefinition = expectedIter.next();
+            AttributeDefinition actualDefinition = actualIter.next();
+
+            assertEqualAttributeDefinitions(expectedDefinition, actualDefinition);
+        }
+    }
+
+    private void assertEqualAttributeDefinitions(AttributeDefinition expected, AttributeDefinition actual) {
+        List<AttributePermission> expectedPermissions = expected.getPermissions();
+        List<AttributePermission> actualPermissions = actual.getPermissions();
+
+        assertEquals(expected.getName(), actual.getName());
+        assertEquals(expected.getMetadata(), actual.getMetadata());
+
+        assertNotNull(actualPermissions);
+        assertEquals(expectedPermissions.size(), actualPermissions.size());
+
+        for (int i = 0; i < expectedPermissions.size(); i++) {
+            AttributePermission expectedPermission = expectedPermissions.get(i);
+            AttributePermission actualPermission = actualPermissions.get(i);
+
+            assertEquals(expectedPermission.getApplication(), actualPermission.getApplication());
+            assertEquals(expectedPermission.getAllowedActions(), actualPermission.getAllowedActions());
+        }
     }
 
 }

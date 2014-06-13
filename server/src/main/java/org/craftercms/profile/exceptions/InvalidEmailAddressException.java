@@ -16,6 +16,8 @@
  */
 package org.craftercms.profile.exceptions;
 
+import org.craftercms.profile.api.exceptions.I10nProfileException;
+
 /**
  * Thrown when an email address is in an invalid format.
  *

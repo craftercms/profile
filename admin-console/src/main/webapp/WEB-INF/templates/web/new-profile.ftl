@@ -1,30 +1,54 @@
 <h1 class="page-header">New Profile</h1>
 
-<form role="form">
-    <div class="form-group">
-        <label for="username">Username</label>
-        <input name="username" type="text" class="form-control" ng-model="profile.username"/>
+<form role="form" name="form" novalidate>
+    <div class="alert alert-info">Fields with * are required</div>
+
+    <div class="form-group" ng-class="{'has-error': form.username.$dirty && form.username.$invalid}">
+        <label for="username">Username *</label>
+        <input name="username" type="text" class="form-control" ng-model="profile.username" required/>
+        <span class="error-message" ng-show="form.username.$dirty && form.username.$error.required">
+            Username is required
+        </span>
     </div>
 
     <div class="form-group">
         <label for="tenant">Tenant</label>
         <select name="tenant" class="form-control" ng-model="profile.tenant"
-                ng-options="tenant for tenant in tenants" ng-change="fetchAvailableRoles(selectedTenant)"></select>
+                ng-options="tenantName for tenantName in tenantNames" ng-change="getTenant(profile.tenant)">
+        </select>
     </div>
 
-    <div class="form-group">
-        <label for="email">Email</label>
-        <input name="email" type="email" class="form-control" ng-model="profile.email"/>
+    <div class="form-group" ng-class="{'has-error': form.email.$dirty && form.email.$invalid}">
+        <label for="email">Email *</label>
+        <input name="email" type="email" class="form-control" ng-model="profile.email" required/>
+        <span class="error-message" ng-show="form.email.$dirty && form.email.$error.required">
+            Email is required
+        </span>
+        <span class="error-message" ng-show="form.email.$dirty && form.email.$error.email">
+            This is not a valid email
+        </span>
     </div>
 
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input name="password" type="password" class="form-control" ng-model="profile.password"/>
+    <div class="form-group" ng-class="{'has-error': form.password.$dirty && form.password.$invalid}">
+        <label for="password">Password *</label>
+        <input name="password" type="password" class="form-control" ng-model="profile.password" required/>
+        <span class="error-message" ng-show="form.password.$dirty && form.password.$error.required">
+            Password is required
+        </span>
     </div>
 
-    <div class="form-group">
-        <label for="confirmPassword">Confirm Password</label>
-        <input name="confirmPassword" type="password" class="form-control" ng-model="profile.confirmPassword"/>
+    <div class="form-group" ng-class="{'has-error': form.confirmPassword.$dirty && form.confirmPassword.$invalid}">
+        <label for="confirmPassword">Confirm Password *</label>
+        <input name="confirmPassword" type="password" class="form-control" ng-model="confirmPassword"
+               equals="profile.password" required/>
+        <span class="error-message" ng-show="form.confirmPassword.$dirty && form.confirmPassword.$error.required">
+            Confirm Password is required
+        </span>
+        <span class="error-message"
+              ng-show="form.confirmPassword.$dirty && form.confirmPassword.$error.equals &&
+              !form.confirmPassword.$error.required">
+            Passwords don't match
+        </span>
     </div>
 
     <div class="checkbox">
@@ -33,8 +57,14 @@
         </label>
     </div>
 
-    <roles selected-roles="profile.roles" available-roles="availableRoles"></roles>
+    <div class="form-group">
+        <checkbox-list name="Roles" selected="profile.roles" options="tenant.availableRoles"></checkbox-list>
+    </div>
 
-    <button class="btn btn-default" type="button" ng-click="createProfile(profile)">Accept</button>
+    <attributes definitions="tenant.attributeDefinitions" attributes="profile.attributes"></attributes>
+
+    <button class="btn btn-default" type="button" ng-disabled="form.$invalid" ng-click="createProfile(profile)">
+        Accept
+    </button>
     <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
 </form>
