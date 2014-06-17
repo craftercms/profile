@@ -44,6 +44,7 @@ import org.craftercms.profile.services.VerificationSuccessCallback;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Default implementation of {@link org.craftercms.profile.api.services.ProfileService}.
@@ -56,31 +57,41 @@ public class ProfileServiceImpl implements ProfileService {
     private static final I10nLogger logger = new I10nLogger(ProfileServiceImpl.class,
             "crafter.profile.messages.logging");
 
-    public static final String LOG_KEY_PROFILE_CREATED =            "profile.profile.profileCreated";
-    public static final String LOG_KEY_PROFILE_UPDATED =            "profile.profile.profileUpdated";
-    public static final String LOG_KEY_PROFILE_VERIFIED =           "profile.profile.profileVerified";
-    public static final String LOG_KEY_PROFILE_ENABLED =            "profile.profile.profileEnabled";
-    public static final String LOG_KEY_PROFILE_DISABLED =           "profile.profile.profileDisabled";
-    public static final String LOG_KEY_PROFILE_ROLES_ADDED =        "profile.profile.rolesAdded";
-    public static final String LOG_KEY_PROFILE_ROLES_REMOVED =      "profile.profile.rolesRemoved";
-    public static final String LOG_KEY_PROFILE_ATTRIBS_UPDATED =    "profile.profile.attributesUpdated";
-    public static final String LOG_KEY_PROFILE_ATTRIBS_REMOVED =    "profile.profile.attributesRemoved";
-    public static final String LOG_KEY_PROFILE_DELETED =            "profile.profile.profileDeleted";
+    public static final String LOG_KEY_PROFILE_CREATED = "profile.profile.profileCreated";
+    public static final String LOG_KEY_PROFILE_UPDATED = "profile.profile.profileUpdated";
+    public static final String LOG_KEY_PROFILE_VERIFIED = "profile.profile.profileVerified";
+    public static final String LOG_KEY_PROFILE_ENABLED = "profile.profile.profileEnabled";
+    public static final String LOG_KEY_PROFILE_DISABLED = "profile.profile.profileDisabled";
+    public static final String LOG_KEY_PROFILE_ROLES_ADDED = "profile.profile.rolesAdded";
+    public static final String LOG_KEY_PROFILE_ROLES_REMOVED = "profile.profile.rolesRemoved";
+    public static final String LOG_KEY_PROFILE_ATTRIBS_UPDATED = "profile.profile.attributesUpdated";
+    public static final String LOG_KEY_PROFILE_ATTRIBS_REMOVED = "profile.profile.attributesRemoved";
+    public static final String LOG_KEY_PROFILE_DELETED = "profile.profile.profileDeleted";
 
-    public static final String ERROR_KEY_CREATE_PROFILE_ERROR =             "profile.profile.createProfileError";
-    public static final String ERROR_KEY_GET_PROFILE_ERROR =                "profile.profile.getProfileError";
-    public static final String ERROR_KEY_UPDATE_PROFILE_ERROR =             "profile.profile.updateProfileError";
-    public static final String ERROR_KEY_DELETE_PROFILE_ERROR =             "profile.profile.deleteProfileError";
-    public static final String ERROR_KEY_GET_PROFILE_BY_USERNAME_ERROR =    "profile.profile.getProfileByUsernameError";
-    public static final String ERROR_KEY_GET_PROFILE_COUNT_ERROR =          "profile.profile.getProfileCountError";
-    public static final String ERROR_KEY_GET_PROFILES_ERROR =               "profile.profile.getProfilesError";
-    public static final String ERROR_KEY_GET_PROFILE_RANGE_ERROR =          "profile.profile.getProfileRangeError";
-    public static final String ERROR_KEY_GET_PROFILES_BY_ROLE_ERROR =       "profile.profile.getProfilesByRoleError";
-    public static final String ERROR_KEY_GET_PROFILES_BY_EXISTING_ATTRIB_ERROR =
-            "profile.profile.getProfilesByExistingAttributeError";
-    public static final String ERROR_KEY_GET_PROFILES_BY_ATTRIB_VALUE_ERROR =
-            "profile.profile.getProfilesByAttributeValueError";
-    public static final String ERROR_KEY_RESET_PASSWORD_ERROR =             "profile.profile.resetPasswordError";
+    public static final String ERROR_KEY_CREATE_PROFILE_ERROR = "profile.profile.createProfileError";
+    public static final String ERROR_KEY_GET_PROFILE_BY_QUERY_ERROR = "profile.profile.getProfileByQueryError";
+    public static final String ERROR_KEY_GET_PROFILE_ERROR = "profile.profile.getProfileError";
+    public static final String ERROR_KEY_UPDATE_PROFILE_ERROR = "profile.profile.updateProfileError";
+    public static final String ERROR_KEY_DELETE_PROFILE_ERROR = "profile.profile.deleteProfileError";
+    public static final String ERROR_KEY_GET_PROFILES_BY_QUERY_ERROR = "profile.profile.getProfilesByQueryError";
+    public static final String ERROR_KEY_GET_PROFILE_BY_USERNAME_ERROR = "profile.profile.getProfileByUsernameError";
+    public static final String ERROR_KEY_GET_PROFILE_COUNT_ERROR = "profile.profile.getProfileCountError";
+    public static final String ERROR_KEY_GET_PROFILES_ERROR = "profile.profile.getProfilesError";
+    public static final String ERROR_KEY_GET_PROFILE_RANGE_ERROR = "profile.profile.getProfileRangeError";
+    public static final String ERROR_KEY_GET_PROFILES_BY_ROLE_ERROR = "profile.profile.getProfilesByRoleError";
+    public static final String ERROR_KEY_GET_PROFILES_BY_EXISTING_ATTRIB_ERROR = "profile.profile." +
+            "getProfilesByExistingAttributeError";
+    public static final String ERROR_KEY_GET_PROFILES_BY_ATTRIB_VALUE_ERROR = "profile.profile." +
+            "getProfilesByAttributeValueError";
+    public static final String ERROR_KEY_RESET_PASSWORD_ERROR = "profile.profile.resetPasswordError";
+    public static final String ERROR_KEY_TENANT_NOT_ALLOWED = "profile.profile.query.tenantNotAllowed";
+    public static final String ERROR_KEY_WHERE_NOT_ALLOWED = "profile.profile.query.whereNotAllowed";
+    public static final String ERROR_KEY_ATTRIBUTE_NOT_ALLOWED = "profile.profile.query.attributeNotAllowed";
+
+    public static final Pattern QUERY_TENANT_PATTERN = Pattern.compile("['\"]?tenant['\"]?\\s*:");
+    public static final Pattern QUERY_WHERE_PATTERN = Pattern.compile("['\"]?\\$where['\"]?\\s*:");
+    public static final String QUERY_ATTRIBUTE_PATTERN_FORMAT = "['\"]?attributes\\.%s(\\.[^'\":]+)?['\"]?\\s*:";
+    public static final String QUERY_FINAL_FORMAT = "{$and: [{tenant: '%s'}, %s]}";
 
     protected PermissionEvaluator<Application, String> tenantPermissionEvaluator;
     protected PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator;
@@ -210,8 +221,7 @@ public class ProfileServiceImpl implements ProfileService {
                 if (MapUtils.isNotEmpty(attributes)) {
                     String tenantName = profile.getTenant();
 
-                    rejectAttributesIfActionNotAllowed(tenantName, attributes.keySet(), AttributeAction
-                            .WRITE_ATTRIBUTE);
+                    rejectAttributesIfActionNotAllowed(tenantName, attributes.keySet(), AttributeAction.WRITE_ATTRIBUTE);
 
                     profile.getAttributes().putAll(attributes);
                 }
@@ -390,6 +400,23 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    public Profile getProfileByQuery(String tenantName, String query, String... attributesToReturn)
+            throws ProfileException {
+        checkIfManageProfilesIsAllowed(tenantName);
+
+        Tenant tenant = getTenant(tenantName);
+
+        try {
+            Profile profile = profileRepository.findOneByQuery(getFinalQuery(tenant, query), attributesToReturn);
+            filterNonReadableAttributes(tenant, profile);
+
+            return profile;
+        } catch (MongoDataException e) {
+            throw new I10nProfileException(ERROR_KEY_GET_PROFILE_BY_QUERY_ERROR, e, query);
+        }
+    }
+
+    @Override
     public Profile getProfile(String profileId, String... attributesToReturn) throws ProfileException {
         try {
             Profile profile = profileRepository.findById(profileId, attributesToReturn);
@@ -437,6 +464,24 @@ public class ProfileServiceImpl implements ProfileService {
             return profileRepository.countByTenant(tenantName);
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_GET_PROFILE_COUNT_ERROR, e, tenantName);
+        }
+    }
+
+    @Override
+    public List<Profile> getProfilesByQuery(String tenantName, String query, String... attributesToReturn)
+            throws ProfileException {
+        checkIfManageProfilesIsAllowed(tenantName);
+
+        Tenant tenant = getTenant(tenantName);
+
+        try {
+            List<Profile> profiles = IterableUtils.toList(profileRepository.findByQuery(getFinalQuery(tenant, query),
+                    attributesToReturn));
+            filterNonReadableAttributes(tenant, profiles);
+
+            return profiles;
+        } catch (MongoDataException e) {
+            throw new I10nProfileException(ERROR_KEY_GET_PROFILES_BY_QUERY_ERROR, e, query);
         }
     }
 
@@ -605,7 +650,12 @@ public class ProfileServiceImpl implements ProfileService {
 
     protected void filterNonReadableAttributes(Profile profile) throws ProfileException {
         if (profile != null) {
-            Tenant tenant = getTenant(profile.getTenant());
+            filterNonReadableAttributes(getTenant(profile.getTenant()), profile);
+        }
+    }
+
+    protected void filterNonReadableAttributes(Tenant tenant, Profile profile) throws ProfileException {
+        if (profile != null) {
             Set<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
             Iterator<String> attributeNamesIter = profile.getAttributes().keySet().iterator();
 
@@ -619,6 +669,14 @@ public class ProfileServiceImpl implements ProfileService {
         if (profiles != null) {
             for (Profile profile : profiles) {
                 filterNonReadableAttributes(profile);
+            }
+        }
+    }
+
+    protected void filterNonReadableAttributes(Tenant tenant, Iterable<Profile> profiles) throws ProfileException {
+        if (profiles != null) {
+            for (Profile profile : profiles) {
+                filterNonReadableAttributes(tenant, profile);
             }
         }
     }
@@ -663,6 +721,33 @@ public class ProfileServiceImpl implements ProfileService {
             }
         } else {
             throw new AttributeNotDefinedException(attributeName, tenant.getName());
+        }
+    }
+
+    protected String getFinalQuery(Tenant tenant, String query) throws ProfileException {
+        validateQuery(tenant, query);
+
+        return String.format(QUERY_FINAL_FORMAT, tenant.getName(), query);
+    }
+
+    protected void validateQuery(Tenant tenant, String query) throws ProfileException {
+        if (QUERY_TENANT_PATTERN.matcher(query).find()) {
+            throw new InvalidQueryException(ERROR_KEY_TENANT_NOT_ALLOWED);
+        }
+
+        if (QUERY_WHERE_PATTERN.matcher(query).find()) {
+            throw new InvalidQueryException(ERROR_KEY_WHERE_NOT_ALLOWED);
+        }
+
+        for (AttributeDefinition definition : tenant.getAttributeDefinitions()) {
+            if (!attributePermissionEvaluator.isAllowed(definition, AttributeAction.READ_ATTRIBUTE.toString())) {
+                String attributeName = definition.getName();
+                Pattern pattern = Pattern.compile(String.format(QUERY_ATTRIBUTE_PATTERN_FORMAT, attributeName));
+
+                if (pattern.matcher(query).find()) {
+                    throw new InvalidQueryException(ERROR_KEY_ATTRIBUTE_NOT_ALLOWED, attributeName);
+                }
+            }
         }
     }
 

@@ -43,17 +43,17 @@ import static org.junit.Assert.*;
 @ContextConfiguration("classpath:crafter/profile/extension/client-context.xml")
 public class AuthenticationServiceIT {
 
-    private static final String INVALID_ACCESS_TOKEN_ID =   "ab785de0-c327-11e3-9c1a-0800200c9a66";
-    private static final String EXPIRED_ACCESS_TOKEN_ID =   "9161fb80-c329-11e3-9c1a-0800200c9a66";
+    private static final String INVALID_ACCESS_TOKEN_ID = "ab785de0-c327-11e3-9c1a-0800200c9a66";
+    private static final String EXPIRED_ACCESS_TOKEN_ID = "9161fb80-c329-11e3-9c1a-0800200c9a66";
     private static final String UNALLOWED_ACCESS_TOKEN_ID = "f9929b40-c358-11e3-9c1a-0800200c9a66";
 
-    private static final String DEFAULT_TENANT_NAME =       "default";
-    private static final String ADMIN_USERNAME =            "admin";
-    private static final String ADMIN_PASSWORD =            "admin";
-    private static final String INVALID_USERNAME =          "nouser";
-    private static final String INVALID_PASSWORD =          "nopassword";
-    private static final String DISABLED_USER_USERNAME =    "jdoe";
-    private static final String DISABLED_USER_PASSWORD =    "1234";
+    private static final String DEFAULT_TENANT_NAME = "default";
+    private static final String ADMIN_USERNAME = "admin";
+    private static final String ADMIN_PASSWORD = "admin";
+    private static final String INVALID_USERNAME = "nouser";
+    private static final String INVALID_PASSWORD = "nopassword";
+    private static final String DISABLED_USER_USERNAME = "jdoe";
+    private static final String DISABLED_USER_PASSWORD = "1234";
 
     @Autowired
     private AuthenticationService authenticationService;

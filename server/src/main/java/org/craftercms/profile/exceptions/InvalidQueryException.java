@@ -19,16 +19,14 @@ package org.craftercms.profile.exceptions;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 
 /**
- * Thrown when the attributes map can't be serialized correctly to JSON.
+ * Thrown when a specified Mongo query is invalid, because of illegal operators ($where) or non-readable attributes.
  *
  * @author avasquez
  */
-public class AttributesSerializationException extends I10nProfileException {
+public class InvalidQueryException extends I10nProfileException {
 
-    public static final String KEY = "profile.attributes.serializationError";
-
-    public AttributesSerializationException(Throwable cause) {
-        super(KEY, cause);
+    public InvalidQueryException(String key, Object... args) {
+        super(key, args);
     }
 
 }

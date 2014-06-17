@@ -108,8 +108,32 @@ public abstract class AbstractProfileRestClientBase extends AbstractRestClientBa
         return null;
     }
 
+    protected <T> T doGetForObject(URI url, Class<T> responseType) throws ProfileException {
+        try {
+            return restTemplate.getForObject(url, responseType);
+        } catch (RestServiceException e) {
+            handleRestServiceException(e);
+        } catch (Exception e) {
+            handleException(e);
+        }
+
+        return null;
+    }
+
     protected <T> T doGetForObject(String url, ParameterizedTypeReference<T> responseType, Object... uriVariables)
             throws ProfileException {
+        try {
+            return restTemplate.exchange(url, HttpMethod.GET, null, responseType, uriVariables).getBody();
+        } catch (RestServiceException e) {
+            handleRestServiceException(e);
+        } catch (Exception e) {
+            handleException(e);
+        }
+
+        return null;
+    }
+
+    protected <T> T doGetForObject(URI url, ParameterizedTypeReference<T> responseType) throws ProfileException {
         try {
             return restTemplate.exchange(url, HttpMethod.GET, null, responseType).getBody();
         } catch (RestServiceException e) {

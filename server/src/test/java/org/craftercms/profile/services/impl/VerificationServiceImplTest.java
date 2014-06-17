@@ -46,23 +46,23 @@ import static org.mockito.Mockito.*;
  */
 public class VerificationServiceImplTest {
 
-    private static final String FROM =          "noreply@craftersoftware.com";
-    private static final String SUBJECT =       "Verification Email";
+    private static final String FROM = "noreply@craftersoftware.com";
+    private static final String SUBJECT = "Verification Email";
     private static final String TEMPLATE_NAME = "verification-email.ftl";
-    private static final int TOKEN_MAX_AGE =    86400;
+    private static final int TOKEN_MAX_AGE = 86400;
 
-    private static final ObjectId PROFILE_ID =  new ObjectId();
+    private static final ObjectId PROFILE_ID = new ObjectId();
     private static final String PROFILE_EMAIL = "johndoe@gmail.com";
 
-    private static final String[] TO = { PROFILE_EMAIL };
+    private static final String[] TO = {PROFILE_EMAIL};
 
-    private static final ObjectId NORMAL_TOKEN_ID =     new ObjectId();
-    private static final ObjectId EXPIRED_TOKEN_ID =    new ObjectId();
+    private static final ObjectId NORMAL_TOKEN_ID = new ObjectId();
+    private static final ObjectId EXPIRED_TOKEN_ID = new ObjectId();
 
-    private static final String VERIFICATION_BASE_URL =                     "http://localhost:8080/verifyProfile";
-    private static final Map<String, String> VERIFICATION_TEMPLATE_ARGS =   Collections.singletonMap(
+    private static final String VERIFICATION_BASE_URL = "http://localhost:8080/verifyProfile";
+    private static final Map<String, String> VERIFICATION_TEMPLATE_ARGS = Collections.singletonMap(
             VerificationServiceImpl.VERIFICATION_LINK_TEMPLATE_ARG, VERIFICATION_BASE_URL + "?" +
-            VerificationService.TOKEN_ID_PARAM + "=" + NORMAL_TOKEN_ID);
+                    VerificationService.TOKEN_ID_PARAM + "=" + NORMAL_TOKEN_ID);
 
     private VerificationServiceImpl verificationService;
     @Mock

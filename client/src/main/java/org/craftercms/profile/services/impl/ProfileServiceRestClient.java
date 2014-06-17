@@ -21,13 +21,15 @@ import org.apache.commons.collections4.MapUtils;
 import org.craftercms.commons.rest.RestClientUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
+import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
-import org.craftercms.profile.exceptions.AttributesSerializationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.util.MultiValueMap;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,10 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
 
     public static final ParameterizedTypeReference<List<Profile>> profileListTypeRef =
             new ParameterizedTypeReference<List<Profile>>() {};
+
+    public static final String ERROR_KEY_ATTRIBUTES_SERIALIZATION_ERROR = "profile.client.attributes." +
+            "serializationError";
+    public static final String ERROR_KEY_INVALID_URI_ERROR = "profile.client.invalidUri";
 
     private ObjectMapper objectMapper;
 
@@ -191,6 +197,24 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     }
 
     @Override
+    public Profile getProfileByQuery(String tenantName, String query, String... attributesToReturn)
+            throws ProfileException {
+        MultiValueMap<String, String> params = createBaseParams();
+        RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
+        RestClientUtils.addValue(PARAM_QUERY, query, params);
+        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_ONE_BY_QUERY);
+        url = RestClientUtils.addQueryParams(url, params, true);
+
+        try {
+            return doGetForObject(new URI(url), Profile.class);
+        } catch (URISyntaxException e) {
+            throw new I10nProfileException(ERROR_KEY_INVALID_URI_ERROR, url);
+        }
+    }
+
+    @Override
     public Profile getProfile(String profileId, String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
@@ -236,6 +260,24 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         url = RestClientUtils.addQueryParams(url, params, false);
 
         return doGetForObject(url, Long.class);
+    }
+
+    @Override
+    public List<Profile> getProfilesByQuery(String tenantName, String query, String... attributesToReturn)
+            throws ProfileException {
+        MultiValueMap<String, String> params = createBaseParams();
+        RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
+        RestClientUtils.addValue(PARAM_QUERY, query, params);
+        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_QUERY);
+        url = RestClientUtils.addQueryParams(url, params, true);
+
+        try {
+            return doGetForObject(new URI(url), profileListTypeRef);
+        } catch (URISyntaxException e) {
+            throw new I10nProfileException(ERROR_KEY_INVALID_URI_ERROR, url);
+        }
     }
 
     @Override
@@ -346,11 +388,11 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         return doPostForObject(url, params, Profile.class);
     }
 
-    protected String serializeAttributes(Map<String, Object> attributes) throws AttributesSerializationException {
+    protected String serializeAttributes(Map<String, Object> attributes) throws ProfileException {
         try {
             return objectMapper.writeValueAsString(attributes);
         } catch (Exception e) {
-            throw new AttributesSerializationException(e);
+            throw new I10nProfileException(ERROR_KEY_INVALID_URI_ERROR, e);
         }
     }
 

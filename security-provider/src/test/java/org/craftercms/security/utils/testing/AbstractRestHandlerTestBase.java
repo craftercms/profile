@@ -47,10 +47,10 @@ public abstract class AbstractRestHandlerTestBase {
         ContentNegotiationManager contentNegotiationManager = factoryBean.getObject();
         List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
 
-        List<JsonSerializer> serializers = new ArrayList<>();
+        List<JsonSerializer<?>> serializers = new ArrayList<>();
         serializers.add(new ObjectIdSerializer());
 
-        Map<Class, JsonDeserializer> deserializers = new HashMap<>();
+        Map<Class<?>, JsonDeserializer<?>> deserializers = new HashMap<>();
         deserializers.put(ObjectId.class, new ObjectIdDeserializer());
 
         CustomSerializationObjectMapper objectMapper = new CustomSerializationObjectMapper();

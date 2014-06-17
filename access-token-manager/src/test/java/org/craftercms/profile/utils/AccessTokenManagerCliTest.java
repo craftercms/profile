@@ -174,9 +174,9 @@ public class AccessTokenManagerCliTest {
 
     private void createTestObjectMapper() {
         objectMapper = new CustomSerializationObjectMapper();
-        objectMapper.setSerializers(Arrays.<JsonSerializer>asList(new ObjectIdSerializer()));
-        objectMapper.setDeserializers(Collections.<Class, JsonDeserializer>singletonMap(ObjectId.class,
-                new ObjectIdDeserializer()));
+        objectMapper.setSerializers(Arrays.<JsonSerializer<?>>asList(new ObjectIdSerializer()));
+        objectMapper.setDeserializers(Collections.<Class<?>, JsonDeserializer<?>>singletonMap(
+                ObjectId.class, new ObjectIdDeserializer()));
         objectMapper.init();
     }
 

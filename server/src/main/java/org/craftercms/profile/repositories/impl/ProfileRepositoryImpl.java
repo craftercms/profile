@@ -43,18 +43,18 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
 
     private static final Logger logger = LoggerFactory.getLogger(ProfileRepositoryImpl.class);
 
-    public static final String KEY_INDEX_KEYS =                                 "profile.profile.index.keys";
-    public static final String KEY_INDEX_OPTIONS =                              "profile.profile.index.options";
-    public static final String KEY_DEFAULT_FIELDS =                             "profile.profile.defaultFields";
-    public static final String KEY_FIND_BY_TENANT_AND_USERNAME_QUERY =          "profile.profile.byTenantAndUsername";
-    public static final String KEY_COUNT_BY_TENANT_QUERY =                      "profile.profile.countByTenant";
-    public static final String KEY_REMOVE_BY_TENANT_QUERY =                     "profile.profile.removeByTenant";
-    public static final String KEY_FIND_BY_IDS_QUERY =                          "profile.profile.byIds";
-    public static final String KEY_FIND_BY_TENANT_QUERY =                       "profile.profile.byTenant";
-    public static final String KEY_FIND_BY_TENANT_AND_ROLE_QUERY =              "profile.profile.byTenantAndRole";
-    public static final String KEY_FIND_BY_TENANT_AND_EXISTING_ATTRIB_QUERY =   "profile.profile" +
+    public static final String KEY_INDEX_KEYS = "profile.profile.index.keys";
+    public static final String KEY_INDEX_OPTIONS = "profile.profile.index.options";
+    public static final String KEY_DEFAULT_FIELDS = "profile.profile.defaultFields";
+    public static final String KEY_FIND_BY_TENANT_AND_USERNAME_QUERY = "profile.profile.byTenantAndUsername";
+    public static final String KEY_COUNT_BY_TENANT_QUERY = "profile.profile.countByTenant";
+    public static final String KEY_REMOVE_BY_TENANT_QUERY = "profile.profile.removeByTenant";
+    public static final String KEY_FIND_BY_IDS_QUERY = "profile.profile.byIds";
+    public static final String KEY_FIND_BY_TENANT_QUERY = "profile.profile.byTenant";
+    public static final String KEY_FIND_BY_TENANT_AND_ROLE_QUERY = "profile.profile.byTenantAndRole";
+    public static final String KEY_FIND_BY_TENANT_AND_EXISTING_ATTRIB_QUERY = "profile.profile" +
             ".byTenantAndExistingAttribute";
-    public static final String KEY_FIND_BY_TENANT_AND_ATTRIB_VALUE_QUERY =      "profile.profile" +
+    public static final String KEY_FIND_BY_TENANT_AND_ATTRIB_VALUE_QUERY = "profile.profile" +
             ".byTenantAndAttributeValue";
 
     public static final String ATTRIBUTE_FIELD_PREFIX = "attributes.";
@@ -64,6 +64,21 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
         super.init();
 
         getCollection().ensureIndex(getQueryFor(KEY_INDEX_KEYS), getQueryFor(KEY_INDEX_OPTIONS));
+    }
+
+    @Override
+    public Profile findOneByQuery(String query, String... attributesToReturn) throws MongoDataException {
+        try {
+            FindOne findOne = getCollection().findOne(query);
+
+            addProjection(findOne, attributesToReturn);
+
+            return findOne.as(Profile.class);
+        } catch (MongoException ex) {
+            String msg = "Unable to find profile by query '" + query + "'";
+            logger.error(msg, ex);
+            throw new MongoDataException(msg, ex);
+        }
     }
 
     @Override
@@ -80,6 +95,21 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
             throw new MongoDataException(msg, ex);
         } catch (IllegalArgumentException ex) {
             String msg = "Given id '" + id + "' can't be converted to an ObjectId";
+            logger.error(msg, ex);
+            throw new MongoDataException(msg, ex);
+        }
+    }
+
+    @Override
+    public Iterable<Profile> findByQuery(String query, String... attributesToReturn) throws MongoDataException {
+        try {
+            Find find = getCollection().find(query);
+
+            addProjection(find, attributesToReturn);
+
+            return find.as(Profile.class);
+        } catch (MongoException ex) {
+            String msg = "Unable to find profiles by query '" + query + "'";
             logger.error(msg, ex);
             throw new MongoDataException(msg, ex);
         }

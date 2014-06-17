@@ -19,11 +19,13 @@ package org.craftercms.profile.services.impl;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.SetUtils;
 import org.craftercms.commons.crypto.CipherUtils;
+import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.*;
 import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.exceptions.InvalidEmailAddressException;
+import org.craftercms.profile.exceptions.InvalidQueryException;
 import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.services.VerificationService;
@@ -47,42 +49,48 @@ import static org.mockito.Mockito.*;
  * @author avasquez
  */
 public class ProfileServiceImplTest {
-    
-    private static final String ATTRIB_NAME_FIRST_NAME =    "firstName";
-    private static final String ATTRIB_NAME_LAST_NAME =     "lastName";
-    private static final String ATTRIB_NAME_GENDER =        "gender";
 
-    private static final String TENANT1_NAME =  "tenant1";
-    private static final String TENANT2_NAME =  "tenant2";
+    private static final String ATTRIB_NAME_FIRST_NAME = "firstName";
+    private static final String ATTRIB_NAME_LAST_NAME = "lastName";
+    private static final String ATTRIB_NAME_GENDER = "gender";
+    private static final String ATTRIB_NAME_PRIVATE = "private";
 
-    private static final ObjectId PROFILE1_ID =             new ObjectId();
-    private static final ObjectId PROFILE2_ID =             new ObjectId();
+    private static final String TENANT1_NAME = "tenant1";
+    private static final String TENANT2_NAME = "tenant2";
+
+    private static final ObjectId PROFILE1_ID = new ObjectId();
+    private static final ObjectId PROFILE2_ID = new ObjectId();
     private static final List<String> TENANT1_PROFILE_IDS = Arrays.asList(PROFILE1_ID.toString());
-    private static final String USERNAME1 =                 "user1";
-    private static final String USERNAME2 =                 "user2";
-    private static final String PASSWORD1 =                 "12345";
-    private static final String PASSWORD2 =                 "54321";
-    private static final String EMAIL1 =                    "user1@craftersoftware.com";
-    private static final String EMAIL2 =                    "user2@craftersoftware.com";
-    private static final String ROLE1 =                     "role1";
-    private static final String ROLE2 =                     "role2";
-    private static final Set<String> ROLES1 =               new HashSet<>(Arrays.asList(ROLE1));
-    private static final Set<String> ROLES2 =               new HashSet<>(Arrays.asList(ROLE2));
-    private static final String FIRST_NAME =                "John";
-    private static final String LAST_NAME =                 "Doe";
-    private static final String GENDER =                    "male";
+    private static final String USERNAME1 = "user1";
+    private static final String USERNAME2 = "user2";
+    private static final String PASSWORD1 = "12345";
+    private static final String PASSWORD2 = "54321";
+    private static final String EMAIL1 = "user1@craftersoftware.com";
+    private static final String EMAIL2 = "user2@craftersoftware.com";
+    private static final String ROLE1 = "role1";
+    private static final String ROLE2 = "role2";
+    private static final Set<String> ROLES1 = new HashSet<>(Arrays.asList(ROLE1));
+    private static final Set<String> ROLES2 = new HashSet<>(Arrays.asList(ROLE2));
+    private static final String FIRST_NAME = "John";
+    private static final String LAST_NAME = "Doe";
+    private static final String GENDER = "male";
 
-    private static final String VERIFICATION_URL =      "http://localhost:8080/verifyProfile";
+    private static final String QUERY = "{attribute.firstName: 'John'}";
+    private static final String INVALID_QUERY1 = "{tenant: 'tenant1'}";
+    private static final String INVALID_QUERY2 = "{$where: \"this.tenant == 'tenant1'\"}";
+    private static final String INVALID_QUERY3 = "{attributes.private.sub: 'test'}";
+
+    private static final String VERIFICATION_URL = "http://localhost:8080/verifyProfile";
     private static final String VERIFICATION_TOKEN_ID = new ObjectId().toString();
 
     private static final ObjectId TICKET_ID = new ObjectId();
 
-    private static final String SORT_BY =   "username";
-    private static final int START =        0;
-    private static final int COUNT =        10;
+    private static final String SORT_BY = "username";
+    private static final int START = 0;
+    private static final int COUNT = 10;
 
-    private static final String RESET_PASSWORD_URL =        "http://localhost:8080/resetPassword";
-    private static final String RESET_PASSWORD_TOKEN_ID =   new ObjectId().toString();
+    private static final String RESET_PASSWORD_URL = "http://localhost:8080/resetPassword";
+    private static final String RESET_PASSWORD_TOKEN_ID = new ObjectId().toString();
 
     private ProfileServiceImpl profileService;
     @Mock
@@ -106,7 +114,11 @@ public class ProfileServiceImplTest {
 
         when(tenantPermissionEvaluator.isAllowed(anyString(), anyString())).thenReturn(true);
         when(attributePermissionEvaluator.isAllowed(any(AttributeDefinition.class), anyString())).thenReturn(true);
+        when(attributePermissionEvaluator.isAllowed(eq(new AttributeDefinition(ATTRIB_NAME_PRIVATE)), anyString()))
+                .thenReturn(false);
 
+        when(profileRepository.findOneByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT,
+                TENANT1_NAME, QUERY), new String[0])).thenReturn(getTenant1Profile());
         when(profileRepository.findById(PROFILE1_ID.toString(), new String[0]))
                 .thenReturn(getTenant1Profile());
         when(profileRepository.findById(PROFILE1_ID.toString(), NO_ATTRIBUTE))
@@ -115,6 +127,8 @@ public class ProfileServiceImplTest {
                 .thenReturn(getTenant1ProfileNoLastName());
         when(profileRepository.findById(PROFILE2_ID.toString(), new String[0]))
                 .thenReturn(getTenant2Profile());
+        when(profileRepository.findByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT,
+                TENANT1_NAME, QUERY), new String[0])).thenReturn(getAllTenant1Profiles());
         when(profileRepository.findByTenantAndUsername(TENANT1_NAME, USERNAME1, new String[0]))
                 .thenReturn(getTenant1Profile());
         when(profileRepository.findByIds(TENANT1_PROFILE_IDS, SORT_BY, SortOrder.ASC))
@@ -123,8 +137,8 @@ public class ProfileServiceImplTest {
                 .thenReturn(getAllTenant1Profiles());
         when(profileRepository.findByTenantAndRole(TENANT1_NAME, ROLE1, SORT_BY, SortOrder.ASC))
                 .thenReturn(getAllTenant1Profiles());
-        when(profileRepository.findByTenantAndAttributeValue(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME, FIRST_NAME, SORT_BY,
-                SortOrder.ASC)).thenReturn(getAllTenant1Profiles());
+        when(profileRepository.findByTenantAndAttributeValue(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME,
+                FIRST_NAME, SORT_BY, SortOrder.ASC)).thenReturn(getAllTenant1Profiles());
         when(profileRepository.countByTenant(TENANT1_NAME)).thenReturn(10L);
 
         when(tenantService.getTenant(TENANT1_NAME)).thenReturn(getTenant1());
@@ -151,9 +165,10 @@ public class ProfileServiceImplTest {
     public void testCreateProfile() throws Exception {
         Profile expected = getTenant2Profile();
         expected.setTenant(TENANT1_NAME);
+        expected.setAttributes(getAttributesWithoutPrivateAttribute());
 
         Profile actual = profileService.createProfile(TENANT1_NAME, USERNAME2, PASSWORD2, EMAIL2, true, ROLES2,
-                getAttributes(), VERIFICATION_URL);
+                getAttributesWithoutPrivateAttribute(), VERIFICATION_URL);
 
         assertEqualProfiles(expected, actual);
         assertTrue(CipherUtils.matchPassword(actual.getPassword(), PASSWORD2));
@@ -164,6 +179,16 @@ public class ProfileServiceImplTest {
         verify(tenantService).getTenant(TENANT1_NAME);
         verify(profileRepository).insert(actual);
         verify(newProfileVerificationService).sendEmail(actual, VERIFICATION_URL);
+    }
+
+    @Test
+    public void testCreateProfileWithUnwritableAttribute() throws Exception {
+        try {
+            profileService.createProfile(TENANT1_NAME, USERNAME2, PASSWORD2, EMAIL2, true, ROLES2, getAttributes(),
+                    VERIFICATION_URL);
+            fail("Exception " + ActionDeniedException.class.getName() + " expected");
+        } catch (ActionDeniedException e) {
+        }
     }
 
     @Test
@@ -180,9 +205,10 @@ public class ProfileServiceImplTest {
     public void testCreateProfileNotVerify() throws Exception {
         Profile expected = getTenant2Profile();
         expected.setEnabled(true);
+        expected.setAttributes(getAttributesWithoutPrivateAttribute());
 
         Profile actual = profileService.createProfile(TENANT2_NAME, USERNAME2, PASSWORD2, EMAIL2, true, ROLES2,
-                getAttributes(), VERIFICATION_URL);
+                getAttributesWithoutPrivateAttribute(), VERIFICATION_URL);
 
         assertEqualProfiles(expected, actual);
         assertTrue(CipherUtils.matchPassword(actual.getPassword(), PASSWORD2));
@@ -206,7 +232,7 @@ public class ProfileServiceImplTest {
         expected.setRoles(ROLES2);
         expected.setVerified(true);
         expected.setEnabled(false);
-        expected.setAttributes(getAttributes());
+        expected.setAttributes(getAttributesWithoutPrivateAttribute());
         expected.getAttributes().put(ATTRIB_NAME_GENDER, GENDER);
 
         Profile actual = profileService.updateProfile(PROFILE1_ID.toString(), USERNAME2, PASSWORD2,
@@ -217,6 +243,16 @@ public class ProfileServiceImplTest {
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
+    }
+
+    @Test
+    public void testUpdateProfileWithUnwritableAttribute() throws Exception {
+        try {
+            profileService.updateProfile(PROFILE1_ID.toString(), USERNAME2, PASSWORD2, EMAIL2, false, ROLES2,
+                    Collections.<String, Object>singletonMap(ATTRIB_NAME_PRIVATE, 0));
+            fail("Exception " + ActionDeniedException.class.getName() + " expected");
+        } catch (ActionDeniedException e) {
+        }
     }
 
     @Test
@@ -234,6 +270,7 @@ public class ProfileServiceImplTest {
         Profile expected = getTenant2Profile();
         expected.setVerified(true);
         expected.setEnabled(true);
+        expected.setAttributes(getAttributesWithoutPrivateAttribute());
 
         Profile actual = profileService.verifyProfile(VERIFICATION_TOKEN_ID);
 
@@ -248,6 +285,7 @@ public class ProfileServiceImplTest {
     public void testEnableProfile() throws Exception {
         Profile expected = getTenant2Profile();
         expected.setEnabled(true);
+        expected.setAttributes(getAttributesWithoutPrivateAttribute());
 
         Profile actual = profileService.enableProfile(PROFILE2_ID.toString());
 
@@ -262,6 +300,7 @@ public class ProfileServiceImplTest {
     public void testDisableProfile() throws Exception {
         Profile expected = getTenant1Profile();
         expected.setEnabled(false);
+        expected.setAttributes(getAttributesWithoutPrivateAttribute());
 
         Profile actual = profileService.disableProfile(PROFILE1_ID.toString());
 
@@ -276,6 +315,7 @@ public class ProfileServiceImplTest {
     public void testAddRoles() throws Exception {
         Profile expected = getTenant1Profile();
         expected.getRoles().add(ROLE2);
+        expected.setAttributes(getAttributesWithoutPrivateAttribute());
 
         Profile actual = profileService.addRoles(PROFILE1_ID.toString(), Arrays.asList(ROLE2));
 
@@ -290,6 +330,7 @@ public class ProfileServiceImplTest {
     public void testRemoveRoles() throws Exception {
         Profile expected = getTenant1Profile();
         expected.getRoles().remove(ROLE1);
+        expected.setAttributes(getAttributesWithoutPrivateAttribute());
 
         Profile actual = profileService.removeRoles(PROFILE1_ID.toString(), Arrays.asList(ROLE1));
 
@@ -306,9 +347,7 @@ public class ProfileServiceImplTest {
         Map<String, Object> attributes = profileService.getAttributes(PROFILE1_ID.toString());
 
         assertNotNull(attributes);
-        assertEquals(2, attributes.size());
-        assertEquals(FIRST_NAME, attributes.get(ATTRIB_NAME_FIRST_NAME));
-        assertEquals(LAST_NAME, attributes.get(ATTRIB_NAME_LAST_NAME));
+        assertEquals(getAttributesWithoutPrivateAttribute(), attributes);
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
@@ -337,6 +376,7 @@ public class ProfileServiceImplTest {
     @Test
     public void testUpdateAttributes() throws Exception {
         Profile expected = getTenant1Profile();
+        expected.setAttributes(getAttributesWithoutPrivateAttribute());
         expected.getAttributes().put(ATTRIB_NAME_GENDER, GENDER);
 
         Map<String, Object> newAttributes = Collections.<String, Object>singletonMap(ATTRIB_NAME_GENDER, GENDER);
@@ -350,8 +390,19 @@ public class ProfileServiceImplTest {
     }
 
     @Test
+    public void testUpdateUnwritableAttribute() throws Exception {
+        try {
+            Map<String, Object> newAttributes = Collections.<String, Object>singletonMap(ATTRIB_NAME_PRIVATE, 0);
+            profileService.updateAttributes(PROFILE1_ID.toString(), newAttributes);
+            fail("Exception " + ActionDeniedException.class.getName() + " expected");
+        } catch (ActionDeniedException e) {
+        }
+    }
+
+    @Test
     public void testRemoveAttributes() throws Exception {
         Profile expected = getTenant1Profile();
+        expected.setAttributes(getAttributesWithoutPrivateAttribute());
         expected.getAttributes().remove(ATTRIB_NAME_LAST_NAME);
 
         Profile actual = profileService.removeAttributes(PROFILE1_ID.toString(), Arrays.asList(ATTRIB_NAME_LAST_NAME));
@@ -364,6 +415,15 @@ public class ProfileServiceImplTest {
     }
 
     @Test
+    public void testRemoveUnremovableAttribute() throws Exception {
+        try {
+            profileService.removeAttributes(PROFILE1_ID.toString(), Arrays.asList(ATTRIB_NAME_PRIVATE));
+            fail("Exception " + ActionDeniedException.class.getName() + " expected");
+        } catch (ActionDeniedException e) {
+        }
+    }
+
+    @Test
     public void testDeleteProfile() throws Exception {
         profileService.deleteProfile(PROFILE1_ID.toString());
 
@@ -372,8 +432,67 @@ public class ProfileServiceImplTest {
     }
 
     @Test
+    public void testGetProfileByQuery() throws Exception {
+        Profile expected = getTenant1Profile();
+        expected.setAttributes(getAttributesWithoutPrivateAttribute());
+
+        Profile actual = profileService.getProfileByQuery(TENANT1_NAME, QUERY);
+
+        assertEqualProfiles(expected, actual);
+
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
+        verify(profileRepository).findOneByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT,
+                TENANT1_NAME, QUERY), new String[0]);
+    }
+
+    @Test
+    public void testGetProfileByQueryWithTenant() throws Exception {
+        try {
+            profileService.getProfileByQuery(TENANT1_NAME, INVALID_QUERY1);
+            fail("Expected " + InvalidQueryException.class.getSimpleName() + " exception");
+        } catch (InvalidQueryException e) {
+        }
+    }
+
+    @Test
+    public void testGetProfileByQueryWithWhereOperator() throws Exception {
+        try {
+            profileService.getProfileByQuery(TENANT1_NAME, INVALID_QUERY2);
+            fail("Expected " + InvalidQueryException.class.getSimpleName() + " exception");
+        } catch (InvalidQueryException e) {
+        }
+    }
+
+    @Test
+    public void testGetProfileByQueryWithUnreadableAttribute() throws Exception {
+        try {
+            profileService.getProfileByQuery(TENANT1_NAME, INVALID_QUERY3);
+            fail("Expected " + InvalidQueryException.class.getSimpleName() + " exception");
+        } catch (InvalidQueryException e) {
+        }
+    }
+
+    @Test
+    public void testGetProfilesByQuery() throws Exception {
+        List<Profile> expected = getAllTenant1Profiles();
+        for (Profile profile : expected) {
+            profile.setAttributes(getAttributesWithoutPrivateAttribute());
+        }
+
+        List<Profile> actual = profileService.getProfilesByQuery(TENANT1_NAME, QUERY);
+
+        assertEqualProfileLists(expected, actual);
+
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
+        verify(profileRepository).findByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT,
+                TENANT1_NAME, QUERY), new String[0]);
+    }
+
+    @Test
     public void testGetProfile() throws Exception {
         Profile expected = getTenant1Profile();
+        expected.setAttributes(getAttributesWithoutPrivateAttribute());
+
         Profile actual = profileService.getProfile(PROFILE1_ID.toString());
 
         assertEqualProfiles(expected, actual);
@@ -385,6 +504,8 @@ public class ProfileServiceImplTest {
     @Test
     public void testGetProfileByUsername() throws Exception {
         Profile expected = getTenant1Profile();
+        expected.setAttributes(getAttributesWithoutPrivateAttribute());
+
         Profile actual = profileService.getProfileByUsername(TENANT1_NAME, USERNAME1);
 
         assertEqualProfiles(expected, actual);
@@ -407,6 +528,10 @@ public class ProfileServiceImplTest {
     @Test
     public void testGetProfilesByIds() throws Exception {
         List<Profile> expected = getAllTenant1Profiles();
+        for (Profile profile : expected) {
+            profile.setAttributes(getAttributesWithoutPrivateAttribute());
+        }
+
         List<Profile> actual = profileService.getProfilesByIds(TENANT1_PROFILE_IDS, "username", SortOrder.ASC);
 
         assertEqualProfileLists(expected, actual);
@@ -418,6 +543,10 @@ public class ProfileServiceImplTest {
     @Test
     public void testGetProfileRange() throws Exception {
         List<Profile> expected = getAllTenant1Profiles();
+        for (Profile profile : expected) {
+            profile.setAttributes(getAttributesWithoutPrivateAttribute());
+        }
+
         List<Profile> actual = profileService.getProfileRange(TENANT1_NAME, SORT_BY, SortOrder.ASC, START, COUNT);
 
         assertEqualProfileLists(expected, actual);
@@ -429,6 +558,10 @@ public class ProfileServiceImplTest {
     @Test
     public void testGetProfileByRole() throws Exception {
         List<Profile> expected = getAllTenant1Profiles();
+        for (Profile profile : expected) {
+            profile.setAttributes(getAttributesWithoutPrivateAttribute());
+        }
+
         List<Profile> actual = profileService.getProfilesByRole(TENANT1_NAME, ROLE1, SORT_BY, SortOrder.ASC);
 
         assertEqualProfileLists(expected, actual);
@@ -440,6 +573,10 @@ public class ProfileServiceImplTest {
     @Test
     public void testGetProfilesByAttribute() throws Exception {
         List<Profile> expected = getAllTenant1Profiles();
+        for (Profile profile : expected) {
+            profile.setAttributes(getAttributesWithoutPrivateAttribute());
+        }
+
         List<Profile> actual = profileService.getProfilesByAttributeValue(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME,
                 FIRST_NAME, SORT_BY, SortOrder.ASC);
 
@@ -453,6 +590,8 @@ public class ProfileServiceImplTest {
     @Test
     public void testForgotPassword() throws Exception {
         Profile expected = getTenant1Profile();
+        expected.setAttributes(getAttributesWithoutPrivateAttribute());
+
         Profile actual = profileService.forgotPassword(PROFILE1_ID.toString(), RESET_PASSWORD_URL);
 
         assertEqualProfiles(expected, actual);
@@ -465,6 +604,8 @@ public class ProfileServiceImplTest {
     @Test
     public void testResetPassword() throws Exception {
         Profile expected = getTenant1Profile();
+        expected.setAttributes(getAttributesWithoutPrivateAttribute());
+
         Profile actual = profileService.resetPassword(RESET_PASSWORD_TOKEN_ID, PASSWORD2);
 
         assertEqualProfiles(expected, actual);
@@ -509,7 +650,10 @@ public class ProfileServiceImplTest {
         genderDefinition.setName(ATTRIB_NAME_GENDER);
         genderDefinition.addPermission(anyAppCanDoAnything);
 
-        return SetUtils.asSet(firstNameDefinition, lastNameDefinition, genderDefinition);
+        AttributeDefinition privateDefinition = new AttributeDefinition();
+        privateDefinition.setName(ATTRIB_NAME_PRIVATE);
+
+        return SetUtils.asSet(firstNameDefinition, lastNameDefinition, genderDefinition, privateDefinition);
     }
 
     private Profile getTenant1Profile() {
@@ -561,6 +705,15 @@ public class ProfileServiceImplTest {
     }
 
     private Map<String, Object> getAttributes() {
+        Map<String, Object> attributes = new LinkedHashMap<>(2);
+        attributes.put(ATTRIB_NAME_FIRST_NAME, FIRST_NAME);
+        attributes.put(ATTRIB_NAME_LAST_NAME, LAST_NAME);
+        attributes.put(ATTRIB_NAME_PRIVATE, Collections.singletonMap("sub", "test"));
+
+        return attributes;
+    }
+
+    private Map<String, Object> getAttributesWithoutPrivateAttribute() {
         Map<String, Object> attributes = new LinkedHashMap<>(2);
         attributes.put(ATTRIB_NAME_FIRST_NAME, FIRST_NAME);
         attributes.put(ATTRIB_NAME_LAST_NAME, LAST_NAME);

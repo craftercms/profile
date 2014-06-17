@@ -174,6 +174,15 @@ public class ProfileController {
         profileService.deleteProfile(profileId);
     }
 
+    @RequestMapping(value = URL_PROFILE_GET_ONE_BY_QUERY, method = RequestMethod.GET)
+    @ResponseBody
+    public Profile getProfileByQuery(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                     @RequestParam(PARAM_QUERY) String query,
+                                     @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
+                                     String[] attributesToReturn) throws ProfileException {
+        return profileService.getProfileByQuery(tenantName, query, attributesToReturn);
+    }
+
     @RequestMapping(value = URL_PROFILE_GET, method = RequestMethod.GET)
     @ResponseBody
     public Profile getProfile(@PathVariable(PATH_VAR_ID) String profileId,
@@ -203,6 +212,15 @@ public class ProfileController {
     @ResponseBody
     public long getProfileCount(@RequestParam(PARAM_TENANT_NAME) String tenantName) throws ProfileException {
         return profileService.getProfileCount(tenantName);
+    }
+
+    @RequestMapping(value = URL_PROFILE_GET_BY_QUERY, method = RequestMethod.GET)
+    @ResponseBody
+    public List<Profile> getProfilesByQuery(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                            @RequestParam(PARAM_QUERY) String query,
+                                            @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
+                                            String[] attributesToReturn) throws ProfileException {
+        return profileService.getProfilesByQuery(tenantName, query, attributesToReturn);
     }
 
     @RequestMapping(value = URL_PROFILE_GET_BY_IDS, method = RequestMethod.GET)
