@@ -144,6 +144,11 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.PROFILE_EXISTS, request);
     }
 
+    @ExceptionHandler(InvalidQueryException.class)
+    public ResponseEntity<Object> handleInvalidQueryException(InvalidQueryException e, WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.INVALID_QUERY, request);
+    }
+
     @ExceptionHandler(ProfileException.class)
     public ResponseEntity<Object> handleProfileException(ProfileException e, WebRequest request) {
         return handleExceptionInternal(e, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.OTHER, request);

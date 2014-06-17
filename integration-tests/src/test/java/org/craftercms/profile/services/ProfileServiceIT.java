@@ -57,43 +57,48 @@ public class ProfileServiceIT {
 
     private static final String VERIFICATION_EMAIL_REGEX = ".+<a id=\"verificationLink\" href=\".+\\?tokenId=(.+)\">.+";
 
-    private static final String INVALID_ACCESS_TOKEN_ID =       "ab785de0-c327-11e3-9c1a-0800200c9a66";
-    private static final String EXPIRED_ACCESS_TOKEN_ID =       "9161fb80-c329-11e3-9c1a-0800200c9a66";
-    private static final String UNALLOWED_ACCESS_TOKEN_ID =     "f9929b40-c358-11e3-9c1a-0800200c9a66";
+    private static final String INVALID_ACCESS_TOKEN_ID = "ab785de0-c327-11e3-9c1a-0800200c9a66";
+    private static final String EXPIRED_ACCESS_TOKEN_ID = "9161fb80-c329-11e3-9c1a-0800200c9a66";
+    private static final String UNALLOWED_ACCESS_TOKEN_ID = "f9929b40-c358-11e3-9c1a-0800200c9a66";
     private static final String ADMIN_CONSOLE_ACCESS_TOKEN_ID = "e8f5170c-877b-416f-b70f-4b09772f8e2d";
-    private static final String RANDOM_APP_ACCESS_TOKEN_ID =    "f91cdaf0-e5c6-11e3-ac10-0800200c9a66";
+    private static final String RANDOM_APP_ACCESS_TOKEN_ID = "f91cdaf0-e5c6-11e3-ac10-0800200c9a66";
 
     private static final String DEFAULT_TENANT = "default";
 
-    private static final String ADMIN_USERNAME =    "admin";
-    private static final String ADMIN_PASSWORD =    "admin";
-    private static final String ADMIN_EMAIL =       "admin@craftersoftware.com";
-    private static final Set<String> ADMIN_ROLES =  new HashSet<>(Arrays.asList("PROFILE_ADMIN", "SOCIAL_ADMIN"));
+    private static final String ADMIN_USERNAME = "admin";
+    private static final String ADMIN_PASSWORD = "admin";
+    private static final String ADMIN_EMAIL = "admin@craftersoftware.com";
+    private static final Set<String> ADMIN_ROLES = new HashSet<>(Arrays.asList("PROFILE_ADMIN", "SOCIAL_ADMIN"));
 
-    private static final String JDOE_USERNAME =                     "jdoe";
-    private static final String JDOE_PASSWORD =                     "1234";
-    private static final String JDOE_EMAIL =                        "john.doe@craftersoftware.com";
-    private static final Set<String> JDOE_ROLES =                   new HashSet<>(Arrays.asList("SOCIAL_ADMIN"));
-    private static final String JDOE_FIRST_NAME =                   "John";
-    private static final String JDOE_LAST_NAME =                    "Doe";
-    private static final String JDOE_SUBSCRIPTIONS_FREQUENCY =      "instant";
-    private static final boolean JDOE_SUBSCRIPTIONS_AUTO_WATCH =    true;
-    private static final List<String> JDOE_SUBSCRIPTIONS_TARGETS =  Arrays.asList("news");
+    private static final String JDOE_USERNAME = "jdoe";
+    private static final String JDOE_PASSWORD = "1234";
+    private static final String JDOE_EMAIL = "john.doe@craftersoftware.com";
+    private static final Set<String> JDOE_ROLES = new HashSet<>(Arrays.asList("SOCIAL_ADMIN"));
+    private static final String JDOE_FIRST_NAME = "John";
+    private static final String JDOE_LAST_NAME = "Doe";
+    private static final String JDOE_SUBSCRIPTIONS_FREQUENCY = "instant";
+    private static final boolean JDOE_SUBSCRIPTIONS_AUTO_WATCH = true;
+    private static final List<String> JDOE_SUBSCRIPTIONS_TARGETS = Arrays.asList("news");
 
-    private static final String AVASQUEZ_USERNAME =     "avasquez";
-    private static final String AVASQUEZ_PASSWORD1 =    "1234";
-    private static final String AVASQUEZ_PASSWORD2 =    "4321";
-    private static final String AVASQUEZ_EMAIL1 =       "alfonso.vasquez@craftersoftware.com";
-    private static final String AVASQUEZ_EMAIL2 =       "avasquez@rivetlogic.com";
-    private static final Set<String> AVASQUEZ_ROLES1 =  SetUtils.asSet("PROFILE_ADMIN", "SOCIAL_MODERATOR");
-    private static final Set<String> AVASQUEZ_ROLES2 =  SetUtils.asSet("SOCIAL_AUTHOR");
-    private static final String AVASQUEZ_FIRST_NAME =   "Alfonso";
-    private static final String AVASQUEZ_LAST_NAME =    "Vasquez";
+    private static final String AVASQUEZ_USERNAME = "avasquez";
+    private static final String AVASQUEZ_PASSWORD1 = "1234";
+    private static final String AVASQUEZ_PASSWORD2 = "4321";
+    private static final String AVASQUEZ_EMAIL1 = "alfonso.vasquez@craftersoftware.com";
+    private static final String AVASQUEZ_EMAIL2 = "avasquez@rivetlogic.com";
+    private static final Set<String> AVASQUEZ_ROLES1 = SetUtils.asSet("PROFILE_ADMIN", "SOCIAL_MODERATOR");
+    private static final Set<String> AVASQUEZ_ROLES2 = SetUtils.asSet("SOCIAL_AUTHOR");
+    private static final String AVASQUEZ_FIRST_NAME = "Alfonso";
+    private static final String AVASQUEZ_LAST_NAME = "Vasquez";
 
-    private static final String VERIFICATION_URL =      "http://localhost:8983/crafter-profile" + BASE_URL_PROFILE +
+    private static final String VERIFICATION_URL = "http://localhost:8983/crafter-profile" + BASE_URL_PROFILE +
             URL_PROFILE_VERIFY;
-    private static final String RESET_PASSWORD_URL =    "http://localhost:8983/crafter-profile" + BASE_URL_PROFILE +
+    private static final String RESET_PASSWORD_URL = "http://localhost:8983/crafter-profile" + BASE_URL_PROFILE +
             URL_PROFILE_RESET_PASSWORD;
+
+    private static final String QUERY1 = "{email: 'admin@craftersoftware.com'}";
+    private static final String QUERY2 = "{attributes.subscriptions.targets: 'news'}";
+    private static final String INVALID_QUERY1 = "{tenant: 'default'}";
+    private static final String INVALID_QUERY2 = "{$where: \"this.email == 'admin@craftersoftware.com'\"}";
 
     @Autowired
     private ProfileService profileService;
@@ -530,6 +535,43 @@ public class ProfileServiceIT {
     }
 
     @Test
+    @DirtiesContext
+    public void testGetProfileByQuery() throws Exception {
+        Profile profile = profileService.getProfileByQuery(DEFAULT_TENANT, QUERY1);
+
+        assertAdminProfile(profile);
+
+        // Try with tenant field in query
+        try {
+            profileService.getProfileByQuery(DEFAULT_TENANT, INVALID_QUERY1);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals(ErrorCode.INVALID_QUERY, e.getErrorCode());
+        }
+
+        // Try with $where operator in query
+        try {
+            profileService.getProfileByQuery(DEFAULT_TENANT, INVALID_QUERY2);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals(ErrorCode.INVALID_QUERY, e.getErrorCode());
+        }
+
+        accessTokenIdResolver.setAccessTokenId(RANDOM_APP_ACCESS_TOKEN_ID);
+
+        // Try with unreadable attribute in query
+        try {
+            profileService.getProfileByQuery(DEFAULT_TENANT, QUERY2);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals(ErrorCode.INVALID_QUERY, e.getErrorCode());
+        }
+    }
+
+    @Test
     public void testGetProfile() throws Exception {
         ObjectId profileId = profileService.getProfileByUsername(DEFAULT_TENANT, ADMIN_USERNAME).getId();
         Profile profile = profileService.getProfile(profileId.toString());
@@ -556,6 +598,7 @@ public class ProfileServiceIT {
         // Try with invalid ticket
         try {
             profileService.getProfileByTicket("507c7f79bcf86cd7994f6c0e");
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
         } catch (ProfileRestServiceException e) {
             assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
             assertEquals(ErrorCode.NO_SUCH_TICKET, e.getErrorCode());
@@ -567,6 +610,45 @@ public class ProfileServiceIT {
         long count = profileService.getProfileCount(DEFAULT_TENANT);
 
         assertEquals(2, count);
+    }
+
+    @Test
+    @DirtiesContext
+    public void testGetProfilesByQuery() throws Exception {
+        List<Profile> profiles = profileService.getProfilesByQuery(DEFAULT_TENANT, QUERY2);
+
+        assertNotNull(profiles);
+        assertEquals(1, profiles.size());
+        assertJdoeProfile(profiles.get(0));
+
+        // Try with tenant field in query
+        try {
+            profileService.getProfilesByQuery(DEFAULT_TENANT, INVALID_QUERY1);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals(ErrorCode.INVALID_QUERY, e.getErrorCode());
+        }
+
+        // Try with $where operator in query
+        try {
+            profileService.getProfilesByQuery(DEFAULT_TENANT, INVALID_QUERY2);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals(ErrorCode.INVALID_QUERY, e.getErrorCode());
+        }
+
+        accessTokenIdResolver.setAccessTokenId(RANDOM_APP_ACCESS_TOKEN_ID);
+
+        // Try with unreadable attribute in query
+        try {
+            profileService.getProfilesByQuery(DEFAULT_TENANT, QUERY2);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals(ErrorCode.INVALID_QUERY, e.getErrorCode());
+        }
     }
 
     @Test

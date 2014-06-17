@@ -15,6 +15,13 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
     private String name;
     private Map<String, Object> metadata;
 
+    public AttributeDefinition() {
+    }
+
+    public AttributeDefinition(String name) {
+        this.name = name;
+    }
+
     /**
      * Returns the name of the attribute.
      */

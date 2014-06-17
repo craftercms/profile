@@ -46,16 +46,16 @@ public class TenantServiceImplTest {
 
     private static final String LABEL_KEY = "label";
 
-    private static final String TENANT1_NAME =  "tenant1";
-    private static final String TENANT2_NAME =  "tenant2";
-    private static final String ROLE1 =         "role1";
-    private static final String ROLE2 =         "role2";
+    private static final String TENANT1_NAME = "tenant1";
+    private static final String TENANT2_NAME = "tenant2";
+    private static final String ROLE1 = "role1";
+    private static final String ROLE2 = "role2";
 
-    private static final String ATTRIB1_NAME =  "attrib1";
+    private static final String ATTRIB1_NAME = "attrib1";
     private static final String ATTRIB1_LABEL = "Attribute #1";
-    private static final String ATTRIB2_NAME =  "attrib2";
+    private static final String ATTRIB2_NAME = "attrib2";
     private static final String ATTRIB2_LABEL = "Attribute #2";
-    private static final String APP_NAME =      "app";
+    private static final String APP_NAME = "app";
 
     private TenantServiceImpl tenantService;
     @Mock

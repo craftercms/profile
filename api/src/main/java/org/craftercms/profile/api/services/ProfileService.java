@@ -154,6 +154,20 @@ public interface ProfileService {
     void deleteProfile(String profileId) throws ProfileException;
 
     /**
+     * Returns the single profile that matches the specified query
+     *
+     * @param tenantName            the tenant's name
+     * @param query                 the Mongo query used to search for the profiles. Must not contain the $where
+     *                              operator, the tenant's name (already specified) or any non-readable attribute
+     *                              by the application
+     * @param attributesToReturn    the names of the attributes to return with the profile (null to return all
+     *                              attributes)
+     *
+     * @return the profile, or null if not found
+     */
+    Profile getProfileByQuery(String tenantName, String query, String... attributesToReturn) throws ProfileException;
+
+    /**
      * Returns the profile for the specified id.
      *
      * @param profileId             the profile's ID
@@ -196,6 +210,21 @@ public interface ProfileService {
      * @return the number of profiles of the specified tenant
      */
     long getProfileCount(String tenantName) throws ProfileException;
+
+    /**
+     * Returns the profiles that match the specified query
+     *
+     * @param tenantName            the tenant's name
+     * @param query                 the Mongo query used to search for the profiles. Must not contain the $where
+     *                              operator, the tenant's name (already specified) or any non-readable attribute
+     *                              by the application
+     * @param attributesToReturn    the names of the attributes to return with the profile (null to return all
+     *                              attributes)
+     *
+     * @return the list of profiles found, or null if none match the query
+     */
+    List<Profile> getProfilesByQuery(String tenantName, String query, String... attributesToReturn)
+            throws ProfileException;
 
     /**
      * Returns a list of profiles for the specified list of ids.

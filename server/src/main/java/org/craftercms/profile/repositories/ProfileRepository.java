@@ -31,6 +31,17 @@ import java.util.List;
 public interface ProfileRepository extends CrudRepository<Profile> {
 
     /**
+     * Returns the single profile that matches the specified query
+     *
+     * @param query                 the Mongo query used to search for the profiles
+     * @param attributesToReturn    the names of the attributes to return with the profile (null to return all
+     *                              attributes)
+     *
+     * @return the profile, or null if not found
+     */
+    Profile findOneByQuery(String query, String... attributesToReturn) throws MongoDataException;
+
+    /**
      * Returns the profile with the given ID.
      *
      * @param id                    the profile's ID
@@ -49,6 +60,19 @@ public interface ProfileRepository extends CrudRepository<Profile> {
      */
     Profile findByTenantAndUsername(String tenantName, String username, String... attributesToReturn)
             throws MongoDataException;
+
+    /**
+     * Returns the profiles that match the specified query.
+     *
+     * @param query                 the Mongo query used to search for the profiles. Must not contain the $where
+     *                              operator, the tenant's name (already specified) or any non-readable attribute
+     *                              by the application
+     * @param attributesToReturn    the names of the attributes to return with the profile (null to return all
+     *                              attributes)
+     *
+     * @return the list of profiles found, or null if none match the query
+     */
+    Iterable<Profile> findByQuery(String query, String... attributesToReturn) throws MongoDataException;
 
     /**
      * Returns the profiles with the given IDs.

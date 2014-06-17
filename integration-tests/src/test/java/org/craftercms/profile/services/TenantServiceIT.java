@@ -45,24 +45,24 @@ import static org.junit.Assert.*;
 @ContextConfiguration("classpath:crafter/profile/extension/client-context.xml")
 public class TenantServiceIT {
 
-    private static final String INVALID_ACCESS_TOKEN_ID =           "ab785de0-c327-11e3-9c1a-0800200c9a66";
-    private static final String EXPIRED_ACCESS_TOKEN_ID =           "9161fb80-c329-11e3-9c1a-0800200c9a66";
-    private static final String UNALLOWED_ACCESS_TOKEN_ID =         "f9929b40-c358-11e3-9c1a-0800200c9a66";
+    private static final String INVALID_ACCESS_TOKEN_ID = "ab785de0-c327-11e3-9c1a-0800200c9a66";
+    private static final String EXPIRED_ACCESS_TOKEN_ID = "9161fb80-c329-11e3-9c1a-0800200c9a66";
+    private static final String UNALLOWED_ACCESS_TOKEN_ID = "f9929b40-c358-11e3-9c1a-0800200c9a66";
 
-    private static final String DEFAULT_TENANT_NAME =   "default";
+    private static final String DEFAULT_TENANT_NAME = "default";
     private static final String CORPORATE_TENANT_NAME = "corporate";
 
-    private static final String PROFILE_ADMIN_ROLE =    "PROFILE_ADMIN";
-    private static final String ADMIN_ROLE =            "ADMIN";
-    private static final String USER_ROLE =             "USER";
-    private static final Set<String> DEFAULT_ROLES =    SetUtils.asSet("PROFILE_ADMIN", "SOCIAL_USER",
-            "SOCIAL_MODERATOR", "SOCIAL_AUTHOR", "SOCIAL_ADMIN");
-    private static final Set<String> CORPORATE_ROLES =  SetUtils.asSet(ADMIN_ROLE);
+    private static final String PROFILE_ADMIN_ROLE = "PROFILE_ADMIN";
+    private static final String ADMIN_ROLE = "ADMIN";
+    private static final String USER_ROLE = "USER";
+    private static final Set<String> DEFAULT_ROLES = SetUtils.asSet("PROFILE_ADMIN", "SOCIAL_USER", "SOCIAL_MODERATOR",
+            "SOCIAL_AUTHOR", "SOCIAL_ADMIN");
+    private static final Set<String> CORPORATE_ROLES = SetUtils.asSet(ADMIN_ROLE);
 
-    private static final String FIRST_NAME_ATTRIBUTE_NAME =     "firstName";
-    private static final String LAST_NAME_ATTRIBUTE_NAME =      "lastName";
-    private static final String SUBSCRIPTIONS_ATTRIBUTE_NAME =  "subscriptions";
-    private static final String GENDER_ATTRIBUTE_NAME =         "gender";
+    private static final String FIRST_NAME_ATTRIBUTE_NAME = "firstName";
+    private static final String LAST_NAME_ATTRIBUTE_NAME = "lastName";
+    private static final String SUBSCRIPTIONS_ATTRIBUTE_NAME = "subscriptions";
+    private static final String GENDER_ATTRIBUTE_NAME = "gender";
 
     @Autowired
     private TenantService tenantService;

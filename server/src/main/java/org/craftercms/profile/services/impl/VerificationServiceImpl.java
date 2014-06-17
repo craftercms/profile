@@ -45,12 +45,13 @@ import java.util.Map;
 public class VerificationServiceImpl implements VerificationService {
 
     public static final String VERIFICATION_LINK_TEMPLATE_ARG = "verificationLink";
-    public static final String LOG_KEY_VER_URL_CREATED = "profile.verification.verificationUrlCreated";
-    public static final String LOG_KEY_EMAIL_SENT = "profile.verification.emailSent";
-    public static final String LOG_KEY_TOKEN_VERIFIED = "profile.verification.tokenVerified";
-    public static final String ERROR_KEY_CREATE_TOKEN_ERROR = "profile.verification.createTokenError";
-    public static final String ERROR_KEY_GET_TOKEN_ERROR = "profile.verification.getTokenError";
-    public static final String ERROR_KEY_EMAIL_ERROR = "profile.verification.emailError";
+
+    public static final String LOG_KEY_VER_URL_CREATED =        "profile.verification.verificationUrlCreated";
+    public static final String LOG_KEY_EMAIL_SENT =             "profile.verification.emailSent";
+    public static final String LOG_KEY_TOKEN_VERIFIED =         "profile.verification.tokenVerified";
+    public static final String ERROR_KEY_CREATE_TOKEN_ERROR =   "profile.verification.createTokenError";
+    public static final String ERROR_KEY_GET_TOKEN_ERROR =      "profile.verification.getTokenError";
+    public static final String ERROR_KEY_EMAIL_ERROR =          "profile.verification.emailError";
 
     private static final I10nLogger logger = new I10nLogger(VerificationServiceImpl.class,
         "crafter.profile.messages.logging");
