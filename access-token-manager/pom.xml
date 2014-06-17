@@ -46,77 +46,6 @@
         <apache.commons.cli.version>1.2</apache.commons.cli.version>
     </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-    <profiles>
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <resources>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                        <!-- Exclude CLI related resources, since they're only needed by the executable jar -->
-                        <excludes>
-                            <exclude>access-token-manager-cli.properties</exclude>
-                            <exclude>access-token-manager-cli-context.xml</exclude>
-                            <exclude>access-token-manager-queries.xml</exclude>
-                            <exclude>logback.xml</exclude>
-                        </excludes>
-                    </resource>
-                </resources>
-            </build>
-        </profile>
-        <profile>
-            <id>executableJar</id>
-            <build>
-                <finalName>access-token-manager</finalName>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-shade-plugin</artifactId>
-                        <version>2.2</version>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>shade</goal>
-                                </goals>
-                                <configuration>
-                                    <transformers>
-                                        <transformer
-                                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                            <mainClass>org.craftercms.profile.utils.AccessTokenManagerCli</mainClass>
-                                        </transformer>
-                                    </transformers>
-                                    <artifactSet>
-                                        <excludes>
-                                            <exclude>org.aspectj:*</exclude>
-                                            <exclude>ch.qos.cal10n:*</exclude>
-                                        </excludes>
-                                    </artifactSet>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
     <dependencies>
         <!-- Crafter -->
         <dependency>
@@ -216,5 +145,83 @@
             <version>${logback.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Implementation-Build>${buildNumber}</Implementation-Build>
+                            <Build-On>${timestamp}</Build-On>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <!-- Exclude CLI related resources, since they're only needed by the executable jar -->
+                        <excludes>
+                            <exclude>access-token-manager-cli.properties</exclude>
+                            <exclude>access-token-manager-cli-context.xml</exclude>
+                            <exclude>access-token-manager-queries.xml</exclude>
+                            <exclude>logback.xml</exclude>
+                        </excludes>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+        <profile>
+            <id>executableJar</id>
+            <build>
+                <finalName>access-token-manager</finalName>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>2.2</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <transformers>
+                                        <transformer
+                                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <mainClass>org.craftercms.profile.utils.AccessTokenManagerCli</mainClass>
+                                        </transformer>
+                                    </transformers>
+                                    <artifactSet>
+                                        <excludes>
+                                            <exclude>org.aspectj:*</exclude>
+                                            <exclude>ch.qos.cal10n:*</exclude>
+                                        </excludes>
+                                    </artifactSet>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
