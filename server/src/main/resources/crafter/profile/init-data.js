@@ -68,6 +68,34 @@ if (db.tenant.count() == 0) {
                         "allowedActions" : [ "*" ]
                     }
                 ]
+            },
+            {
+                "name" : "displayName",
+                "metadata": {
+                    "label": "Display Name",
+                    "type": "TEXT",
+                    "displayOrder": 2
+                },
+                "permissions" : [
+                    {
+                        "application" : "*",
+                        "allowedActions" : [ "*" ]
+                    }
+                ]
+            },
+            {
+                "name" : "avatarLink",
+                "metadata": {
+                    "label": "Avatar Link",
+                    "type": "TEXT",
+                    "displayOrder": 3
+                },
+                "permissions" : [
+                    {
+                        "application" : "*",
+                        "allowedActions" : [ "*" ]
+                    }
+                ]
             }
         ]
     });

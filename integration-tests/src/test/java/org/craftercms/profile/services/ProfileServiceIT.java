@@ -221,6 +221,9 @@ public class ProfileServiceIT {
             assertNotNull(profile.getAttributes());
             assertEquals(0, profile.getAttributes().size());
 
+            // Wait a few seconds so that the email can be sent
+            Thread.sleep(3000);
+
             String email = GreenMailUtil.getBody(mailServer.getReceivedMessages()[0]);
 
             assertNotNull(email);
@@ -756,6 +759,9 @@ public class ProfileServiceIT {
             profile = profileService.forgotPassword(profile.getId().toString(), RESET_PASSWORD_URL);
 
             assertNotNull(profile);
+
+            // Wait a few seconds so that the email can be sent
+            Thread.sleep(3000);
 
             String email = GreenMailUtil.getBody(mailServer.getReceivedMessages()[0]);
 

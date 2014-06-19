@@ -3,10 +3,12 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
     <!--
     Activates various annotations to be detected in bean classes: Spring's @Required and @Autowired, as well as JSR
@@ -16,6 +18,9 @@
     <context:annotation-config/>
 
     <aop:aspectj-autoproxy/>
+
+    <task:annotation-driven executor="taskExecutor"/>
+    <task:executor id="taskExecutor" pool-size="${crafter.profile.task.executor.poolSize}" queue-capacity="${crafter.profile.task.executor.queueCapacity}"/>
 
     <bean id="crafter.loggedAspect" class="org.craftercms.commons.logging.LoggedAspect"/>
 
@@ -75,27 +80,27 @@
         </property>
     </bean>
 
-    <bean id="crafter.AbstractJongoRepositoryBase" class="org.craftercms.commons.mongo.AbstractJongoRepository"
+    <bean id="crafter.jongoRepositoryBase" class="org.craftercms.commons.mongo.AbstractJongoRepository"
           init-method="init" abstract="true">
         <property name="jongo" ref="crafter.jongo"/>
         <property name="queries" ref="crafter.jongoQueries"/>
     </bean>
 
     <bean id="crafter.accessTokenRepository" class="org.craftercms.profile.repositories.impl.AccessTokenRepositoryImpl"
-          parent="crafter.AbstractJongoRepositoryBase"/>
+          parent="crafter.jongoRepositoryBase"/>
 
     <bean id="crafter.profileRepository" class="org.craftercms.profile.repositories.impl.ProfileRepositoryImpl"
-          parent="crafter.AbstractJongoRepositoryBase"/>
+          parent="crafter.jongoRepositoryBase"/>
 
     <bean id="crafter.tenantRepository" class="org.craftercms.profile.repositories.impl.TenantRepositoryImpl"
-          parent="crafter.AbstractJongoRepositoryBase"/>
+          parent="crafter.jongoRepositoryBase"/>
 
     <bean id="crafter.ticketRepository" class="org.craftercms.profile.repositories.impl.TicketRepositoryImpl"
-          parent="crafter.AbstractJongoRepositoryBase"/>
+          parent="crafter.jongoRepositoryBase"/>
 
     <bean id="crafter.verificationTokenRepository"
           class="org.craftercms.profile.repositories.impl.VerificationTokenRepositoryImpl"
-          parent="crafter.AbstractJongoRepositoryBase"/>
+          parent="crafter.jongoRepositoryBase"/>
 
     <bean id="crafter.mongoInitScriptRunner" class="org.craftercms.commons.mongo.MongoScriptRunner">
         <property name="mongo" ref="crafter.mongoClient"/>

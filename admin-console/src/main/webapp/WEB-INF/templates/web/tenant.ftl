@@ -83,10 +83,15 @@
                          ng-class="{'has-error': definitionForm.name.$dirty && definitionForm.name.$invalid}">
                         <label for="name">Name{{newDefinition ? ' *' : ''}}</label>
                         <input name="name" type="text" class="form-control" ng-model="currentDefinition.name"
-                               ng-disabled="!newDefinition" ng-required="newDefinition"/>
+                               ng-disabled="!newDefinition" ng-required="newDefinition"
+                               attribute-name-not-repeated="tenant.attributeDefinitions"/>
                         <span class="error-message"
                               ng-show="definitionForm.name.$dirty && definitionForm.name.$error.required">
                             Name is required
+                        </span>
+                        <span class="error-message"
+                              ng-show="definitionForm.name.$dirty && definitionForm.name.$error.attributeNameNotRepeated">
+                            An attribute with that name already exists
                         </span>
                     </div>
 
