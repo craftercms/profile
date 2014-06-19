@@ -61,26 +61,31 @@
         <property name="accessTokenId" value="${crafter.profile.rest.client.accessToken.id}"/>
     </bean>
 
-    <bean id="crafter.tenantServiceRestClient" class="org.craftercms.profile.services.impl.TenantServiceRestClient">
+    <bean id="crafter.profileRestClientBase"
+          class="org.craftercms.profile.services.impl.AbstractProfileRestClientBase"
+          abstract="true">
         <property name="baseUrl" value="${crafter.profile.rest.client.url.base}"/>
         <property name="extension" value="${crafter.profile.rest.client.url.extension}"/>
+    </bean>
+
+    <bean id="crafter.tenantServiceRestClient"
+          class="org.craftercms.profile.services.impl.TenantServiceRestClient"
+          parent="crafter.profileRestClientBase">
         <property name="restTemplate" ref="crafter.profileRestTemplate"/>
         <property name="accessTokenIdResolver" ref="crafter.accessTokenIdResolver"/>
     </bean>
 
     <bean id="crafter.profileServiceRestClient"
-          class="org.craftercms.profile.services.impl.ProfileServiceRestClient">
-        <property name="baseUrl" value="${crafter.profile.rest.client.url.base}"/>
-        <property name="extension" value="${crafter.profile.rest.client.url.extension}"/>
+          class="org.craftercms.profile.services.impl.ProfileServiceRestClient"
+          parent="crafter.profileRestClientBase">
         <property name="restTemplate" ref="crafter.profileRestTemplate"/>
         <property name="accessTokenIdResolver" ref="crafter.accessTokenIdResolver"/>
         <property name="objectMapper" ref="crafter.profileObjectMapper"/>
     </bean>
 
     <bean id="crafter.authenticationServiceRestClient"
-          class="org.craftercms.profile.services.impl.AuthenticationServiceRestClient">
-        <property name="baseUrl" value="${crafter.profile.rest.client.url.base}"/>
-        <property name="extension" value="${crafter.profile.rest.client.url.extension}"/>
+          class="org.craftercms.profile.services.impl.AuthenticationServiceRestClient"
+          parent="crafter.profileRestClientBase">
         <property name="restTemplate" ref="crafter.profileRestTemplate"/>
         <property name="accessTokenIdResolver" ref="crafter.accessTokenIdResolver"/>
     </bean>

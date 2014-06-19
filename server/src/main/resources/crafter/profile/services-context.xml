@@ -75,27 +75,27 @@
         </property>
     </bean>
 
-    <bean id="crafter.AbstractJongoRepositoryBase" class="org.craftercms.commons.mongo.AbstractJongoRepository"
+    <bean id="crafter.jongoRepositoryBase" class="org.craftercms.commons.mongo.AbstractJongoRepository"
           init-method="init" abstract="true">
         <property name="jongo" ref="crafter.jongo"/>
         <property name="queries" ref="crafter.jongoQueries"/>
     </bean>
 
     <bean id="crafter.accessTokenRepository" class="org.craftercms.profile.repositories.impl.AccessTokenRepositoryImpl"
-          parent="crafter.AbstractJongoRepositoryBase"/>
+          parent="crafter.jongoRepositoryBase"/>
 
     <bean id="crafter.profileRepository" class="org.craftercms.profile.repositories.impl.ProfileRepositoryImpl"
-          parent="crafter.AbstractJongoRepositoryBase"/>
+          parent="crafter.jongoRepositoryBase"/>
 
     <bean id="crafter.tenantRepository" class="org.craftercms.profile.repositories.impl.TenantRepositoryImpl"
-          parent="crafter.AbstractJongoRepositoryBase"/>
+          parent="crafter.jongoRepositoryBase"/>
 
     <bean id="crafter.ticketRepository" class="org.craftercms.profile.repositories.impl.TicketRepositoryImpl"
-          parent="crafter.AbstractJongoRepositoryBase"/>
+          parent="crafter.jongoRepositoryBase"/>
 
     <bean id="crafter.verificationTokenRepository"
           class="org.craftercms.profile.repositories.impl.VerificationTokenRepositoryImpl"
-          parent="crafter.AbstractJongoRepositoryBase"/>
+          parent="crafter.jongoRepositoryBase"/>
 
     <bean id="crafter.mongoInitScriptRunner" class="org.craftercms.commons.mongo.MongoScriptRunner">
         <property name="mongo" ref="crafter.mongoClient"/>
