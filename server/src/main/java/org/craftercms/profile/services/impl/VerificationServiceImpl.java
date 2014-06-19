@@ -30,6 +30,7 @@ import org.craftercms.profile.repositories.VerificationTokenRepository;
 import org.craftercms.profile.services.VerificationService;
 import org.craftercms.profile.services.VerificationSuccessCallback;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.scheduling.annotation.Async;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -94,6 +95,7 @@ public class VerificationServiceImpl implements VerificationService {
     }
 
     @Override
+    @Async
     public void sendEmail(Profile profile, String verificationBaseUrl) throws ProfileException {
         VerificationToken token = new VerificationToken(profile.getId().toString(), new Date());
 

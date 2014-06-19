@@ -192,7 +192,7 @@ app.config(function($routeProvider) {
                     password: null,
                     email: null,
                     verified: false,
-                    enabled: false,
+                    enabled: true,
                     createdOn: null,
                     lastModified: null,
                     tenant: null,
@@ -664,6 +664,29 @@ app.directive('equals', function () {
                 return scope.equals == ctrl.$modelValue;
             }, function(currentValue) {
                 ctrl.$setValidity('equals', currentValue);
+            });
+        }
+    };
+});
+
+app.directive('attributeNameNotRepeated', function () {
+    return {
+        require: 'ngModel',
+        restrict: 'A',
+        scope: {
+            attributeDefinitions: '=attributeNameNotRepeated'
+        },
+        link: function(scope, elem, attrs, ctrl) {
+            scope.$watch(function() {
+                for (var i = 0; i < scope.attributeDefinitions.length; i++) {
+                    if (scope.attributeDefinitions[i].name == ctrl.$modelValue) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }, function(currentValue) {
+                ctrl.$setValidity('attributeNameNotRepeated', currentValue);
             });
         }
     };
