@@ -67,6 +67,7 @@ public class LoginProcessor implements RequestSecurityProcessor {
         usernameParameter = DEFAULT_USERNAME_PARAM;
         passwordParameter = DEFAULT_PASSWORD_PARAM;
     }
+
     public void setLoginUrl(String loginUrl) {
         this.loginUrl = loginUrl;
     }
