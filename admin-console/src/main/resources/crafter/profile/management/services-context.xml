@@ -8,9 +8,6 @@
     
     <import resource="classpath:crafter/security/security-context.xml"/>
 
-    <bean id="crafter.hasPermissionAnnotationHandler" class="org.craftercms.commons.security.permissions.annotations.HasPermissionAnnotationHandler">
-    </bean>
-
     <bean name="crafter.adminConsoleProperties"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="order" value="0"/>
@@ -27,10 +24,6 @@
         <entry key="/login" value="permitAll()"/>
         <entry key="/**" value="hasRole('PROFILE_ADMIN')"/>
     </util:map>
-
-    <bean id="crafter.messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-        <property name="basename" value="${crafter.profile.management.validation.messages.bundle.baseName}"/>
-    </bean>
 
     <import resource="classpath*:crafter/profile/management/extension/services-context.xml"/>
 

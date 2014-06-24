@@ -87,7 +87,7 @@
     </bean>
 
     <bean id="crafter.profileLastModifiedCookieManager" class="org.craftercms.commons.http.CookieManager">
-        <property name="maxAge" value="${crafter.security.cookie.ticket.maxAge}"/>
+        <property name="maxAge" value="${crafter.security.cookie.profileLastModified.maxAge}"/>
         <property name="path" value="/"/>
     </bean>
 

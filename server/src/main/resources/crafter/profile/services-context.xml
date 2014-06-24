@@ -131,12 +131,13 @@
     <bean id="crafter.mailFreeMarkerConfig"
           class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
         <property name="templateLoaderPaths" value="${crafter.profile.mail.templates.path}"/>
-        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="defaultEncoding" value="${crafter.profile.mail.encoding}"/>
     </bean>
 
     <bean id="crafter.emailFactory" class="org.craftercms.commons.mail.impl.EmailFactoryImpl">
         <property name="mailSender" ref="crafter.mailSender"/>
         <property name="freeMarkerConfig" ref="crafter.mailFreeMarkerConfig"/>
+        <property name="templateEncoding" value="${crafter.profile.mail.encoding}"/>
     </bean>
 
     <!-- Permissions -->

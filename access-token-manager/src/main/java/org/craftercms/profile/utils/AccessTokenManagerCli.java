@@ -234,7 +234,8 @@ public class AccessTokenManagerCli {
         while (true) {
             String tenant = readLineCheckingForEmpty("Enter tenant name (use * for any tenant): ");
             String[] actions = readLineCheckingForEmpty("Enter allowed actions, separated by comma (valid actions " +
-                    "are " + StringUtils.join(TenantAction.values(), ", ") + " or * for any action): ").split(",");
+                    "are " + StringUtils.join(TenantAction.values(), ", ") + " or * for any action): ").split(
+                    "\\s*,\\s*");
             boolean validActions = true;
 
             if (!ArrayUtils.contains(actions, "*")) {
