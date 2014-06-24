@@ -73,16 +73,18 @@ public class ProfileServiceImpl implements ProfileService {
     public static final String ERROR_KEY_GET_PROFILE_ERROR = "profile.profile.getProfileError";
     public static final String ERROR_KEY_UPDATE_PROFILE_ERROR = "profile.profile.updateProfileError";
     public static final String ERROR_KEY_DELETE_PROFILE_ERROR = "profile.profile.deleteProfileError";
+    public static final String ERROR_KEY_GET_PROFILE_COUNT_BY_QUERY_ERROR =
+            "profile.profile.getProfileCountByQueryError";
     public static final String ERROR_KEY_GET_PROFILES_BY_QUERY_ERROR = "profile.profile.getProfilesByQueryError";
     public static final String ERROR_KEY_GET_PROFILE_BY_USERNAME_ERROR = "profile.profile.getProfileByUsernameError";
     public static final String ERROR_KEY_GET_PROFILE_COUNT_ERROR = "profile.profile.getProfileCountError";
     public static final String ERROR_KEY_GET_PROFILES_ERROR = "profile.profile.getProfilesError";
     public static final String ERROR_KEY_GET_PROFILE_RANGE_ERROR = "profile.profile.getProfileRangeError";
     public static final String ERROR_KEY_GET_PROFILES_BY_ROLE_ERROR = "profile.profile.getProfilesByRoleError";
-    public static final String ERROR_KEY_GET_PROFILES_BY_EXISTING_ATTRIB_ERROR = "profile.profile." +
-            "getProfilesByExistingAttributeError";
-    public static final String ERROR_KEY_GET_PROFILES_BY_ATTRIB_VALUE_ERROR = "profile.profile." +
-            "getProfilesByAttributeValueError";
+    public static final String ERROR_KEY_GET_PROFILES_BY_EXISTING_ATTRIB_ERROR =
+            "profile.profile.getProfilesByExistingAttributeError";
+    public static final String ERROR_KEY_GET_PROFILES_BY_ATTRIB_VALUE_ERROR =
+            "profile.profile.getProfilesByAttributeValueError";
     public static final String ERROR_KEY_RESET_PASSWORD_ERROR = "profile.profile.resetPasswordError";
     public static final String ERROR_KEY_TENANT_NOT_ALLOWED = "profile.profile.query.tenantNotAllowed";
     public static final String ERROR_KEY_WHERE_NOT_ALLOWED = "profile.profile.query.whereNotAllowed";
@@ -215,7 +217,7 @@ public class ProfileServiceImpl implements ProfileService {
                 if (enabled != null) {
                     profile.setEnabled(enabled);
                 }
-                if (CollectionUtils.isNotEmpty(roles)) {
+                if (roles != null) {
                     profile.setRoles(roles);
                 }
                 if (MapUtils.isNotEmpty(attributes)) {
@@ -468,7 +470,21 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public List<Profile> getProfilesByQuery(String tenantName, String query, String... attributesToReturn)
+    public long getProfileCountByQuery(String tenantName, String query) throws ProfileException {
+        checkIfManageProfilesIsAllowed(tenantName);
+
+        Tenant tenant = getTenant(tenantName);
+
+        try {
+            return profileRepository.count(getFinalQuery(tenant, query));
+        } catch (MongoDataException e) {
+            throw new I10nProfileException(ERROR_KEY_GET_PROFILE_COUNT_BY_QUERY_ERROR, e, tenant, query);
+        }
+    }
+
+    @Override
+    public List<Profile> getProfilesByQuery(String tenantName, String query, String sortBy, SortOrder sortOrder,
+                                            Integer start, Integer count, String... attributesToReturn)
             throws ProfileException {
         checkIfManageProfilesIsAllowed(tenantName);
 
@@ -476,12 +492,12 @@ public class ProfileServiceImpl implements ProfileService {
 
         try {
             List<Profile> profiles = IterableUtils.toList(profileRepository.findByQuery(getFinalQuery(tenant, query),
-                    attributesToReturn));
+                    sortBy, sortOrder, start, count, attributesToReturn));
             filterNonReadableAttributes(tenant, profiles);
 
             return profiles;
         } catch (MongoDataException e) {
-            throw new I10nProfileException(ERROR_KEY_GET_PROFILES_BY_QUERY_ERROR, e, query);
+            throw new I10nProfileException(ERROR_KEY_GET_PROFILES_BY_QUERY_ERROR, e, tenant, query);
         }
     }
 

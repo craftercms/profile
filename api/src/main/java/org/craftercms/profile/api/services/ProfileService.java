@@ -212,19 +212,34 @@ public interface ProfileService {
     long getProfileCount(String tenantName) throws ProfileException;
 
     /**
+     * Returns the number of profiles that match the query for the specified tenant.
+     *
+     * @param tenantName    the tenant's name
+     * @param query         the query the profiles must match
+     *
+     * @return  the number of profiles of the specified tenant
+     */
+    long getProfileCountByQuery(String tenantName, String query) throws ProfileException;
+
+    /**
      * Returns the profiles that match the specified query
      *
      * @param tenantName            the tenant's name
      * @param query                 the Mongo query used to search for the profiles. Must not contain the $where
      *                              operator, the tenant's name (already specified) or any non-readable attribute
      *                              by the application
+     * @param sortBy                profile attribute to sort the list by (optional)
+     * @param sortOrder             the sort order (either ASC or DESC) (optional)
+     * @param start                 from the entire list of results, the position where the actual results should start
+     *                              (useful for pagination) (optional)
+     * @param count                 the number of profiles to return (optional)
      * @param attributesToReturn    the names of the attributes to return with the profile (null to return all
      *                              attributes)
      *
      * @return the list of profiles found, or null if none match the query
      */
-    List<Profile> getProfilesByQuery(String tenantName, String query, String... attributesToReturn)
-            throws ProfileException;
+    List<Profile> getProfilesByQuery(String tenantName, String query, String sortBy, SortOrder sortOrder, Integer start,
+                                     Integer count, String... attributesToReturn) throws ProfileException;
 
     /**
      * Returns a list of profiles for the specified list of ids.

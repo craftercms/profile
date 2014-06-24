@@ -40,21 +40,21 @@ public class TenantController {
 
     public static final String BASE_URL_TENANT = "/tenant";
 
-    public static final String URL_VIEW_TENANT_LIST =   "/list/view";
+    public static final String URL_VIEW_TENANT_LIST = "/list/view";
     public static final String URL_VIEW_CREATE_TENANT = "/new/view";
     public static final String URL_VIEW_UPDATE_TENANT = "/update/view";
 
-    public static final String URL_GET_TENANT_NAMES =   "/names";
-    public static final String URL_GET_TENANT =         "/{" + PATH_VAR_NAME + "}";
-    public static final String URL_CREATE_TENANT =      "/new";
-    public static final String URL_UPDATE_TENANT =      "/update";
-    public static final String URL_DELETE_TENANT =      "/{" + PATH_VAR_NAME + "}/delete";
+    public static final String URL_GET_TENANT_NAMES = "/names";
+    public static final String URL_GET_TENANT = "/{" + PATH_VAR_NAME + "}";
+    public static final String URL_CREATE_TENANT = "/new";
+    public static final String URL_UPDATE_TENANT = "/update";
+    public static final String URL_DELETE_TENANT = "/{" + PATH_VAR_NAME + "}/delete";
 
-    public static final String VIEW_TENANT_LIST =   "tenant-list";
-    public static final String VIEW_TENANT =        "tenant";
+    public static final String VIEW_TENANT_LIST = "tenant-list";
+    public static final String VIEW_TENANT = "tenant";
 
-    public static final String MODEL_PAGE_HEADER =  "pageHeader";
-    public static final String MODEL_MESSAGE =      "message";
+    public static final String MODEL_PAGE_HEADER = "pageHeader";
+    public static final String MODEL_MESSAGE = "message";
 
     public static final String PAGE_HEADER_CREATE = "New Tenant";
     public static final String PAGE_HEADER_UPDATE = "Update Tenant";

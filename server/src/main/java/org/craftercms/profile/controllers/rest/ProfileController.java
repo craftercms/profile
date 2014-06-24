@@ -214,13 +214,26 @@ public class ProfileController {
         return profileService.getProfileCount(tenantName);
     }
 
+    @RequestMapping(value = URL_TENANT_COUNT_BY_QUERY, method = RequestMethod.GET)
+    @ResponseBody
+    public long getProfileCount(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                @RequestParam(PARAM_QUERY) String query) throws ProfileException {
+        return profileService.getProfileCountByQuery(tenantName, query);
+    }
+
+
     @RequestMapping(value = URL_PROFILE_GET_BY_QUERY, method = RequestMethod.GET)
     @ResponseBody
     public List<Profile> getProfilesByQuery(@RequestParam(PARAM_TENANT_NAME) String tenantName,
                                             @RequestParam(PARAM_QUERY) String query,
+                                            @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
+                                            @RequestParam(value = PARAM_SORT_ORDER, required = false)
+                                            SortOrder sortOrder,
+                                            @RequestParam(value = PARAM_START, required = false) Integer start,
+                                            @RequestParam(value = PARAM_COUNT, required = false) Integer count,
                                             @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                             String[] attributesToReturn) throws ProfileException {
-        return profileService.getProfilesByQuery(tenantName, query, attributesToReturn);
+        return profileService.getProfilesByQuery(tenantName, query, sortBy, sortOrder, start, count, attributesToReturn);
     }
 
     @RequestMapping(value = URL_PROFILE_GET_BY_IDS, method = RequestMethod.GET)

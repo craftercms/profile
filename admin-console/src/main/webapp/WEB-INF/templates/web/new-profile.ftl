@@ -5,7 +5,7 @@
 
     <div class="form-group" ng-class="{'has-error': form.username.$dirty && form.username.$invalid}">
         <label for="username">Username *</label>
-        <input name="username" type="text" class="form-control" ng-model="profile.username" required/>
+        <input name="username" type="text" class="form-control" ng-model="profile.username" required="required"/>
         <span class="error-message" ng-show="form.username.$dirty && form.username.$error.required">
             Username is required
         </span>
@@ -20,7 +20,7 @@
 
     <div class="form-group" ng-class="{'has-error': form.email.$dirty && form.email.$invalid}">
         <label for="email">Email *</label>
-        <input name="email" type="email" class="form-control" ng-model="profile.email" required/>
+        <input name="email" type="email" class="form-control" ng-model="profile.email" required="required"/>
         <span class="error-message" ng-show="form.email.$dirty && form.email.$error.required">
             Email is required
         </span>
@@ -31,7 +31,7 @@
 
     <div class="form-group" ng-class="{'has-error': form.password.$dirty && form.password.$invalid}">
         <label for="password">Password *</label>
-        <input name="password" type="password" class="form-control" ng-model="profile.password" required/>
+        <input name="password" type="password" class="form-control" ng-model="profile.password" required="required"/>
         <span class="error-message" ng-show="form.password.$dirty && form.password.$error.required">
             Password is required
         </span>
@@ -40,7 +40,7 @@
     <div class="form-group" ng-class="{'has-error': form.confirmPassword.$dirty && form.confirmPassword.$invalid}">
         <label for="confirmPassword">Confirm Password *</label>
         <input name="confirmPassword" type="password" class="form-control" ng-model="confirmPassword"
-               equals="profile.password" required/>
+               equals="profile.password" required="required"/>
         <span class="error-message" ng-show="form.confirmPassword.$dirty && form.confirmPassword.$error.required">
             Confirm Password is required
         </span>

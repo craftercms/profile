@@ -127,3 +127,10 @@ a {
     margin-right: auto;
     margin-left: auto;
 }
+
+/*
+ * Search
+ */
+.search-box {
+    width: 200px;
+}

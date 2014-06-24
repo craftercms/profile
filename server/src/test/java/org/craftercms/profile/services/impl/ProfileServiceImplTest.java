@@ -112,44 +112,106 @@ public class ProfileServiceImplTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        when(tenantPermissionEvaluator.isAllowed(anyString(), anyString())).thenReturn(true);
-        when(attributePermissionEvaluator.isAllowed(any(AttributeDefinition.class), anyString())).thenReturn(true);
-        when(attributePermissionEvaluator.isAllowed(eq(new AttributeDefinition(ATTRIB_NAME_PRIVATE)), anyString()))
+        when(tenantPermissionEvaluator.isAllowed(
+                anyString(), anyString()))
+                .thenReturn(true);
+        when(attributePermissionEvaluator.isAllowed(
+                any(AttributeDefinition.class), anyString()))
+                .thenReturn(true);
+        when(attributePermissionEvaluator.isAllowed(
+                eq(new AttributeDefinition(ATTRIB_NAME_PRIVATE)), anyString()))
                 .thenReturn(false);
-
-        when(profileRepository.findOneByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT,
-                TENANT1_NAME, QUERY), new String[0])).thenReturn(getTenant1Profile());
-        when(profileRepository.findById(PROFILE1_ID.toString(), new String[0]))
-                .thenReturn(getTenant1Profile());
-        when(profileRepository.findById(PROFILE1_ID.toString(), NO_ATTRIBUTE))
-                .thenReturn(getTenant1ProfileNoAttributes());
-        when(profileRepository.findById(PROFILE1_ID.toString(), ATTRIB_NAME_FIRST_NAME))
-                .thenReturn(getTenant1ProfileNoLastName());
-        when(profileRepository.findById(PROFILE2_ID.toString(), new String[0]))
-                .thenReturn(getTenant2Profile());
-        when(profileRepository.findByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT,
-                TENANT1_NAME, QUERY), new String[0])).thenReturn(getAllTenant1Profiles());
-        when(profileRepository.findByTenantAndUsername(TENANT1_NAME, USERNAME1, new String[0]))
-                .thenReturn(getTenant1Profile());
-        when(profileRepository.findByIds(TENANT1_PROFILE_IDS, SORT_BY, SortOrder.ASC))
-                .thenReturn(getAllTenant1Profiles());
-        when(profileRepository.findRange(TENANT1_NAME, SORT_BY, SortOrder.ASC, START, COUNT))
-                .thenReturn(getAllTenant1Profiles());
-        when(profileRepository.findByTenantAndRole(TENANT1_NAME, ROLE1, SORT_BY, SortOrder.ASC))
-                .thenReturn(getAllTenant1Profiles());
-        when(profileRepository.findByTenantAndAttributeValue(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME,
-                FIRST_NAME, SORT_BY, SortOrder.ASC)).thenReturn(getAllTenant1Profiles());
-        when(profileRepository.countByTenant(TENANT1_NAME)).thenReturn(10L);
 
         when(tenantService.getTenant(TENANT1_NAME)).thenReturn(getTenant1());
         when(tenantService.getTenant(TENANT2_NAME)).thenReturn(getTenant2());
 
         when(authenticationService.getTicket(TICKET_ID.toString())).thenReturn(getTicket());
 
-        when(newProfileVerificationService.verifyToken(eq(VERIFICATION_TOKEN_ID), any(
-                VerificationSuccessCallback.class))).then(new VerifyTokenAnswer(PROFILE2_ID.toString()));
-        when(resetPasswordVerificationService.verifyToken(eq(RESET_PASSWORD_TOKEN_ID), any(
-                VerificationSuccessCallback.class))).then(new VerifyTokenAnswer(PROFILE1_ID.toString()));
+        when(profileRepository.findOneByQuery(
+                String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT, TENANT1_NAME, QUERY),
+                new String[0]))
+                .thenReturn(getTenant1Profile());
+
+        when(profileRepository.findById(
+                PROFILE1_ID.toString(),
+                new String[0])).thenReturn(getTenant1Profile());
+
+        when(profileRepository.findById(
+                PROFILE1_ID.toString(),
+                NO_ATTRIBUTE))
+                .thenReturn(getTenant1ProfileNoAttributes());
+
+        when(profileRepository.findById(
+                PROFILE1_ID.toString(),
+                ATTRIB_NAME_FIRST_NAME))
+                .thenReturn(getTenant1ProfileNoLastName());
+
+        when(profileRepository.findById(
+                PROFILE2_ID.toString(),
+                new String[0]))
+                .thenReturn(getTenant2Profile());
+
+        when(profileRepository.findByQuery(
+                String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT, TENANT1_NAME, QUERY),
+                SORT_BY,
+                SortOrder.ASC,
+                START,
+                COUNT,
+                new String[0]))
+                .thenReturn(getAllTenant1Profiles());
+
+        when(profileRepository.findByTenantAndUsername(
+                TENANT1_NAME,
+                USERNAME1,
+                new String[0]))
+                .thenReturn(getTenant1Profile());
+
+        when(profileRepository.findByIds(
+                TENANT1_PROFILE_IDS,
+                SORT_BY,
+                SortOrder.ASC))
+                .thenReturn(getAllTenant1Profiles());
+
+        when(profileRepository.findRange(
+                TENANT1_NAME,
+                SORT_BY,
+                SortOrder.ASC,
+                START,
+                COUNT))
+                .thenReturn(getAllTenant1Profiles());
+
+        when(profileRepository.findByTenantAndRole(
+                TENANT1_NAME,
+                ROLE1,
+                SORT_BY,
+                SortOrder.ASC))
+                .thenReturn(getAllTenant1Profiles());
+
+        when(profileRepository.findByTenantAndAttributeValue(
+                TENANT1_NAME,
+                ATTRIB_NAME_FIRST_NAME,
+                FIRST_NAME,
+                SORT_BY,
+                SortOrder.ASC))
+                .thenReturn(getAllTenant1Profiles());
+
+        when(profileRepository.countByTenant(
+                TENANT1_NAME))
+                .thenReturn(10L);
+
+        when(profileRepository.count(
+                String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT, TENANT1_NAME, QUERY)))
+                .thenReturn(1L);
+
+        when(newProfileVerificationService.verifyToken(
+                eq(VERIFICATION_TOKEN_ID),
+                any(VerificationSuccessCallback.class)))
+                .then(new VerifyTokenAnswer(PROFILE2_ID.toString()));
+
+        when(resetPasswordVerificationService.verifyToken(
+                eq(RESET_PASSWORD_TOKEN_ID),
+                any(VerificationSuccessCallback.class)))
+                .then(new VerifyTokenAnswer(PROFILE1_ID.toString()));
 
         profileService = new ProfileServiceImpl();
         profileService.setTenantPermissionEvaluator(tenantPermissionEvaluator);
@@ -479,13 +541,14 @@ public class ProfileServiceImplTest {
             profile.setAttributes(getAttributesWithoutPrivateAttribute());
         }
 
-        List<Profile> actual = profileService.getProfilesByQuery(TENANT1_NAME, QUERY);
+        List<Profile> actual = profileService.getProfilesByQuery(TENANT1_NAME, QUERY, SORT_BY, SortOrder.ASC,
+                START, COUNT);
 
         assertEqualProfileLists(expected, actual);
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT,
-                TENANT1_NAME, QUERY), new String[0]);
+                TENANT1_NAME, QUERY), SORT_BY, SortOrder.ASC, START, COUNT, new String[0]);
     }
 
     @Test
@@ -523,6 +586,17 @@ public class ProfileServiceImplTest {
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).countByTenant(TENANT1_NAME);
+    }
+
+    @Test
+    public void testGetProfileCountByQuery() throws Exception {
+        long expected = 1L;
+        long actual = profileService.getProfileCountByQuery(TENANT1_NAME, QUERY);
+
+        assertEquals(expected, actual);
+
+        verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
+        verify(profileRepository).count(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT, TENANT1_NAME, QUERY));
     }
 
     @Test

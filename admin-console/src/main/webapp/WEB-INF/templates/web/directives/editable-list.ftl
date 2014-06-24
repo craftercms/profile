@@ -5,9 +5,9 @@
     <div class="panel-body">
         <div class="input-group">
             <input type="text" class="form-control" placeholder="Enter item to add" ng-model="itemToAdd"/>
-                <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" ng-click="addItem(itemToAdd)">Add</button>
-                </span>
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" ng-click="addItem(itemToAdd)">Add</button>
+            </span>
         </div>
 
         <table class="table table-striped form-panel-table">

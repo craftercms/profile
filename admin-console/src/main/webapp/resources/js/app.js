@@ -125,11 +125,19 @@ app.factory('tenantService', function($http) {
 
 app.factory('profileService', function($http) {
     return {
-        getProfileCount: function(tenantName) {
-            return getObject('/profile/count?tenantName=' + tenantName, $http);
+        getProfileCount: function(tenantName, query) {
+            var url = '/profile/count?tenantName=' + tenantName;
+            if (query != undefined && query != null) {
+                url += '&query=' + query;
+            }
+
+            return getObject(url, $http);
         },
-        getProfileList: function(tenantName, start, count) {
+        getProfileList: function(tenantName, query, start, count) {
             var url ='/profile/list?tenantName=' + tenantName;
+            if (query != undefined && query != null) {
+                url += '&query=' + query;
+            }
             if (start != undefined && start != null) {
                 url += '&start=' + start;
             }
@@ -262,7 +270,7 @@ app.config(function($routeProvider) {
 /**
  * Controllers
  */
-app.controller('ProfileListController', function($scope, tenantNames, profileService) {
+app.controller('ProfileListController', function($scope, $location, tenantNames, profileService) {
     // Abort if tenantNames is null or empty. It means there was a server error
     if (!tenantNames) {
         return;
@@ -271,8 +279,15 @@ app.controller('ProfileListController', function($scope, tenantNames, profileSer
     $scope.tenantNames = tenantNames;
     $scope.selectedTenantName = $scope.tenantNames[0];
 
-    $scope.initPaginationAndGetProfileList = function(tenantName) {
-        profileService.getProfileCount(tenantName).then(function(totalProfiles) {
+
+    $scope.createPaginationAndGetAllProfiles = function(tenantName) {
+        $scope.searchText = "";
+
+        $scope.createPaginationAndGetProfileList(tenantName);
+    };
+
+    $scope.createPaginationAndGetProfileList = function(tenantName, searchText) {
+        profileService.getProfileCount(tenantName, searchText).then(function(totalProfiles) {
             $scope.pagination = {};
             $scope.pagination.first = 0;
             $scope.pagination.current = 0;
@@ -286,7 +301,8 @@ app.controller('ProfileListController', function($scope, tenantNames, profileSer
 
             $scope.pagination.displayed = $scope.getDisplayedPages();
 
-            $scope.getProfileList(tenantName, $scope.pagination.current, $scope.pagination.itemsPerPage);
+            $scope.getProfileList(tenantName, searchText, $scope.pagination.current * $scope.pagination.itemsPerPage,
+                $scope.pagination.itemsPerPage);
         });
     };
 
@@ -298,7 +314,8 @@ app.controller('ProfileListController', function($scope, tenantNames, profileSer
 
         $scope.pagination.current--;
 
-        $scope.getProfileList($scope.selectedTenantName, $scope.pagination.current, $scope.pagination.itemsPerPage);
+        $scope.getProfileList($scope.selectedTenantName, $scope.searchText, $scope.pagination.current *
+                $scope.pagination.itemsPerPage, $scope.pagination.itemsPerPage);
     };
 
     $scope.nextPage = function() {
@@ -309,13 +326,15 @@ app.controller('ProfileListController', function($scope, tenantNames, profileSer
 
         $scope.pagination.current++;
 
-        $scope.getProfileList($scope.selectedTenantName, $scope.pagination.current, $scope.pagination.itemsPerPage);
+        $scope.getProfileList($scope.selectedTenantName, $scope.searchText, $scope.pagination.current *
+            $scope.pagination.itemsPerPage, $scope.pagination.itemsPerPage);
     };
 
     $scope.currentPage = function(page) {
         $scope.pagination.current = page;
 
-        $scope.getProfileList($scope.selectedTenantName, $scope.pagination.current, $scope.pagination.itemsPerPage);
+        $scope.getProfileList($scope.selectedTenantName, $scope.searchText, $scope.pagination.current *
+            $scope.pagination.itemsPerPage, $scope.pagination.itemsPerPage);
     };
 
     $scope.getDisplayedPages = function() {
@@ -328,8 +347,8 @@ app.controller('ProfileListController', function($scope, tenantNames, profileSer
         return displayedPages;
     };
 
-    $scope.getProfileList = function(tenantName, start, count) {
-        profileService.getProfileList(tenantName, start, count).then(function(profiles) {
+    $scope.getProfileList = function(tenantName, query, start, count) {
+        profileService.getProfileList(tenantName, query, start, count).then(function(profiles) {
             $scope.profiles = profiles;
         });
     };
@@ -351,7 +370,7 @@ app.controller('ProfileListController', function($scope, tenantNames, profileSer
         });
     };
 
-    $scope.initPaginationAndGetProfileList($scope.selectedTenantName);
+    $scope.createPaginationAndGetProfileList($scope.selectedTenantName, $scope.searchText);
 });
 
 app.controller('NewProfileController', function($scope, $location, tenantNames, profile, tenantService, profileService) {
@@ -378,12 +397,12 @@ app.controller('NewProfileController', function($scope, $location, tenantNames, 
 
     $scope.createProfile = function(profile) {
         profileService.createProfile(profile).then(function() {
-            $location.path('#/');
+            $location.path('/');
         });
     };
 
     $scope.cancel = function() {
-        $location.path('#/');
+        $location.path('/');
     };
 
     $scope.getTenant($scope.profile.tenant);
@@ -407,12 +426,12 @@ app.controller('UpdateProfileController', function($scope, $location, profile, t
 
     $scope.updateProfile = function(profile) {
         profileService.updateProfile(profile).then(function() {
-            $location.path('#/');
+            $location.path('/');
         });
     };
 
     $scope.cancel = function() {
-        $location.path('#/');
+        $location.path('/');
     };
 
     $scope.getTenant($scope.profile.tenant);
@@ -577,12 +596,12 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
         }
 
         promise.then(function() {
-            $location.path('#/');
+            $location.path('/');
         });
     };
 
     $scope.cancel = function() {
-        $location.path('#/');
+        $location.path('/');
     };
 });
 
@@ -669,12 +688,12 @@ app.directive('equals', function () {
     };
 });
 
-app.directive('attributeNameNotRepeated', function () {
+app.directive('attributeNotRepeated', function () {
     return {
         require: 'ngModel',
         restrict: 'A',
         scope: {
-            attributeDefinitions: '=attributeNameNotRepeated'
+            attributeDefinitions: '=attributeNotRepeated'
         },
         link: function(scope, elem, attrs, ctrl) {
             scope.$watch(function() {
@@ -686,7 +705,7 @@ app.directive('attributeNameNotRepeated', function () {
 
                 return true;
             }, function(currentValue) {
-                ctrl.$setValidity('attributeNameNotRepeated', currentValue);
+                ctrl.$setValidity('attributeNotRepeated', currentValue);
             });
         }
     };

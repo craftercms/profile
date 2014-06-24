@@ -47,8 +47,8 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public static final ParameterizedTypeReference<List<Profile>> profileListTypeRef =
             new ParameterizedTypeReference<List<Profile>>() {};
 
-    public static final String ERROR_KEY_ATTRIBUTES_SERIALIZATION_ERROR = "profile.client.attributes." +
-            "serializationError";
+    public static final String ERROR_KEY_ATTRIBUTES_SERIALIZATION_ERROR =
+            "profile.client.attributes.serializationError";
     public static final String ERROR_KEY_INVALID_URI_ERROR = "profile.client.invalidUri";
 
     private ObjectMapper objectMapper;
@@ -88,10 +88,18 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         RestClientUtils.addValue(PARAM_PASSWORD, password, params);
         RestClientUtils.addValue(PARAM_EMAIL, email, params);
         RestClientUtils.addValue(PARAM_ENABLED, enabled, params);
-        RestClientUtils.addValues(PARAM_ROLE, roles, params);
+
+        // Send empty role to indicate that all roles should be deleted
+        if (roles != null && roles.isEmpty()) {
+            RestClientUtils.addValue(PARAM_ROLE, "", params);
+        } else {
+            RestClientUtils.addValues(PARAM_ROLE, roles, params);
+        }
+
         if (MapUtils.isNotEmpty(attributes)) {
             RestClientUtils.addValue(PARAM_ATTRIBUTES, serializeAttributes(attributes), params);
         }
+
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_UPDATE);
@@ -263,11 +271,32 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     }
 
     @Override
-    public List<Profile> getProfilesByQuery(String tenantName, String query, String... attributesToReturn)
+    public long getProfileCountByQuery(String tenantName, String query) throws ProfileException {
+        MultiValueMap<String, String> params = createBaseParams();
+        RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
+        RestClientUtils.addValue(PARAM_QUERY, query, params);
+
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_TENANT_COUNT_BY_QUERY);
+        url = RestClientUtils.addQueryParams(url, params, true);
+
+        try {
+            return doGetForObject(new URI(url), Long.class);
+        } catch (URISyntaxException e) {
+            throw new I10nProfileException(ERROR_KEY_INVALID_URI_ERROR, url);
+        }
+    }
+
+    @Override
+    public List<Profile> getProfilesByQuery(String tenantName, String query, String sortBy, SortOrder sortOrder,
+                                            Integer start, Integer count, String... attributesToReturn)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
         RestClientUtils.addValue(PARAM_QUERY, query, params);
+        RestClientUtils.addValue(PARAM_SORT_BY, sortBy, params);
+        RestClientUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
+        RestClientUtils.addValue(PARAM_START, start, params);
+        RestClientUtils.addValue(PARAM_COUNT, count, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_QUERY);
@@ -392,7 +421,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         try {
             return objectMapper.writeValueAsString(attributes);
         } catch (Exception e) {
-            throw new I10nProfileException(ERROR_KEY_INVALID_URI_ERROR, e);
+            throw new I10nProfileException(ERROR_KEY_ATTRIBUTES_SERIALIZATION_ERROR, e);
         }
     }
 
