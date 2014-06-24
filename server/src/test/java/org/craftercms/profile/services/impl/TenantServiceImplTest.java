@@ -78,8 +78,8 @@ public class TenantServiceImplTest {
         when(tenantRepository.findAll()).thenReturn(Arrays.asList(getTenant1(), getTenant2()));
         when(tenantRepository.count()).thenReturn(2L);
 
-        when(profileService.getProfilesByRole(TENANT2_NAME, ROLE1, null, null,
-                ProfileConstants.NO_ATTRIBUTE)).thenReturn(Arrays.asList(mock(Profile.class)));
+        when(profileService.getProfilesByRole(TENANT2_NAME, ROLE1, null, null, ProfileConstants.NO_ATTRIBUTE))
+                .thenReturn(Arrays.asList(mock(Profile.class)));
         when(profileService.getProfilesByExistingAttribute(TENANT2_NAME, ATTRIB1_NAME, null, null,
                 ProfileConstants.NO_ATTRIBUTE)).thenReturn(Arrays.asList(mock(Profile.class)));
 

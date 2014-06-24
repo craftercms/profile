@@ -82,15 +82,20 @@
                     <div class="form-group"
                          ng-class="{'has-error': definitionForm.name.$dirty && definitionForm.name.$invalid}">
                         <label for="name">Name{{newDefinition ? ' *' : ''}}</label>
-                        <input name="name" type="text" class="form-control" ng-model="currentDefinition.name"
-                               ng-disabled="!newDefinition" ng-required="newDefinition"
-                               attribute-name-not-repeated="tenant.attributeDefinitions"/>
+                        <div ng-if="newDefinition">
+                            <input name="name" type="text" class="form-control" ng-model="currentDefinition.name"
+                                   attribute-not-repeated="tenant.attributeDefinitions" required="required"/>
+                        </div>
+                        <div ng-if="!newDefinition">
+                            <input name="name" type="text" class="form-control" ng-model="currentDefinition.name"
+                                   disabled="disabled"/>
+                        </div>
                         <span class="error-message"
                               ng-show="definitionForm.name.$dirty && definitionForm.name.$error.required">
                             Name is required
                         </span>
                         <span class="error-message"
-                              ng-show="definitionForm.name.$dirty && definitionForm.name.$error.attributeNameNotRepeated">
+                              ng-show="definitionForm.name.$dirty && definitionForm.name.$error.attributeNotRepeated">
                             An attribute with that name already exists
                         </span>
                     </div>
@@ -99,7 +104,7 @@
                          ng-class="{'has-error': definitionForm.label.$dirty && definitionForm.label.$invalid}">
                         <label for="label">Label *</label>
                         <input name="label" type="text" class="form-control"
-                               ng-model="currentDefinition.metadata.label" required/>
+                               ng-model="currentDefinition.metadata.label" required="required"/>
                         <span class="error-message"
                               ng-show="definitionForm.label.$dirty && definitionForm.label.$error.required">
                             Label is required
@@ -117,7 +122,7 @@
                          ng-class="{'has-error': definitionForm.displayOrder.$dirty && definitionForm.displayOrder.$invalid}">
                         <label for="displayOrder">Display Order *</label>
                         <input name="displayOrder" type="number" class="form-control"
-                               ng-model="currentDefinition.metadata.displayOrder" min="0" required/>
+                               ng-model="currentDefinition.metadata.displayOrder" min="0" required="required"/>
                         <span class="error-message"
                               ng-show="definitionForm.displayOrder.$dirty && definitionForm.displayOrder.$error.required">
                             Display Order is required and must be a number

@@ -16,14 +16,11 @@
  */
 package org.craftercms.profile.management.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
 /**
  * {@link java.lang.RuntimeException} thrown when a resource (like a profile or tenant) couldn't be found
- * and a
+ *
+ * @author avasquez
  */
-@ResponseStatus(HttpStatus.NOT_FOUND)
 public class ResourceNotFoundException extends RuntimeException {
 
     public ResourceNotFoundException(String message) {

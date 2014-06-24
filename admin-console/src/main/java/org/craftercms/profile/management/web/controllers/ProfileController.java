@@ -22,6 +22,7 @@ import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
+import org.craftercms.profile.management.exceptions.InvalidRequestParameterException;
 import org.craftercms.profile.management.exceptions.ResourceNotFoundException;
 import org.craftercms.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -32,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * MVC Controller for displaying and modifying profiles.
@@ -43,35 +45,39 @@ import java.util.Map;
 public class ProfileController {
 
     public static final String PATH_VAR_ID = "id";
-    
+
     public static final String BASE_URL_PROFILE = "/profile";
 
-    public static final String URL_VIEW_PROFILE_LIST =      "/list/view";
-    public static final String URL_VIEW_NEW_PROFILE =       "/new/view";
-    public static final String URL_VIEW_UPDATE_PROFILE =    "/update/view";
+    public static final String URL_VIEW_PROFILE_LIST = "/list/view";
+    public static final String URL_VIEW_NEW_PROFILE = "/new/view";
+    public static final String URL_VIEW_UPDATE_PROFILE = "/update/view";
 
-    public static final String URL_GET_PROFILE_COUNT =  "/count";
-    public static final String URL_GET_PROFILE_LIST =   "/list";
-    public static final String URL_GET_PROFILE =        "/{" + PATH_VAR_ID + "}";
-    public static final String URL_CREATE_PROFILE =     "/new";
-    public static final String URL_UPDATE_PROFILE =     "/update";
-    public static final String URL_DELETE_PROFILE =     "/{" + PATH_VAR_ID + "}/delete";
+    public static final String URL_GET_PROFILE_COUNT = "/count";
+    public static final String URL_GET_PROFILE_LIST = "/list";
+    public static final String URL_GET_PROFILE = "/{" + PATH_VAR_ID + "}";
+    public static final String URL_CREATE_PROFILE = "/new";
+    public static final String URL_UPDATE_PROFILE = "/update";
+    public static final String URL_DELETE_PROFILE = "/{" + PATH_VAR_ID + "}/delete";
 
-    public static final String PARAM_TENANT_NAME =  "tenantName";
-    public static final String PARAM_SORT_BY =      "sortBy";
-    public static final String PARAM_SORT_ORDER =   "sortOrder";
-    public static final String PARAM_START =        "start";
-    public static final String PARAM_COUNT =        "count";
+    public static final String PARAM_TENANT_NAME = "tenantName";
+    public static final String PARAM_QUERY = "query";
+    public static final String PARAM_SORT_BY = "sortBy";
+    public static final String PARAM_SORT_ORDER = "sortOrder";
+    public static final String PARAM_START = "start";
+    public static final String PARAM_COUNT = "count";
 
-    public static final String VIEW_PROFILE_LIST =      "profile-list";
-    public static final String VIEW_NEW_PROFILE =       "new-profile";
-    public static final String VIEW_UPDATE_PROFILE =    "update-profile";
+    public static final String VIEW_PROFILE_LIST = "profile-list";
+    public static final String VIEW_NEW_PROFILE = "new-profile";
+    public static final String VIEW_UPDATE_PROFILE = "update-profile";
 
     public static final String MODEL_MESSAGE = "message";
 
     public static final String MSG_PROFILE_CREATED_FORMAT = "Profile '%s' created";
     public static final String MSG_PROFILE_UPDATED_FORMAT = "Profile '%s' updated";
     public static final String MSG_PROFILE_DELETED_FORMAT = "Profile '%s' deleted";
+
+    public static final Pattern QUERY_PATTERN = Pattern.compile("\\w+");
+    public static final String FINAL_QUERY_FORMAT = "{username: {$regex: '.*%s.*', $options: 'i'}}";
 
     private String defaultSortBy;
     private SortOrder defaultSortOrder;
@@ -128,17 +134,30 @@ public class ProfileController {
     @RequestMapping(value = URL_GET_PROFILE_COUNT, method = RequestMethod.GET)
     @ResponseBody
     public long getProfileCount(@RequestParam(value = PARAM_TENANT_NAME, required = false) String tenantName,
+                                @RequestParam(value = PARAM_QUERY, required = false) String query,
                                 HttpServletRequest request) throws ProfileException {
         if (StringUtils.isEmpty(tenantName)) {
             tenantName = SecurityUtils.getTenant(request);
         }
 
-        return profileService.getProfileCount(tenantName);
+        if (StringUtils.isNotEmpty(query)) {
+            if (QUERY_PATTERN.matcher(query).matches()) {
+                query = String.format(FINAL_QUERY_FORMAT, query);
+
+                return profileService.getProfileCountByQuery(tenantName, query);
+            } else {
+                throw new InvalidRequestParameterException(
+                        "Parameter '" + PARAM_QUERY + "' must match regex " + QUERY_PATTERN.pattern());
+            }
+        } else {
+            return profileService.getProfileCount(tenantName);
+        }
     }
 
     @RequestMapping(value = URL_GET_PROFILE_LIST, method = RequestMethod.GET)
     @ResponseBody
     public List<Profile> getProfileList(@RequestParam(value = PARAM_TENANT_NAME, required = false) String tenantName,
+                                        @RequestParam(value = PARAM_QUERY, required = false) String query,
                                         @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
                                         @RequestParam(value = PARAM_SORT_ORDER, required = false) SortOrder sortOrder,
                                         @RequestParam(value = PARAM_START, required = false) Integer start,
@@ -160,7 +179,18 @@ public class ProfileController {
             limit = defaultCount;
         }
 
-        return profileService.getProfileRange(tenantName, sortBy, sortOrder, start, limit);
+        if (StringUtils.isNotEmpty(query)) {
+            if (QUERY_PATTERN.matcher(query).matches()) {
+                query = String.format(FINAL_QUERY_FORMAT, query);
+
+                return profileService.getProfilesByQuery(tenantName, query, sortBy, sortOrder, start, limit);
+            } else {
+                throw new InvalidRequestParameterException(
+                        "Parameter '" + PARAM_QUERY + "' must match regex " + QUERY_PATTERN.pattern());
+            }
+        } else {
+            return profileService.getProfileRange(tenantName, sortBy, sortOrder, start, limit);
+        }
     }
 
     @RequestMapping(value = URL_GET_PROFILE, method = RequestMethod.GET)

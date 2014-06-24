@@ -2,6 +2,7 @@ package org.craftercms.profile.management.web.controllers;
 
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.ProfileRestServiceException;
+import org.craftercms.profile.management.exceptions.InvalidRequestParameterException;
 import org.craftercms.profile.management.exceptions.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,12 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException e, WebRequest request) {
         return handleExceptionInternal(e, HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(InvalidRequestParameterException.class)
+    public ResponseEntity<Object> handleInvalidRequestParameterException(InvalidRequestParameterException e,
+                                                                         WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(ProfileRestServiceException.class)

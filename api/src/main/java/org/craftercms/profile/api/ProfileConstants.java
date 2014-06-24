@@ -44,6 +44,7 @@ public class ProfileConstants {
     public static final String URL_TENANT_UPDATE = "/update";
     public static final String URL_TENANT_DELETE = "/{name}/delete";
     public static final String URL_TENANT_COUNT = "/count";
+    public static final String URL_TENANT_COUNT_BY_QUERY = "/count_by_query";
     public static final String URL_TENANT_GET_ALL = "/all";
     public static final String URL_TENANT_VERIFY_NEW_PROFILES = "/{name}/verify_new_profiles";
     public static final String URL_TENANT_ADD_ROLES = "/{name}/roles/add";

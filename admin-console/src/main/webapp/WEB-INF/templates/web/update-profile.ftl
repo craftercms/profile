@@ -15,7 +15,7 @@
 
     <div class="form-group" ng-class="{'has-error': form.email.$invalid}">
         <label for="email">Email *</label>
-        <input name="email" type="email" class="form-control" ng-model="profile.email" required/>
+        <input name="email" type="email" class="form-control" ng-model="profile.email" required="required"/>
         <span class="error-message" ng-show="form.email.$error.required">Email is required</span>
         <span class="error-message" ng-show="form.email.$error.email">Not a valid email</span>
     </div>

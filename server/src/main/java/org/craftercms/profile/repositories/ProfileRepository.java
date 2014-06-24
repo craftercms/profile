@@ -72,7 +72,8 @@ public interface ProfileRepository extends CrudRepository<Profile> {
      *
      * @return the list of profiles found, or null if none match the query
      */
-    Iterable<Profile> findByQuery(String query, String... attributesToReturn) throws MongoDataException;
+    Iterable<Profile> findByQuery(String query, String sortBy, SortOrder sortOrder, Integer start, Integer count,
+                                  String... attributesToReturn) throws MongoDataException;
 
     /**
      * Returns the profiles with the given IDs.

@@ -101,15 +101,18 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
     }
 
     @Override
-    public Iterable<Profile> findByQuery(String query, String... attributesToReturn) throws MongoDataException {
+    public Iterable<Profile> findByQuery(String query, String sortBy, SortOrder sortOrder, Integer start,
+                                         Integer count, String... attributesToReturn) throws MongoDataException {
         try {
             Find find = getCollection().find(query);
 
+            addSort(find, sortBy, sortOrder);
+            addRange(find, start, count);
             addProjection(find, attributesToReturn);
 
             return find.as(Profile.class);
         } catch (MongoException ex) {
-            String msg = "Unable to find profiles by query '" + query + "'";
+            String msg = "Unable to find profiles by query " + query;
             logger.error(msg, ex);
             throw new MongoDataException(msg, ex);
         }

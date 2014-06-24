@@ -97,6 +97,7 @@ public class ProfileServiceIT {
 
     private static final String QUERY1 = "{email: 'admin@craftersoftware.com'}";
     private static final String QUERY2 = "{attributes.subscriptions.targets: 'news'}";
+    private static final String QUERY3 = "{roles: 'SOCIAL_ADMIN'}";
     private static final String INVALID_QUERY1 = "{tenant: 'default'}";
     private static final String INVALID_QUERY2 = "{$where: \"this.email == 'admin@craftersoftware.com'\"}";
 
@@ -617,16 +618,14 @@ public class ProfileServiceIT {
 
     @Test
     @DirtiesContext
-    public void testGetProfilesByQuery() throws Exception {
-        List<Profile> profiles = profileService.getProfilesByQuery(DEFAULT_TENANT, QUERY2);
+    public void testGetProfileCountByQuery() throws Exception {
+        long count = profileService.getProfileCountByQuery(DEFAULT_TENANT, QUERY2);
 
-        assertNotNull(profiles);
-        assertEquals(1, profiles.size());
-        assertJdoeProfile(profiles.get(0));
+        assertEquals(1, count);
 
         // Try with tenant field in query
         try {
-            profileService.getProfilesByQuery(DEFAULT_TENANT, INVALID_QUERY1);
+            profileService.getProfileCountByQuery(DEFAULT_TENANT, INVALID_QUERY1);
             fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
         } catch (ProfileRestServiceException e) {
             assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
@@ -635,7 +634,7 @@ public class ProfileServiceIT {
 
         // Try with $where operator in query
         try {
-            profileService.getProfilesByQuery(DEFAULT_TENANT, INVALID_QUERY2);
+            profileService.getProfileCountByQuery(DEFAULT_TENANT, INVALID_QUERY2);
             fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
         } catch (ProfileRestServiceException e) {
             assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
@@ -646,7 +645,53 @@ public class ProfileServiceIT {
 
         // Try with unreadable attribute in query
         try {
-            profileService.getProfilesByQuery(DEFAULT_TENANT, QUERY2);
+            profileService.getProfileCountByQuery(DEFAULT_TENANT, QUERY2);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals(ErrorCode.INVALID_QUERY, e.getErrorCode());
+        }
+    }
+
+    @Test
+    @DirtiesContext
+    public void testGetProfilesByQuery() throws Exception {
+        List<Profile> profiles = profileService.getProfilesByQuery(DEFAULT_TENANT, QUERY2, null, null, null, null);
+
+        assertNotNull(profiles);
+        assertEquals(1, profiles.size());
+        assertJdoeProfile(profiles.get(0));
+
+        // With sort and start/limit
+        profiles = profileService.getProfilesByQuery(DEFAULT_TENANT, QUERY3, "username", SortOrder.DESC, 1, 1);
+
+        assertNotNull(profiles);
+        assertEquals(1, profiles.size());
+        assertAdminProfile(profiles.get(0));
+
+        // Try with tenant field in query
+        try {
+            profileService.getProfilesByQuery(DEFAULT_TENANT, INVALID_QUERY1, null, null, null, null);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals(ErrorCode.INVALID_QUERY, e.getErrorCode());
+        }
+
+        // Try with $where operator in query
+        try {
+            profileService.getProfilesByQuery(DEFAULT_TENANT, INVALID_QUERY2, null, null, null, null);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals(ErrorCode.INVALID_QUERY, e.getErrorCode());
+        }
+
+        accessTokenIdResolver.setAccessTokenId(RANDOM_APP_ACCESS_TOKEN_ID);
+
+        // Try with unreadable attribute in query
+        try {
+            profileService.getProfilesByQuery(DEFAULT_TENANT, QUERY2, null, null, null, null);
             fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
         } catch (ProfileRestServiceException e) {
             assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
