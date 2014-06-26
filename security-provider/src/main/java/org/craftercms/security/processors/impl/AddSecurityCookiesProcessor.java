@@ -146,9 +146,12 @@ public class AddSecurityCookiesProcessor implements RequestSecurityProcessor {
                     Long profileLastModified = SecurityUtils.getProfileLastModifiedCookie(request);
                     long currentProfileLastModified = auth.getProfile().getLastModified().getTime();
 
-                    if (StringUtils.isEmpty(ticket)) {
+                    // If both cookie and auth tickets are diff, it means the user has logged in with a new ticket,
+                    // so set the new ticket as the cookie
+                    if (StringUtils.isEmpty(ticket) || !ticket.equals(auth.getTicket())) {
                         addTicketCookie(auth.getTicket());
                     }
+
                     if (profileLastModified == null || currentProfileLastModified != profileLastModified) {
                         addProfileLastModifiedCookie(currentProfileLastModified);
                     }
