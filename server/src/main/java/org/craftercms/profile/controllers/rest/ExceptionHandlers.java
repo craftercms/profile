@@ -168,7 +168,11 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
 
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpHeaders headers, HttpStatus status,
                                                              ErrorCode errorCode, WebRequest request) {
-        logger.error(LOG_KEY_REST_ERROR, ex, ((ServletWebRequest) request).getRequest().getRequestURI(), status);
+        if (status.series() == HttpStatus.Series.SERVER_ERROR) {
+            logger.error(LOG_KEY_REST_ERROR, ex, ((ServletWebRequest) request).getRequest().getRequestURI(), status);
+        } else {
+            logger.debug(LOG_KEY_REST_ERROR, ex, ((ServletWebRequest) request).getRequest().getRequestURI(), status);
+        }
 
         return new ResponseEntity<Object>(new ErrorDetails(errorCode, ex.getLocalizedMessage()), headers, status);
     }

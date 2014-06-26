@@ -116,7 +116,7 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
 
     protected void handleAuthenticationRequiredException(RequestContext context, AuthenticationRequiredException e)
             throws SecurityProviderException, IOException {
-        logger.info("Authentication is required", e);
+        logger.debug("Authentication is required", e);
 
         authenticationRequiredHandler.handle(context, e);
     }
@@ -133,12 +133,12 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
                 // Throw ex just to initialize stack trace
                 throw new AuthenticationRequiredException("Authentication required to access the resource", e);
             } catch (AuthenticationRequiredException ae) {
-                logger.info("Authentication is required", ae);
+                logger.debug("Authentication is required", ae);
 
                 authenticationRequiredHandler.handle(context, ae);
             }
         } else {
-            logger.info("Access denied to user '" + auth.getProfile().getUsername() + "'", e);
+            logger.debug("Access denied to user '" + auth.getProfile().getUsername() + "'", e);
 
             accessDeniedHandler.handle(context, e);
         }
