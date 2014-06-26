@@ -104,7 +104,7 @@ public class LogoutProcessor implements RequestSecurityProcessor {
     }
 
     protected void onLogoutSuccess(Authentication authentication, RequestContext context) throws IOException {
-        logger.info("Logout for user '" + authentication.getProfile().getUsername() + "' successful");
+        logger.debug("Logout for user '" + authentication.getProfile().getUsername() + "' successful");
 
         SecurityUtils.removeAuthentication(context.getRequest());
 

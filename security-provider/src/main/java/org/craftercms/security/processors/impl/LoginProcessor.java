@@ -167,7 +167,7 @@ public class LoginProcessor implements RequestSecurityProcessor {
     }
 
     protected void onLoginFailure(RequestContext context, AuthenticationException e) throws Exception {
-        logger.warn("Login failed", e);
+        logger.debug("Login failed", e);
 
         saveException(e, context.getRequest());
 
