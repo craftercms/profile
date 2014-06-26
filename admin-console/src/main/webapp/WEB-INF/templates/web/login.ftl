@@ -16,7 +16,7 @@
                 <input name="username" type="text" class="form-control" placeholder="Username" autofocus="autofocus">
                 <input name="password" type="password" class="form-control" placeholder="Password">
                 <#if RequestParameters.logout??>
-                    <div class="alert alert-success">You have been successfully logged out</div>
+                    <div class="alert alert-success">You have successfully logged out</div>
                 </#if>
                 <#if RequestParameters.login_error??>
                     <div class="alert alert-danger">Your credentials were not recognized</div>

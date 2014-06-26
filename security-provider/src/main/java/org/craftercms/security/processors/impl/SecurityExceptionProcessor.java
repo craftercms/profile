@@ -131,7 +131,7 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
         if (auth == null) {
             try {
                 // Throw ex just to initialize stack trace
-                throw new AuthenticationRequiredException("Authentication required to access a resource", e);
+                throw new AuthenticationRequiredException("Authentication required to access the resource", e);
             } catch (AuthenticationRequiredException ae) {
                 logger.info("Authentication is required", ae);
 
