@@ -11,7 +11,8 @@ var attributeTypes = [
     { name: 'LARGE_TEXT', label: 'Large Text'},
     { name: 'NUMBER', label: 'Number' },
     { name: 'BOOLEAN', label: 'Boolean' },
-    { name: 'STRING_LIST', label: 'String List' }
+    { name: 'STRING_LIST', label: 'String List' },
+    { name: 'COMPLEX', label: 'Complex' }
 ];
 
 var attributeActions = [
@@ -61,6 +62,15 @@ function getAllActions() {
 }
 
 /**
+ * Filters
+ */
+app.filter('prettyStringify', function() {
+    return function(input) {
+        return angular.toJson(input, true);
+    }
+});
+
+/**
  * Http Interceptors
  */
 app.factory('httpErrorHandler', function ($q) {
@@ -101,7 +111,6 @@ app.config(['$httpProvider', function($httpProvider) {
 /**
  * Services
  */
-
 app.factory('tenantService', function($http) {
     return {
         getTenantNames: function() {
