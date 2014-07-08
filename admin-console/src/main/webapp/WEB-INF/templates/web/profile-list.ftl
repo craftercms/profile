@@ -15,7 +15,7 @@
         <button class="btn btn-default" type="button"
                 ng-click="createPaginationAndGetAllProfiles(selectedTenantName)">Reset</button>
     </div>
-    <div class="form-group" style="float: right;">
+    <div class="form-group pull-right">
         <ul class="pagination" style="margin: 0px;">
             <li ng-class="{'disabled': pagination.current == 0}">
                 <a ng-click="prevPage()">&laquo;</a>
