@@ -98,7 +98,7 @@ if (db.tenant.count() == 0) {
                 ]
             },
             {
-                "name": "socialRoles",
+                "name": "socialTenants",
                 "metadata": {
                     "label": "Social Roles",
                     "type": "COMPLEX",
@@ -124,10 +124,10 @@ if (db.profile.count() == 0) {
         "createdOn" : new Date(),
         "lastModified" : new Date(),
         "tenant" : "default",
-        "roles" : [ "PROFILE_ADMIN" ],
+        "roles" : [ "PROFILE_ADMIN","SOCIAL_GOD" ],
         "attributes" : {
-            "socialRoles": [
-                { "socialTenant": "*", "roles": [ "ADMIN" ] }
+            "socialTenants": [
+                { "tenant": "Default", "id":"f5b143c2-f1c0-4a10-b56e-f485f00d3fe9" ,"roles": ["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER"] },
             ]
         }
     });
