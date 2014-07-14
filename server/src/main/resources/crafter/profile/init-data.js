@@ -124,7 +124,7 @@ if (db.profile.count() == 0) {
         "createdOn" : new Date(),
         "lastModified" : new Date(),
         "tenant" : "default",
-        "roles" : [ "PROFILE_ADMIN","SOCIAL_GOD" ],
+        "roles" : [ "PROFILE_ADMIN","SOCIAL_SUPERADMIN" ],
         "attributes" : {
             "socialTenants": [
                 { "tenant": "Default", "id":"f5b143c2-f1c0-4a10-b56e-f485f00d3fe9" ,"roles": ["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER"] },
