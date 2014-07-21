@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-profile-parent</artifactId>
-        <version>2.3.6-SNAPSHOT</version>
+        <version>2.3.6</version>
     </parent>
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-security-provider</artifactId>
-    <version>2.3.6-SNAPSHOT</version>
+    <version>2.3.6</version>
     <name>Crafter Security Provider</name>
     <description>Crafter Security Provider</description>
     <url>https://github.com/craftercms/profile/tree/master/crafter-security-provider</url>
@@ -130,7 +130,7 @@
         <dependency>
             <groupId>org.craftercms</groupId>
             <artifactId>crafter-profile-client</artifactId>
-            <version>2.3.6-SNAPSHOT</version>
+            <version>2.3.6</version>
         </dependency>
 
         <!-- Eh Cache -->
