@@ -98,7 +98,7 @@ if (db.tenant.count() == 0) {
                 ]
             },
             {
-                "name": "socialTenants",
+                "name": "socialContext",
                 "metadata": {
                     "label": "Social Roles",
                     "type": "COMPLEX",
@@ -126,8 +126,8 @@ if (db.profile.count() == 0) {
         "tenant" : "default",
         "roles" : [ "PROFILE_ADMIN","SOCIAL_SUPERADMIN" ],
         "attributes" : {
-            "socialTenants": [
-                { "tenant": "Default", "id":"f5b143c2-f1c0-4a10-b56e-f485f00d3fe9" ,"roles": ["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER"] },
+            "socialContext": [
+                { "name": "Default", "id":"f5b143c2-f1c0-4a10-b56e-f485f00d3fe9" ,"roles": ["SOCIAL_ADMIN","SOCIAL_MODERATOR","SOCIAL_USER"] },
             ]
         }
     });
