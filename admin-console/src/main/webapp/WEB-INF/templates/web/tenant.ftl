@@ -191,5 +191,5 @@
                         ng-click="saveAttributeDefinition(currentDefinition, currentDefinitionIndex)">Save changes</button>
             </div>
         </div>
-    </div><
+    </div>
 </div>
