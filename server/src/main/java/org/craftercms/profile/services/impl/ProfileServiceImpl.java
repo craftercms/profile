@@ -16,9 +16,18 @@
  */
 package org.craftercms.profile.services.impl;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.Predicate;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.crypto.CipherUtils;
@@ -30,21 +39,30 @@ import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.exception.PermissionException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
-import org.craftercms.profile.api.*;
+import org.craftercms.profile.api.AttributeAction;
+import org.craftercms.profile.api.AttributeDefinition;
+import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.SortOrder;
+import org.craftercms.profile.api.Tenant;
+import org.craftercms.profile.api.TenantAction;
+import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.api.services.TenantService;
-import org.craftercms.profile.exceptions.*;
+import org.craftercms.profile.exceptions.AttributeNotDefinedException;
+import org.craftercms.profile.exceptions.InvalidEmailAddressException;
+import org.craftercms.profile.exceptions.InvalidQueryException;
+import org.craftercms.profile.exceptions.NoSuchProfileException;
+import org.craftercms.profile.exceptions.NoSuchTenantException;
+import org.craftercms.profile.exceptions.NoSuchTicketException;
+import org.craftercms.profile.exceptions.ProfileExistsException;
 import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.services.VerificationService;
 import org.craftercms.profile.services.VerificationSuccessCallback;
 import org.springframework.beans.factory.annotation.Required;
-
-import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * Default implementation of {@link org.craftercms.profile.api.services.ProfileService}.
@@ -244,14 +262,16 @@ public class ProfileServiceImpl implements ProfileService {
             @Override
             public Profile doOnSuccess(VerificationToken token) throws ProfileException {
                 try {
-                    Profile profile = getNonNullProfile(token.getProfileId(), attributesToReturn);
+                    // We need to filter the attributes after save, if not, the attributes to return will replace
+                    // all the attributes
+                    Profile profile = getNonNullProfile(token.getProfileId());
                     profile.setEnabled(true);
                     profile.setVerified(true);
                     profile.setLastModified(new Date());
 
                     profileRepository.save(profile);
 
-                    return profile;
+                    return filterAttributes(profile, attributesToReturn);
                 } catch (MongoDataException e) {
                     throw new I10nProfileException(ERROR_KEY_UPDATE_PROFILE_ERROR, e, token.getProfileId());
                 }
@@ -606,13 +626,15 @@ public class ProfileServiceImpl implements ProfileService {
             @Override
             public Profile doOnSuccess(VerificationToken token) throws ProfileException {
                 try {
-                    Profile profile = getNonNullProfile(token.getProfileId(), attributesToReturn);
+                    // We need to filter the attributes after save, if not, the attributes to return will replace all
+                    // the attributes
+                    Profile profile = getNonNullProfile(token.getProfileId());
                     profile.setPassword(CipherUtils.hashPassword(newPassword));
                     profile.setLastModified(new Date());
 
                     profileRepository.save(profile);
 
-                    return profile;
+                    return filterAttributes(profile, attributesToReturn);
                 } catch (MongoDataException e) {
                     throw new I10nProfileException(ERROR_KEY_RESET_PASSWORD_ERROR, e);
                 }
@@ -649,7 +671,9 @@ public class ProfileServiceImpl implements ProfileService {
 
     protected Profile updateProfile(String profileId, UpdateCallback callback, String... attributesToReturn)
             throws ProfileException {
-        Profile profile = getNonNullProfile(profileId, attributesToReturn);
+        // We need to filter the attributes after save, if not, the attributes to return will replace all the
+        // attributes
+        Profile profile = getNonNullProfile(profileId);
 
         callback.doWithProfile(profile);
 
@@ -659,6 +683,21 @@ public class ProfileServiceImpl implements ProfileService {
             profileRepository.save(profile);
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_UPDATE_PROFILE_ERROR, e, profileId);
+        }
+
+        return filterAttributes(profile, attributesToReturn);
+    }
+
+    protected Profile filterAttributes(Profile profile, String[] attributesToReturn) {
+        if (ArrayUtils.isNotEmpty(attributesToReturn) && MapUtils.isNotEmpty(profile.getAttributes())) {
+            Iterator<String> keyIter = profile.getAttributes().keySet().iterator();
+
+            while (keyIter.hasNext()) {
+                String key = keyIter.next();
+                if (!ArrayUtils.contains(attributesToReturn, key)) {
+                    keyIter.remove();
+                }
+            }
         }
 
         return profile;

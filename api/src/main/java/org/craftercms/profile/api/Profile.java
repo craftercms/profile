@@ -1,8 +1,13 @@
 package org.craftercms.profile.api;
 
-import org.bson.types.ObjectId;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-import java.util.*;
+import org.bson.types.ObjectId;
 
 /**
  * Representation of a user.
@@ -129,8 +134,8 @@ public class Profile {
         return attributes;
     }
 
-    public Object getAttribute(String name) {
-        return getAttributes().get(name);
+    public <T> T getAttribute(String name) {
+        return (T) getAttributes().get(name);
     }
 
     public void setAttributes(final Map<String, Object> attributes) {

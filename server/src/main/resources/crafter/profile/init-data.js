@@ -39,7 +39,7 @@ if (db.tenant.count() == 0) {
     db.tenant.insert({
         "name" : "default",
         "verifyNewProfiles" : false,
-        "availableRoles" : [ "PROFILE_ADMIN" ],
+        "availableRoles" : [ "PROFILE_ADMIN", "SOCIAL_SUPERADMIN" ],
         "attributeDefinitions" : [
             {
                 "name" : "firstName",
@@ -98,7 +98,7 @@ if (db.tenant.count() == 0) {
                 ]
             },
             {
-                "name": "socialTenants",
+                "name": "socialContexts",
                 "metadata": {
                     "label": "Social Contexts",
                     "type": "COMPLEX",
@@ -124,6 +124,6 @@ if (db.profile.count() == 0) {
         "createdOn" : new Date(),
         "lastModified" : new Date(),
         "tenant" : "default",
-        "roles" : [ "PROFILE_ADMIN","SOCIAL_SUPERADMIN" ]
+        "roles" : [ "PROFILE_ADMIN", "SOCIAL_SUPERADMIN" ]
     });
 }
