@@ -16,11 +16,11 @@
  */
 package org.craftercms.security.authentication;
 
+import java.io.IOException;
+
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.SecurityProviderException;
-
-import java.io.IOException;
 
 /**
  * Handles the request after a failed authentication.

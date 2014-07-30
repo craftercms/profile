@@ -16,11 +16,12 @@
  */
 package org.craftercms.security.processors.impl;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;
-import org.craftercms.security.processors.RequestSecurityProcessor;
-import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.AuthenticationManager;
 import org.craftercms.security.authentication.LoginFailureHandler;
@@ -28,13 +29,12 @@ import org.craftercms.security.authentication.LoginSuccessHandler;
 import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.AuthenticationSystemException;
 import org.craftercms.security.exception.BadCredentialsException;
+import org.craftercms.security.processors.RequestSecurityProcessor;
+import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
  * Processes login requests.

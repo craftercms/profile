@@ -1,9 +1,9 @@
 package org.craftercms.profile.api.exceptions;
 
+import java.util.ResourceBundle;
+
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.i10n.I10nUtils;
-
-import java.util.ResourceBundle;
 
 /**
  * Localized version of {@link org.craftercms.profile.api.exceptions.ProfileException}. Follows the same strategy

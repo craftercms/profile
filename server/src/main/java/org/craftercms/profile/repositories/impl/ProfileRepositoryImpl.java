@@ -17,6 +17,10 @@
 package org.craftercms.profile.repositories.impl;
 
 import com.mongodb.MongoException;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -30,9 +34,6 @@ import org.jongo.Find;
 import org.jongo.FindOne;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Default implementation of {@link org.craftercms.profile.repositories.ProfileRepository}.

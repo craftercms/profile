@@ -16,6 +16,8 @@
  */
 package org.craftercms.security.authentication.impl;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.utils.testing.AbstractRestHandlerTestBase;
@@ -24,10 +26,8 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import javax.servlet.http.HttpServletResponse;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link org.craftercms.security.authentication.impl.RestLogoutSuccessHandler}.

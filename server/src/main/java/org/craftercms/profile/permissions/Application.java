@@ -16,9 +16,9 @@
  */
 package org.craftercms.profile.permissions;
 
-import org.craftercms.profile.api.TenantPermission;
-
 import java.util.List;
+
+import org.craftercms.profile.api.TenantPermission;
 
 /**
  * The application subject, which is the user of Crafter Profile.

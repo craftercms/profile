@@ -16,11 +16,11 @@
  */
 package org.craftercms.security.processors.impl;
 
+import java.util.Iterator;
+
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.processors.RequestSecurityProcessor;
 import org.craftercms.security.processors.RequestSecurityProcessorChain;
-
-import java.util.Iterator;
 
 /**
  * Default implementation of a handler chain, using an iterator.

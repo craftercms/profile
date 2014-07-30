@@ -19,6 +19,17 @@ package org.craftercms.profile.services;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetupTest;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.SetUtils;
 import org.craftercms.commons.crypto.CipherUtils;
@@ -39,12 +50,16 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static org.craftercms.profile.api.ProfileConstants.*;
-import static org.junit.Assert.*;
+import static org.craftercms.profile.api.ProfileConstants.BASE_URL_PROFILE;
+import static org.craftercms.profile.api.ProfileConstants.NO_ATTRIBUTE;
+import static org.craftercms.profile.api.ProfileConstants.URL_PROFILE_RESET_PASSWORD;
+import static org.craftercms.profile.api.ProfileConstants.URL_PROFILE_VERIFY;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Integration tests for {@link org.craftercms.profile.api.services.ProfileService}.

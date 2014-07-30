@@ -6,7 +6,13 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AuthenticationService;
 import org.springframework.util.MultiValueMap;
 
-import static org.craftercms.profile.api.ProfileConstants.*;
+import static org.craftercms.profile.api.ProfileConstants.BASE_URL_AUTHENTICATION;
+import static org.craftercms.profile.api.ProfileConstants.PARAM_PASSWORD;
+import static org.craftercms.profile.api.ProfileConstants.PARAM_TENANT_NAME;
+import static org.craftercms.profile.api.ProfileConstants.PARAM_USERNAME;
+import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_AUTHENTICATE;
+import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_GET_TICKET;
+import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_INVALIDATE_TICKET;
 
 /**
  * REST client implementation of {@link org.craftercms.profile.api.services.AuthenticationService}.

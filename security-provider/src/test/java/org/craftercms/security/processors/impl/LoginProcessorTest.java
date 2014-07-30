@@ -16,6 +16,8 @@
  */
 package org.craftercms.security.processors.impl;
 
+import javax.servlet.http.HttpSession;
+
 import org.bson.types.ObjectId;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.profile.api.Profile;
@@ -35,10 +37,16 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import javax.servlet.http.HttpSession;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link org.craftercms.security.processors.impl.LoginProcessor}.

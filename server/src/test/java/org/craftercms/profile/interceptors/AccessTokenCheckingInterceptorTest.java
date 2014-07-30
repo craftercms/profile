@@ -16,6 +16,10 @@
  */
 package org.craftercms.profile.interceptors;
 
+import java.util.Arrays;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.TenantPermission;
@@ -28,10 +32,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

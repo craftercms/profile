@@ -1,9 +1,9 @@
 package org.craftercms.profile.api;
 
-import org.bson.types.ObjectId;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import org.bson.types.ObjectId;
 
 /**
  * A tenant is normally an application that shares common configuration.

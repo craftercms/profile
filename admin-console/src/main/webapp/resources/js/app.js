@@ -1,7 +1,7 @@
 /**
  * Angular Module
  */
-var app = angular.module('CrafterAdminConsole', ['ngRoute']);
+var app = angular.module('CrafterAdminConsole', ['ngRoute', 'ui.bootstrap']);
 
 /**
  * Global variables
@@ -25,6 +25,20 @@ var paginationConfig = {
     size: 5,
     itemsPerPage: 10
 };
+
+/**
+ * Constants
+ */
+app.constant('paginationConfig', {
+    itemsPerPage: 10,
+    boundaryLinks: true,
+    directionLinks: true,
+    previousText: '‹',
+    nextText: '›',
+    firstText: '«',
+    lastText: '»',
+    rotate: true
+});
 
 /**
  * Global functions
@@ -61,6 +75,18 @@ function getAllActions() {
     return actions;
 }
 
+function showGrowlMessage(type, message) {
+    $.growl(message, {
+        type: type,
+        pause_on_mouseover: true,
+        position: {
+            from: 'top',
+            align: 'center'
+        },
+        offset: 40
+    });
+}
+
 /**
  * Filters
  */
@@ -89,15 +115,7 @@ app.factory('httpErrorHandler', function ($q) {
                 message += '. Please contact IT support for more information';
             }
 
-            $.growl(message, {
-                type: 'danger',
-                pause_on_mouseover: true,
-                position: {
-                    from: 'top',
-                    align: 'center'
-                },
-                offset: 40
-            });
+            showGrowlMessage('danger', message);
 
             return $q.reject(rejection);
         }
@@ -287,99 +305,41 @@ app.controller('ProfileListController', function($scope, $location, tenantNames,
 
     $scope.tenantNames = tenantNames;
     $scope.selectedTenantName = $scope.tenantNames[0];
+    $scope.itemsPerPage = 10;
 
-
-    $scope.createPaginationAndGetAllProfiles = function(tenantName) {
-        $scope.searchText = "";
-
-        $scope.createPaginationAndGetProfileList(tenantName);
+    $scope.isValidUsername = function(text) {
+        return /^\w+$/.test(text);
     };
 
-    $scope.createPaginationAndGetProfileList = function(tenantName, searchText) {
-        profileService.getProfileCount(tenantName, searchText).then(function(totalProfiles) {
-            $scope.pagination = {};
-            $scope.pagination.first = 0;
-            $scope.pagination.current = 0;
-            $scope.pagination.size = paginationConfig.size;
-            $scope.pagination.itemsPerPage = paginationConfig.itemsPerPage;
-            $scope.pagination.total = Math.ceil(totalProfiles / $scope.pagination.itemsPerPage);
 
-            if ($scope.pagination.total < $scope.pagination.size) {
-                $scope.pagination.size = $scope.pagination.total;
-            }
+    $scope.getCurrentPage = function(tenantName, searchText, currentPage, itemsPerPage) {
+        var start = (currentPage - 1) * itemsPerPage;
 
-            $scope.pagination.displayed = $scope.getDisplayedPages();
-
-            $scope.getProfileList(tenantName, searchText, $scope.pagination.current * $scope.pagination.itemsPerPage,
-                $scope.pagination.itemsPerPage);
-        });
-    };
-
-    $scope.prevPage = function() {
-        if ($scope.pagination.current == $scope.pagination.first) {
-            $scope.pagination.first--;
-            $scope.pagination.displayed = $scope.getDisplayedPages();
-        }
-
-        $scope.pagination.current--;
-
-        $scope.getProfileList($scope.selectedTenantName, $scope.searchText, $scope.pagination.current *
-                $scope.pagination.itemsPerPage, $scope.pagination.itemsPerPage);
-    };
-
-    $scope.nextPage = function() {
-        if ($scope.pagination.current == ($scope.pagination.first + $scope.pagination.size - 1)) {
-            $scope.pagination.first++;
-            $scope.pagination.displayed = $scope.getDisplayedPages();
-        }
-
-        $scope.pagination.current++;
-
-        $scope.getProfileList($scope.selectedTenantName, $scope.searchText, $scope.pagination.current *
-            $scope.pagination.itemsPerPage, $scope.pagination.itemsPerPage);
-    };
-
-    $scope.currentPage = function(page) {
-        $scope.pagination.current = page;
-
-        $scope.getProfileList($scope.selectedTenantName, $scope.searchText, $scope.pagination.current *
-            $scope.pagination.itemsPerPage, $scope.pagination.itemsPerPage);
-    };
-
-    $scope.getDisplayedPages = function() {
-        var displayedPages = [];
-
-        for (var i = $scope.pagination.first; i < ($scope.pagination.first + $scope.pagination.size); i++) {
-            displayedPages.push(i);
-        }
-
-        return displayedPages;
-    };
-
-    $scope.getProfileList = function(tenantName, query, start, count) {
-        profileService.getProfileList(tenantName, query, start, count).then(function(profiles) {
+        profileService.getProfileList(tenantName, searchText, start, itemsPerPage).then(function(profiles) {
             $scope.profiles = profiles;
         });
     };
 
-    $scope.showDeleteConfirmationDialog = function(profile, profileIndex) {
-        $scope.profileToDelete = {};
-        $scope.profileToDelete.id = profile.id;
-        $scope.profileToDelete.username = profile.username;
-        $scope.profileToDelete.index = profileIndex;
+    $scope.getProfiles = function(tenantName, searchText) {
+        if ($scope.searchText == null || $scope.searchText == '' || $scope.isValidUsername($scope.searchText)) {
+            profileService.getProfileCount(tenantName, searchText).then(function(count) {
+                $scope.totalItems = count;
+                $scope.currentPage = 1;
 
-        $('#deleteConfirmationDialog').modal('show');
+                $scope.getCurrentPage(tenantName, searchText, $scope.currentPage, $scope.itemsPerPage);
+            });
+        } else {
+            showGrowlMessage('info', 'Search term must be a word with no spaces');
+        }
     };
 
-    $scope.deleteProfile = function(id, index) {
-        profileService.deleteProfile(id).then(function() {
-            $scope.profiles.splice(index, 1);
+    $scope.resetSearchAndGetProfiles = function(tenantName) {
+        $scope.searchText = "";
 
-            $('#deleteConfirmationDialog').modal('hide');
-        });
+        $scope.getProfiles(tenantName, $scope.searchText);
     };
 
-    $scope.createPaginationAndGetProfileList($scope.selectedTenantName, $scope.searchText);
+    $scope.resetSearchAndGetProfiles($scope.selectedTenantName);
 });
 
 app.controller('NewProfileController', function($scope, $location, tenantNames, profile, tenantService, profileService) {

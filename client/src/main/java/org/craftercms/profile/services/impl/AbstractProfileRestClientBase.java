@@ -16,6 +16,8 @@
  */
 package org.craftercms.profile.services.impl;
 
+import java.net.URI;
+
 import org.craftercms.commons.rest.AbstractRestClientBase;
 import org.craftercms.commons.rest.RestClientUtils;
 import org.craftercms.commons.rest.RestServiceException;
@@ -30,8 +32,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
-import java.net.URI;
 
 /**
  * Base class for all Profile REST clients.

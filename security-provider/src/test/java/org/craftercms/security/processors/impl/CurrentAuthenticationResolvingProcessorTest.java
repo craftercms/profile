@@ -16,6 +16,9 @@
  */
 package org.craftercms.security.processors.impl;
 
+import java.util.Date;
+import javax.servlet.http.Cookie;
+
 import org.bson.types.ObjectId;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.profile.api.Profile;
@@ -31,11 +34,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import javax.servlet.http.Cookie;
-import java.util.Date;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link org.craftercms.security.processors.impl.CurrentAuthenticationResolvingProcessor}.

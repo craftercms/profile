@@ -16,6 +16,12 @@
  */
 package org.craftercms.security.authorization.impl;
 
+import java.io.IOException;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authorization.AccessDeniedHandler;
@@ -24,12 +30,6 @@ import org.craftercms.security.exception.SecurityProviderException;
 import org.craftercms.security.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * Default implementation of {@link AccessDeniedHandler}, which forwards to the error page URL, so that the original

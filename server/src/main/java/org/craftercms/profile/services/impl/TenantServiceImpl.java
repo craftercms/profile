@@ -16,6 +16,11 @@
  */
 package org.craftercms.profile.services.impl;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.craftercms.commons.collections.IterableUtils;
@@ -25,21 +30,24 @@ import org.craftercms.commons.mongo.DuplicateKeyException;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
-import org.craftercms.profile.api.*;
+import org.craftercms.profile.api.AttributeDefinition;
+import org.craftercms.profile.api.ProfileConstants;
+import org.craftercms.profile.api.Tenant;
+import org.craftercms.profile.api.TenantAction;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.api.services.TenantService;
-import org.craftercms.profile.exceptions.*;
+import org.craftercms.profile.exceptions.AttributeAlreadyDefinedException;
+import org.craftercms.profile.exceptions.AttributeDefinitionStillUsedException;
+import org.craftercms.profile.exceptions.AttributeNotDefinedException;
+import org.craftercms.profile.exceptions.NoSuchTenantException;
+import org.craftercms.profile.exceptions.RoleStillUsedException;
+import org.craftercms.profile.exceptions.TenantExistsException;
 import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TenantRepository;
 import org.springframework.beans.factory.annotation.Required;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Default implementation of {@link org.craftercms.profile.api.services.TenantService}.

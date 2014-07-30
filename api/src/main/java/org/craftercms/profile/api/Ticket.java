@@ -1,8 +1,8 @@
 package org.craftercms.profile.api;
 
-import org.bson.types.ObjectId;
-
 import java.util.Date;
+
+import org.bson.types.ObjectId;
 
 /**
  * An authentication ticket for a profile. The ticket will later be encrypted for secure transmission.

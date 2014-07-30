@@ -17,6 +17,14 @@
 package org.craftercms.profile.services.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.collections4.MapUtils;
 import org.craftercms.commons.rest.RestClientUtils;
 import org.craftercms.profile.api.Profile;
@@ -27,13 +35,6 @@ import org.craftercms.profile.api.services.ProfileService;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.util.MultiValueMap;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static org.craftercms.profile.api.ProfileConstants.*;
 

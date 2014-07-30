@@ -16,6 +16,13 @@
  */
 package org.craftercms.security.processors.impl;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.http.CookieManager;
 import org.craftercms.commons.http.RequestContext;
@@ -26,13 +33,6 @@ import org.craftercms.security.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * {@link org.craftercms.security.processors.RequestSecurityProcessor} implementation that creates a wrapper so that

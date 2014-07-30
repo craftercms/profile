@@ -18,6 +18,12 @@ package org.craftercms.security.utils.testing;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.bson.types.ObjectId;
 import org.craftercms.commons.jackson.CustomSerializationObjectMapper;
 import org.craftercms.commons.jackson.ObjectIdDeserializer;
@@ -27,11 +33,6 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Base for REST handler tests.

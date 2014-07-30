@@ -16,6 +16,8 @@
  */
 package org.craftercms.security.processors.impl;
 
+import java.util.Collections;
+
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.SetUtils;
 import org.craftercms.commons.http.RequestContext;
@@ -29,9 +31,8 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import java.util.Collections;
-
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests for {@link org.craftercms.security.processors.impl.UrlAccessRestrictionCheckingProcessor}.

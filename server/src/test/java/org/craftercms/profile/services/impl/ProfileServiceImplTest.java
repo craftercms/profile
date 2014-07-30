@@ -16,12 +16,27 @@
  */
 package org.craftercms.profile.services.impl;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.SetUtils;
 import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
-import org.craftercms.profile.api.*;
+import org.craftercms.profile.api.AttributeDefinition;
+import org.craftercms.profile.api.AttributePermission;
+import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.SortOrder;
+import org.craftercms.profile.api.Tenant;
+import org.craftercms.profile.api.TenantAction;
+import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.exceptions.InvalidEmailAddressException;
@@ -37,11 +52,17 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import java.util.*;
-
 import static org.craftercms.profile.api.ProfileConstants.NO_ATTRIBUTE;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit test for {@link org.craftercms.profile.services.impl.ProfileServiceImpl}.

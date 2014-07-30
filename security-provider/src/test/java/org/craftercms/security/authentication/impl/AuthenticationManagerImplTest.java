@@ -16,6 +16,8 @@
  */
 package org.craftercms.security.authentication.impl;
 
+import java.util.Date;
+
 import org.bson.types.ObjectId;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.Ticket;
@@ -32,8 +34,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
-
-import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

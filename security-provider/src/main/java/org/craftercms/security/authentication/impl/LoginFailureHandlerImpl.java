@@ -16,6 +16,9 @@
  */
 package org.craftercms.security.authentication.impl;
 
+import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.LoginFailureHandler;
@@ -24,9 +27,6 @@ import org.craftercms.security.exception.SecurityProviderException;
 import org.craftercms.security.utils.handlers.AbstractHandlerBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * Default implementation of {@link org.craftercms.security.authentication.LoginFailureHandler}, which redirects the

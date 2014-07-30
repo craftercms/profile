@@ -16,6 +16,8 @@
  */
 package org.craftercms.security.authentication.impl;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.bson.types.ObjectId;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.profile.api.Profile;
@@ -25,8 +27,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import javax.servlet.http.HttpServletResponse;
 
 import static org.junit.Assert.assertEquals;
 
