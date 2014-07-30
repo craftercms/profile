@@ -16,9 +16,9 @@
  */
 package org.craftercms.security.utils.spring.el;
 
-import org.craftercms.profile.api.Profile;
-
 import java.util.Collection;
+
+import org.craftercms.profile.api.Profile;
 
 /**
  * Instances of this class are used as the root object for Spring EL {@link org.springframework.expression

@@ -16,6 +16,12 @@
  */
 package org.craftercms.profile.management.web.controllers;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.ProfileConstants;
@@ -27,13 +33,12 @@ import org.craftercms.profile.management.exceptions.ResourceNotFoundException;
 import org.craftercms.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * MVC Controller for displaying and modifying profiles.
@@ -79,33 +84,9 @@ public class ProfileController {
     public static final Pattern QUERY_PATTERN = Pattern.compile("\\w+");
     public static final String FINAL_QUERY_FORMAT = "{username: {$regex: '.*%s.*', $options: 'i'}}";
 
-    private String defaultSortBy;
-    private SortOrder defaultSortOrder;
-    private int defaultStart;
-    private int defaultCount;
     private String verificationUrl;
 
     private ProfileService profileService;
-
-    @Required
-    public void setDefaultSortBy(String defaultSortBy) {
-        this.defaultSortBy = defaultSortBy;
-    }
-
-    @Required
-    public void setDefaultSortOrder(SortOrder defaultSortOrder) {
-        this.defaultSortOrder = defaultSortOrder;
-    }
-
-    @Required
-    public void setDefaultStart(int defaultStart) {
-        this.defaultStart = defaultStart;
-    }
-
-    @Required
-    public void setDefaultCount(int defaultCount) {
-        this.defaultCount = defaultCount;
-    }
 
     public void setVerificationUrl(String verificationUrl) {
         this.verificationUrl = verificationUrl;
@@ -165,18 +146,6 @@ public class ProfileController {
                                         HttpServletRequest request) throws ProfileException {
         if (StringUtils.isEmpty(tenantName)) {
             tenantName = SecurityUtils.getTenant(request);
-        }
-        if (StringUtils.isEmpty(sortBy)) {
-            sortBy = defaultSortBy;
-        }
-        if (sortOrder == null) {
-            sortOrder = defaultSortOrder;
-        }
-        if (start == null) {
-            start = defaultStart;
-        }
-        if (limit == null) {
-            limit = defaultCount;
         }
 
         if (StringUtils.isNotEmpty(query)) {

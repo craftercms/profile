@@ -111,3 +111,11 @@ a {
 .search-box {
     width: 200px;
 }
+
+
+/*
+ * Utils
+ */
+.no-margin {
+    margin: 0 !important;
+}

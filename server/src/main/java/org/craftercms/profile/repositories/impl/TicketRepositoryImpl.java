@@ -16,13 +16,13 @@
  */
 package org.craftercms.profile.repositories.impl;
 
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import org.craftercms.commons.mongo.AbstractJongoRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.repositories.TicketRepository;
-
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Default implementation of {@link org.craftercms.profile.repositories.TicketRepository}.

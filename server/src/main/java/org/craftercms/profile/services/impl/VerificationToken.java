@@ -1,8 +1,8 @@
 package org.craftercms.profile.services.impl;
 
-import org.bson.types.ObjectId;
-
 import java.util.Date;
+
+import org.bson.types.ObjectId;
 
 /**
  * Verification token, used for verifying a new profile with the user or for verifying a reset password request.

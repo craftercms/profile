@@ -16,9 +16,20 @@
  */
 package org.craftercms.profile.services.impl;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import org.craftercms.commons.collections.SetUtils;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
-import org.craftercms.profile.api.*;
+import org.craftercms.profile.api.AttributeDefinition;
+import org.craftercms.profile.api.AttributePermission;
+import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.ProfileConstants;
+import org.craftercms.profile.api.Tenant;
+import org.craftercms.profile.api.TenantPermission;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.AttributeAlreadyDefinedException;
 import org.craftercms.profile.exceptions.AttributeDefinitionStillUsedException;
@@ -32,10 +43,13 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.*;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link org.craftercms.profile.services.impl.TenantServiceImpl}.

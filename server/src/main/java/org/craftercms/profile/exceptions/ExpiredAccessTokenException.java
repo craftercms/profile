@@ -16,9 +16,9 @@
  */
 package org.craftercms.profile.exceptions;
 
-import org.craftercms.profile.api.exceptions.I10nProfileException;
-
 import java.util.Date;
+
+import org.craftercms.profile.api.exceptions.I10nProfileException;
 
 /**
  * Thrown when the access token has already expired.

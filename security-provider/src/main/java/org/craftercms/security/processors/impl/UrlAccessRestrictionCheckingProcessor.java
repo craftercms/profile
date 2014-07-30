@@ -16,12 +16,16 @@
  */
 package org.craftercms.security.processors.impl;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.collections4.MapUtils;
 import org.craftercms.commons.http.RequestContext;
-import org.craftercms.security.processors.RequestSecurityProcessor;
-import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.exception.AccessDeniedException;
+import org.craftercms.security.processors.RequestSecurityProcessor;
+import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.utils.SecurityUtils;
 import org.craftercms.security.utils.spring.el.AccessRestrictionExpressionRoot;
 import org.slf4j.Logger;
@@ -32,10 +36,6 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Processor that checks if the current user has permission to access the current request URL. To do this,

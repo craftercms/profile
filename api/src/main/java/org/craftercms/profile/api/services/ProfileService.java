@@ -1,13 +1,13 @@
 package org.craftercms.profile.api.services;
 
-import org.craftercms.profile.api.Profile;
-import org.craftercms.profile.api.exceptions.ProfileException;
-import org.craftercms.profile.api.SortOrder;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.SortOrder;
+import org.craftercms.profile.api.exceptions.ProfileException;
 
 /**
  * Service for handling profiles.

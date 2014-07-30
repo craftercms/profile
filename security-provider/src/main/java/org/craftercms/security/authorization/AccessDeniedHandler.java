@@ -16,11 +16,11 @@
  */
 package org.craftercms.security.authorization;
 
+import java.io.IOException;
+
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.exception.AccessDeniedException;
 import org.craftercms.security.exception.SecurityProviderException;
-
-import java.io.IOException;
 
 /**
  * Handles the request after access to a resource is denied for a user.

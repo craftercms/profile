@@ -1,11 +1,11 @@
 package org.craftercms.profile.api.services;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ProfileException;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Service for managing tenants.

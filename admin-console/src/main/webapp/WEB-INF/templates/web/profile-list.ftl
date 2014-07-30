@@ -5,28 +5,20 @@
         <label for="tenant">Tenant:</label>
         <select name="tenant" class="form-control"
                 ng-model="selectedTenantName" ng-options="tenantName for tenantName in tenantNames"
-                ng-change="createPaginationAndGetAllProfiles(selectedTenantName)">
+                ng-change="resetSearchAndGetProfiles(selectedTenantName)">
         </select>
     </div>
     <div class="form-group">
         <input type="text" class="form-control search-box" placeholder="Search by username" ng-model="searchText"/>
         <button class="btn btn-default" type="button" ng-disabled="searchText == null || searchText == ''"
-                ng-click="createPaginationAndGetProfileList(selectedTenantName, searchText)">Search</button>
+                ng-click="getProfiles(selectedTenantName, searchText)">Search</button>
         <button class="btn btn-default" type="button"
-                ng-click="createPaginationAndGetAllProfiles(selectedTenantName)">Reset</button>
+                ng-click="resetSearchAndGetProfiles(selectedTenantName)">Reset</button>
     </div>
     <div class="form-group pull-right">
-        <ul class="pagination" style="margin: 0px;">
-            <li ng-class="{'disabled': pagination.current == 0}">
-                <a ng-click="prevPage()">&laquo;</a>
-            </li>
-            <li ng-repeat="p in pagination.displayed" ng-class="{'active': pagination.current == p}">
-                <a ng-click="currentPage(p)">{{p + 1}}</a>
-            </li>
-            <li ng-class="{'disabled': pagination.current == (pagination.total - 1)}">
-                <a ng-click="nextPage()">&raquo;</a>
-            </li>
-        </ul>
+        <pagination total-items="totalItems" items-per-page="itemsPerPage" class="no-margin" ng-model="currentPage"
+                    ng-change="getCurrentPage(selectedTenantName, searchText, currentPage, itemsPerPage)">
+        </pagination>
     </div>
 </form>
 

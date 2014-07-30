@@ -16,14 +16,14 @@
  */
 package org.craftercms.security.authentication.impl;
 
+import java.io.IOException;
+
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.LogoutSuccessHandler;
 import org.craftercms.security.exception.SecurityProviderException;
 import org.craftercms.security.utils.handlers.AbstractHandlerBase;
 import org.springframework.beans.factory.annotation.Required;
-
-import java.io.IOException;
 
 /**
  * Default implementation for {@link org.craftercms.security.authentication.impl.LogoutSuccessHandlerImpl}, which

@@ -16,22 +16,22 @@
  */
 package org.craftercms.security.processors.impl;
 
+import java.io.IOException;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.craftercms.commons.http.RequestContext;
-import org.craftercms.security.processors.RequestSecurityProcessor;
-import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.AuthenticationRequiredHandler;
 import org.craftercms.security.authorization.AccessDeniedHandler;
 import org.craftercms.security.exception.AccessDeniedException;
 import org.craftercms.security.exception.AuthenticationRequiredException;
 import org.craftercms.security.exception.SecurityProviderException;
+import org.craftercms.security.processors.RequestSecurityProcessor;
+import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-
-import java.io.IOException;
 
 /**
  * Handles certain security exceptions:

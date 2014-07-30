@@ -16,6 +16,9 @@
  */
 package org.craftercms.profile.services;
 
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.exceptions.ErrorCode;
 import org.craftercms.profile.api.services.AuthenticationService;
@@ -29,10 +32,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Integration tests for {@link org.craftercms.profile.api.services.AuthenticationService}.

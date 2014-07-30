@@ -16,14 +16,14 @@
  */
 package org.craftercms.security.authorization.impl;
 
+import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authorization.AccessDeniedHandler;
 import org.craftercms.security.exception.AccessDeniedException;
 import org.craftercms.security.exception.SecurityProviderException;
 import org.craftercms.security.utils.handlers.AbstractRestHandlerBase;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * Implementation of {@link org.craftercms.security.authorization.AccessDeniedHandler} for REST based applications,

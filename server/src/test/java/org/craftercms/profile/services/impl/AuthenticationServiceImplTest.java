@@ -16,6 +16,9 @@
  */
 package org.craftercms.profile.services.impl;
 
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import org.bson.types.ObjectId;
 import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
@@ -31,11 +34,13 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link org.craftercms.profile.services.impl.AuthenticationServiceImpl}.

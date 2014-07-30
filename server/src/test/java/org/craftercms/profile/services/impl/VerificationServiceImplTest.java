@@ -16,6 +16,11 @@
  */
 package org.craftercms.profile.services.impl;
 
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import org.bson.types.ObjectId;
 import org.craftercms.commons.mail.Email;
 import org.craftercms.commons.mail.EmailFactory;
@@ -32,12 +37,10 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link org.craftercms.profile.services.impl.VerificationServiceImpl}.

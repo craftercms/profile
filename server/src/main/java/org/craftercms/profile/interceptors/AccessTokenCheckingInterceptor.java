@@ -16,23 +16,23 @@
  */
 package org.craftercms.profile.interceptors;
 
+import java.util.Date;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.ProfileConstants;
-import org.craftercms.profile.repositories.AccessTokenRepository;
-import org.craftercms.profile.exceptions.ExpiredAccessTokenException;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
+import org.craftercms.profile.exceptions.ExpiredAccessTokenException;
 import org.craftercms.profile.exceptions.MissingAccessTokenIdParamException;
 import org.craftercms.profile.exceptions.NoSuchAccessTokenIdException;
 import org.craftercms.profile.permissions.Application;
+import org.craftercms.profile.repositories.AccessTokenRepository;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
 
 /**
  * Filter that checks that in every call the access token ID is specified. If no access token ID is specified, a 401

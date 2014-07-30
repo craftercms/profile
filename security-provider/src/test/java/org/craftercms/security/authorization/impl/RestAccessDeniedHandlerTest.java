@@ -16,6 +16,8 @@
  */
 package org.craftercms.security.authorization.impl;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.exception.AccessDeniedException;
 import org.craftercms.security.utils.testing.AbstractRestHandlerTestBase;
@@ -23,8 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import javax.servlet.http.HttpServletResponse;
 
 import static org.junit.Assert.assertEquals;
 

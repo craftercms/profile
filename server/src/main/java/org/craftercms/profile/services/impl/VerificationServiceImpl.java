@@ -16,26 +16,26 @@
  */
 package org.craftercms.profile.services.impl;
 
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.logging.Logged;
 import org.craftercms.commons.mail.EmailException;
 import org.craftercms.commons.mail.EmailFactory;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.ExpiredVerificationTokenException;
-import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
 import org.craftercms.profile.repositories.VerificationTokenRepository;
 import org.craftercms.profile.services.VerificationService;
 import org.craftercms.profile.services.VerificationSuccessCallback;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.scheduling.annotation.Async;
-
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
 
 /**
  * Default implementation of {@link org.craftercms.profile.services.VerificationService}.

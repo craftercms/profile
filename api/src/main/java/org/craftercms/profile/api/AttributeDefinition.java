@@ -1,9 +1,9 @@
 package org.craftercms.profile.api;
 
 
-import org.craftercms.commons.security.permissions.SecuredObjectBase;
-
 import java.util.Map;
+
+import org.craftercms.commons.security.permissions.SecuredObjectBase;
 
 /**
  * Represents the definition of an attribute in a tenant.

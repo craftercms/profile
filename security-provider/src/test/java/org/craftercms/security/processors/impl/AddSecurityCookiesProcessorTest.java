@@ -16,6 +16,10 @@
  */
 package org.craftercms.security.processors.impl;
 
+import java.util.Arrays;
+import java.util.Date;
+import javax.servlet.http.Cookie;
+
 import org.bson.types.ObjectId;
 import org.craftercms.commons.http.CookieManager;
 import org.craftercms.commons.http.RequestContext;
@@ -29,10 +33,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import javax.servlet.http.Cookie;
-import java.util.Arrays;
-import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -16,12 +16,12 @@
  */
 package org.craftercms.profile.repositories;
 
+import java.util.List;
+
 import org.craftercms.commons.mongo.CrudRepository;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
-
-import java.util.List;
 
 /**
  * DB repository for {@link org.craftercms.profile.api.Profile}s.

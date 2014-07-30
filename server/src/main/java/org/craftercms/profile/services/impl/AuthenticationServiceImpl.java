@@ -16,6 +16,9 @@
  */
 package org.craftercms.profile.services.impl;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.logging.Logged;
@@ -25,18 +28,15 @@ import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.TenantAction;
 import org.craftercms.profile.api.Ticket;
+import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.BadCredentialsException;
 import org.craftercms.profile.exceptions.DisabledProfileException;
-import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.springframework.beans.factory.annotation.Required;
-
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Default implementation of {@link org.craftercms.profile.api.services.AuthenticationService}.

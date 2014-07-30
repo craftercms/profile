@@ -16,6 +16,8 @@
  */
 package org.craftercms.profile.controllers.rest;
 
+import java.util.Collection;
+
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ProfileException;
@@ -23,11 +25,31 @@ import org.craftercms.profile.api.services.TenantService;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.util.Collection;
-
-import static org.craftercms.profile.api.ProfileConstants.*;
+import static org.craftercms.profile.api.ProfileConstants.BASE_URL_TENANT;
+import static org.craftercms.profile.api.ProfileConstants.PARAM_ATTRIBUTE_NAME;
+import static org.craftercms.profile.api.ProfileConstants.PARAM_ROLE;
+import static org.craftercms.profile.api.ProfileConstants.PARAM_VERIFY;
+import static org.craftercms.profile.api.ProfileConstants.PATH_VAR_NAME;
+import static org.craftercms.profile.api.ProfileConstants.URL_TENANT_ADD_ATTRIBUTE_DEFINITIONS;
+import static org.craftercms.profile.api.ProfileConstants.URL_TENANT_ADD_ROLES;
+import static org.craftercms.profile.api.ProfileConstants.URL_TENANT_COUNT;
+import static org.craftercms.profile.api.ProfileConstants.URL_TENANT_CREATE;
+import static org.craftercms.profile.api.ProfileConstants.URL_TENANT_DELETE;
+import static org.craftercms.profile.api.ProfileConstants.URL_TENANT_GET;
+import static org.craftercms.profile.api.ProfileConstants.URL_TENANT_GET_ALL;
+import static org.craftercms.profile.api.ProfileConstants.URL_TENANT_REMOVE_ATTRIBUTE_DEFINITIONS;
+import static org.craftercms.profile.api.ProfileConstants.URL_TENANT_REMOVE_ROLES;
+import static org.craftercms.profile.api.ProfileConstants.URL_TENANT_UPDATE;
+import static org.craftercms.profile.api.ProfileConstants.URL_TENANT_UPDATE_ATTRIBUTE_DEFINITIONS;
+import static org.craftercms.profile.api.ProfileConstants.URL_TENANT_VERIFY_NEW_PROFILES;
 
 /**
  * REST controller for the tenant service.
