@@ -17,13 +17,13 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 public interface ProfileService {
 
     /**
-     * Creates a new profile for a specific tenantName.
+     * Creates a new profile for a specific tenant name.
      *
      * @param tenantName        the name of the tenant to add the profile to
      * @param username          the profile's username
      * @param password          the profile's password
      * @param email             the profile's email
-     * @param enabled           if the profile is enabled or not
+     * @param enabled           if the profile should be enabled or not
      * @param roles             the profile's roles (optional)
      * @param attributes        the additional attributes to add to the profile (optional)
      * @param verificationUrl   the URL (sans token) the user needs to go in case it needs to verify the created
@@ -35,10 +35,10 @@ public interface ProfileService {
             throws ProfileException;
 
     /**
-     * Update the profile's info.
+     * Updates the profile's info.
      *
      * @param profileId             the profile's ID
-     * @param username              the profile's username, or null if it shouldn't be updated
+     * @param username              the new username for the profile, or null if it shouldn't be updated
      * @param password              the new password for the profile, or null if it shouldn't be updated
      * @param email                 the new email for the profile, or null if it shouldn't be updated
      * @param enabled               if the profile should be enabled or not, or null if it shouldn't be updated
@@ -55,7 +55,7 @@ public interface ProfileService {
     /**
      * Sets the profile as verified if the verification token is valid.
      *
-     * @param verificationTokenId   the ID of the verification token
+     * @param verificationTokenId   the verification token ID
      * @param attributesToReturn    the names of the attributes to return with the profile (null to return
      *                              all attributes)
      *
@@ -168,7 +168,7 @@ public interface ProfileService {
     Profile getProfileByQuery(String tenantName, String query, String... attributesToReturn) throws ProfileException;
 
     /**
-     * Returns the profile for the specified id.
+     * Returns the profile for the specified ID.
      *
      * @param profileId             the profile's ID
      * @param attributesToReturn    the names of the attributes to return with the profile (null to return all
@@ -215,14 +215,16 @@ public interface ProfileService {
      * Returns the number of profiles that match the query for the specified tenant.
      *
      * @param tenantName    the tenant's name
-     * @param query         the query the profiles must match
+     * @param query         the Mongo query used to search for the profiles. Must not contain the $where
+     *                      operator, the tenant's name (already specified) or any non-readable attribute
+     *                      by the application
      *
      * @return  the number of profiles of the specified tenant
      */
     long getProfileCountByQuery(String tenantName, String query) throws ProfileException;
 
     /**
-     * Returns the profiles that match the specified query
+     * Returns the profiles that match the specified query.
      *
      * @param tenantName            the tenant's name
      * @param query                 the Mongo query used to search for the profiles. Must not contain the $where
@@ -242,9 +244,9 @@ public interface ProfileService {
                                      Integer count, String... attributesToReturn) throws ProfileException;
 
     /**
-     * Returns a list of profiles for the specified list of ids.
+     * Returns a list of profiles for the specified list of IDs.
      *
-     * @param profileIds            the ids of the profiles to look for
+     * @param profileIds            the IDs of the profiles to look for
      * @param sortBy                profile attribute to sort the list by (optional)
      * @param sortOrder             the sort order (either ASC or DESC) (optional)
      * @param attributesToReturn    the names of the attributes to return for each profile (null to return all
@@ -337,7 +339,7 @@ public interface ProfileService {
     /**
      * Resets a profile's password.
      *
-     * @param resetTokenId          the ID of the reset token
+     * @param resetTokenId          the reset token ID
      * @param newPassword           the new password
      * @param attributesToReturn    the names of the attributes to return with the profile (null to return all
      *                              attributes)

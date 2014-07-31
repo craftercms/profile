@@ -63,6 +63,7 @@ public class AccessTokenCheckingInterceptorTest {
         
         interceptor = new AccessTokenCheckingInterceptor();
         interceptor.setTokenRepository(tokenRepository);
+        interceptor.setUrlsToInclude(new String[] { ".*" });
     }
 
     @Test

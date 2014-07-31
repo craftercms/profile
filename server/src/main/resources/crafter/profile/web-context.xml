@@ -42,6 +42,7 @@
     <bean id="crafter.accessTokenCheckingInterceptor"
           class="org.craftercms.profile.interceptors.AccessTokenCheckingInterceptor">
         <property name="tokenRepository" ref="crafter.accessTokenRepository"/>
+        <property name="urlsToInclude" value="/api/1/.*"/>
     </bean>
 
     <!-- Jackson config -->
@@ -78,6 +79,20 @@
           class="org.craftercms.profile.controllers.rest.AuthenticationController">
         <property name="authenticationService" ref="crafter.authenticationService"/>
     </bean>
+
+    <!-- Swagger -->
+
+    <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPaths" value="classpath:/views/"/>
+    </bean>
+
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="cache" value="true"/>
+        <property name="prefix" value=""/>
+        <property name="suffix" value=".ftl"/>
+    </bean>
+
+    <import resource="classpath:crafter/api-documentation/api-documentation-context.xml"/>
 
     <import resource="classpath*:crafter/profile/extension/web-context.xml"/>
 

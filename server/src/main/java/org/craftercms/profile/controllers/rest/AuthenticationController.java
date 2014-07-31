@@ -16,6 +16,10 @@
  */
 package org.craftercms.profile.controllers.rest;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AuthenticationService;
@@ -45,6 +49,7 @@ import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_INVALIDATE_TI
  */
 @Controller
 @RequestMapping(BASE_URL_AUTHENTICATION)
+@Api(value = "authentication", basePath = BASE_URL_AUTHENTICATION, description = "Authentication operations")
 public class AuthenticationController {
 
     protected AuthenticationService authenticationService;
@@ -54,23 +59,31 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
+    @ApiOperation("Authenticates the user, and returns a ticket identifying the authentication")
     @RequestMapping(value = URL_AUTH_AUTHENTICATE, method = RequestMethod.POST)
     @ResponseBody
-    public Ticket authenticate(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+    public Ticket authenticate(@ApiParam("The tenant's name")
+                               @RequestParam(PARAM_TENANT_NAME) String tenantName,
+                               @ApiParam("The username")
                                @RequestParam(PARAM_USERNAME) String username,
+                               @ApiParam("The password")
                                @RequestParam(PARAM_PASSWORD) String password) throws ProfileException {
         return authenticationService.authenticate(tenantName, username, password);
     }
 
+    @ApiOperation("Returns the ticket object for the given ticket ID")
     @RequestMapping(value = URL_AUTH_GET_TICKET, method = RequestMethod.GET)
     @ResponseBody
-    public Ticket getTicket(@PathVariable(PATH_VAR_ID) String ticketId) throws ProfileException {
+    public Ticket getTicket(@ApiParam("The ID of the ticket")
+                            @PathVariable(PATH_VAR_ID) String ticketId) throws ProfileException {
         return authenticationService.getTicket(ticketId);
     }
 
+    @ApiOperation("Invalidates the given ticket")
     @RequestMapping(value = URL_AUTH_INVALIDATE_TICKET, method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
-    public void invalidateTicket(@PathVariable(PATH_VAR_ID) String ticketId) throws ProfileException {
+    public void invalidateTicket(@ApiParam("The ID of the ticket")
+                                 @PathVariable(PATH_VAR_ID) String ticketId) throws ProfileException {
         authenticationService.invalidateTicket(ticketId);
     }
 
