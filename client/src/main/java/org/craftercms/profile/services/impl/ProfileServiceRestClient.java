@@ -394,7 +394,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     }
 
     @Override
-    public Profile forgotPassword(String profileId, String resetPasswordUrl, String... attributesToReturn)
+    public Profile resetPassword(String profileId, String resetPasswordUrl, String... attributesToReturn)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_RESET_PASSWORD_URL, resetPasswordUrl, params);
@@ -406,7 +406,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     }
 
     @Override
-    public Profile resetPassword(String resetTokenId, String newPassword, String... attributesToReturn)
+    public Profile changePassword(String resetTokenId, String newPassword, String... attributesToReturn)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_RESET_TOKEN_ID, resetTokenId, params);

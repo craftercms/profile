@@ -50,7 +50,7 @@ public class VerificationToken {
     @Override
     public String toString() {
         return "VerificationToken{" +
-                ", id=" + _id +
+                "id=" + _id +
                 ", profileId='" + profileId + '\'' +
                 ", timestamp=" + timestamp +
                 '}';

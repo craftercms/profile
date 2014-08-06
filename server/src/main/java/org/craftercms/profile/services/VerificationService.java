@@ -18,10 +18,11 @@ package org.craftercms.profile.services;
 
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.exceptions.ProfileException;
+import org.craftercms.profile.services.impl.VerificationToken;
 
 /**
- * Service used to verify a particular activity with the profile owner through email (like a recently created profile
- * or a reset password request).
+ * Service used to verify a particular activity with the profile owner (like a recently created profile or a reset
+ * password request).
  *
  * @author avasquez
  */
@@ -30,21 +31,42 @@ public interface VerificationService {
     String TOKEN_ID_PARAM =    "tokenId";
 
     /**
-     * Sends the user an email for verification.
+     * Creates a new verification token. The token can be later transmitted to the client through email, for
+     * example.
      *
-     * @param profile           the profile of the user
-     * @param verificationUrl   the URL the user should click to verify the new profile
+     * @param profileId the ID of the profile associated to the token
      */
-    void sendEmail(Profile profile, String verificationUrl) throws ProfileException;
+    VerificationToken createToken(String profileId) throws ProfileException;
 
     /**
-     * Verify that the token received from the user is correct.
+     * Creates a verification token and sends the user an email with the token for verification.
      *
-     * @param tokenId   the serialized token, sent in the verification email
-     * @param callback  callback used on verification success
+     * @param token             the verification token to send
+     * @param profile           the profile of the user
+     * @param verificationUrl   the URL the user should click to verify the new profile
+     * @param from              the from address
+     * @param subject           the subject of the email
+     * @param templateName      the template name of the email
      *
-     * @return the profile associated to the token
+     * @return the verification token created
      */
-    Profile verifyToken(String tokenId, VerificationSuccessCallback callback) throws ProfileException;
+    void sendVerificationEmail(VerificationToken token, Profile profile, String verificationUrl,
+                               String from, String subject, String templateName) throws ProfileException;
+
+    /**
+     * Verify that the token ID received from the user corresponds to an existing token.
+     *
+     * @param tokenId   the token ID, sent in the verification email
+     *
+     * @return the verification token object associated to the ID
+     */
+    VerificationToken verifyToken(String tokenId) throws ProfileException;
+
+    /**
+     * Deletes the token corresponding the specified ID.
+     *
+     * @param tokenId the ID of the token to delete
+     */
+    void deleteToken(String tokenId) throws ProfileException;
 
 }

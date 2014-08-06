@@ -61,7 +61,6 @@ import org.craftercms.profile.exceptions.ProfileExistsException;
 import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.services.VerificationService;
-import org.craftercms.profile.services.VerificationSuccessCallback;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
@@ -85,6 +84,7 @@ public class ProfileServiceImpl implements ProfileService {
     public static final String LOG_KEY_PROFILE_ATTRIBS_UPDATED = "profile.profile.attributesUpdated";
     public static final String LOG_KEY_PROFILE_ATTRIBS_REMOVED = "profile.profile.attributesRemoved";
     public static final String LOG_KEY_PROFILE_DELETED = "profile.profile.profileDeleted";
+    public static final String LOG_KEY_PASSWORD_CHANGED = "profile.profile.passwordChanged";
 
     public static final String ERROR_KEY_CREATE_PROFILE_ERROR = "profile.profile.createProfileError";
     public static final String ERROR_KEY_GET_PROFILE_BY_QUERY_ERROR = "profile.profile.getProfileByQueryError";
@@ -118,8 +118,13 @@ public class ProfileServiceImpl implements ProfileService {
     protected ProfileRepository profileRepository;
     protected TenantService tenantService;
     protected AuthenticationService authenticationService;
-    protected VerificationService newProfileVerificationService;
-    protected VerificationService resetPasswordVerificationService;
+    protected VerificationService verificationService;
+    protected String newProfileEmailFromAddress;
+    protected String newProfileEmailSubject;
+    protected String newProfileEmailTemplateName;
+    protected String resetPwdEmailFromAddress;
+    protected String resetPwdEmailSubject;
+    protected String resetPwdEmailTemplateName;
 
     @Required
     public void setTenantPermissionEvaluator(PermissionEvaluator<Application, String> tenantPermissionEvaluator) {
@@ -148,13 +153,38 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Required
-    public void setNewProfileVerificationService(VerificationService newProfileVerificationService) {
-        this.newProfileVerificationService = newProfileVerificationService;
+    public void setVerificationService(final VerificationService verificationService) {
+        this.verificationService = verificationService;
     }
 
     @Required
-    public void setResetPasswordVerificationService(VerificationService resetPasswordVerificationService) {
-        this.resetPasswordVerificationService = resetPasswordVerificationService;
+    public void setNewProfileEmailFromAddress(final String newProfileEmailFromAddress) {
+        this.newProfileEmailFromAddress = newProfileEmailFromAddress;
+    }
+
+    @Required
+    public void setNewProfileEmailSubject(final String newProfileEmailSubject) {
+        this.newProfileEmailSubject = newProfileEmailSubject;
+    }
+
+    @Required
+    public void setNewProfileEmailTemplateName(final String newProfileEmailTemplateName) {
+        this.newProfileEmailTemplateName = newProfileEmailTemplateName;
+    }
+
+    @Required
+    public void setResetPwdEmailFromAddress(final String resetPwdEmailFromAddress) {
+        this.resetPwdEmailFromAddress = resetPwdEmailFromAddress;
+    }
+
+    @Required
+    public void setResetPwdEmailSubject(final String resetPwdEmailSubject) {
+        this.resetPwdEmailSubject = resetPwdEmailSubject;
+    }
+
+    @Required
+    public void setResetPwdEmailTemplateName(final String resetPwdEmailTemplateName) {
+        this.resetPwdEmailTemplateName = resetPwdEmailTemplateName;
     }
 
     @Override
@@ -199,7 +229,9 @@ public class ProfileServiceImpl implements ProfileService {
             logger.debug(LOG_KEY_PROFILE_CREATED, profile);
 
             if (emailNewProfiles && StringUtils.isNotEmpty(verificationUrl)) {
-                newProfileVerificationService.sendEmail(profile, verificationUrl);
+                VerificationToken token = verificationService.createToken(profile.getId().toString());
+                verificationService.sendVerificationEmail(token, profile, verificationUrl, newProfileEmailFromAddress,
+                    newProfileEmailSubject, newProfileEmailTemplateName);
             }
 
             return profile;
@@ -257,29 +289,19 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile verifyProfile(String verificationTokenId, final String... attributesToReturn)
             throws ProfileException {
-        VerificationSuccessCallback callback = new VerificationSuccessCallback() {
+        VerificationToken token = verificationService.verifyToken(verificationTokenId);
+
+        Profile profile = updateProfile(token.getProfileId(), new UpdateCallback() {
 
             @Override
-            public Profile doOnSuccess(VerificationToken token) throws ProfileException {
-                try {
-                    // We need to filter the attributes after save, if not, the attributes to return will replace
-                    // all the attributes
-                    Profile profile = getNonNullProfile(token.getProfileId());
-                    profile.setEnabled(true);
-                    profile.setVerified(true);
-                    profile.setLastModified(new Date());
-
-                    profileRepository.save(profile);
-
-                    return filterAttributes(profile, attributesToReturn);
-                } catch (MongoDataException e) {
-                    throw new I10nProfileException(ERROR_KEY_UPDATE_PROFILE_ERROR, e, token.getProfileId());
-                }
+            public void doWithProfile(final Profile profile) throws ProfileException {
+                profile.setEnabled(true);
+                profile.setVerified(true);
             }
 
-        };
+        }, attributesToReturn);
 
-        Profile profile = newProfileVerificationService.verifyToken(verificationTokenId, callback);
+        verificationService.deleteToken(verificationTokenId);
 
         logger.debug(LOG_KEY_PROFILE_VERIFIED, profile.getId());
 
@@ -526,7 +548,7 @@ public class ProfileServiceImpl implements ProfileService {
                                           String... attributesToReturn) throws ProfileException {
         try {
             List<Profile> profiles = IterableUtils.toList(profileRepository.findByIds(profileIds, sortBy, sortOrder,
-                    attributesToReturn));
+                attributesToReturn));
             if (profiles != null) {
                 for (Profile profile : profiles) {
                     checkIfManageProfilesIsAllowed(profile.getTenant());
@@ -547,7 +569,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         try {
             List<Profile> profiles = IterableUtils.toList(profileRepository.findRange(tenantName, sortBy, sortOrder,
-                    start, count, attributesToReturn));
+                start, count, attributesToReturn));
             filterNonReadableAttributes(profiles);
 
             return profiles;
@@ -563,7 +585,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         try {
             List<Profile> profiles = IterableUtils.toList(profileRepository.findByTenantAndRole(tenantName, role,
-                    sortBy, sortOrder, attributesToReturn));
+                sortBy, sortOrder, attributesToReturn));
             filterNonReadableAttributes(profiles);
 
             return profiles;
@@ -580,7 +602,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         try {
             List<Profile> profiles = IterableUtils.toList(profileRepository.findByTenantAndExistingAttribute(
-                    tenantName, attributeName, sortBy, sortOrder, attributesToReturn));
+                tenantName, attributeName, sortBy, sortOrder, attributesToReturn));
             filterNonReadableAttributes(profiles);
 
             return profiles;
@@ -598,7 +620,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         try {
             List<Profile> profiles = IterableUtils.toList(profileRepository.findByTenantAndAttributeValue(tenantName,
-                    attributeName, attributeValue, sortBy, sortOrder, attributesToReturn));
+                attributeName, attributeValue, sortBy, sortOrder, attributesToReturn));
             filterNonReadableAttributes(profiles);
 
             return profiles;
@@ -609,40 +631,36 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Profile forgotPassword(String profileId, String resetPasswordUrl, String... attributesToReturn)
+    public Profile resetPassword(String profileId, String resetPasswordUrl, String... attributesToReturn)
             throws ProfileException {
         Profile profile = getNonNullProfile(profileId, attributesToReturn);
+        VerificationToken token = verificationService.createToken(profileId);
 
-        resetPasswordVerificationService.sendEmail(profile, resetPasswordUrl);
+        verificationService.sendVerificationEmail(token, profile, resetPasswordUrl, resetPwdEmailFromAddress,
+            resetPwdEmailSubject, resetPwdEmailTemplateName);
 
         return profile;
     }
 
     @Override
-    public Profile resetPassword(String resetTokenId, final String newPassword, final String... attributesToReturn)
+    public Profile changePassword(String resetTokenId, final String newPassword, final String... attributesToReturn)
             throws ProfileException {
-        VerificationSuccessCallback callback = new VerificationSuccessCallback() {
+        VerificationToken token = verificationService.verifyToken(resetTokenId);
+
+        Profile profile = updateProfile(token.getProfileId(), new UpdateCallback() {
 
             @Override
-            public Profile doOnSuccess(VerificationToken token) throws ProfileException {
-                try {
-                    // We need to filter the attributes after save, if not, the attributes to return will replace all
-                    // the attributes
-                    Profile profile = getNonNullProfile(token.getProfileId());
-                    profile.setPassword(CipherUtils.hashPassword(newPassword));
-                    profile.setLastModified(new Date());
-
-                    profileRepository.save(profile);
-
-                    return filterAttributes(profile, attributesToReturn);
-                } catch (MongoDataException e) {
-                    throw new I10nProfileException(ERROR_KEY_RESET_PASSWORD_ERROR, e);
-                }
+            public void doWithProfile(final Profile profile) throws ProfileException {
+                profile.setPassword(CipherUtils.hashPassword(newPassword));
             }
 
-        };
+        }, attributesToReturn);
 
-        return resetPasswordVerificationService.verifyToken(resetTokenId, callback);
+        verificationService.deleteToken(resetTokenId);
+
+        logger.debug(LOG_KEY_PASSWORD_CHANGED, profile.getId().toString());
+
+        return profile;
     }
 
     protected void checkIfManageProfilesIsAllowed(String tenantName) {

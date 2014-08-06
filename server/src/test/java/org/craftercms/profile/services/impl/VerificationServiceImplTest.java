@@ -29,7 +29,6 @@ import org.craftercms.profile.exceptions.ExpiredVerificationTokenException;
 import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
 import org.craftercms.profile.repositories.VerificationTokenRepository;
 import org.craftercms.profile.services.VerificationService;
-import org.craftercms.profile.services.VerificationSuccessCallback;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -37,6 +36,8 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
@@ -74,8 +75,6 @@ public class VerificationServiceImplTest {
     private EmailFactory emailFactory;
     @Mock
     private Email email;
-    @Mock
-    private VerificationSuccessCallback callback;
 
     @Before
     public void setUp() throws Exception {
@@ -101,42 +100,57 @@ public class VerificationServiceImplTest {
         verificationService = new VerificationServiceImpl();
         verificationService.setTokenRepository(tokenRepository);
         verificationService.setEmailFactory(emailFactory);
-        verificationService.setFrom(FROM);
-        verificationService.setSubject(SUBJECT);
-        verificationService.setTemplateName(TEMPLATE_NAME);
         verificationService.setTokenMaxAge(TOKEN_MAX_AGE);
     }
 
     @Test
-    public void testSendEmail() throws Exception {
-        Profile profile = new Profile();
+    public void testCreateToken() throws Exception {
+        VerificationToken token = verificationService.createToken(PROFILE_ID.toString());
 
+        assertEquals(NORMAL_TOKEN_ID, token.getId());
+        assertEquals(PROFILE_ID.toString(), token.getProfileId());
+        assertNotNull(token.getTimestamp());
+
+        verify(tokenRepository).insert(any(VerificationToken.class));
+    }
+
+    @Test
+    public void testSendVerificationEmail() throws Exception {
+        Profile profile = new Profile();
         profile.setId(PROFILE_ID);
         profile.setEmail(PROFILE_EMAIL);
 
-        verificationService.sendEmail(profile, VERIFICATION_BASE_URL);
+        VerificationToken token = new VerificationToken(PROFILE_ID.toString(), new Date());
+        token.setId(NORMAL_TOKEN_ID);
 
-        verify(tokenRepository).insert(any(VerificationToken.class));
+        verificationService.sendVerificationEmail(token, profile, VERIFICATION_BASE_URL, FROM, SUBJECT, TEMPLATE_NAME);
+
         verify(emailFactory).getEmail(FROM, TO, null, null, SUBJECT, TEMPLATE_NAME, VERIFICATION_TEMPLATE_ARGS, true);
         verify(email).send();
     }
 
     @Test
     public void testVerifyToken() throws Exception {
-        verificationService.verifyToken(NORMAL_TOKEN_ID.toString(), callback);
+        verificationService.verifyToken(NORMAL_TOKEN_ID.toString());
 
         verify(tokenRepository).findById(NORMAL_TOKEN_ID.toString());
-        verify(callback).doOnSuccess(getNormalToken());
     }
 
     @Test(expected = NoSuchVerificationTokenException.class)
     public void testVerifyInvalidToken() throws Exception {
-        verificationService.verifyToken("1", callback);
+        verificationService.verifyToken("1");
     }
 
     @Test(expected = ExpiredVerificationTokenException.class)
     public void testVerifyExpiredToken() throws Exception {
-        verificationService.verifyToken(EXPIRED_TOKEN_ID.toString(), callback);
+        verificationService.verifyToken(EXPIRED_TOKEN_ID.toString());
+    }
+
+    @Test
+    public void testDeleteToken() throws Exception {
+        verificationService.deleteToken(NORMAL_TOKEN_ID.toString());
+
+        verify(tokenRepository).removeById(NORMAL_TOKEN_ID.toString());
     }
 
     private VerificationToken getNormalToken() {

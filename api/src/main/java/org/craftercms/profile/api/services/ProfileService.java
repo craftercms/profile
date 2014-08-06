@@ -323,7 +323,7 @@ public interface ProfileService {
             throws ProfileException;
 
     /**
-     * Common forgot password functionality: sends the profile an email with an URL to reset their password.
+     * Sends an email to the profile's user to indicate that the password needs to be reset.
      *
      * @param profileId             the profile's ID
      * @param resetPasswordUrl      the base URL to use to build the final URL the profile will use to reset
@@ -333,11 +333,11 @@ public interface ProfileService {
      *
      * @return the updated profile
      */
-    Profile forgotPassword(String profileId, String resetPasswordUrl, String... attributesToReturn)
+    Profile resetPassword(String profileId, String resetPasswordUrl, String... attributesToReturn)
             throws ProfileException;
 
     /**
-     * Resets a profile's password.
+     * Changes a profile's password, after a reset request has been sent.
      *
      * @param resetTokenId          the reset token ID
      * @param newPassword           the new password
@@ -346,7 +346,7 @@ public interface ProfileService {
      *
      * @return the updated profile
      */
-    Profile resetPassword(String resetTokenId, String newPassword, String... attributesToReturn)
+    Profile changePassword(String resetTokenId, String newPassword, String... attributesToReturn)
             throws ProfileException;
 
 }

@@ -449,7 +449,7 @@ public class ProfileController {
                                   @ApiParam("The name of the attributes to return (don't specify to return all)")
                                   @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                   String[] attributesToReturn) throws ProfileException {
-        return profileService.forgotPassword(profileId, resetPasswordUrl, attributesToReturn);
+        return profileService.resetPassword(profileId, resetPasswordUrl, attributesToReturn);
     }
 
     @ApiOperation("Resets a profile's password")
@@ -462,7 +462,7 @@ public class ProfileController {
                                  @ApiParam("The name of the attributes to return (don't specify to return all)")
                                  @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                  String[] attributesToReturn) throws ProfileException {
-        return profileService.resetPassword(resetTokenId, newPassword, attributesToReturn);
+        return profileService.changePassword(resetTokenId, newPassword, attributesToReturn);
     }
 
     protected Map<String, Object> deserializeAttributes(String serializedAttributes)

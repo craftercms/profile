@@ -816,7 +816,7 @@ public class ProfileServiceIT {
                 AVASQUEZ_EMAIL1, true, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
 
         try {
-            profile = profileService.forgotPassword(profile.getId().toString(), RESET_PASSWORD_URL);
+            profile = profileService.resetPassword(profile.getId().toString(), RESET_PASSWORD_URL);
 
             assertNotNull(profile);
 
@@ -834,7 +834,7 @@ public class ProfileServiceIT {
 
             String resetTokenId = emailMatcher.group(1);
 
-            Profile profileWithNewPswd = profileService.resetPassword(resetTokenId, AVASQUEZ_PASSWORD2);
+            Profile profileWithNewPswd = profileService.changePassword(resetTokenId, AVASQUEZ_PASSWORD2);
 
             assertNotNull(profileWithNewPswd);
             assertEquals(profile.getId(), profileWithNewPswd.getId());
