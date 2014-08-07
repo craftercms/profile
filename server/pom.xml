@@ -74,6 +74,11 @@
             <artifactId>crafter-profile-access-token-manager</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.craftercms</groupId>
+            <artifactId>crafter-commons-api-documentation</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Javax -->
         <dependency>

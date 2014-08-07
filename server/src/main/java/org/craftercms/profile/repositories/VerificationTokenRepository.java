@@ -17,10 +17,10 @@
 package org.craftercms.profile.repositories;
 
 import org.craftercms.commons.mongo.CrudRepository;
-import org.craftercms.profile.services.impl.VerificationToken;
+import org.craftercms.profile.api.VerificationToken;
 
 /**
- * Repository for {@link org.craftercms.profile.services.impl.VerificationToken}s
+ * Repository for {@link org.craftercms.profile.api.VerificationToken}s
  *
  * @author avasquez
  */

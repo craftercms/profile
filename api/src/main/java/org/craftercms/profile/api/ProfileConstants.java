@@ -35,6 +35,7 @@ public class ProfileConstants {
     public static final String BASE_URL_TENANT = BASE_URL_REST_API + "/tenant";
     public static final String BASE_URL_PROFILE = BASE_URL_REST_API + "/profile";
     public static final String BASE_URL_AUTHENTICATION = BASE_URL_REST_API + "/authentication";
+    public static final String BASE_URL_VERIFICATION = BASE_URL_REST_API + "/verification";
 
     public static final String PATH_VAR_NAME = "name";
     public static final String PATH_VAR_ID = "id";
@@ -75,8 +76,10 @@ public class ProfileConstants {
     public static final String URL_PROFILE_GET_BY_ROLE = "/by_role";
     public static final String URL_PROFILE_GET_BY_EXISTING_ATTRIB = "/by_existing_attribute";
     public static final String URL_PROFILE_GET_BY_ATTRIB_VALUE = "/by_attribute_value";
-    public static final String URL_PROFILE_FORGOT_PASSWORD = "/{id}/forgot_password";
-    public static final String URL_PROFILE_RESET_PASSWORD = "/reset_password";
+    public static final String URL_PROFILE_RESET_PASSWORD = "/{id}/reset_password";
+    public static final String URL_PROFILE_CHANGE_PASSWORD = "/change_password";
+    public static final String URL_PROFILE_CREATE_VERIFICATION_TOKEN = "/{id}/verification/create_token";
+    public static final String URL_PROFILE_DELETE_VERIFICATION_TOKEN = "/verification/delete_token";
 
     public static final String URL_AUTH_AUTHENTICATE = "/authenticate";
     public static final String URL_AUTH_GET_TICKET = "/{id}/ticket";
@@ -106,6 +109,7 @@ public class ProfileConstants {
     public static final String PARAM_RESET_TOKEN_ID = "resetTokenId";
     public static final String PARAM_NEW_PASSWORD = "newPassword";
     public static final String PARAM_QUERY = "query";
+    public static final String PARAM_TOKEN_ID = "tokenId";
 
     private ProfileConstants() {
     }

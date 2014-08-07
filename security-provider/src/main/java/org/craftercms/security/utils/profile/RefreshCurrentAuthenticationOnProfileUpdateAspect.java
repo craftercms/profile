@@ -49,7 +49,7 @@ public class RefreshCurrentAuthenticationOnProfileUpdateAspect {
             "execution(* org.craftercms.profile.api.services.ProfileService.removeRoles(..)) || " +
             "execution(* org.craftercms.profile.api.services.ProfileService.updateAttributes(..)) || " +
             "execution(* org.craftercms.profile.api.services.ProfileService.removeAttributes(..)) || " +
-            "execution(* org.craftercms.profile.api.services.ProfileService.resetPassword(..))",
+            "execution(* org.craftercms.profile.api.services.ProfileService.changePassword(..))",
             returning = "updatedProfile")
     public void refreshCurrentAuthentication(Profile updatedProfile) {
         Authentication auth = SecurityUtils.getCurrentAuthentication();

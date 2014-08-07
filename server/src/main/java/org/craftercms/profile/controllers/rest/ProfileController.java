@@ -18,6 +18,9 @@ package org.craftercms.profile.controllers.rest;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,6 +30,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
+import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.AttributesDeserializationException;
@@ -50,6 +54,7 @@ import static org.craftercms.profile.api.ProfileConstants.*;
  */
 @Controller
 @RequestMapping(BASE_URL_PROFILE)
+@Api(value = "profile", basePath = BASE_URL_PROFILE, description = "Profile operations")
 public class ProfileController {
 
     private static final TypeReference<Map<String, Object>> ATTRIBUTES_TYPE_REFERENCE =
@@ -68,15 +73,25 @@ public class ProfileController {
         this.objectMapper = objectMapper;
     }
 
+    @ApiOperation("Creates a new profile for a specific tenant name")
     @RequestMapping(value = URL_PROFILE_CREATE, method = RequestMethod.POST)
     @ResponseBody
-    public Profile createProfile(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+    public Profile createProfile(@ApiParam("The name of the tenant to add the profile to")
+                                 @RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                 @ApiParam("The profile's username")
                                  @RequestParam(PARAM_USERNAME) String username,
+                                 @ApiParam("The profile's password")
                                  @RequestParam(PARAM_PASSWORD) String password,
+                                 @ApiParam("The profile's email")
                                  @RequestParam(PARAM_EMAIL) String email,
+                                 @ApiParam("If the profile should be enabled or not")
                                  @RequestParam(PARAM_ENABLED) boolean enabled,
+                                 @ApiParam("The profile's roles")
                                  @RequestParam(value = PARAM_ROLE, required = false) Set<String> roles,
+                                 @ApiParam("The additional attributes to add to the profile (specify a JSON string)")
                                  @RequestParam(value = PARAM_ATTRIBUTES, required = false) String serializedAttributes,
+                                 @ApiParam("The URL (sans token) the user needs to go in case it needs to verify " +
+                                     "the created profile (verification depends on tenant)")
                                  @RequestParam(value = PARAM_VERIFICATION_URL, required = false) String verificationUrl)
             throws ProfileException {
         Map<String, Object> attributes = deserializeAttributes(serializedAttributes);
@@ -85,15 +100,24 @@ public class ProfileController {
                 verificationUrl);
     }
 
+    @ApiOperation("Updates the profile's info")
     @RequestMapping(value = URL_PROFILE_UPDATE, method = RequestMethod.POST)
     @ResponseBody
-    public Profile updateProfile(@PathVariable(PATH_VAR_ID) String profileId,
+    public Profile updateProfile(@ApiParam("The profile's ID")
+                                 @PathVariable(PATH_VAR_ID) String profileId,
+                                 @ApiParam("The new username for the profile")
                                  @RequestParam(value = PARAM_USERNAME, required = false) String username,
+                                 @ApiParam("The new password for the profile")
                                  @RequestParam(value = PARAM_PASSWORD, required = false) String password,
+                                 @ApiParam("The new email for the profile")
                                  @RequestParam(value = PARAM_EMAIL, required = false) String email,
+                                 @ApiParam("If the profile should be enabled or not")
                                  @RequestParam(value = PARAM_ENABLED, required = false) Boolean enabled,
+                                 @ApiParam("The new roles for the profile")
                                  @RequestParam(value = PARAM_ROLE, required = false) Set<String> roles,
+                                 @ApiParam("The attributes to update (specify a JSON string)")
                                  @RequestParam(value = PARAM_ATTRIBUTES, required = false) String serializedAttributes,
+                                 @ApiParam("The name of the attributes to return (don't specify to return all)")
                                  @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                  String[] attributesToReturn)
             throws ProfileException {
@@ -103,229 +127,363 @@ public class ProfileController {
                 attributesToReturn);
     }
 
+    @ApiOperation("Enables a profile")
     @RequestMapping(value = URL_PROFILE_ENABLE, method = RequestMethod.POST)
     @ResponseBody
-    public Profile enableProfile(@PathVariable(PATH_VAR_ID) String profileId,
+    public Profile enableProfile(@ApiParam("The profile's ID")
+                                 @PathVariable(PATH_VAR_ID) String profileId,
+                                 @ApiParam("The name of the attributes to return (don't specify to return all)")
                                  @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                  String[] attributesToReturn)
             throws ProfileException {
         return profileService.enableProfile(profileId, attributesToReturn);
     }
 
+    @ApiOperation("Disables a profile")
     @RequestMapping(value = URL_PROFILE_DISABLE, method = RequestMethod.POST)
     @ResponseBody
-    public Profile disableProfile(@PathVariable(PATH_VAR_ID) String profileId,
+    public Profile disableProfile(@ApiParam("The profile's ID")
+                                  @PathVariable(PATH_VAR_ID) String profileId,
+                                  @ApiParam("The name of the attributes to return (don't specify to return all)")
                                   @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                   String[] attributesToReturn) throws ProfileException {
         return profileService.disableProfile(profileId, attributesToReturn);
     }
 
+    @ApiOperation("Assigns roles to a profile")
     @RequestMapping(value = URL_PROFILE_ADD_ROLES, method = RequestMethod.POST)
     @ResponseBody
-    public Profile addRoles(@PathVariable(PATH_VAR_ID) String profileId,
+    public Profile addRoles(@ApiParam("The profile's ID")
+                            @PathVariable(PATH_VAR_ID) String profileId,
+                            @ApiParam("The roles to assign")
                             @RequestParam(PARAM_ROLE) Collection<String> roles,
+                            @ApiParam("The name of the attributes to return (don't specify to return all)")
                             @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                             String[] attributesToReturn) throws ProfileException {
         return profileService.addRoles(profileId, roles, attributesToReturn);
     }
 
+    @ApiOperation("Removes assigned roles from a profile")
     @RequestMapping(value = URL_PROFILE_REMOVE_ROLES, method = RequestMethod.POST)
     @ResponseBody
-    public Profile removeRoles(@PathVariable(PATH_VAR_ID) String profileId,
+    public Profile removeRoles(@ApiParam("The profile's ID")
+                               @PathVariable(PATH_VAR_ID) String profileId,
+                               @ApiParam("The roles to remove")
                                @RequestParam(PARAM_ROLE) Collection<String> roles,
+                               @ApiParam("The name of the attributes to return (don't specify to return all)")
                                @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                String[] attributesToReturn) throws ProfileException {
         return profileService.removeRoles(profileId, roles, attributesToReturn);
     }
 
+    @ApiOperation("Sets the profile as verified if the verification token is valid")
     @RequestMapping(value = URL_PROFILE_VERIFY, method = RequestMethod.POST)
     @ResponseBody
-    public Profile verifyProfile(@RequestParam(PARAM_VERIFICATION_TOKEN_ID) String verificationTokenId,
+    public Profile verifyProfile(@ApiParam("The verification token ID")
+                                 @RequestParam(PARAM_VERIFICATION_TOKEN_ID) String verificationTokenId,
+                                 @ApiParam("The name of the attributes to return (don't specify to return all)")
                                  @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                  String[] attributesToReturn)
             throws ProfileException {
         return profileService.verifyProfile(verificationTokenId, attributesToReturn);
     }
 
+
+    @ApiOperation("Returns the attributes of a profile")
     @RequestMapping(value = URL_PROFILE_GET_ATTRIBUTES, method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getAttributes(@PathVariable(PATH_VAR_ID) String profileId,
+    public Map<String, Object> getAttributes(@ApiParam("The profile's ID")
+                                             @PathVariable(PATH_VAR_ID) String profileId,
+                                             @ApiParam("The name of the attributes to return (don't specify to " +
+                                                 "return all)")
                                              @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                              String[] attributesToReturn)
             throws ProfileException {
         return profileService.getAttributes(profileId, attributesToReturn);
     }
 
+    @ApiOperation(value = "Updates the attributes of a profile", notes = "The specified attributes will be merged " +
+        "with existing attributes")
     @RequestMapping(value = URL_PROFILE_UPDATE_ATTRIBUTES, method = RequestMethod.POST)
     @ResponseBody
-    public Profile updateAttributes(@PathVariable(PATH_VAR_ID) String profileId,
+    public Profile updateAttributes(@ApiParam("The profile's ID")
+                                    @PathVariable(PATH_VAR_ID) String profileId,
+                                    @ApiParam("The new attributes")
                                     @RequestBody Map<String, Object> attributes,
+                                    @ApiParam("The name of the attributes to return (don't specify to return all)")
                                     @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                     String[] attributesToReturn) throws ProfileException {
         return profileService.updateAttributes(profileId, attributes, attributesToReturn);
     }
 
+    @ApiOperation("Removes a list of attributes of a profile")
     @RequestMapping(value = URL_PROFILE_REMOVE_ATTRIBUTES, method = RequestMethod.POST)
     @ResponseBody
-    public Profile removeAttributes(@PathVariable(PATH_VAR_ID) String profileId,
+    public Profile removeAttributes(@ApiParam("The profile's ID")
+                                    @PathVariable(PATH_VAR_ID) String profileId,
+                                    @ApiParam("The name of the attributes to remove")
                                     @RequestParam(PARAM_ATTRIBUTE_NAME) Collection<String> attributeNames,
+                                    @ApiParam("The name of the attributes to return (don't specify to return all)")
                                     @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                     String[] attributesToReturn)
         throws ProfileException {
         return profileService.removeAttributes(profileId, attributeNames, attributesToReturn);
     }
 
+    @ApiOperation("Deletes a profile")
     @RequestMapping(value = URL_PROFILE_DELETE_PROFILE, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void deleteProfile(@PathVariable(PATH_VAR_ID) String profileId) throws ProfileException {
+    public void deleteProfile(@ApiParam("The profile's ID")
+                              @PathVariable(PATH_VAR_ID) String profileId) throws ProfileException {
         profileService.deleteProfile(profileId);
     }
 
+    @ApiOperation("Returns the single profile that matches the specified query")
     @RequestMapping(value = URL_PROFILE_GET_ONE_BY_QUERY, method = RequestMethod.GET)
     @ResponseBody
-    public Profile getProfileByQuery(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+    public Profile getProfileByQuery(@ApiParam("The tenant's name")
+                                     @RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                     @ApiParam("The Mongo query used to search for the profiles. Must not contain " +
+                                         "the $where operator, the tenant's name (already specified) or any " +
+                                         "non-readable attribute by the application")
                                      @RequestParam(PARAM_QUERY) String query,
+                                     @ApiParam("The name of the attributes to return (don't specify to return all)")
                                      @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                      String[] attributesToReturn) throws ProfileException {
         return profileService.getProfileByQuery(tenantName, query, attributesToReturn);
     }
 
+    @ApiOperation("Returns the profile for the specified ID")
     @RequestMapping(value = URL_PROFILE_GET, method = RequestMethod.GET)
     @ResponseBody
-    public Profile getProfile(@PathVariable(PATH_VAR_ID) String profileId,
+    public Profile getProfile(@ApiParam("The profile's ID")
+                              @PathVariable(PATH_VAR_ID) String profileId,
+                              @ApiParam("The name of the attributes to return (don't specify to return all)")
                               @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                               String[] attributesToReturn) throws ProfileException {
         return profileService.getProfile(profileId, attributesToReturn);
     }
 
+    @ApiOperation("Returns the user for the specified tenant and username")
     @RequestMapping(value = URL_PROFILE_GET_BY_USERNAME, method = RequestMethod.GET)
     @ResponseBody
-    public Profile getProfileByUsername(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+    public Profile getProfileByUsername(@ApiParam("The tenant's name")
+                                        @RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                        @ApiParam("The profile's username")
                                         @RequestParam(PARAM_USERNAME) String username,
+                                        @ApiParam("The name of the attributes to return (don't specify to return all)")
                                         @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                         String[] attributesToReturn) throws ProfileException {
         return profileService.getProfileByUsername(tenantName, username, attributesToReturn);
     }
 
+    @ApiOperation("Returns the profile for the specified ticket")
     @RequestMapping(value = URL_PROFILE_GET_BY_TICKET, method = RequestMethod.GET)
     @ResponseBody
-    public Profile getProfileByTicket(@RequestParam(PARAM_TICKET_ID) String ticketId,
+    public Profile getProfileByTicket(@ApiParam("The ID ticket of the authenticated profile")
+                                      @RequestParam (PARAM_TICKET_ID) String ticketId,
+                                      @ApiParam("The name of the attributes to return (don't specify to return all)")
                                       @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                       String[] attributesToReturn) throws ProfileException {
         return profileService.getProfileByTicket(ticketId, attributesToReturn);
     }
 
+    @ApiOperation("Returns the number of profiles of the specified tenant")
     @RequestMapping(value = URL_PROFILE_GET_COUNT, method = RequestMethod.GET)
     @ResponseBody
-    public long getProfileCount(@RequestParam(PARAM_TENANT_NAME) String tenantName) throws ProfileException {
+    public long getProfileCount(@ApiParam("The tenant's name")
+                                @RequestParam(PARAM_TENANT_NAME) String tenantName) throws ProfileException {
         return profileService.getProfileCount(tenantName);
     }
 
+    @ApiOperation("Returns the number of profiles that match the query for the specified tenant")
     @RequestMapping(value = URL_TENANT_COUNT_BY_QUERY, method = RequestMethod.GET)
     @ResponseBody
-    public long getProfileCount(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+    public long getProfileCount(@ApiParam("The tenant's name")
+                                @RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                @ApiParam("The Mongo query used to search for the profiles. Must not contain " +
+                                    "the $where operator, the tenant's name (already specified) or any " +
+                                    "non-readable attribute by the application")
                                 @RequestParam(PARAM_QUERY) String query) throws ProfileException {
         return profileService.getProfileCountByQuery(tenantName, query);
     }
 
-
+    @ApiOperation("Returns the profiles that match the specified query")
     @RequestMapping(value = URL_PROFILE_GET_BY_QUERY, method = RequestMethod.GET)
     @ResponseBody
-    public List<Profile> getProfilesByQuery(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+    public List<Profile> getProfilesByQuery(@ApiParam("The tenant's name")
+                                            @RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                            @ApiParam("The Mongo query used to search for the profiles. Must not " +
+                                                "contain the $where operator, the tenant's name (already specified) " +
+                                                "or any non-readable attribute by the application")
                                             @RequestParam(PARAM_QUERY) String query,
+                                            @ApiParam("Profile attribute to sort the list by")
                                             @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
+                                            @ApiParam("The sort order (either ASC or DESC)")
                                             @RequestParam(value = PARAM_SORT_ORDER, required = false)
                                             SortOrder sortOrder,
+                                            @ApiParam("From the entire list of results, the position where the " +
+                                                "actual results should start (useful for pagination)")
                                             @RequestParam(value = PARAM_START, required = false) Integer start,
+                                            @ApiParam("The number of profiles to return")
                                             @RequestParam(value = PARAM_COUNT, required = false) Integer count,
+                                            @ApiParam("The name of the attributes to return (don't specify to " +
+                                                "return all)")
                                             @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                             String[] attributesToReturn) throws ProfileException {
         return profileService.getProfilesByQuery(tenantName, query, sortBy, sortOrder, start, count, attributesToReturn);
     }
 
+    @ApiOperation("Returns a list of profiles for the specified list of IDs")
     @RequestMapping(value = URL_PROFILE_GET_BY_IDS, method = RequestMethod.GET)
     @ResponseBody
-    public Iterable<Profile> getProfileByIds(@RequestParam(PATH_VAR_ID) List<String> profileIds,
+    public Iterable<Profile> getProfileByIds(@ApiParam("The IDs of the profiles to look for")
+                                             @RequestParam(PATH_VAR_ID) List<String> profileIds,
+                                             @ApiParam("Profile attribute to sort the list by")
                                              @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
+                                             @ApiParam("The sort order (either ASC or DESC)")
                                              @RequestParam(value = PARAM_SORT_ORDER, required = false)
                                              SortOrder sortOrder,
+                                             @ApiParam("The name of the attributes to return (don't specify to " +
+                                                 "return all)")
                                              @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                              String[] attributesToReturn) throws ProfileException {
         return profileService.getProfilesByIds(profileIds, sortBy, sortOrder, attributesToReturn);
     }
 
+    @ApiOperation("Returns a range of profiles for the specified tenant")
     @RequestMapping(value = URL_PROFILE_GET_RANGE, method = RequestMethod.GET)
     @ResponseBody
-    public Iterable<Profile> getProfileRange(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+    public Iterable<Profile> getProfileRange(@ApiParam("The tenant's name")
+                                             @RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                             @ApiParam("Profile attribute to sort the list by")
                                              @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
+                                             @ApiParam("The sort order (either ASC or DESC)")
                                              @RequestParam(value = PARAM_SORT_ORDER, required = false)
                                              SortOrder sortOrder,
+                                             @ApiParam("From the entire list of results, the position where the " +
+                                                 "actual results should start (useful for pagination)")
                                              @RequestParam(value = PARAM_START, required = false) Integer start,
+                                             @ApiParam("The number of profiles to return")
                                              @RequestParam(value = PARAM_COUNT, required = false) Integer count,
+                                             @ApiParam("The name of the attributes to return (don't specify to " +
+                                                 "return all)")
                                              @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                              String[] attributesToReturn) throws ProfileException {
         return profileService.getProfileRange(tenantName, sortBy, sortOrder, start, count, attributesToReturn);
     }
 
+    @ApiOperation("Returns a list of profiles for a specific role and tenant")
     @RequestMapping(value = URL_PROFILE_GET_BY_ROLE, method = RequestMethod.GET)
     @ResponseBody
-    public Iterable<Profile> getProfileByRole(@RequestParam(PARAM_TENANT_NAME) String tenantName,
-                                              @RequestParam(PARAM_ROLE) String role,
-                                              @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
-                                              @RequestParam(value = PARAM_SORT_ORDER, required = false)
-                                              SortOrder sortOrder,
-                                              @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
-                                              String[] attributesToReturn) throws ProfileException {
+    public Iterable<Profile> getProfilesByRole(@ApiParam("The tenant's name")
+                                               @RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                               @ApiParam("The role's name")
+                                               @RequestParam (PARAM_ROLE) String role,
+                                               @ApiParam("Profile attribute to sort the list by")
+                                               @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
+                                               @ApiParam("The sort order (either ASC or DESC)")
+                                               @RequestParam(value = PARAM_SORT_ORDER, required = false)
+                                               SortOrder sortOrder,
+                                               @ApiParam("The name of the attributes to return (don't specify to " +
+                                                   "return all)")
+                                               @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
+                                               String[] attributesToReturn) throws ProfileException {
         return profileService.getProfilesByRole(tenantName, role, sortBy, sortOrder, attributesToReturn);
     }
 
+    @ApiOperation("Returns the list of profiles that have the given attribute, with any value")
     @RequestMapping(value = URL_PROFILE_GET_BY_EXISTING_ATTRIB, method = RequestMethod.GET)
     @ResponseBody
-    public Iterable<Profile> getProfileByExistingAttribute(@RequestParam(PARAM_TENANT_NAME) String tenantName,
-                                                           @RequestParam(PARAM_ATTRIBUTE_NAME) String attributeName,
-                                                           @RequestParam(value = PARAM_SORT_BY, required = false)
-                                                           String sortBy,
-                                                           @RequestParam(value = PARAM_SORT_ORDER, required = false)
-                                                           SortOrder sortOrder,
-                                                           @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN,
+    public Iterable<Profile> getProfilesByExistingAttribute(@ApiParam("The tenant's name")
+                                                            @RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                                            @ApiParam("The name of the attribute profiles must have")
+                                                            @RequestParam(PARAM_ATTRIBUTE_NAME) String attributeName,
+                                                            @ApiParam("Profile attribute to sort the list by")
+                                                            @RequestParam(value = PARAM_SORT_BY, required = false)
+                                                            String sortBy,
+                                                            @ApiParam("The sort order (either ASC or DESC)")
+                                                            @RequestParam(value = PARAM_SORT_ORDER, required = false)
+                                                            SortOrder sortOrder,
+                                                            @ApiParam("The name of the attributes to return (don't " +
+                                                                "specify to return all)")
+                                                            @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN,
                                                                    required = false)
-                                                           String[] attributesToReturn) throws ProfileException {
+                                                            String[] attributesToReturn) throws ProfileException {
         return profileService.getProfilesByExistingAttribute(tenantName, attributeName, sortBy, sortOrder,
                 attributesToReturn);
     }
 
+    @ApiOperation("Returns the list of profiles that have the given attribute with the given value")
     @RequestMapping(value = URL_PROFILE_GET_BY_ATTRIB_VALUE, method = RequestMethod.GET)
     @ResponseBody
-    public Iterable<Profile> getProfileByAttributeValue(@RequestParam(PARAM_TENANT_NAME) String tenantName,
-                                                        @RequestParam(PARAM_ATTRIBUTE_NAME) String attributeName,
-                                                        @RequestParam(PARAM_ATTRIBUTE_VALUE) String attributeValue,
-                                                        @RequestParam(value = PARAM_SORT_BY, required = false)
-                                                        String sortBy,
-                                                        @RequestParam(value = PARAM_SORT_ORDER, required = false)
-                                                        SortOrder sortOrder,
-                                                        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN,
-                                                                required = false)
-                                                        String[] attributesToReturn) throws ProfileException {
+    public Iterable<Profile> getProfilesByAttributeValue(@ApiParam("The tenant's name")
+                                                         @RequestParam(PARAM_TENANT_NAME) String tenantName,
+                                                         @ApiParam("The name of the attribute profiles must have")
+                                                         @RequestParam(PARAM_ATTRIBUTE_NAME) String attributeName,
+                                                         @ApiParam("The value of the attribute profiles must have")
+                                                         @RequestParam(PARAM_ATTRIBUTE_VALUE) String attributeValue,
+                                                         @ApiParam("Profile attribute to sort the list by")
+                                                         @RequestParam(value = PARAM_SORT_BY,
+                                                             required = false) String sortBy,
+                                                         @ApiParam("The sort order (either ASC or DESC)")
+                                                         @RequestParam(value = PARAM_SORT_ORDER,
+                                                             required = false) SortOrder sortOrder,
+                                                         @ApiParam("The name of the attributes to return (don't " +
+                                                             "specify to return all)")
+                                                         @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN,
+                                                             required = false)
+                                                         String[] attributesToReturn) throws ProfileException {
         return profileService.getProfilesByAttributeValue(tenantName, attributeName, attributeValue, sortBy, sortOrder,
                 attributesToReturn);
     }
 
-    @RequestMapping(value = URL_PROFILE_FORGOT_PASSWORD, method = RequestMethod.POST)
-    @ResponseBody
-    public Profile forgotPassword(@PathVariable(PATH_VAR_ID) String profileId,
-                                  @RequestParam(PARAM_RESET_PASSWORD_URL) String resetPasswordUrl,
-                                  @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
-                                  String[] attributesToReturn) throws ProfileException {
-        return profileService.forgotPassword(profileId, resetPasswordUrl, attributesToReturn);
-    }
-
+    @ApiOperation("Sends an email to the profile's user to indicate that the password needs to be reset")
     @RequestMapping(value = URL_PROFILE_RESET_PASSWORD, method = RequestMethod.POST)
     @ResponseBody
-    public Profile resetPassword(@RequestParam(PARAM_RESET_TOKEN_ID) String resetTokenId,
-                                 @RequestParam(PARAM_NEW_PASSWORD) String newPassword,
+    public Profile resetPassword(@ApiParam("The profile's ID")
+                                 @PathVariable(PATH_VAR_ID) String profileId,
+                                 @ApiParam("The base URL to use to build the final URL the profile will use to " +
+                                     "reset their password.")
+                                 @RequestParam(PARAM_RESET_PASSWORD_URL) String resetPasswordUrl,
+                                 @ApiParam("The name of the attributes to return (don't specify to return all)")
                                  @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                  String[] attributesToReturn) throws ProfileException {
-        return profileService.resetPassword(resetTokenId, newPassword, attributesToReturn);
+        return profileService.resetPassword(profileId, resetPasswordUrl, attributesToReturn);
+    }
+
+    @ApiOperation("Resets a profile's password")
+    @RequestMapping(value = URL_PROFILE_CHANGE_PASSWORD, method = RequestMethod.POST)
+    @ResponseBody
+    public Profile changePassword(@ApiParam("The reset token ID")
+                                  @RequestParam(PARAM_RESET_TOKEN_ID) String resetTokenId,
+                                  @ApiParam("The new password")
+                                  @RequestParam(PARAM_NEW_PASSWORD) String newPassword,
+                                  @ApiParam("The name of the attributes to return (don't specify to return all)")
+                                  @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
+                                  String[] attributesToReturn) throws ProfileException {
+        return profileService.changePassword(resetTokenId, newPassword, attributesToReturn);
+    }
+
+    @ApiOperation(value = "Creates a token that can be sent to the user in an email as a link", notes = "After the " +
+        "user clicks the link, the token then can be passed to verifyProfile or changePassword to verify that the " +
+        "user agrees")
+    @RequestMapping(value = URL_PROFILE_CREATE_VERIFICATION_TOKEN, method = RequestMethod.POST)
+    @ResponseBody
+    public VerificationToken createVerificationToken(@ApiParam("The profile ID of the user that needs to be contacted")
+                                                     @PathVariable(PATH_VAR_ID)
+                                                     String profileId) throws ProfileException {
+        return profileService.createVerificationToken(profileId);
+    }
+
+    @ApiOperation(value = "Deletes a verification token when it's not needed anymore", notes = "Not necessary to " +
+        "call if verifyProfile or changePassword, since they already delete the token")
+    @RequestMapping(value = URL_PROFILE_DELETE_VERIFICATION_TOKEN, method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteVerificationToken(@ApiParam("The ID of the token to delete")
+                                        @RequestParam(PARAM_TOKEN_ID)
+                                        String tokenId) throws ProfileException {
+        profileService.deleteVerificationToken(tokenId);
     }
 
     protected Map<String, Object> deserializeAttributes(String serializedAttributes)

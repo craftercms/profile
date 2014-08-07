@@ -15,7 +15,7 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 public interface TenantService {
 
     /**
-     * Creates the given tenant, failing it already has been created.
+     * Creates the given tenant, failing if it already has been created.
      *
      * @param tenant the tenant to create
      *
@@ -63,7 +63,7 @@ public interface TenantService {
     List<Tenant> getAllTenants() throws ProfileException;
 
     /**
-     * Sets verify new profiles for specified tenant.
+     * Sets if new profiles for the specified tenant should be verified or not.
      *
      * @param tenantName    the tenant's name
      * @param verify        true to verify new profiles through email, false otherwise

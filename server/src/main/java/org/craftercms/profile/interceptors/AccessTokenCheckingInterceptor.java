@@ -20,7 +20,9 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.AccessToken;
@@ -53,21 +55,29 @@ public class AccessTokenCheckingInterceptor extends HandlerInterceptorAdapter {
     public static final String LOG_KEY_APP_UNBINDING_APP =     "profile.app.unbindingApp";
 
     protected AccessTokenRepository tokenRepository;
+    protected String[] urlsToInclude;
 
     @Required
     public void setTokenRepository(AccessTokenRepository tokenRepository) {
         this.tokenRepository = tokenRepository;
     }
 
+    @Required
+    public void setUrlsToInclude(final String[] urlsToInclude) {
+        this.urlsToInclude = urlsToInclude;
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        AccessToken token = getAccessToken(request);
-        Application application = getApplication(token);
+        if (includeRequest(request)) {
+            AccessToken token = getAccessToken(request);
+            Application application = getApplication(token);
 
-        logger.debug(LOG_KEY_APP_BINDING_APP, application, Thread.currentThread().getName());
+            logger.debug(LOG_KEY_APP_BINDING_APP, application, Thread.currentThread().getName());
 
-        Application.setCurrent(application);
+            Application.setCurrent(application);
+        }
 
         return true;
     }
@@ -78,6 +88,18 @@ public class AccessTokenCheckingInterceptor extends HandlerInterceptorAdapter {
         logger.debug(LOG_KEY_APP_UNBINDING_APP, Application.getCurrent(), Thread.currentThread().getName());
 
         Application.clear();
+    }
+
+    protected boolean includeRequest(HttpServletRequest request) {
+        if (ArrayUtils.isNotEmpty(urlsToInclude)) {
+            for (String pathPattern : urlsToInclude) {
+                if (HttpUtils.getRequestUriWithoutContextPath(request).matches(pathPattern)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     protected Application getApplication(AccessToken token) throws I10nProfileException {
