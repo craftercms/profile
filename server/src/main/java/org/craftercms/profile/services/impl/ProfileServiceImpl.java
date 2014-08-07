@@ -39,6 +39,7 @@ import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.exception.PermissionException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
+import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.AttributeAction;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Profile;
@@ -230,7 +231,7 @@ public class ProfileServiceImpl implements ProfileService {
 
             if (emailNewProfiles && StringUtils.isNotEmpty(verificationUrl)) {
                 VerificationToken token = verificationService.createToken(profile.getId().toString());
-                verificationService.sendVerificationEmail(token, profile, verificationUrl, newProfileEmailFromAddress,
+                verificationService.sendEmail(token, profile, verificationUrl, newProfileEmailFromAddress,
                     newProfileEmailSubject, newProfileEmailTemplateName);
             }
 
@@ -636,7 +637,7 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = getNonNullProfile(profileId, attributesToReturn);
         VerificationToken token = verificationService.createToken(profileId);
 
-        verificationService.sendVerificationEmail(token, profile, resetPasswordUrl, resetPwdEmailFromAddress,
+        verificationService.sendEmail(token, profile, resetPasswordUrl, resetPwdEmailFromAddress,
             resetPwdEmailSubject, resetPwdEmailTemplateName);
 
         return profile;
@@ -661,6 +662,16 @@ public class ProfileServiceImpl implements ProfileService {
         logger.debug(LOG_KEY_PASSWORD_CHANGED, profile.getId().toString());
 
         return profile;
+    }
+
+    @Override
+    public VerificationToken createVerificationToken(String profileId) throws ProfileException {
+        return verificationService.createToken(profileId);
+    }
+
+    @Override
+    public void deleteVerificationToken(String tokenId) throws ProfileException {
+        verificationService.deleteToken(tokenId);
     }
 
     protected void checkIfManageProfilesIsAllowed(String tenantName) {

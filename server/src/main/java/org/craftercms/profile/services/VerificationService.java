@@ -17,8 +17,8 @@
 package org.craftercms.profile.services;
 
 import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.ProfileException;
-import org.craftercms.profile.services.impl.VerificationToken;
 
 /**
  * Service used to verify a particular activity with the profile owner (like a recently created profile or a reset
@@ -27,8 +27,6 @@ import org.craftercms.profile.services.impl.VerificationToken;
  * @author avasquez
  */
 public interface VerificationService {
-
-    String TOKEN_ID_PARAM =    "tokenId";
 
     /**
      * Creates a new verification token. The token can be later transmitted to the client through email, for
@@ -50,8 +48,8 @@ public interface VerificationService {
      *
      * @return the verification token created
      */
-    void sendVerificationEmail(VerificationToken token, Profile profile, String verificationUrl,
-                               String from, String subject, String templateName) throws ProfileException;
+    void sendEmail(VerificationToken token, Profile profile, String verificationUrl, String from, String subject,
+                   String templateName) throws ProfileException;
 
     /**
      * Verify that the token ID received from the user corresponds to an existing token.

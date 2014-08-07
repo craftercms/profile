@@ -1,4 +1,4 @@
-package org.craftercms.profile.services.impl;
+package org.craftercms.profile.api;
 
 import java.util.Date;
 
@@ -14,14 +14,6 @@ public class VerificationToken {
     private ObjectId _id;
     private String profileId;
     private Date timestamp;
-
-    public VerificationToken() {
-    }
-
-    public VerificationToken(String profileId, Date timestamp) {
-        this.profileId = profileId;
-        this.timestamp = timestamp;
-    }
 
     public ObjectId getId() {
         return _id;
@@ -48,15 +40,6 @@ public class VerificationToken {
     }
 
     @Override
-    public String toString() {
-        return "VerificationToken{" +
-                "id=" + _id +
-                ", profileId='" + profileId + '\'' +
-                ", timestamp=" + timestamp +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -77,6 +60,15 @@ public class VerificationToken {
     @Override
     public int hashCode() {
         return _id.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "VerificationToken{" +
+                "id=" + _id +
+                ", profileId='" + profileId + '\'' +
+                ", timestamp=" + timestamp +
+                '}';
     }
 
 }

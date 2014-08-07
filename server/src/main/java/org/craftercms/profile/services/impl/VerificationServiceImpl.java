@@ -27,12 +27,14 @@ import org.craftercms.commons.mail.EmailException;
 import org.craftercms.commons.mail.EmailFactory;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.ProfileConstants;
+import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
+import org.craftercms.profile.services.VerificationService;
 import org.craftercms.profile.exceptions.ExpiredVerificationTokenException;
 import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
 import org.craftercms.profile.repositories.VerificationTokenRepository;
-import org.craftercms.profile.services.VerificationService;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.scheduling.annotation.Async;
 
@@ -79,7 +81,9 @@ public class VerificationServiceImpl implements VerificationService {
 
     @Override
     public VerificationToken createToken(String profileId) throws ProfileException {
-        VerificationToken token = new VerificationToken(profileId, new Date());
+        VerificationToken token = new VerificationToken();
+        token.setProfileId(profileId);
+        token.setTimestamp(new Date());
 
         try {
             tokenRepository.insert(token);
@@ -94,8 +98,8 @@ public class VerificationServiceImpl implements VerificationService {
 
     @Override
     @Async
-    public void sendVerificationEmail(VerificationToken token, Profile profile, String verificationBaseUrl,
-                                      String from, String subject, String templateName) throws ProfileException {
+    public void sendEmail(VerificationToken token, Profile profile, String verificationBaseUrl, String from,
+                          String subject, String templateName) throws ProfileException {
         String verificationUrl = createVerificationUrl(verificationBaseUrl, token.getId().toString());
 
         Map<String, String> templateArgs = Collections.singletonMap(VERIFICATION_LINK_TEMPLATE_ARG, verificationUrl);
@@ -156,7 +160,7 @@ public class VerificationServiceImpl implements VerificationService {
             verificationUrl.append("?");
         }
 
-        verificationUrl.append(TOKEN_ID_PARAM).append("=").append(tokenId);
+        verificationUrl.append(ProfileConstants.PARAM_TOKEN_ID).append("=").append(tokenId);
 
         return verificationUrl.toString();
     }

@@ -36,6 +36,7 @@ import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.Ticket;
+import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.ErrorCode;
 import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.api.services.ProfileService;
@@ -52,7 +53,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.craftercms.profile.api.ProfileConstants.BASE_URL_PROFILE;
 import static org.craftercms.profile.api.ProfileConstants.NO_ATTRIBUTE;
-import static org.craftercms.profile.api.ProfileConstants.URL_PROFILE_RESET_PASSWORD;
+import static org.craftercms.profile.api.ProfileConstants.URL_PROFILE_CHANGE_PASSWORD;
 import static org.craftercms.profile.api.ProfileConstants.URL_PROFILE_VERIFY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -108,7 +109,7 @@ public class ProfileServiceIT {
     private static final String VERIFICATION_URL = "http://localhost:8983/crafter-profile" + BASE_URL_PROFILE +
             URL_PROFILE_VERIFY;
     private static final String RESET_PASSWORD_URL = "http://localhost:8983/crafter-profile" + BASE_URL_PROFILE +
-            URL_PROFILE_RESET_PASSWORD;
+        URL_PROFILE_CHANGE_PASSWORD;
 
     private static final String QUERY1 = "{email: 'admin@craftersoftware.com'}";
     private static final String QUERY2 = "{attributes.subscriptions.targets: 'news'}";
@@ -808,7 +809,7 @@ public class ProfileServiceIT {
     }
 
     @Test
-    public void testForgotAndResetPassword() throws Exception {
+    public void testResetAndChangePassword() throws Exception {
         GreenMail mailServer = new GreenMail(ServerSetupTest.SMTP);
         mailServer.start();
 
@@ -843,6 +844,25 @@ public class ProfileServiceIT {
             profileService.deleteProfile(profile.getId().toString());
 
             mailServer.stop();
+        }
+    }
+
+    @Test
+    public void testCreateVerificationToken() throws Exception {
+        VerificationToken token = null;
+
+        try {
+            ObjectId profileId = profileService.getProfileByUsername(DEFAULT_TENANT, ADMIN_USERNAME).getId();
+            token = profileService.createVerificationToken(profileId.toString());
+
+            assertNotNull(token);
+            assertNotNull(token.getId());
+            assertEquals(profileId.toString(), token.getProfileId());
+            assertNotNull(token.getTimestamp());
+        } finally {
+            if (token != null) {
+                profileService.deleteVerificationToken(token.getId().toString());
+            }
         }
     }
 

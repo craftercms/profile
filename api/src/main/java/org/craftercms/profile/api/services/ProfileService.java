@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
+import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.ProfileException;
 
 /**
@@ -348,5 +349,25 @@ public interface ProfileService {
      */
     Profile changePassword(String resetTokenId, String newPassword, String... attributesToReturn)
             throws ProfileException;
+
+    /**
+     * Creates a token that can be sent to the user in an email as a link. After the user clicks the link, the token
+     * then can be passed to {@link #verifyProfile(String, String...)} or {@link #changePassword(String, String,
+     * String...)} to verify that the user agrees.
+     *
+     * @param profileId the profile ID of the user that needs to be contacted
+     *
+     * @return the created token
+     */
+    VerificationToken createVerificationToken(String profileId) throws ProfileException;
+
+    /**
+     * Deletes a verification token when it's not needed anymore (not necessary to call if
+     * {@link #verifyProfile(String, String...)} or {@link #changePassword(String, String, String...)}, since they
+     * already delete the token.
+     *
+     * @param tokenId the ID of the token to delete
+     */
+    void deleteVerificationToken(String tokenId) throws ProfileException;
 
 }

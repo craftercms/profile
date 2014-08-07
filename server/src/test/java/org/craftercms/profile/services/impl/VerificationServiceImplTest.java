@@ -24,11 +24,12 @@ import java.util.concurrent.TimeUnit;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.mail.Email;
 import org.craftercms.commons.mail.EmailFactory;
+import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.exceptions.ExpiredVerificationTokenException;
 import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
 import org.craftercms.profile.repositories.VerificationTokenRepository;
-import org.craftercms.profile.services.VerificationService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -66,7 +67,7 @@ public class VerificationServiceImplTest {
     private static final String VERIFICATION_BASE_URL = "http://localhost:8080/verifyProfile";
     private static final Map<String, String> VERIFICATION_TEMPLATE_ARGS = Collections.singletonMap(
             VerificationServiceImpl.VERIFICATION_LINK_TEMPLATE_ARG, VERIFICATION_BASE_URL + "?" +
-                    VerificationService.TOKEN_ID_PARAM + "=" + NORMAL_TOKEN_ID);
+                    ProfileConstants.PARAM_TOKEN_ID + "=" + NORMAL_TOKEN_ID);
 
     private VerificationServiceImpl verificationService;
     @Mock
@@ -115,15 +116,15 @@ public class VerificationServiceImplTest {
     }
 
     @Test
-    public void testSendVerificationEmail() throws Exception {
+    public void testSendEmail() throws Exception {
         Profile profile = new Profile();
         profile.setId(PROFILE_ID);
         profile.setEmail(PROFILE_EMAIL);
 
-        VerificationToken token = new VerificationToken(PROFILE_ID.toString(), new Date());
+        VerificationToken token = new VerificationToken();
         token.setId(NORMAL_TOKEN_ID);
 
-        verificationService.sendVerificationEmail(token, profile, VERIFICATION_BASE_URL, FROM, SUBJECT, TEMPLATE_NAME);
+        verificationService.sendEmail(token, profile, VERIFICATION_BASE_URL, FROM, SUBJECT, TEMPLATE_NAME);
 
         verify(emailFactory).getEmail(FROM, TO, null, null, SUBJECT, TEMPLATE_NAME, VERIFICATION_TEMPLATE_ARGS, true);
         verify(email).send();

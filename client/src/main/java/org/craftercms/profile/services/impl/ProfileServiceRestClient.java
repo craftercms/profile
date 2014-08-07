@@ -29,6 +29,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.craftercms.commons.rest.RestClientUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
+import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
@@ -312,7 +313,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
 
     @Override
     public List<Profile> getProfilesByIds(List<String> profileIds, String sortBy, SortOrder sortOrder,
-                                              String... attributesToReturn) throws ProfileException {
+                                          String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValues(PARAM_ID, profileIds, params);
         RestClientUtils.addValue(PARAM_SORT_BY, sortBy, params);
@@ -327,7 +328,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
 
     @Override
     public List<Profile> getProfileRange(String tenantName, String sortBy, SortOrder sortOrder, Integer start,
-                                             Integer count, String... attributesToReturn) throws ProfileException {
+                                         Integer count, String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
         RestClientUtils.addValue(PARAM_SORT_BY, sortBy, params);
@@ -344,7 +345,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
 
     @Override
     public List<Profile> getProfilesByRole(String tenantName, String role, String sortBy, SortOrder sortOrder,
-                                               String... attributesToReturn) throws ProfileException {
+                                           String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
         RestClientUtils.addValue(PARAM_ROLE, role, params);
@@ -360,7 +361,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
 
     @Override
     public List<Profile> getProfilesByExistingAttribute(String tenantName, String attributeName, String sortBy,
-                                                            SortOrder sortOrder, String... attributesToReturn)
+                                                        SortOrder sortOrder, String... attributesToReturn)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
@@ -377,8 +378,8 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
 
     @Override
     public List<Profile> getProfilesByAttributeValue(String tenantName, String attributeName,
-                                                         String attributeValue, String sortBy, SortOrder sortOrder,
-                                                         String... attributesToReturn) throws ProfileException {
+                                                     String attributeValue, String sortBy, SortOrder sortOrder,
+                                                     String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
         RestClientUtils.addValue(PARAM_ATTRIBUTE_NAME, attributeName, params);
@@ -400,7 +401,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         RestClientUtils.addValue(PARAM_RESET_PASSWORD_URL, resetPasswordUrl, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_FORGOT_PASSWORD);
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_RESET_PASSWORD);
 
         return doPostForObject(url, params, Profile.class, profileId);
     }
@@ -413,9 +414,26 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         RestClientUtils.addValue(PARAM_NEW_PASSWORD, newPassword, params);
         RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
-        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_RESET_PASSWORD);
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_CHANGE_PASSWORD);
 
         return doPostForObject(url, params, Profile.class);
+    }
+
+    @Override
+    public VerificationToken createVerificationToken(final String profileId) throws ProfileException {
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_CREATE_VERIFICATION_TOKEN);
+
+        return doPostForObject(url, createBaseParams(), VerificationToken.class, profileId);
+    }
+
+    @Override
+    public void deleteVerificationToken(String tokenId) throws ProfileException {
+        MultiValueMap<String, String> params = createBaseParams();
+        RestClientUtils.addValue(PARAM_TOKEN_ID, tokenId, params);
+
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_DELETE_VERIFICATION_TOKEN);
+
+        doPostForLocation(url, params);
     }
 
     protected String serializeAttributes(Map<String, Object> attributes) throws ProfileException {

@@ -30,6 +30,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
+import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.AttributesDeserializationException;
@@ -437,32 +438,52 @@ public class ProfileController {
                 attributesToReturn);
     }
 
-    @ApiOperation("Common forgot password functionality: sends the profile an email with an URL to reset their " +
-        "password")
-    @RequestMapping(value = URL_PROFILE_FORGOT_PASSWORD, method = RequestMethod.POST)
+    @ApiOperation("Sends an email to the profile's user to indicate that the password needs to be reset")
+    @RequestMapping(value = URL_PROFILE_RESET_PASSWORD, method = RequestMethod.POST)
     @ResponseBody
-    public Profile forgotPassword(@ApiParam("The profile's ID")
-                                  @PathVariable(PATH_VAR_ID) String profileId,
-                                  @ApiParam("The base URL to use to build the final URL the profile will use to " +
-                                      "reset their password.")
-                                  @RequestParam(PARAM_RESET_PASSWORD_URL) String resetPasswordUrl,
-                                  @ApiParam("The name of the attributes to return (don't specify to return all)")
-                                  @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
-                                  String[] attributesToReturn) throws ProfileException {
+    public Profile resetPassword(@ApiParam("The profile's ID")
+                                 @PathVariable(PATH_VAR_ID) String profileId,
+                                 @ApiParam("The base URL to use to build the final URL the profile will use to " +
+                                     "reset their password.")
+                                 @RequestParam(PARAM_RESET_PASSWORD_URL) String resetPasswordUrl,
+                                 @ApiParam("The name of the attributes to return (don't specify to return all)")
+                                 @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
+                                 String[] attributesToReturn) throws ProfileException {
         return profileService.resetPassword(profileId, resetPasswordUrl, attributesToReturn);
     }
 
     @ApiOperation("Resets a profile's password")
-    @RequestMapping(value = URL_PROFILE_RESET_PASSWORD, method = RequestMethod.POST)
+    @RequestMapping(value = URL_PROFILE_CHANGE_PASSWORD, method = RequestMethod.POST)
     @ResponseBody
-    public Profile resetPassword(@ApiParam("The reset token ID")
-                                 @RequestParam(PARAM_RESET_TOKEN_ID) String resetTokenId,
-                                 @ApiParam("The new password")
-                                 @RequestParam(PARAM_NEW_PASSWORD) String newPassword,
-                                 @ApiParam("The name of the attributes to return (don't specify to return all)")
-                                 @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
-                                 String[] attributesToReturn) throws ProfileException {
+    public Profile changePassword(@ApiParam("The reset token ID")
+                                  @RequestParam(PARAM_RESET_TOKEN_ID) String resetTokenId,
+                                  @ApiParam("The new password")
+                                  @RequestParam(PARAM_NEW_PASSWORD) String newPassword,
+                                  @ApiParam("The name of the attributes to return (don't specify to return all)")
+                                  @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
+                                  String[] attributesToReturn) throws ProfileException {
         return profileService.changePassword(resetTokenId, newPassword, attributesToReturn);
+    }
+
+    @ApiOperation(value = "Creates a token that can be sent to the user in an email as a link", notes = "After the " +
+        "user clicks the link, the token then can be passed to verifyProfile or changePassword to verify that the " +
+        "user agrees")
+    @RequestMapping(value = URL_PROFILE_CREATE_VERIFICATION_TOKEN, method = RequestMethod.POST)
+    @ResponseBody
+    public VerificationToken createVerificationToken(@ApiParam("The profile ID of the user that needs to be contacted")
+                                                     @PathVariable(PATH_VAR_ID)
+                                                     String profileId) throws ProfileException {
+        return profileService.createVerificationToken(profileId);
+    }
+
+    @ApiOperation(value = "Deletes a verification token when it's not needed anymore", notes = "Not necessary to " +
+        "call if verifyProfile or changePassword, since they already delete the token")
+    @RequestMapping(value = URL_PROFILE_DELETE_VERIFICATION_TOKEN, method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteVerificationToken(@ApiParam("The ID of the token to delete")
+                                        @RequestParam(PARAM_TOKEN_ID)
+                                        String tokenId) throws ProfileException {
+        profileService.deleteVerificationToken(tokenId);
     }
 
     protected Map<String, Object> deserializeAttributes(String serializedAttributes)

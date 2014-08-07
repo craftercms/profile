@@ -18,7 +18,7 @@ package org.craftercms.profile.repositories.impl;
 
 import org.craftercms.commons.mongo.AbstractJongoRepository;
 import org.craftercms.profile.repositories.VerificationTokenRepository;
-import org.craftercms.profile.services.impl.VerificationToken;
+import org.craftercms.profile.api.VerificationToken;
 
 /**
  * Default implementation of {@link org.craftercms.profile.repositories.VerificationTokenRepository}.
