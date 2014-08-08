@@ -142,6 +142,10 @@ public class Profile {
         this.attributes = attributes;
     }
 
+    public void setAttribute(String name, Object value) {
+        getAttributes().put(name, value);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
