@@ -34,6 +34,8 @@ import org.craftercms.profile.exceptions.InvalidEmailAddressException;
 import org.craftercms.profile.exceptions.InvalidQueryException;
 import org.craftercms.profile.exceptions.MissingAccessTokenIdParamException;
 import org.craftercms.profile.exceptions.NoSuchAccessTokenIdException;
+import org.craftercms.profile.exceptions.NoSuchProfileException;
+import org.craftercms.profile.exceptions.NoSuchTenantException;
 import org.craftercms.profile.exceptions.NoSuchTicketException;
 import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
 import org.craftercms.profile.exceptions.ProfileExistsException;
@@ -83,6 +85,11 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.ACTION_DENIED, request);
     }
 
+    @ExceptionHandler(NoSuchTenantException.class)
+    public ResponseEntity<Object> handleNoSuchTenantException(NoSuchTenantException e, WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.NO_SUCH_TENANT, request);
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException e, WebRequest request) {
         return handleExceptionInternal(e, HttpStatus.UNAUTHORIZED, ErrorCode.BAD_CREDENTIALS, request);
@@ -91,6 +98,11 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DisabledProfileException.class)
     public ResponseEntity<Object> handleDisabledProfileException(DisabledProfileException e, WebRequest request) {
         return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.DISABLED_PROFILE, request);
+    }
+
+    @ExceptionHandler(NoSuchProfileException.class)
+    public ResponseEntity<Object> handleNoSuchProfileException(NoSuchProfileException e, WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.NO_SUCH_PROFILE, request);
     }
 
     @ExceptionHandler(NoSuchTicketException.class)
