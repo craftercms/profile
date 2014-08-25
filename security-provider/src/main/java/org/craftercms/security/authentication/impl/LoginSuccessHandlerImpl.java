@@ -24,7 +24,7 @@ import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.LoginSuccessHandler;
 import org.craftercms.security.exception.SecurityProviderException;
-import org.craftercms.security.utils.handlers.AbstractHandlerBase;
+import org.craftercms.security.utils.RedirectUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
@@ -41,7 +41,7 @@ import org.springframework.security.web.savedrequest.SavedRequest;
  *
  * @author Alfonso Vásquez
  */
-public class LoginSuccessHandlerImpl extends AbstractHandlerBase implements LoginSuccessHandler {
+public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
 
     protected RequestCache requestCache;
     protected String defaultTargetUrl;
@@ -69,9 +69,9 @@ public class LoginSuccessHandlerImpl extends AbstractHandlerBase implements Logi
     protected void redirectToSavedRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         SavedRequest savedRequest = requestCache.getRequest(request, response);
         if (savedRequest != null) {
-            redirectToUrl(request, response, savedRequest.getRedirectUrl());
+            RedirectUtils.redirect(request, response, savedRequest.getRedirectUrl());
         } else {
-            redirectToUrl(request, response, defaultTargetUrl);
+            RedirectUtils.redirect(request, response, defaultTargetUrl);
         }
     }
 

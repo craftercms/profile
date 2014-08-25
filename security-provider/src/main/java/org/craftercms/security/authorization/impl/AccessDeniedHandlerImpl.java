@@ -74,7 +74,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     protected void saveException(RequestContext context, AccessDeniedException e) {
         logger.debug("Saving access denied exception in request to use after forward");
 
-        context.getRequest().setAttribute(SecurityUtils.ACCESS_DENIED_EXCEPTION_ATTRIBUTE, e);
+        context.getRequest().setAttribute(SecurityUtils.ACCESS_DENIED_EXCEPTION_SESSION_ATTRIBUTE, e);
     }
 
     protected void forwardToErrorPage(RequestContext context) throws SecurityProviderException, IOException {

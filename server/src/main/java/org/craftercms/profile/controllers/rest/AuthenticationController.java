@@ -35,10 +35,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import static org.craftercms.profile.api.ProfileConstants.BASE_URL_AUTHENTICATION;
 import static org.craftercms.profile.api.ProfileConstants.PARAM_PASSWORD;
+import static org.craftercms.profile.api.ProfileConstants.PARAM_PROFILE_ID;
 import static org.craftercms.profile.api.ProfileConstants.PARAM_TENANT_NAME;
 import static org.craftercms.profile.api.ProfileConstants.PARAM_USERNAME;
 import static org.craftercms.profile.api.ProfileConstants.PATH_VAR_ID;
 import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_AUTHENTICATE;
+import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_CREATE_TICKET;
 import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_GET_TICKET;
 import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_INVALIDATE_TICKET;
 
@@ -69,6 +71,16 @@ public class AuthenticationController {
                                @ApiParam("The password")
                                @RequestParam(PARAM_PASSWORD) String password) throws ProfileException {
         return authenticationService.authenticate(tenantName, username, password);
+    }
+
+    @ApiOperation(value = "Create a new ticket for the specified profile" , notes = "This method should only be " +
+        "used when authentication is done through other means (like when authenticating through Facebook or " +
+        "Twitter) different than profile.")
+    @RequestMapping(value = URL_AUTH_CREATE_TICKET, method = RequestMethod.POST)
+    @ResponseBody
+    public Ticket createTicket(@ApiParam("The ID of the profile")
+                               @RequestParam(PARAM_PROFILE_ID) String profileId) throws ProfileException {
+        return authenticationService.createTicket(profileId);
     }
 
     @ApiOperation("Returns the ticket object for the given ticket ID")

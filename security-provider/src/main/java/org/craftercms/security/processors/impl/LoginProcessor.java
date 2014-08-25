@@ -27,7 +27,6 @@ import org.craftercms.security.authentication.AuthenticationManager;
 import org.craftercms.security.authentication.LoginFailureHandler;
 import org.craftercms.security.authentication.LoginSuccessHandler;
 import org.craftercms.security.exception.AuthenticationException;
-import org.craftercms.security.exception.AuthenticationSystemException;
 import org.craftercms.security.exception.BadCredentialsException;
 import org.craftercms.security.processors.RequestSecurityProcessor;
 import org.craftercms.security.processors.RequestSecurityProcessorChain;
@@ -178,10 +177,10 @@ public class LoginProcessor implements RequestSecurityProcessor {
         logger.debug("Saving authentication exception in session for later use");
 
         HttpSession session = request.getSession(true);
-        if (e instanceof AuthenticationSystemException) {
-            session.setAttribute(SecurityUtils.AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE, e);
-        } else if (e instanceof BadCredentialsException) {
-            session.setAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_ATTRIBUTE, e);
+        if (e instanceof BadCredentialsException) {
+            session.setAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE, e);
+        } else {
+            session.setAttribute(SecurityUtils.AUTHENTICATION_SYSTEM_EXCEPTION_SESSION_ATTRIBUTE, e);
         }
     }
 
@@ -190,8 +189,8 @@ public class LoginProcessor implements RequestSecurityProcessor {
 
         HttpSession session = request.getSession();
         if (session != null) {
-            session.removeAttribute(SecurityUtils.AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE);
-            session.removeAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_ATTRIBUTE);
+            session.removeAttribute(SecurityUtils.AUTHENTICATION_SYSTEM_EXCEPTION_SESSION_ATTRIBUTE);
+            session.removeAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE);
         }
     }
 

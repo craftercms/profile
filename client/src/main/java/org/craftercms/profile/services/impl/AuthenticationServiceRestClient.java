@@ -8,9 +8,11 @@ import org.springframework.util.MultiValueMap;
 
 import static org.craftercms.profile.api.ProfileConstants.BASE_URL_AUTHENTICATION;
 import static org.craftercms.profile.api.ProfileConstants.PARAM_PASSWORD;
+import static org.craftercms.profile.api.ProfileConstants.PARAM_PROFILE_ID;
 import static org.craftercms.profile.api.ProfileConstants.PARAM_TENANT_NAME;
 import static org.craftercms.profile.api.ProfileConstants.PARAM_USERNAME;
 import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_AUTHENTICATE;
+import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_CREATE_TICKET;
 import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_GET_TICKET;
 import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_INVALIDATE_TICKET;
 
@@ -29,6 +31,16 @@ public class AuthenticationServiceRestClient extends AbstractProfileRestClientBa
         RestClientUtils.addValue(PARAM_PASSWORD, password, params);
 
         String url = getAbsoluteUrl(BASE_URL_AUTHENTICATION + URL_AUTH_AUTHENTICATE);
+
+        return doPostForObject(url, params, Ticket.class);
+    }
+
+    @Override
+    public Ticket createTicket(final String profileId) throws ProfileException {
+        MultiValueMap<String, String> params = createBaseParams();
+        RestClientUtils.addValue(PARAM_PROFILE_ID, profileId, params);
+
+        String url = getAbsoluteUrl(BASE_URL_AUTHENTICATION + URL_AUTH_CREATE_TICKET);
 
         return doPostForObject(url, params, Ticket.class);
     }

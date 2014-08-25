@@ -82,6 +82,7 @@ public class ProfileConstants {
     public static final String URL_PROFILE_DELETE_VERIFICATION_TOKEN = "/verification/delete_token";
 
     public static final String URL_AUTH_AUTHENTICATE = "/authenticate";
+    public static final String URL_AUTH_CREATE_TICKET = "/create_ticket";
     public static final String URL_AUTH_GET_TICKET = "/{id}/ticket";
     public static final String URL_AUTH_INVALIDATE_TICKET = "/{id}/invalidate_ticket";
 
@@ -110,6 +111,7 @@ public class ProfileConstants {
     public static final String PARAM_NEW_PASSWORD = "newPassword";
     public static final String PARAM_QUERY = "query";
     public static final String PARAM_TOKEN_ID = "tokenId";
+    public static final String PARAM_PROFILE_ID = "profileId";
 
     private ProfileConstants() {
     }

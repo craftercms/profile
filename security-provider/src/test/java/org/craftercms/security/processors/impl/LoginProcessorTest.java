@@ -100,17 +100,17 @@ public class LoginProcessorTest {
 
         request.setParameter(LoginProcessor.DEFAULT_USERNAME_PARAM, USERNAME);
         request.setParameter(LoginProcessor.DEFAULT_PASSWORD_PARAM, VALID_PASSWORD);
-        session.setAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_ATTRIBUTE,
+        session.setAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE,
                 new BadCredentialsException());
-        session.setAttribute(SecurityUtils.AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE,
+        session.setAttribute(SecurityUtils.AUTHENTICATION_SYSTEM_EXCEPTION_SESSION_ATTRIBUTE,
                 new AuthenticationSystemException());
 
         processor.processRequest(context, chain);
 
         verify(chain, never()).processRequest(context);
 
-        assertNull(session.getAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_ATTRIBUTE));
-        assertNull(session.getAttribute(SecurityUtils.AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE));
+        assertNull(session.getAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE));
+        assertNull(session.getAttribute(SecurityUtils.AUTHENTICATION_SYSTEM_EXCEPTION_SESSION_ATTRIBUTE));
 
         Authentication auth = SecurityUtils.getAuthentication(request);
 
@@ -141,7 +141,7 @@ public class LoginProcessorTest {
 
         verify(chain, never()).processRequest(context);
 
-        assertNotNull(session.getAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_ATTRIBUTE));
+        assertNotNull(session.getAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE));
 
         Authentication auth = SecurityUtils.getAuthentication(request);
 

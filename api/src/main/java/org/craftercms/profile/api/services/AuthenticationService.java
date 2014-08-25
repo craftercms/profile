@@ -22,6 +22,20 @@ public interface AuthenticationService {
     Ticket authenticate(String tenantName, String username, String password) throws ProfileException;
 
     /**
+     * Create a new ticket for the specified profile.
+     *
+     * <p>
+     *     <strong>Note: </strong> this method should only be used when authentication is done through other means
+     *     (like when authenticating through Facebook or Twitter) different than profile.
+     * </p>
+     *
+     * @param profileId the ID of the profile
+     *
+     * @return the ticket
+     */
+    Ticket createTicket(String profileId) throws ProfileException;
+
+    /**
      * Returns the ticket object for the given ticket ID.
      *
      * @param ticketId      the ID of the ticket
