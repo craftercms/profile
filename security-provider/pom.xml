@@ -133,6 +133,11 @@
             <artifactId>crafter-profile-client</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.craftercms</groupId>
+            <artifactId>crafter-profile-social-medial-integration</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- EhCache -->
         <dependency>
