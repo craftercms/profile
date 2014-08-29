@@ -10,7 +10,7 @@ import org.springframework.social.connect.ConnectionRepositoryException;
  */
 public class ProfileConnectionRepositoryException extends ConnectionRepositoryException {
 
-    public ProfileConnectionRepositoryException(final String message, final Throwable cause) {
+    public ProfileConnectionRepositoryException(String message, Throwable cause) {
         super(message, cause);
     }
 

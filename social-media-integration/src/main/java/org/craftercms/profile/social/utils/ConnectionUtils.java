@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.profile.api.Profile;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.UserProfile;
@@ -184,10 +185,23 @@ public class ConnectionUtils {
      * @param providerProfile   the provider profile where to get the info
      */
     public static void addProviderProfileInfo(Profile profile, UserProfile providerProfile) {
-        profile.setUsername(providerProfile.getUsername());
-        profile.setEmail(providerProfile.getEmail());
-        profile.setAttribute(FIRST_NAME_ATTRIBUTE_NAME, providerProfile.getFirstName());
-        profile.setAttribute(LAST_NAME_ATTRIBUTE_NAME, providerProfile.getLastName());
+        String email = providerProfile.getEmail();
+        if (StringUtils.isEmpty(email)) {
+            throw new IllegalStateException("No email included in provider profile");
+        }
+
+        String username = providerProfile.getUsername();
+        if (StringUtils.isEmpty(username)) {
+            username = email;
+        }
+
+        String firstName = providerProfile.getFirstName();
+        String lastName = providerProfile.getLastName();
+
+        profile.setUsername(username);
+        profile.setEmail(email);
+        profile.setAttribute(FIRST_NAME_ATTRIBUTE_NAME, firstName);
+        profile.setAttribute(LAST_NAME_ATTRIBUTE_NAME, lastName);
     }
 
 }

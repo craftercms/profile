@@ -110,6 +110,20 @@ if (db.tenant.count() == 0) {
                         "allowedActions": [ "*" ]
                     }
                 ]
+            },
+            {
+                "name": "connections",
+                "metadata": {
+                    "label": "Connections",
+                    "type": "COMPLEX",
+                    "displayOrder": 5
+                },
+                "permissions": [
+                    {
+                        "application": "*",
+                        "allowedActions": [ "*" ]
+                    }
+                ]
             }
         ]
     });

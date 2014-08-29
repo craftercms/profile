@@ -119,7 +119,7 @@ public class ProfileUsersConnectionRepository implements AnonymousAwareUsersConn
         try {
             return profileService.getProfile(profileId);
         } catch (ProfileException e) {
-            throw new ProfileConnectionRepositoryException("Unable to find profile '" + profileId + "", e);
+            throw new ProfileConnectionRepositoryException("Unable to find profile '" + profileId + "'", e);
         }
     }
 
