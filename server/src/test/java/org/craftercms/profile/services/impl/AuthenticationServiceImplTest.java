@@ -23,6 +23,7 @@ import org.bson.types.ObjectId;
 import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.BadCredentialsException;
@@ -77,8 +78,10 @@ public class AuthenticationServiceImplTest {
         when(ticketRepository.findById(NORMAL_TICKET_ID.toString())).thenReturn(getNormalTicket());
         when(ticketRepository.findById(EXPIRED_TICKET_ID.toString())).thenReturn(getExpiredTicket());
 
-        when(profileService.getProfileByUsername(TENANT_NAME, USERNAME1)).thenReturn(getProfile1());
-        when(profileService.getProfileByUsername(TENANT_NAME, USERNAME2)).thenReturn(getProfile2());
+        when(profileService.getProfileByUsername(TENANT_NAME, USERNAME1, ProfileConstants.NO_ATTRIBUTE))
+            .thenReturn(getProfile1());
+        when(profileService.getProfileByUsername(TENANT_NAME, USERNAME2, ProfileConstants.NO_ATTRIBUTE))
+            .thenReturn(getProfile2());
 
         authenticationService = new AuthenticationServiceImpl();
         authenticationService.setPermissionEvaluator(permissionEvaluator);
@@ -95,7 +98,7 @@ public class AuthenticationServiceImplTest {
         assertEquals(PROFILE_ID, ticket.getProfileId());
         assertNotNull(ticket.getLastRequestTime());
 
-        verify(profileService).getProfileByUsername(TENANT_NAME, USERNAME1);
+        verify(profileService).getProfileByUsername(TENANT_NAME, USERNAME1, ProfileConstants.NO_ATTRIBUTE);
         verify(ticketRepository).insert(ticket);
     }
 

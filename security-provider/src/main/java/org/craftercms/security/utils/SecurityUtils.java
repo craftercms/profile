@@ -34,14 +34,17 @@ public class SecurityUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityUtils.class);
 
-    public static final String AUTHENTICATION_SYSTEM_EXCEPTION_ATTRIBUTE =  "authenticationSystemException";
-    public static final String BAD_CREDENTIALS_EXCEPTION_ATTRIBUTE =        "badCredentialsException";
-    public static final String ACCESS_DENIED_EXCEPTION_ATTRIBUTE =          "accessDeniedException";
+    public static final String AUTHENTICATION_SYSTEM_EXCEPTION_SESSION_ATTRIBUTE = "authenticationSystemException";
+    public static final String BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE = "badCredentialsException";
+    public static final String ACCESS_DENIED_EXCEPTION_SESSION_ATTRIBUTE = "accessDeniedException";
 
-    public static final String TICKET_COOKIE_NAME =                     "ticket";
-    public static final String PROFILE_LAST_MODIFIED_COOKIE_NAME =      "profile-last-modified";
-    public static final String TENANT_REQUEST_ATTRIBUTE_NAME =          "tenant";
-    public static final String AUTHENTICATION_REQUEST_ATTRIBUTE_NAME =  "authentication";
+    public static final String TICKET_COOKIE_NAME = "ticket";
+    public static final String PROFILE_LAST_MODIFIED_COOKIE_NAME = "profile-last-modified";
+    public static final String TENANT_REQUEST_ATTRIBUTE_NAME = "tenant";
+    public static final String AUTHENTICATION_REQUEST_ATTRIBUTE_NAME = "authentication";
+
+
+    public static final String PROFILE_TO_REGISTER_SESSION_ATTRIBUTE = "profileToRegister";
 
     private SecurityUtils() {
     }

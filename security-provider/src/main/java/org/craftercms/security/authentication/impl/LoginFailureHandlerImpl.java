@@ -24,7 +24,7 @@ import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.LoginFailureHandler;
 import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.SecurityProviderException;
-import org.craftercms.security.utils.handlers.AbstractHandlerBase;
+import org.craftercms.security.utils.RedirectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Alfonso Vásquez
  */
-public class LoginFailureHandlerImpl extends AbstractHandlerBase implements LoginFailureHandler {
+public class LoginFailureHandlerImpl implements LoginFailureHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginFailureHandlerImpl.class);
 
@@ -58,7 +58,7 @@ public class LoginFailureHandlerImpl extends AbstractHandlerBase implements Logi
     public void handle(RequestContext context, AuthenticationException e) throws SecurityProviderException,
             IOException {
         if (StringUtils.isNotEmpty(targetUrl)) {
-            redirectToUrl(context.getRequest(), context.getResponse(), targetUrl);
+            RedirectUtils.redirect(context.getRequest(), context.getResponse(), targetUrl);
         } else {
             sendError(e, context);
         }

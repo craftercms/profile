@@ -24,7 +24,7 @@ import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.AuthenticationRequiredHandler;
 import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.SecurityProviderException;
-import org.craftercms.security.utils.handlers.AbstractHandlerBase;
+import org.craftercms.security.utils.RedirectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
@@ -40,7 +40,7 @@ import org.springframework.security.web.savedrequest.RequestCache;
  *
  * @author Alfonso Vásquez
  */
-public class AuthenticationRequiredHandlerImpl extends AbstractHandlerBase implements AuthenticationRequiredHandler {
+public class AuthenticationRequiredHandlerImpl implements AuthenticationRequiredHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationRequiredHandlerImpl.class);
 
@@ -80,7 +80,7 @@ public class AuthenticationRequiredHandlerImpl extends AbstractHandlerBase imple
         saveRequest(context);
 
         if (StringUtils.isNotEmpty(loginFormUrl)) {
-            redirectToUrl(context.getRequest(), context.getResponse(), loginFormUrl);
+            RedirectUtils.redirect(context.getRequest(), context.getResponse(), loginFormUrl);
         } else {
             sendError(e, context);
         }

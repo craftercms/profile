@@ -81,7 +81,7 @@ public class ProfileController {
                                  @ApiParam("The profile's username")
                                  @RequestParam(PARAM_USERNAME) String username,
                                  @ApiParam("The profile's password")
-                                 @RequestParam(PARAM_PASSWORD) String password,
+                                 @RequestParam(value = PARAM_PASSWORD, required = false) String password,
                                  @ApiParam("The profile's email")
                                  @RequestParam(PARAM_EMAIL) String email,
                                  @ApiParam("If the profile should be enabled or not")

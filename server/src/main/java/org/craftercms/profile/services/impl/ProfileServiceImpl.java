@@ -28,6 +28,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.crypto.CipherUtils;
@@ -201,6 +202,10 @@ public class ProfileServiceImpl implements ProfileService {
         try {
             Tenant tenant = getTenant(tenantName);
             Date now = new Date();
+
+            if (StringUtils.isEmpty(password)) {
+                password = RandomStringUtils.randomAlphanumeric(8);
+            }
 
             Profile profile = new Profile();
             profile.setTenant(tenantName);

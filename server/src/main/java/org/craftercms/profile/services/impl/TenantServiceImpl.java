@@ -60,21 +60,21 @@ public class TenantServiceImpl implements TenantService {
     private static final I10nLogger logger = new I10nLogger(TenantServiceImpl.class,
             "crafter.profile.messages.logging");
 
-    public static final String LOG_KEY_TENANT_CREATED =                 "profile.tenant.tenantCreated";
-    public static final String LOG_KEY_TENANT_DELETED =                 "profile.tenant.tenantDeleted";
-    public static final String LOG_KEY_VERIFY_NEW_PROFILES_FLAG_SET =   "profile.tenant.verifyNewProfilesFlagSet";
-    public static final String LOG_KEY_ROLES_ADDED =                    "profile.tenant.rolesAdded";
-    public static final String LOG_KEY_ROLES_REMOVED =                  "profile.tenant.rolesRemoved";
-    public static final String LOG_KEY_ATTRIBUTE_DEFINITIONS_ADDED =    "profile.tenant.attributeDefinitionsAdded";
-    public static final String LOG_KEY_ATTRIBUTE_DEFINITIONS_UPDATED =  "profile.tenant.attributeDefinitionsUpdated";
-    public static final String LOG_KEY_ATTRIBUTE_DEFINITIONS_REMOVED =  "profile.tenant.attributeDefinitionsRemoved";
+    public static final String LOG_KEY_TENANT_CREATED = "profile.tenant.tenantCreated";
+    public static final String LOG_KEY_TENANT_DELETED = "profile.tenant.tenantDeleted";
+    public static final String LOG_KEY_VERIFY_NEW_PROFILES_FLAG_SET = "profile.tenant.verifyNewProfilesFlagSet";
+    public static final String LOG_KEY_ROLES_ADDED = "profile.tenant.rolesAdded";
+    public static final String LOG_KEY_ROLES_REMOVED = "profile.tenant.rolesRemoved";
+    public static final String LOG_KEY_ATTRIBUTE_DEFINITIONS_ADDED = "profile.tenant.attributeDefinitionsAdded";
+    public static final String LOG_KEY_ATTRIBUTE_DEFINITIONS_UPDATED = "profile.tenant.attributeDefinitionsUpdated";
+    public static final String LOG_KEY_ATTRIBUTE_DEFINITIONS_REMOVED = "profile.tenant.attributeDefinitionsRemoved";
 
-    public static final String ERROR_KEY_CREATE_TENANT_ERROR =      "profile.tenant.createTenantError";
-    public static final String ERROR_KEY_GET_TENANT_ERROR =         "profile.tenant.getTenantError";
-    public static final String ERROR_KEY_UPDATE_TENANT_ERROR =      "profile.tenant.updateTenantError";
-    public static final String ERROR_KEY_DELETE_TENANT_ERROR =      "profile.tenant.deleteTenantError";
-    public static final String ERROR_KEY_GET_TENANT_COUNT_ERROR =   "profile.tenant.getTenantCountError";
-    public static final String ERROR_KEY_GET_ALL_TENANTS_ERROR =    "profile.tenant.getAllTenantsError";
+    public static final String ERROR_KEY_CREATE_TENANT_ERROR = "profile.tenant.createTenantError";
+    public static final String ERROR_KEY_GET_TENANT_ERROR = "profile.tenant.getTenantError";
+    public static final String ERROR_KEY_UPDATE_TENANT_ERROR = "profile.tenant.updateTenantError";
+    public static final String ERROR_KEY_DELETE_TENANT_ERROR = "profile.tenant.deleteTenantError";
+    public static final String ERROR_KEY_GET_TENANT_COUNT_ERROR = "profile.tenant.getTenantCountError";
+    public static final String ERROR_KEY_GET_ALL_TENANTS_ERROR = "profile.tenant.getAllTenantsError";
 
     protected PermissionEvaluator<Application, String> tenantPermissionEvaluator;
     protected PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator;

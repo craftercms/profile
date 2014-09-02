@@ -287,7 +287,7 @@ public class AccessTokenManagerCli {
     }
 
     public static void main(String... args) {
-        ApplicationContext context = getApplicationContext();
+        ApplicationContext context = new ClassPathXmlApplicationContext(CONTEXT_PATH);
         AccessTokenRepository repository = context.getBean(AccessTokenRepository.class);
         ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
         BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
@@ -295,12 +295,6 @@ public class AccessTokenManagerCli {
         AccessTokenManagerCli cli = new AccessTokenManagerCli(stdIn, stdOut, repository, objectMapper);
 
         cli.run(args);
-    }
-
-    public static ApplicationContext getApplicationContext() {
-        ApplicationContext context = new ClassPathXmlApplicationContext(CONTEXT_PATH);
-
-        return context;
     }
 
 }

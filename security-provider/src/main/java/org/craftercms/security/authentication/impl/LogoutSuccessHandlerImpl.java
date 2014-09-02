@@ -22,7 +22,7 @@ import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.LogoutSuccessHandler;
 import org.craftercms.security.exception.SecurityProviderException;
-import org.craftercms.security.utils.handlers.AbstractHandlerBase;
+import org.craftercms.security.utils.RedirectUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
@@ -31,7 +31,7 @@ import org.springframework.beans.factory.annotation.Required;
  *
  * @author avasquez
  */
-public class LogoutSuccessHandlerImpl extends AbstractHandlerBase implements LogoutSuccessHandler {
+public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler {
 
     protected String targetUrl;
 
@@ -49,7 +49,7 @@ public class LogoutSuccessHandlerImpl extends AbstractHandlerBase implements Log
     @Override
     public void handle(RequestContext context, Authentication authentication) throws SecurityProviderException,
             IOException {
-        redirectToUrl(context.getRequest(), context.getResponse(), targetUrl);
+        RedirectUtils.redirect(context.getRequest(), context.getResponse(), targetUrl);
     }
 
 }
