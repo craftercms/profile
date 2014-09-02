@@ -10,6 +10,8 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.craftercms.commons.crypto.CryptoException;
+import org.craftercms.commons.crypto.TextEncryptor;
 import org.craftercms.profile.api.Profile;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.UserProfile;
@@ -29,19 +31,21 @@ public class ConnectionUtils {
      * Creates a new map from the specified {@link org.springframework.social.connect.ConnectionData}. Used when
      * connection data needs to be stored in a profile.
      *
-     * @param connectionData the connection data to convert
+     * @param connectionData    the connection data to convert
+     * @param encryptor         the encryptor used to encrypt the accessToken, secret and refreshToken
      *
      * @return the connection data as a map
      */
-    public static Map<String, Object> connectionDataToMap(ConnectionData connectionData) {
+    public static Map<String, Object> connectionDataToMap(ConnectionData connectionData,
+                                                          TextEncryptor encryptor) throws CryptoException {
         Map<String, Object> map = new HashMap<>();
         map.put("providerUserId", connectionData.getProviderUserId());
         map.put("displayName", connectionData.getDisplayName());
         map.put("profileUrl", connectionData.getProfileUrl());
         map.put("imageUrl", connectionData.getImageUrl());
-        map.put("accessToken", connectionData.getAccessToken());
-        map.put("secret", connectionData.getSecret());
-        map.put("refreshToken", connectionData.getRefreshToken());
+        map.put("accessToken", encrypt(connectionData.getAccessToken(), encryptor));
+        map.put("secret", encrypt(connectionData.getSecret(), encryptor));
+        map.put("refreshToken", encrypt(connectionData.getRefreshToken(), encryptor));
         map.put("expireTime", connectionData.getExpireTime());
 
         return map;
@@ -53,17 +57,19 @@ public class ConnectionUtils {
      *
      * @param providerId    the provider ID of the connection (which is not stored in the map)
      * @param map           the map to convert
+     * @param encryptor     the encryptor used to decrypt the accessToken, secret and refreshToken
      *
      * @return the map as {@link org.springframework.social.connect.ConnectionData}
      */
-    public static ConnectionData mapToConnectionData(String providerId, Map<String, Object> map) {
+    public static ConnectionData mapToConnectionData(String providerId, Map<String, Object> map,
+                                                     TextEncryptor encryptor) throws CryptoException {
         String providerUserId = (String) map.get("providerUserId");
         String displayName = (String) map.get("displayName");
         String profileUrl = (String) map.get("profileUrl");
         String imageUrl = (String) map.get("imageUrl");
-        String accessToken = (String) map.get("accessToken");
-        String secret = (String) map.get("secret");
-        String refreshToken = (String) map.get("refreshToken");
+        String accessToken = decrypt((String)map.get("accessToken"), encryptor);
+        String secret = decrypt((String)map.get("secret"), encryptor);
+        String refreshToken = decrypt((String)map.get("refreshToken"), encryptor);
         Long expireTime = (Long) map.get("expireTime");
 
         return new ConnectionData(providerId, providerUserId, displayName, profileUrl, imageUrl,
@@ -76,8 +82,10 @@ public class ConnectionUtils {
      *
      * @param profile           the profile
      * @param connectionData    the connection data to add
+     * @param encryptor         the encryptor used to encrypt the accessToken, secret and refreshToken
      */
-    public static void addConnectionData(Profile profile, ConnectionData connectionData) {
+    public static void addConnectionData(Profile profile, ConnectionData connectionData,
+                                         TextEncryptor encryptor) throws CryptoException {
         Map<String, List<Map<String, Object>>> allConnections = profile.getAttribute(CONNECTIONS_ATTRIBUTE_NAME);
         List<Map<String, Object>> connectionsForProvider = null;
 
@@ -105,9 +113,9 @@ public class ConnectionUtils {
         }
 
         if (currentConnectionDataMap != null) {
-            currentConnectionDataMap.putAll(connectionDataToMap(connectionData));
+            currentConnectionDataMap.putAll(connectionDataToMap(connectionData, encryptor));
         } else {
-            connectionsForProvider.add(connectionDataToMap(connectionData));
+            connectionsForProvider.add(connectionDataToMap(connectionData, encryptor));
         }
     }
 
@@ -117,10 +125,12 @@ public class ConnectionUtils {
      *
      * @param profile       the profile that contains the connection data in its attributes
      * @param providerId    the provider ID of the connection
+     * @param encryptor     the encryptor used to decrypt the accessToken, secret and refreshToken
      *
      * @return the list of connection data for the provider, or empty if no connection data was found
      */
-    public static List<ConnectionData> getConnectionData(Profile profile, String providerId) {
+    public static List<ConnectionData> getConnectionData(Profile profile, String providerId,
+                                                         TextEncryptor encryptor) throws CryptoException {
         Map<String, List<Map<String, Object>>> allConnections = profile.getAttribute(CONNECTIONS_ATTRIBUTE_NAME);
 
         if (MapUtils.isNotEmpty(allConnections)) {
@@ -130,7 +140,7 @@ public class ConnectionUtils {
                 List<ConnectionData> connectionDataList = new ArrayList<>(connectionsForProvider.size());
 
                 for (Map<String, Object> connectionDataMap : connectionsForProvider) {
-                    connectionDataList.add(mapToConnectionData(providerId, connectionDataMap));
+                    connectionDataList.add(mapToConnectionData(providerId, connectionDataMap, encryptor));
                 }
 
                 return connectionDataList;
@@ -202,6 +212,14 @@ public class ConnectionUtils {
         profile.setEmail(email);
         profile.setAttribute(FIRST_NAME_ATTRIBUTE_NAME, firstName);
         profile.setAttribute(LAST_NAME_ATTRIBUTE_NAME, lastName);
+    }
+
+    private static String encrypt(String clear, TextEncryptor encryptor) throws CryptoException {
+        return StringUtils.isNotEmpty(clear) ? encryptor.encrypt(clear) : clear;
+    }
+
+    private static String decrypt(String encrypted, TextEncryptor encryptor) throws CryptoException {
+        return StringUtils.isNotEmpty(encrypted) ? encryptor.decrypt(encrypted) : encrypted;
     }
 
 }

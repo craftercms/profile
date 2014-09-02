@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.craftercms.commons.crypto.TextEncryptor;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.exceptions.ProfileException;
@@ -34,6 +35,7 @@ public class ProfileUsersConnectionRepository implements AnonymousAwareUsersConn
     protected ProfileService profileService;
     protected TenantResolver tenantResolver;
     protected ConnectionFactoryLocator connectionFactoryLocator;
+    protected TextEncryptor encryptor;
 
     @Required
     public void setProfileService(final ProfileService profileService) {
@@ -48,6 +50,11 @@ public class ProfileUsersConnectionRepository implements AnonymousAwareUsersConn
     @Required
     public void setConnectionFactoryLocator(final ConnectionFactoryLocator connectionFactoryLocator) {
         this.connectionFactoryLocator = connectionFactoryLocator;
+    }
+
+    @Required
+    public void setEncryptor(final TextEncryptor encryptor) {
+        this.encryptor = encryptor;
     }
 
     @Override
@@ -93,7 +100,7 @@ public class ProfileUsersConnectionRepository implements AnonymousAwareUsersConn
     public ConnectionRepository createConnectionRepository(String userId) {
         Profile profile = findProfile(userId);
         if (profile != null) {
-            return new ProfileConnectionRepository(connectionFactoryLocator, profile, profileService);
+            return new ProfileConnectionRepository(connectionFactoryLocator, profile, profileService, encryptor);
         } else {
             return null;
         }
@@ -101,7 +108,7 @@ public class ProfileUsersConnectionRepository implements AnonymousAwareUsersConn
 
     @Override
     public ConnectionRepository createConnectionRepository() {
-        return new ProfileConnectionRepository(connectionFactoryLocator, profileService, tenantResolver);
+        return new ProfileConnectionRepository(connectionFactoryLocator, profileService, tenantResolver, encryptor);
     }
 
     protected List<Profile> findProfilesByQuery(String query) {
