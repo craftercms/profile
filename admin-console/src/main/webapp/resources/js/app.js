@@ -339,6 +339,23 @@ app.controller('ProfileListController', function($scope, $location, tenantNames,
         $scope.getProfiles(tenantName, $scope.searchText);
     };
 
+    $scope.showDeleteConfirmationDialog = function(profile, index) {
+        $scope.profileToDelete = {};
+        $scope.profileToDelete.username = profile.username;
+        $scope.profileToDelete.id = profile.id;
+        $scope.profileToDelete.index = index;
+
+        $('#deleteConfirmationDialog').modal('show');
+    };
+
+    $scope.deleteProfile = function(id, index) {
+        profileService.deleteProfile(id).then(function() {
+            $scope.profiles.splice(index, 1);
+
+            $('#deleteConfirmationDialog').modal('hide');
+        });
+    };
+
     $scope.resetSearchAndGetProfiles($scope.selectedTenantName);
 });
 
@@ -414,10 +431,10 @@ app.controller('TenantListController', function($scope, tenantNames, tenantServi
 
     $scope.tenantNames = tenantNames;
 
-    $scope.showDeleteConfirmationDialog = function(tenantName, tenantIndex) {
+    $scope.showDeleteConfirmationDialog = function(tenantName, index) {
         $scope.tenantToDelete = {};
         $scope.tenantToDelete.name = tenantName;
-        $scope.tenantToDelete.index = tenantIndex;
+        $scope.tenantToDelete.index = index;
 
         $('#deleteConfirmationDialog').modal('show');
     };
