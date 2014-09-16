@@ -64,7 +64,7 @@
 <#macro scripts>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-route.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="<@spring.url '/resources/js/bootstrap.min.js'/>"></script>
 <script src="<@spring.url '/resources/js/ui-bootstrap-tpls-0.11.0.min.js'/>"></script>
 <script src="<@spring.url '/resources/js/bootstrap-growl.min.js'/>"></script>
