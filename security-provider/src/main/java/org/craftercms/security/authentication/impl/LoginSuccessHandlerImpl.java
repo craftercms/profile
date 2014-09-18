@@ -45,10 +45,12 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
 
     protected RequestCache requestCache;
     protected String defaultTargetUrl;
+    protected boolean alwaysUseDefaultTargetUrl;
 
     public LoginSuccessHandlerImpl() {
         super();
         requestCache = new HttpSessionRequestCache();
+        alwaysUseDefaultTargetUrl = false;
     }
 
     public void setRequestCache(RequestCache requestCache) {
@@ -60,6 +62,10 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
         this.defaultTargetUrl = defaultTargetUrl;
     }
 
+    public void setAlwaysUseDefaultTargetUrl(boolean alwaysUseDefaultTargetUrl) {
+        this.alwaysUseDefaultTargetUrl = alwaysUseDefaultTargetUrl;
+    }
+
     @Override
     public void handle(RequestContext context, Authentication authentication) throws SecurityProviderException,
             IOException {
@@ -68,7 +74,7 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
 
     protected void redirectToSavedRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         SavedRequest savedRequest = requestCache.getRequest(request, response);
-        if (savedRequest != null) {
+        if (!alwaysUseDefaultTargetUrl && savedRequest != null) {
             RedirectUtils.redirect(request, response, savedRequest.getRedirectUrl());
         } else {
             RedirectUtils.redirect(request, response, defaultTargetUrl);
