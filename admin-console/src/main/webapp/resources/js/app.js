@@ -87,6 +87,12 @@ function showGrowlMessage(type, message) {
     });
 }
 
+function isLoggedIn() {
+    var ticket = $.cookie('ticket');
+
+    return ticket !== undefined && ticket !== null && ticket !== '';
+}
+
 /**
  * Filters
  */
@@ -101,21 +107,32 @@ app.filter('prettyStringify', function() {
  */
 app.factory('httpErrorHandler', function ($q) {
     return {
-        'responseError': function(rejection) {
-            var message;
-
-            if (rejection.status == 0) {
-                message = 'Unable to communicate with the server. Please try again later or contact IT support';
-            } else {
-                message = 'Server responded with ' + rejection.status + ' error';
-                if (rejection.data.message) {
-                    message += ': <strong>' + rejection.data.message + '</strong>';
-                }
-
-                message += '. Please contact IT support for more information';
+        'response': function(response) {
+            if (!isLoggedIn()) {
+                window.location = 'login';
             }
 
-            showGrowlMessage('danger', message);
+            return response;
+        },
+        'responseError': function(rejection) {
+            if (!isLoggedIn()) {
+                window.location = 'login';
+            } else {
+                var message;
+
+                if (rejection.status == 0) {
+                    message = 'Unable to communicate with the server. Please try again later or contact IT support';
+                } else {
+                    message = 'Server responded with ' + rejection.status + ' error';
+                    if (rejection.data.message) {
+                        message += ': <strong>' + rejection.data.message + '</strong>';
+                    }
+
+                    message += '. Please contact IT support for more information';
+                }
+
+                showGrowlMessage('danger', message);
+            }
 
             return $q.reject(rejection);
         }
@@ -339,6 +356,23 @@ app.controller('ProfileListController', function($scope, $location, tenantNames,
         $scope.getProfiles(tenantName, $scope.searchText);
     };
 
+    $scope.showDeleteConfirmationDialog = function(profile, index) {
+        $scope.profileToDelete = {};
+        $scope.profileToDelete.username = profile.username;
+        $scope.profileToDelete.id = profile.id;
+        $scope.profileToDelete.index = index;
+
+        $('#deleteConfirmationDialog').modal('show');
+    };
+
+    $scope.deleteProfile = function(id, index) {
+        profileService.deleteProfile(id).then(function() {
+            $scope.profiles.splice(index, 1);
+
+            $('#deleteConfirmationDialog').modal('hide');
+        });
+    };
+
     $scope.resetSearchAndGetProfiles($scope.selectedTenantName);
 });
 
@@ -414,10 +448,10 @@ app.controller('TenantListController', function($scope, tenantNames, tenantServi
 
     $scope.tenantNames = tenantNames;
 
-    $scope.showDeleteConfirmationDialog = function(tenantName, tenantIndex) {
+    $scope.showDeleteConfirmationDialog = function(tenantName, index) {
         $scope.tenantToDelete = {};
         $scope.tenantToDelete.name = tenantName;
-        $scope.tenantToDelete.index = tenantIndex;
+        $scope.tenantToDelete.index = index;
 
         $('#deleteConfirmationDialog').modal('show');
     };
