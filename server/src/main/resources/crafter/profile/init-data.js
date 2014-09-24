@@ -1,5 +1,5 @@
 if (db.accesstoken.count() == 0) {
-	db.accesstoken.insert([
+    db.accesstoken.insert([
         {
             "_id" : "e8f5170c-877b-416f-b70f-4b09772f8e2d",
             "application" : "adminconsole",
@@ -10,7 +10,7 @@ if (db.accesstoken.count() == 0) {
                 }
             ],
             "expiresOn" : new Date("Jan 1, 2024")
-	    },
+        },
         {
             "_id" : "b4d44030-d0af-11e3-9c1a-0800200c9a66",
             "application" : "crafterengine",
@@ -39,7 +39,7 @@ if (db.tenant.count() == 0) {
     db.tenant.insert({
         "name" : "default",
         "verifyNewProfiles" : false,
-        "availableRoles" : [ "PROFILE_ADMIN", "SOCIAL_SUPERADMIN" ],
+        "availableRoles": ["PROFILE_ADMIN"],
         "attributeDefinitions" : [
             {
                 "name" : "firstName",
@@ -98,9 +98,9 @@ if (db.tenant.count() == 0) {
                 ]
             },
             {
-                "name": "socialContexts",
+                "name": "socialContext",
                 "metadata": {
-                    "label": "Social Contexts",
+                    "label": "Social Roles",
                     "type": "COMPLEX",
                     "displayOrder": 4
                 },
@@ -115,7 +115,7 @@ if (db.tenant.count() == 0) {
     });
 }
 if (db.profile.count() == 0) {
-    db.profile.insert({ 
+    db.profile.insert({
         "username" : "admin",
         "password" : "4rQ8a67wAk1GRwIqHix5kYw1MORa49o83Y7zXQhBqT0=|j4vsWtPbYjO3LfSiQcnGlw==",
         "email" : "admin@craftersoftware.com",
@@ -124,6 +124,15 @@ if (db.profile.count() == 0) {
         "createdOn" : new Date(),
         "lastModified" : new Date(),
         "tenant" : "default",
-        "roles" : [ "PROFILE_ADMIN", "SOCIAL_SUPERADMIN" ]
+        "roles": ["PROFILE_ADMIN", "SOCIAL_SUPERADMIN"],
+        "attributes": {
+            "socialContext": [
+                {
+                    "name": "Default",
+                    "id": "f5b143c2-f1c0-4a10-b56e-f485f00d3fe9",
+                    "roles": ["SOCIAL_ADMIN", "SOCIAL_MODERATOR", "SOCIAL_USER"]
+                },
+            ]
+        }
     });
 }
