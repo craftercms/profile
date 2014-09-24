@@ -115,7 +115,7 @@ if (db.tenant.count() == 0) {
     });
 }
 if (db.profile.count() == 0) {
-    db.profile.insert({
+    db.profile.insert({ 
         "username" : "admin",
         "password" : "4rQ8a67wAk1GRwIqHix5kYw1MORa49o83Y7zXQhBqT0=|j4vsWtPbYjO3LfSiQcnGlw==",
         "email" : "admin@craftersoftware.com",
