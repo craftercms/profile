@@ -451,6 +451,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.2</version>
                 <configuration>
+					<attachClasses>true</attachClasses>
                     <warName>${project.artifactId}</warName>
                     <archive>
                         <manifest>
