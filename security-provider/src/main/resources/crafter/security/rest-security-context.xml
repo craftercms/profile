@@ -7,15 +7,6 @@
 
     <import resource="classpath:crafter/security/security-context.xml"/>
 
-    <bean id="crafter.restResponseWriter" class="org.craftercms.commons.rest.HttpMessageConvertingResponseWriter">
-        <constructor-arg>
-            <bean class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
-                <property name="defaultContentType" value="application/json" />
-            </bean>
-        </constructor-arg>
-        <constructor-arg ref="crafter.profileMessageConverters"/>
-    </bean>
-
     <!-- ////////////////////////////////// -->
     <!--								 	-->
     <!--		   Authentication			-->
