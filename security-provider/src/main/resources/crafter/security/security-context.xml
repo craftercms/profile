@@ -38,6 +38,15 @@
         <constructor-arg value="${crafter.security.enabled}"/>
     </bean>
 
+    <bean id="crafter.restResponseWriter" class="org.craftercms.commons.rest.HttpMessageConvertingResponseWriter">
+        <constructor-arg>
+            <bean class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+                <property name="defaultContentType" value="application/json" />
+            </bean>
+        </constructor-arg>
+        <constructor-arg ref="crafter.profileMessageConverters"/>
+    </bean>
+
     <!-- ////////////////////////////////// -->
     <!--								 	-->
     <!--			 Aspects				-->
@@ -68,6 +77,7 @@
         <ref bean="crafter.addSecurityCookiesProcessor"/>
         <ref bean="crafter.tenantNameResolvingProcessor"/>
         <ref bean="crafter.currentAuthenticationResolvingProcessor"/>
+        <ref bean="crafter.returnCurrentAuthenticationProcessor"/>
         <ref bean="crafter.loginProcessor"/>
         <ref bean="crafter.logoutProcessor"/>
         <ref bean="crafter.saveRequestAwareProcessor"/>
@@ -132,6 +142,11 @@
     <bean id="crafter.currentAuthenticationResolvingProcessor"
           class="org.craftercms.security.processors.impl.CurrentAuthenticationResolvingProcessor">
         <property name="authenticationManager" ref="crafter.authenticationManager"/>
+    </bean>
+
+    <bean id="crafter.returnCurrentAuthenticationProcessor"
+          class="org.craftercms.security.processors.impl.ReturnCurrentAuthenticationProcessor">
+        <property name="responseWriter" ref="crafter.restResponseWriter"/>
     </bean>
 
     <bean id="crafter.loginProcessor" class="org.craftercms.security.processors.impl.LoginProcessor">
