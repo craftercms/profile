@@ -54,10 +54,7 @@ public class ReturnCurrentAuthenticationProcessor implements RequestSecurityProc
         HttpServletRequest request = context.getRequest();
 
         if (isServiceRequest(request)) {
-            Authentication auth = SecurityUtils.getAuthentication(request);
-            if (auth != null) {
-                sendAuthentication(auth, context);
-            }
+            sendAuthentication(SecurityUtils.getAuthentication(request), context);
         } else {
             processorChain.processRequest(context);
         }
@@ -72,14 +69,18 @@ public class ReturnCurrentAuthenticationProcessor implements RequestSecurityProc
         HttpServletRequest request = context.getRequest();
         HttpServletResponse response = context.getResponse();
 
-        response.setStatus(HttpServletResponse.SC_OK);
+        if (auth != null) {
+            response.setStatus(HttpServletResponse.SC_OK);
 
-        try {
-            responseWriter.writeWithMessageConverters(auth, request, response);
-        } catch (HttpMediaTypeNotAcceptableException e) {
-            logger.error(e.getMessage(), e);
+            try {
+                responseWriter.writeWithMessageConverters(auth, request, response);
+            } catch (HttpMediaTypeNotAcceptableException e) {
+                logger.error(e.getMessage(), e);
 
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            }
+        } else {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
     }
 
