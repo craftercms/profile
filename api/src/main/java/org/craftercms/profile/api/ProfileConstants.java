@@ -35,7 +35,6 @@ public class ProfileConstants {
     public static final String BASE_URL_TENANT = BASE_URL_REST_API + "/tenant";
     public static final String BASE_URL_PROFILE = BASE_URL_REST_API + "/profile";
     public static final String BASE_URL_AUTHENTICATION = BASE_URL_REST_API + "/authentication";
-    public static final String BASE_URL_VERIFICATION = BASE_URL_REST_API + "/verification";
 
     public static final String PATH_VAR_NAME = "name";
     public static final String PATH_VAR_ID = "id";

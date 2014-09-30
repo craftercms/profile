@@ -12,8 +12,7 @@ import org.craftercms.commons.crypto.TextEncryptor;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
-import org.craftercms.profile.social.exceptions.ProfileConnectionRepositoryException;
-import org.craftercms.profile.social.utils.TenantResolver;
+import org.craftercms.profile.social.exceptions.SocialMediaIntegrationException;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactory;
@@ -25,7 +24,11 @@ import org.springframework.social.connect.NotConnectedException;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import static org.craftercms.profile.social.utils.ConnectionUtils.*;
+import static org.craftercms.profile.social.utils.ConnectionUtils.CONNECTIONS_ATTRIBUTE_NAME;
+import static org.craftercms.profile.social.utils.ConnectionUtils.addConnectionData;
+import static org.craftercms.profile.social.utils.ConnectionUtils.getConnectionData;
+import static org.craftercms.profile.social.utils.ConnectionUtils.mapToConnectionData;
+import static org.craftercms.profile.social.utils.ConnectionUtils.removeConnectionData;
 
 /**
  * Implementation of {@link org.springframework.social.connect.ConnectionRepository} that uses a profile to persist
@@ -38,8 +41,8 @@ public class ProfileConnectionRepository implements ConnectionRepository {
 
     protected ConnectionFactoryLocator connectionFactoryLocator;
     protected Profile profile;
+    protected String verificationUrl;
     protected ProfileService profileService;
-    protected TenantResolver tenantResolver;
     protected TextEncryptor encryptor;
 
     public ProfileConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator, Profile profile,
@@ -48,19 +51,6 @@ public class ProfileConnectionRepository implements ConnectionRepository {
         this.profile = profile;
         this.profileService = profileService;
         this.encryptor = encryptor;
-    }
-
-    public ProfileConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator,
-                                       ProfileService profileService, TenantResolver tenantResolver,
-                                       TextEncryptor encryptor) {
-        this.connectionFactoryLocator = connectionFactoryLocator;
-        this.profileService = profileService;
-        this.tenantResolver = tenantResolver;
-        this.encryptor = encryptor;
-    }
-
-    public Profile getProfile() {
-        return profile;
     }
 
     @Override
@@ -77,13 +67,7 @@ public class ProfileConnectionRepository implements ConnectionRepository {
                 String providerId = entry.getKey();
 
                 for (Map<String, Object> connectionDataMap : entry.getValue()) {
-                    ConnectionData connectionData;
-                    try {
-                        connectionData = mapToConnectionData(providerId, connectionDataMap, encryptor);
-                    } catch (CryptoException e) {
-                        throw new ProfileConnectionRepositoryException("Decryption error", e);
-                    }
-
+                    ConnectionData connectionData = mapToConnectionData(providerId, connectionDataMap, encryptor);
                     Connection<?> connection = createConnection(connectionData);
 
                     allConnections.add(providerId, connection);
@@ -106,7 +90,7 @@ public class ProfileConnectionRepository implements ConnectionRepository {
         try {
             connectionDataList = getConnectionData(profile, providerId, encryptor);
         } catch (CryptoException e) {
-            throw new ProfileConnectionRepositoryException("Decryption error", e);
+            throw new SocialMediaIntegrationException("Decryption error", e);
         }
 
         if (CollectionUtils.isNotEmpty(connectionDataList)) {
@@ -141,7 +125,7 @@ public class ProfileConnectionRepository implements ConnectionRepository {
             try {
                 connectionDataList = getConnectionData(profile, providerId, encryptor);
             } catch (CryptoException e) {
-                throw new ProfileConnectionRepositoryException("Decryption error", e);
+                throw new SocialMediaIntegrationException("Decryption error", e);
             }
 
             for (String providerUserId : entry.getValue()) {
@@ -165,7 +149,7 @@ public class ProfileConnectionRepository implements ConnectionRepository {
         try {
             connectionDataList = getConnectionData(profile, providerId, encryptor);
         } catch (CryptoException e) {
-            throw new ProfileConnectionRepositoryException("Decryption error", e);
+            throw new SocialMediaIntegrationException("Decryption error", e);
         }
 
         Connection<?> connection = findConnection(connectionDataList, connectionKey.getProviderUserId());
@@ -211,32 +195,8 @@ public class ProfileConnectionRepository implements ConnectionRepository {
 
     @Override
     public void addConnection(Connection<?> connection) {
-        if (profile == null) {
-            profile = getProfileFromConnection(connection);
-
-            Profile existingProfile = findProfileByUsername(profile.getTenant(), profile.getUsername());
-            if (existingProfile != null) {
-                profile = existingProfile;
-
-                try {
-                    addConnectionData(profile, connection.createData(), encryptor);
-                } catch (CryptoException e) {
-                    throw new ProfileConnectionRepositoryException("Encryption error", e);
-                }
-
-                updateProfile();
-            } else {
-                createProfile();
-            }
-        } else {
-            try {
-                addConnectionData(profile, connection.createData(), encryptor);
-            } catch (CryptoException e) {
-                throw new ProfileConnectionRepositoryException("Encryption error", e);
-            }
-
-            updateProfile();
-        }
+        addConnectionData(profile, connection.createData(), encryptor);
+        updateProfile();
     }
 
     @Override
@@ -245,12 +205,7 @@ public class ProfileConnectionRepository implements ConnectionRepository {
             throw new IllegalStateException("Missing profile in connection repository");
         }
 
-        try {
-            addConnectionData(profile, connection.createData(), encryptor);
-        } catch (CryptoException e) {
-            throw new ProfileConnectionRepositoryException("Encryption error", e);
-        }
-
+        addConnectionData(profile, connection.createData(), encryptor);
         updateProfile();
     }
 
@@ -299,51 +254,11 @@ public class ProfileConnectionRepository implements ConnectionRepository {
         return connectionFactoryLocator.getConnectionFactory(apiType).getProviderId();
     }
 
-    protected void createProfile() {
-        String tenant = profile.getTenant();
-        boolean enabled = profile.isEnabled();
-        String username = profile.getUsername();
-        String email = profile.getEmail();
-        Map<String, Object> attributes = profile.getAttributes();
-
-        try {
-            profile = profileService.createProfile(tenant, username, null, email, enabled, null, attributes, null);
-        } catch (ProfileException e) {
-            throw new ProfileConnectionRepositoryException("Unable to create profile for user '" + username + "'", e);
-        }
-    }
-
-    protected Profile getProfileFromConnection(Connection<?> connection) {
-        Profile profile = new Profile();
-        profile.setTenant(tenantResolver.getCurrentTenant());
-        profile.setEnabled(true);
-
-        addProviderProfileInfo(profile, connection.fetchUserProfile());
-
-        try {
-            addConnectionData(profile, connection.createData(), encryptor);
-        } catch (CryptoException e) {
-            throw new ProfileConnectionRepositoryException("Encryption error", e);
-        }
-
-        return profile;
-    }
-
     protected void updateProfile() {
         try {
             profile = profileService.updateAttributes(profile.getId().toString(), profile.getAttributes());
         } catch (ProfileException e) {
-            throw new ProfileConnectionRepositoryException("Unable to update profile of user '" + profile
-                .getUsername() + "'", e);
-        }
-    }
-
-    protected Profile findProfileByUsername(String tenant, String username) {
-        try {
-            return profileService.getProfileByUsername(tenant, username);
-        } catch (ProfileException e) {
-            throw new ProfileConnectionRepositoryException("Unable to find profile for user '" + username +
-                " of tenant '" + tenant + "'", e);
+            throw new SocialMediaIntegrationException("Unable to update profile of user '" + profile.getId() + "'", e);
         }
     }
 

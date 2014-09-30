@@ -102,7 +102,7 @@ public class LoginProcessorTest {
         request.setParameter(LoginProcessor.DEFAULT_PASSWORD_PARAM, VALID_PASSWORD);
         session.setAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE,
                 new BadCredentialsException());
-        session.setAttribute(SecurityUtils.AUTHENTICATION_SYSTEM_EXCEPTION_SESSION_ATTRIBUTE,
+        session.setAttribute(SecurityUtils.AUTHENTICATION_EXCEPTION_SESSION_ATTRIBUTE,
                 new AuthenticationSystemException());
 
         processor.processRequest(context, chain);
@@ -110,7 +110,7 @@ public class LoginProcessorTest {
         verify(chain, never()).processRequest(context);
 
         assertNull(session.getAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE));
-        assertNull(session.getAttribute(SecurityUtils.AUTHENTICATION_SYSTEM_EXCEPTION_SESSION_ATTRIBUTE));
+        assertNull(session.getAttribute(SecurityUtils.AUTHENTICATION_EXCEPTION_SESSION_ATTRIBUTE));
 
         Authentication auth = SecurityUtils.getAuthentication(request);
 

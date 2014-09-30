@@ -79,6 +79,7 @@
         <ref bean="crafter.currentAuthenticationResolvingProcessor"/>
         <ref bean="crafter.returnCurrentAuthenticationProcessor"/>
         <ref bean="crafter.loginProcessor"/>
+        <ref bean="crafter.providerLoginProcessor"/>
         <ref bean="crafter.logoutProcessor"/>
         <ref bean="crafter.saveRequestAwareProcessor"/>
         <ref bean="crafter.securityExceptionProcessor"/>
@@ -155,6 +156,19 @@
         <property name="loginFailureHandler" ref="crafter.loginFailureHandler"/>
     </bean>
 
+    <bean id="crafter.providerLoginProcessor" class="org.craftercms.security.processors.impl.ProviderLoginProcessor">
+        <property name="loginSuccessHandler" ref="crafter.loginSuccessHandler"/>
+        <property name="loginFormUrl" value="${crafter.security.login.form.url}"/>
+        <property name="loginFailureHandler" ref="crafter.loginFailureHandler"/>
+        <property name="authenticationService" ref="crafter.authenticationServiceRestClient"/>
+        <property name="connectionFactoryLocator" ref="crafter.connectionFactoryLocator"/>
+        <property name="registrationFormUrl" value="${crafter.security.registration.form.url}"/>
+        <property name="encryptor" ref="crafter.textEncryptor"/>
+        <property name="profileService" ref="crafter.profileServiceRestClient"/>
+        <property name="connectSupport" ref="crafter.connectSupport"/>
+        <property name="tenantResolver" ref="crafter.tenantResolver"/>
+    </bean>
+
     <bean id="crafter.logoutProcessor" class="org.craftercms.security.processors.impl.LogoutProcessor">
         <property name="authenticationManager" ref="crafter.authenticationManager"/>
         <property name="logoutSuccessHandler" ref="crafter.logoutSuccessHandler"/>
@@ -223,5 +237,33 @@
 
     <util:map id="crafter.urlRestrictions">
     </util:map>
+
+    <!-- ////////////////////////////////// -->
+    <!--								 	-->
+    <!--	 Social Media Integration	    -->
+    <!--									-->
+    <!-- ////////////////////////////////// -->
+
+    <util:list id="crafter.connectionFactories">
+        <!-- Override to provide the ConnectionFactories-->
+    </util:list>
+
+    <bean id="crafter.connectionFactoryLocator"
+          class="org.springframework.social.connect.support.ConnectionFactoryRegistry">
+        <property name="connectionFactories" ref="crafter.connectionFactories"/>
+    </bean>
+
+    <bean id="crafter.textEncryptor" class="org.craftercms.commons.crypto.impl.NoOpTextEncryptor"/>
+
+    <bean id="crafter.connectSupport" class="org.springframework.social.connect.web.ConnectSupport"/>
+
+    <bean id="crafter.tenantResolver" class="org.craftercms.security.utils.social.RequestTenantResolver"/>
+
+    <bean id="crafter.usersConnectionRepository" class="org.craftercms.profile.social.ProfileUsersConnectionRepository">
+        <property name="connectionFactoryLocator" ref="crafter.connectionFactoryLocator"/>
+        <property name="tenantResolver" ref="crafter.tenantResolver"/>
+        <property name="profileService" ref="crafter.profileServiceRestClient"/>
+        <property name="encryptor" ref="crafter.textEncryptor"/>
+    </bean>
 
 </beans>

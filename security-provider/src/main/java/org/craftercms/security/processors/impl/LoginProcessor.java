@@ -180,7 +180,7 @@ public class LoginProcessor implements RequestSecurityProcessor {
         if (e instanceof BadCredentialsException) {
             session.setAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE, e);
         } else {
-            session.setAttribute(SecurityUtils.AUTHENTICATION_SYSTEM_EXCEPTION_SESSION_ATTRIBUTE, e);
+            session.setAttribute(SecurityUtils.AUTHENTICATION_EXCEPTION_SESSION_ATTRIBUTE, e);
         }
     }
 
@@ -189,7 +189,7 @@ public class LoginProcessor implements RequestSecurityProcessor {
 
         HttpSession session = request.getSession();
         if (session != null) {
-            session.removeAttribute(SecurityUtils.AUTHENTICATION_SYSTEM_EXCEPTION_SESSION_ATTRIBUTE);
+            session.removeAttribute(SecurityUtils.AUTHENTICATION_EXCEPTION_SESSION_ATTRIBUTE);
             session.removeAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE);
         }
     }
