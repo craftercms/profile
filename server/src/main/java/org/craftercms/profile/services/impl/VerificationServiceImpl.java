@@ -16,7 +16,6 @@
  */
 package org.craftercms.profile.services.impl;
 
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
@@ -31,10 +30,9 @@ import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
-import org.craftercms.profile.services.VerificationService;
-import org.craftercms.profile.exceptions.ExpiredVerificationTokenException;
 import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
 import org.craftercms.profile.repositories.VerificationTokenRepository;
+import org.craftercms.profile.services.VerificationService;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.scheduling.annotation.Async;
 
@@ -127,17 +125,7 @@ public class VerificationServiceImpl implements VerificationService {
             throw new NoSuchVerificationTokenException(tokenId);
         }
 
-        Calendar expirationTime = Calendar.getInstance();
-        expirationTime.setTime(token.getTimestamp());
-        expirationTime.add(Calendar.SECOND, tokenMaxAge);
-
-        if (Calendar.getInstance().before(expirationTime)) {
-            logger.debug(LOG_KEY_TOKEN_VERIFIED, token);
-
-            return token;
-        } else {
-            throw new ExpiredVerificationTokenException(tokenId, expirationTime.getTime());
-        }
+        return token;
     }
 
     @Override
@@ -164,6 +152,5 @@ public class VerificationServiceImpl implements VerificationService {
 
         return verificationUrl.toString();
     }
-
 
 }

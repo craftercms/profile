@@ -17,6 +17,7 @@
 package org.craftercms.profile.repositories;
 
 import org.craftercms.commons.mongo.CrudRepository;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.VerificationToken;
 
 /**
@@ -25,4 +26,12 @@ import org.craftercms.profile.api.VerificationToken;
  * @author avasquez
  */
 public interface VerificationTokenRepository extends CrudRepository<VerificationToken> {
+
+    /**
+     * Removes tokens with timestamps older than the specified number of seconds.
+     *
+     * @param seconds   the number of seconds
+     */
+    void removeOlderThan(long seconds) throws MongoDataException;
+
 }

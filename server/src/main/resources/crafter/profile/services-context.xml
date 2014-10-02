@@ -213,16 +213,36 @@
         <property name="concurrent" value="false"/>
     </bean>
 
+    <bean id="crafter.verificationTokenCleanerJobDetail"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetBeanName" value="crafter.verificationTokenRepository"/>
+        <property name="targetMethod" value="removeOlderThan"/>
+        <property name="arguments">
+            <array>
+                <value>${crafter.profile.verification.token.maxAge}</value>
+            </array>
+        </property>
+        <property name="concurrent" value="false"/>
+    </bean>
+
     <bean id="crafter.ticketCleanerTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
         <property name="startDelay" value="${crafter.profile.auth.ticket.cleaner.startDelay}"/>
         <property name="repeatInterval" value="${crafter.profile.auth.ticket.cleaner.repeatInterval}"/>
         <property name="jobDetail" ref="crafter.ticketCleanerJobDetail"/>
     </bean>
 
+    <bean id="crafter.verificationTokenCleanerTrigger"
+          class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+        <property name="startDelay" value="${crafter.profile.verification.token.cleaner.startDelay}"/>
+        <property name="repeatInterval" value="${crafter.profile.verification.token.cleaner.repeatInterval}"/>
+        <property name="jobDetail" ref="crafter.verificationTokenCleanerJobDetail"/>
+    </bean>
+
     <bean id="crafter.schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
                 <ref bean="crafter.ticketCleanerTrigger"/>
+                <ref bean="crafter.verificationTokenCleanerTrigger"/>
             </list>
         </property>
     </bean>

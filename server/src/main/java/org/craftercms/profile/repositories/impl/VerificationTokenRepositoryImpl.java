@@ -16,7 +16,11 @@
  */
 package org.craftercms.profile.repositories.impl;
 
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import org.craftercms.commons.mongo.AbstractJongoRepository;
+import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.repositories.VerificationTokenRepository;
 import org.craftercms.profile.api.VerificationToken;
 
@@ -25,6 +29,17 @@ import org.craftercms.profile.api.VerificationToken;
  *
  * @author avasquez
  */
-public class VerificationTokenRepositoryImpl extends AbstractJongoRepository<VerificationToken> implements VerificationTokenRepository {
+public class VerificationTokenRepositoryImpl extends AbstractJongoRepository<VerificationToken>
+    implements VerificationTokenRepository {
+
+    public static final String KEY_REMOVE_TOKENS_OLDER_THAN_QUERy = "profile.verificationToken.removeOlderThan";
+
+    @Override
+    public void removeOlderThan(long seconds) throws MongoDataException {
+        long millis = TimeUnit.SECONDS.toMillis(seconds);
+        Date limit = new Date(System.currentTimeMillis() - millis);
+
+        remove(getQueryFor(KEY_REMOVE_TOKENS_OLDER_THAN_QUERy), limit);
+    }
 
 }

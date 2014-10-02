@@ -111,4 +111,10 @@
         {lastRequestTime: {$lt: #}}
     </entry>
 
+    <!-- Verification Token Queries -->
+
+    <entry key="profile.verificationToken.removeOlderThan">
+        {timestamp: {$lt: #}}
+    </entry>
+
 </properties>
