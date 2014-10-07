@@ -50,9 +50,9 @@ public class AccessTokenCheckingInterceptor extends HandlerInterceptorAdapter {
 
     public static final String ERROR_KEY_GET_ACCESS_TOKEN_ERROR = "profile.accessToken.getAccessTokenError";
 
-    public static final String LOG_KEY_ACCESS_TOKEN_FOUND =    "profile.accessToken.accessTokenFound";
-    public static final String LOG_KEY_APP_BINDING_APP =       "profile.app.bindingApp";
-    public static final String LOG_KEY_APP_UNBINDING_APP =     "profile.app.unbindingApp";
+    public static final String LOG_KEY_ACCESS_TOKEN_FOUND = "profile.accessToken.accessTokenFound";
+    public static final String LOG_KEY_APP_BINDING_APP = "profile.app.bindingApp";
+    public static final String LOG_KEY_APP_UNBINDING_APP = "profile.app.unbindingApp";
 
     protected AccessTokenRepository tokenRepository;
     protected String[] urlsToInclude;

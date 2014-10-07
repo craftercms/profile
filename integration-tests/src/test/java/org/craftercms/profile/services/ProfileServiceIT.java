@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.SetUtils;
-import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.Ticket;
@@ -198,7 +197,7 @@ public class ProfileServiceIT {
             assertNotNull(profile);
             assertNotNull(profile.getId());
             assertEquals(AVASQUEZ_USERNAME, profile.getUsername());
-            assertTrue(CipherUtils.matchPassword(profile.getPassword(), AVASQUEZ_PASSWORD1));
+            assertNull(profile.getPassword());
             assertEquals(AVASQUEZ_EMAIL1, profile.getEmail());
             assertFalse(profile.isVerified());
             assertTrue(profile.isEnabled());
@@ -227,7 +226,7 @@ public class ProfileServiceIT {
             assertNotNull(profile);
             assertNotNull(profile.getId());
             assertEquals(AVASQUEZ_USERNAME, profile.getUsername());
-            assertTrue(CipherUtils.matchPassword(profile.getPassword(), AVASQUEZ_PASSWORD1));
+            assertNull(profile.getPassword());
             assertEquals(AVASQUEZ_EMAIL1, profile.getEmail());
             assertFalse(profile.isVerified());
             assertFalse(profile.isEnabled());
@@ -284,7 +283,7 @@ public class ProfileServiceIT {
             assertNotNull(updatedProfile);
             assertEquals(profile.getId(), updatedProfile.getId());
             assertEquals(profile.getUsername(), updatedProfile.getUsername());
-            assertTrue(CipherUtils.matchPassword(updatedProfile.getPassword(), AVASQUEZ_PASSWORD2));
+            assertNull(updatedProfile.getPassword());
             assertEquals(AVASQUEZ_EMAIL2, updatedProfile.getEmail());
             assertEquals(profile.isVerified(), updatedProfile.isVerified());
             assertFalse(updatedProfile.isEnabled());
@@ -311,7 +310,7 @@ public class ProfileServiceIT {
             assertNotNull(updatedProfile);
             assertEquals(profile.getId(), updatedProfile.getId());
             assertEquals(profile.getUsername(), updatedProfile.getUsername());
-            assertEquals(profile.getPassword(), updatedProfile.getPassword());
+            assertNull(updatedProfile.getPassword());
             assertEquals(profile.getEmail(), updatedProfile.getEmail());
             assertEquals(profile.isVerified(), updatedProfile.isVerified());
             assertTrue(updatedProfile.isEnabled());
@@ -338,7 +337,7 @@ public class ProfileServiceIT {
             assertNotNull(updatedProfile);
             assertEquals(profile.getId(), updatedProfile.getId());
             assertEquals(profile.getUsername(), updatedProfile.getUsername());
-            assertEquals(profile.getPassword(), updatedProfile.getPassword());
+            assertNull(updatedProfile.getPassword());
             assertEquals(profile.getEmail(), updatedProfile.getEmail());
             assertEquals(profile.isVerified(), updatedProfile.isVerified());
             assertFalse(updatedProfile.isEnabled());
@@ -369,7 +368,7 @@ public class ProfileServiceIT {
             assertNotNull(updatedProfile);
             assertEquals(profile.getId(), updatedProfile.getId());
             assertEquals(profile.getUsername(), updatedProfile.getUsername());
-            assertEquals(profile.getPassword(), updatedProfile.getPassword());
+            assertNull(updatedProfile.getPassword());
             assertEquals(profile.getEmail(), updatedProfile.getEmail());
             assertEquals(profile.isVerified(), updatedProfile.isVerified());
             assertEquals(profile.isEnabled(), updatedProfile.isEnabled());
@@ -400,7 +399,7 @@ public class ProfileServiceIT {
             assertNotNull(updatedProfile);
             assertEquals(profile.getId(), updatedProfile.getId());
             assertEquals(profile.getUsername(), updatedProfile.getUsername());
-            assertEquals(profile.getPassword(), updatedProfile.getPassword());
+            assertNull(updatedProfile.getPassword());
             assertEquals(profile.getEmail(), updatedProfile.getEmail());
             assertEquals(profile.isVerified(), updatedProfile.isVerified());
             assertEquals(profile.isEnabled(), updatedProfile.isEnabled());
@@ -835,11 +834,11 @@ public class ProfileServiceIT {
 
             String resetTokenId = emailMatcher.group(1);
 
-            Profile profileWithNewPswd = profileService.changePassword(resetTokenId, AVASQUEZ_PASSWORD2);
+            Profile profileAfterPswdReset = profileService.changePassword(resetTokenId, AVASQUEZ_PASSWORD2);
 
-            assertNotNull(profileWithNewPswd);
-            assertEquals(profile.getId(), profileWithNewPswd.getId());
-            assertTrue(CipherUtils.matchPassword(profileWithNewPswd.getPassword(), AVASQUEZ_PASSWORD2));
+            assertNotNull(profileAfterPswdReset);
+            assertEquals(profile.getId(), profileAfterPswdReset.getId());
+            assertNull(profileAfterPswdReset.getPassword());
         } finally {
             profileService.deleteProfile(profile.getId().toString());
 
@@ -869,7 +868,7 @@ public class ProfileServiceIT {
     private void assertAdminProfile(Profile profile) {
         assertNotNull(profile);
         assertEquals(ADMIN_USERNAME, profile.getUsername());
-        assertTrue(CipherUtils.matchPassword(profile.getPassword(), ADMIN_PASSWORD));
+        assertNull(profile.getPassword());
         assertEquals(ADMIN_EMAIL, profile.getEmail());
         assertFalse(profile.isVerified());
         assertTrue(profile.isEnabled());
@@ -884,7 +883,7 @@ public class ProfileServiceIT {
     private void assertJdoeProfile(Profile profile) {
         assertNotNull(profile);
         assertEquals(JDOE_USERNAME, profile.getUsername());
-        assertTrue(CipherUtils.matchPassword(profile.getPassword(), JDOE_PASSWORD));
+        assertNotNull(profile.getPassword());
         assertEquals(JDOE_EMAIL, profile.getEmail());
         assertFalse(profile.isVerified());
         assertFalse(profile.isEnabled());
