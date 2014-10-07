@@ -82,6 +82,8 @@ public class AuthenticationServiceImplTest {
             .thenReturn(getProfile1());
         when(profileService.getProfileByUsername(TENANT_NAME, USERNAME2, ProfileConstants.NO_ATTRIBUTE))
             .thenReturn(getProfile2());
+        when(profileService.getProfile(PROFILE_ID.toString(), ProfileConstants.NO_ATTRIBUTE))
+            .thenReturn(getProfile1());
 
         authenticationService = new AuthenticationServiceImpl();
         authenticationService.setPermissionEvaluator(permissionEvaluator);
@@ -99,6 +101,18 @@ public class AuthenticationServiceImplTest {
         assertNotNull(ticket.getLastRequestTime());
 
         verify(profileService).getProfileByUsername(TENANT_NAME, USERNAME1, ProfileConstants.NO_ATTRIBUTE);
+        verify(ticketRepository).insert(ticket);
+    }
+
+    @Test
+    public void testCreateTicket() throws Exception {
+        Ticket ticket = authenticationService.createTicket(PROFILE_ID.toString());
+
+        assertNotNull(ticket);
+        assertEquals(PROFILE_ID, ticket.getProfileId());
+        assertNotNull(ticket.getLastRequestTime());
+
+        verify(profileService).getProfile(PROFILE_ID.toString(), ProfileConstants.NO_ATTRIBUTE);
         verify(ticketRepository).insert(ticket);
     }
 

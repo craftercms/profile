@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
+import org.craftercms.commons.jackson.mvc.annotations.Exclude;
 
 /**
  * Representation of a user.
@@ -18,6 +19,7 @@ public class Profile {
 
     private ObjectId _id;
     private String username;
+    @Exclude
     private String password;
     private String email;
     private boolean verified;

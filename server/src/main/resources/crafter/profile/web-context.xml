@@ -17,8 +17,9 @@
 
     <mvc:annotation-driven content-negotiation-manager="crafter.contentNegotiationManager">
         <mvc:message-converters>
-            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+            <bean class="org.craftercms.commons.jackson.mvc.CrafterJackson2MessageConverter">
                 <property name="objectMapper" ref="crafter.objectMapper"/>
+                <property name="filter" ref="crafter.jacksonFilterProvider"/>
             </bean>
         </mvc:message-converters>
     </mvc:annotation-driven>
@@ -47,6 +48,21 @@
 
     <!-- Jackson config -->
 
+    <bean id="crafter.jacksonFilterProvider" class="org.craftercms.commons.jackson.mvc.SelectorFilterFactory">
+        <property name="filters">
+            <list>
+                <bean class="org.craftercms.commons.jackson.mvc.GDataPropertyFilter">
+                    <property name="selectorParameterName" value="selector"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="crafter.jacksonAnnotationIntrospector"
+          class="org.craftercms.commons.jackson.mvc.CrafterJacksonAnnotationIntrospector">
+        <property name="defaultFilter" value="gdata"/>
+    </bean>
+
     <bean id="crafter.objectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper">
         <property name="serializers">
             <list>
@@ -60,6 +76,7 @@
                 </entry>
             </map>
         </property>
+        <property name="annotationIntrospector" ref="crafter.jacksonAnnotationIntrospector"/>
     </bean>
 
     <!-- Controllers -->

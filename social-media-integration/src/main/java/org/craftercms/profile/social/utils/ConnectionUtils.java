@@ -13,6 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.crypto.CryptoException;
 import org.craftercms.commons.crypto.TextEncryptor;
 import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.social.exceptions.SocialMediaIntegrationException;
+import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.UserProfile;
 
@@ -36,8 +38,7 @@ public class ConnectionUtils {
      *
      * @return the connection data as a map
      */
-    public static Map<String, Object> connectionDataToMap(ConnectionData connectionData,
-                                                          TextEncryptor encryptor) throws CryptoException {
+    public static Map<String, Object> connectionDataToMap(ConnectionData connectionData, TextEncryptor encryptor) {
         Map<String, Object> map = new HashMap<>();
         map.put("providerUserId", connectionData.getProviderUserId());
         map.put("displayName", connectionData.getDisplayName());
@@ -62,7 +63,7 @@ public class ConnectionUtils {
      * @return the map as {@link org.springframework.social.connect.ConnectionData}
      */
     public static ConnectionData mapToConnectionData(String providerId, Map<String, Object> map,
-                                                     TextEncryptor encryptor) throws CryptoException {
+                                                     TextEncryptor encryptor) {
         String providerUserId = (String) map.get("providerUserId");
         String displayName = (String) map.get("displayName");
         String profileUrl = (String) map.get("profileUrl");
@@ -72,8 +73,8 @@ public class ConnectionUtils {
         String refreshToken = decrypt((String)map.get("refreshToken"), encryptor);
         Long expireTime = (Long) map.get("expireTime");
 
-        return new ConnectionData(providerId, providerUserId, displayName, profileUrl, imageUrl,
-            accessToken, secret,refreshToken, expireTime);
+        return new ConnectionData(providerId, providerUserId, displayName, profileUrl, imageUrl, accessToken, secret,
+            refreshToken, expireTime);
     }
 
     /**
@@ -84,8 +85,7 @@ public class ConnectionUtils {
      * @param connectionData    the connection data to add
      * @param encryptor         the encryptor used to encrypt the accessToken, secret and refreshToken
      */
-    public static void addConnectionData(Profile profile, ConnectionData connectionData,
-                                         TextEncryptor encryptor) throws CryptoException {
+    public static void addConnectionData(Profile profile, ConnectionData connectionData, TextEncryptor encryptor) {
         Map<String, List<Map<String, Object>>> allConnections = profile.getAttribute(CONNECTIONS_ATTRIBUTE_NAME);
         List<Map<String, Object>> connectionsForProvider = null;
 
@@ -214,12 +214,38 @@ public class ConnectionUtils {
         profile.setAttribute(LAST_NAME_ATTRIBUTE_NAME, lastName);
     }
 
-    private static String encrypt(String clear, TextEncryptor encryptor) throws CryptoException {
-        return StringUtils.isNotEmpty(clear) ? encryptor.encrypt(clear) : clear;
+    /**
+     * Creates a profile from the specified connection data.
+     *
+     * @param connection        the connection where to retrieve the profile info from
+     * @param encryptor         the encryptor used to decrypt the accessToken, secret and refreshToken
+     *
+     * @return
+     */
+    public static Profile getProfileFromConnection(Connection<?> connection, TextEncryptor encryptor) {
+        Profile profile = new Profile();
+        profile.setEnabled(true);
+
+        addProviderProfileInfo(profile, connection.fetchUserProfile());
+        addConnectionData(profile, connection.createData(), encryptor);
+
+        return profile;
     }
 
-    private static String decrypt(String encrypted, TextEncryptor encryptor) throws CryptoException {
-        return StringUtils.isNotEmpty(encrypted) ? encryptor.decrypt(encrypted) : encrypted;
+    private static String encrypt(String clear, TextEncryptor encryptor) {
+        try {
+            return StringUtils.isNotEmpty(clear) ? encryptor.encrypt(clear) : clear;
+        } catch (CryptoException e) {
+            throw new SocialMediaIntegrationException("Encryption error", e);
+        }
+    }
+
+    private static String decrypt(String encrypted, TextEncryptor encryptor)  {
+        try {
+            return StringUtils.isNotEmpty(encrypted) ? encryptor.decrypt(encrypted) : encrypted;
+        } catch (CryptoException e) {
+            throw new SocialMediaIntegrationException("Decryption error", e);
+        }
     }
 
 }

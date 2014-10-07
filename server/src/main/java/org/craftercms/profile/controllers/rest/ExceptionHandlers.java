@@ -29,7 +29,6 @@ import org.craftercms.profile.exceptions.AttributesDeserializationException;
 import org.craftercms.profile.exceptions.BadCredentialsException;
 import org.craftercms.profile.exceptions.DisabledProfileException;
 import org.craftercms.profile.exceptions.ExpiredAccessTokenException;
-import org.craftercms.profile.exceptions.ExpiredVerificationTokenException;
 import org.craftercms.profile.exceptions.InvalidEmailAddressException;
 import org.craftercms.profile.exceptions.InvalidQueryException;
 import org.craftercms.profile.exceptions.MissingAccessTokenIdParamException;
@@ -114,12 +113,6 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleNoSuchVerificationTokenException(NoSuchVerificationTokenException e,
                                                                          WebRequest request) {
         return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.NO_SUCH_VERIFICATION_TOKEN, request);
-    }
-
-    @ExceptionHandler(ExpiredVerificationTokenException.class)
-    public ResponseEntity<Object> handleExpiredVerificationTokenException(ExpiredVerificationTokenException e,
-                                                                          WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.EXPIRED_VERIFICATION_TOKEN, request);
     }
 
     @ExceptionHandler(InvalidEmailAddressException.class)

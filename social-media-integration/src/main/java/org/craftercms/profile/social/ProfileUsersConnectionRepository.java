@@ -13,21 +13,22 @@ import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
-import org.craftercms.profile.social.exceptions.ProfileConnectionRepositoryException;
+import org.craftercms.profile.social.exceptions.SocialMediaIntegrationException;
 import org.craftercms.profile.social.utils.ConnectionUtils;
 import org.craftercms.profile.social.utils.TenantResolver;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.connect.UsersConnectionRepository;
 
 /**
- * Implementation of {@link org.craftercms.profile.social.AnonymousAwareUsersConnectionRepository} that uses
- * Crafter Profile for connection persistence.
+ * Implementation of {@link org.springframework.social.connect.UsersConnectionRepository} that uses Crafter Profile
+ * for connection persistence.
  *
  * @author avasquez
  */
-public class ProfileUsersConnectionRepository implements AnonymousAwareUsersConnectionRepository {
+public class ProfileUsersConnectionRepository implements UsersConnectionRepository {
 
     public static final String FIND_PROFILES_BY_PROVIDER_ID_AND_USER_ID_QUERY = "{attributes." + ConnectionUtils
         .CONNECTIONS_ATTRIBUTE_NAME + ".%s.providerUserId: {$in: [%s]}}";
@@ -38,22 +39,22 @@ public class ProfileUsersConnectionRepository implements AnonymousAwareUsersConn
     protected TextEncryptor encryptor;
 
     @Required
-    public void setProfileService(final ProfileService profileService) {
+    public void setProfileService(ProfileService profileService) {
         this.profileService = profileService;
     }
 
     @Required
-    public void setTenantResolver(final TenantResolver tenantResolver) {
+    public void setTenantResolver(TenantResolver tenantResolver) {
         this.tenantResolver = tenantResolver;
     }
 
     @Required
-    public void setConnectionFactoryLocator(final ConnectionFactoryLocator connectionFactoryLocator) {
+    public void setConnectionFactoryLocator(ConnectionFactoryLocator connectionFactoryLocator) {
         this.connectionFactoryLocator = connectionFactoryLocator;
     }
 
     @Required
-    public void setEncryptor(final TextEncryptor encryptor) {
+    public void setEncryptor(TextEncryptor encryptor) {
         this.encryptor = encryptor;
     }
 
@@ -106,9 +107,8 @@ public class ProfileUsersConnectionRepository implements AnonymousAwareUsersConn
         }
     }
 
-    @Override
-    public ConnectionRepository createConnectionRepository() {
-        return new ProfileConnectionRepository(connectionFactoryLocator, profileService, tenantResolver, encryptor);
+    public ConnectionRepository createConnectionRepository(Profile profile) {
+        return new ProfileConnectionRepository(connectionFactoryLocator, profile, profileService, encryptor);
     }
 
     protected List<Profile> findProfilesByQuery(String query) {
@@ -117,8 +117,8 @@ public class ProfileUsersConnectionRepository implements AnonymousAwareUsersConn
             return profileService.getProfilesByQuery(tenant, query, null, null, null, null, ProfileConstants
                 .NO_ATTRIBUTE);
         } catch (ProfileException e) {
-            throw new ProfileConnectionRepositoryException("Unable to find profiles of tenant '" + tenant +
-                "' by query " + query, e);
+            throw new SocialMediaIntegrationException("Unable to find profiles of tenant '" + tenant + "' by " +
+                "query " + query, e);
         }
     }
 
@@ -126,7 +126,7 @@ public class ProfileUsersConnectionRepository implements AnonymousAwareUsersConn
         try {
             return profileService.getProfile(profileId);
         } catch (ProfileException e) {
-            throw new ProfileConnectionRepositoryException("Unable to find profile '" + profileId + "'", e);
+            throw new SocialMediaIntegrationException("Unable to find profile '" + profileId + "'", e);
         }
     }
 

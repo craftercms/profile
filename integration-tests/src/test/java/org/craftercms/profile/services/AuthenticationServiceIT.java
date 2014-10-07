@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.exceptions.ErrorCode;
 import org.craftercms.profile.api.services.AuthenticationService;
+import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.ProfileRestServiceException;
 import org.craftercms.profile.services.impl.SingleAccessTokenIdResolver;
 import org.junit.Test;
@@ -61,6 +62,8 @@ public class AuthenticationServiceIT {
 
     @Autowired
     private AuthenticationService authenticationService;
+    @Autowired
+    private ProfileService profileService;
     @Autowired
     private SingleAccessTokenIdResolver accessTokenIdResolver;
 
@@ -127,6 +130,20 @@ public class AuthenticationServiceIT {
         assertNotNull(ticket);
         assertNotNull(ticket.getId());
         assertNotNull(ticket.getProfileId());
+        assertEquals(DEFAULT_TENANT_NAME, ticket.getTenant());
+        assertNotNull(ticket.getLastRequestTime());
+
+        authenticationService.invalidateTicket(ticket.getId().toString());
+    }
+
+    @Test
+    public void testCreateTicket() throws Exception {
+        String profileId = profileService.getProfileByUsername(DEFAULT_TENANT_NAME, ADMIN_USERNAME).getId().toString();
+        Ticket ticket = authenticationService.createTicket(profileId);
+
+        assertNotNull(ticket);
+        assertNotNull(ticket.getId());
+        assertEquals(profileId, ticket.getProfileId());
         assertEquals(DEFAULT_TENANT_NAME, ticket.getTenant());
         assertNotNull(ticket.getLastRequestTime());
 

@@ -28,7 +28,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.crypto.CipherUtils;
@@ -40,7 +39,6 @@ import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.exception.PermissionException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
-import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.AttributeAction;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Profile;
@@ -48,6 +46,7 @@ import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.TenantAction;
 import org.craftercms.profile.api.Ticket;
+import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AuthenticationService;
@@ -202,10 +201,6 @@ public class ProfileServiceImpl implements ProfileService {
         try {
             Tenant tenant = getTenant(tenantName);
             Date now = new Date();
-
-            if (StringUtils.isEmpty(password)) {
-                password = RandomStringUtils.randomAlphanumeric(8);
-            }
 
             Profile profile = new Profile();
             profile.setTenant(tenantName);
