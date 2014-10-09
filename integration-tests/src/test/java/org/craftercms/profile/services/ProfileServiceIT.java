@@ -883,7 +883,7 @@ public class ProfileServiceIT {
     private void assertJdoeProfile(Profile profile) {
         assertNotNull(profile);
         assertEquals(JDOE_USERNAME, profile.getUsername());
-        assertNotNull(profile.getPassword());
+        assertNull(profile.getPassword());
         assertEquals(JDOE_EMAIL, profile.getEmail());
         assertFalse(profile.isVerified());
         assertFalse(profile.isEnabled());
