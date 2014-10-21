@@ -66,7 +66,7 @@ public class ProviderLoginProcessor implements RequestSecurityProcessor {
 
     public static final String CONNECTIONS_ATTRIBUTE = "connections";
 
-    public static final String PROFILE_BY_PROVIDER_USER_ID_QUERY = "{attributes.connections.%s.providerUserId: %s}";
+    public static final String PROFILE_BY_PROVIDER_USER_ID_QUERY = "{'attributes.connections.%s.providerUserId': '%s'}";
 
     protected String loginUrlPattern;
     protected PathMatcher loginUrlMatcher;

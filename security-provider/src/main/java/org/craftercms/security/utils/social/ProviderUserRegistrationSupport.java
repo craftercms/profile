@@ -58,8 +58,8 @@ public class ProviderUserRegistrationSupport {
             username = email;
         }
 
-        profile = profileService.createProfile(tenant, username, password, email, enabled,
-            roles, attributes, verificationUrl);
+        profile = profileService.createProfile(tenant, username, password, email, enabled, roles, attributes,
+            verificationUrl);
 
         return profile;
     }
