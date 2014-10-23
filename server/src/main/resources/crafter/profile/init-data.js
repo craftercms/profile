@@ -138,7 +138,7 @@ if (db.profile.count() == 0) {
         "createdOn" : new Date(),
         "lastModified" : new Date(),
         "tenant" : "default",
-        "roles": ["PROFILE_ADMIN", "SOCIAL_SUPERADMIN"],
+        "roles": [ "PROFILE_ADMIN", "SOCIAL_SUPERADMIN" ],
         "attributes": {
             "socialContexts": [
                 {

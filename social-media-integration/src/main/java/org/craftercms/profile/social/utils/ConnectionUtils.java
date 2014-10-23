@@ -34,7 +34,7 @@ public class ConnectionUtils {
      * connection data needs to be stored in a profile.
      *
      * @param connectionData    the connection data to convert
-     * @param encryptor         the encryptor used to encrypt the accessToken, secret and refreshToken
+     * @param encryptor         the encryptor used to encrypt the accessToken, secret and refreshToken (optional)
      *
      * @return the connection data as a map
      */
@@ -58,7 +58,7 @@ public class ConnectionUtils {
      *
      * @param providerId    the provider ID of the connection (which is not stored in the map)
      * @param map           the map to convert
-     * @param encryptor     the encryptor used to decrypt the accessToken, secret and refreshToken
+     * @param encryptor     the encryptor used to decrypt the accessToken, secret and refreshToken (optional)
      *
      * @return the map as {@link org.springframework.social.connect.ConnectionData}
      */
@@ -215,26 +215,23 @@ public class ConnectionUtils {
     }
 
     /**
-     * Creates a profile from the specified connection data.
+     * Creates a profile from the specified connection.
      *
-     * @param connection        the connection where to retrieve the profile info from
-     * @param encryptor         the encryptor used to decrypt the accessToken, secret and refreshToken
+     * @param connection the connection where to retrieve the profile info from
      *
      * @return
      */
-    public static Profile getProfileFromConnection(Connection<?> connection, TextEncryptor encryptor) {
+    public static Profile createProfileFromConnection(Connection<?> connection) {
         Profile profile = new Profile();
-        profile.setEnabled(true);
 
         addProviderProfileInfo(profile, connection.fetchUserProfile());
-        addConnectionData(profile, connection.createData(), encryptor);
 
         return profile;
     }
 
     private static String encrypt(String clear, TextEncryptor encryptor) {
         try {
-            return StringUtils.isNotEmpty(clear) ? encryptor.encrypt(clear) : clear;
+            return encryptor != null && StringUtils.isNotEmpty(clear) ? encryptor.encrypt(clear) : clear;
         } catch (CryptoException e) {
             throw new SocialMediaIntegrationException("Encryption error", e);
         }
@@ -242,7 +239,7 @@ public class ConnectionUtils {
 
     private static String decrypt(String encrypted, TextEncryptor encryptor)  {
         try {
-            return StringUtils.isNotEmpty(encrypted) ? encryptor.decrypt(encrypted) : encrypted;
+            return encryptor != null && StringUtils.isNotEmpty(encrypted) ? encryptor.decrypt(encrypted) : encrypted;
         } catch (CryptoException e) {
             throw new SocialMediaIntegrationException("Decryption error", e);
         }

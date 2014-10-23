@@ -1,7 +1,6 @@
 package org.craftercms.profile.social;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -55,10 +54,6 @@ public class ProfileConnectionRepository implements ConnectionRepository {
 
     @Override
     public MultiValueMap<String, Connection<?>> findAllConnections() {
-        if (profile == null) {
-            return new LinkedMultiValueMap<>();
-        }
-
         MultiValueMap<String, Connection<?>> allConnections = new LinkedMultiValueMap<>();
         Map<String, List<Map<String, Object>>> allConnectionData = getConnectionsAttribute(profile);
 
@@ -80,10 +75,6 @@ public class ProfileConnectionRepository implements ConnectionRepository {
 
     @Override
     public List<Connection<?>> findConnections(String providerId) {
-        if (profile == null) {
-            return Collections.emptyList();
-        }
-
         List<Connection<?>> connections = new ArrayList<>();
         List<ConnectionData> connectionDataList;
 
@@ -112,10 +103,6 @@ public class ProfileConnectionRepository implements ConnectionRepository {
 
     @Override
     public MultiValueMap<String, Connection<?>> findConnectionsToUsers(MultiValueMap<String, String> providerUserIds) {
-        if (profile == null) {
-            return new LinkedMultiValueMap<>();
-        }
-
         MultiValueMap<String, Connection<?>> connectionsForUserIds = new LinkedMultiValueMap<>();
 
         for (Map.Entry<String, List<String>> entry : providerUserIds.entrySet()) {
@@ -139,10 +126,6 @@ public class ProfileConnectionRepository implements ConnectionRepository {
 
     @Override
     public Connection<?> getConnection(ConnectionKey connectionKey) {
-        if (profile == null) {
-            throw new NoSuchConnectionException(connectionKey);
-        }
-
         String providerId = connectionKey.getProviderId();
         List<ConnectionData> connectionDataList;
 
@@ -179,10 +162,6 @@ public class ProfileConnectionRepository implements ConnectionRepository {
     @Override
     @SuppressWarnings("unchecked")
     public <A> Connection<A> findPrimaryConnection(Class<A> apiType) {
-        if (profile == null) {
-            return null;
-        }
-
         String providerId = getProviderId(apiType);
         List<Connection<?>> connections = findConnections(providerId);
 
@@ -201,31 +180,22 @@ public class ProfileConnectionRepository implements ConnectionRepository {
 
     @Override
     public void updateConnection(Connection<?> connection) {
-        if (profile == null) {
-            throw new IllegalStateException("Missing profile in connection repository");
-        }
-
-        addConnectionData(profile, connection.createData(), encryptor);
-        updateProfile();
+        addConnection(connection);
     }
 
     @Override
     public void removeConnections(String providerId) {
-        if (profile != null) {
-            removeConnectionData(profile, providerId);
-            updateProfile();
-        }
+        removeConnectionData(profile, providerId);
+        updateProfile();
     }
 
     @Override
     public void removeConnection(ConnectionKey connectionKey) {
-        if (profile != null) {
-            String providerId = connectionKey.getProviderId();
-            String providerUserId = connectionKey.getProviderUserId();
+        String providerId = connectionKey.getProviderId();
+        String providerUserId = connectionKey.getProviderUserId();
 
-            removeConnectionData(providerId, providerUserId, profile);
-            updateProfile();
-        }
+        removeConnectionData(providerId, providerUserId, profile);
+        updateProfile();
     }
     
     protected Connection<?> createConnection(ConnectionData data) {

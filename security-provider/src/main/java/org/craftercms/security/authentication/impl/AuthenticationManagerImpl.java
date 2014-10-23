@@ -77,22 +77,43 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 
             authenticationCache.putAuthentication(auth);
 
-            logger.debug("Authentication successful for user '{}' (ticket ID = '{}')", username, ticketId);
+            logger.debug("Authentication successful for user '{}' (ticket ID = '{}')", ticket.getProfileId(), ticketId);
 
             return auth;
         } catch (ProfileRestServiceException e) {
             switch (e.getErrorCode()) {
                 case DISABLED_PROFILE:
-                    throw new DisabledUserException("User '" + username + "' is disabled", e);
+                    throw new DisabledUserException("User is disabled", e);
                 case BAD_CREDENTIALS:
                     throw new BadCredentialsException("Invalid username and/or password", e);
                 default:
-                    throw new AuthenticationSystemException("An unexpected error occurred while attempting " +
-                            "authentication for user '" + username + "'", e);
+                    throw new AuthenticationSystemException("An unexpected error occurred while authenticating", e);
             }
         } catch (ProfileException e) {
-            throw new AuthenticationSystemException("An unexpected error occurred while attempting authentication " +
-                    "for user '" + username + "'", e);
+            throw new AuthenticationSystemException("An unexpected error occurred while authenticating", e);
+        }
+    }
+
+    @Override
+    public Authentication authenticateUser(Profile profile) throws AuthenticationException {
+        try {
+            Ticket ticket = authenticationService.createTicket(profile.getId().toString());
+            String ticketId = ticket.getId().toString();
+            DefaultAuthentication auth = new DefaultAuthentication(ticketId, profile);
+
+            authenticationCache.putAuthentication(auth);
+
+            logger.debug("Authentication successful for user '{}' (ticket ID = '{}')", ticket.getProfileId(), ticketId);
+
+            return auth;
+        } catch (ProfileRestServiceException e) {
+            if (e.getErrorCode() == ErrorCode.DISABLED_PROFILE) {
+                throw new DisabledUserException("User is disabled", e);
+            } else {
+                throw new AuthenticationSystemException("An unexpected error occurred while authenticating", e);
+            }
+        } catch (ProfileException e) {
+            throw new AuthenticationSystemException("An unexpected error occurred while authenticating", e);
         }
     }
 
