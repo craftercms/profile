@@ -16,6 +16,7 @@
  */
 package org.craftercms.security.processors.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.processors.RequestSecurityProcessor;
 import org.craftercms.security.processors.RequestSecurityProcessorChain;
@@ -25,13 +26,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
- * Obtains and sets the tenant name for the current request. A default tenant name is used by this implementation.
+ * Obtains and sets the tenant name for the current request. A tenant parameter is checked in the request,
+ * and if not present, the default tenant name is used.
  *
  * @author Alfonso Vásquez
  */
 public class TenantNameResolvingProcessor implements RequestSecurityProcessor {
 
     public static final Logger logger = LoggerFactory.getLogger(TenantNameResolvingProcessor.class);
+
+    public static final String PARAM_TENANT_NAME = "tenantName";
 
     protected String defaultTenantName;
 
@@ -44,19 +48,26 @@ public class TenantNameResolvingProcessor implements RequestSecurityProcessor {
     }
 
     /**
-     * Sets the default tenant name in the context.
+     * Sets the tenant name in the context, from the parameter or the default.
      *
      * @param context        the context which holds the current request and other security info pertinent to the
      *                       request
      * @param processorChain the processor chain, used to call the next processor
-     * @throws Exception
      */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
-        logger.debug("Tenant name resolved for current request: {}", defaultTenantName);
+        String tenantName = context.getRequest().getParameter(PARAM_TENANT_NAME);
 
-        SecurityUtils.setTenant(context.getRequest(), defaultTenantName);
+        if (StringUtils.isEmpty(tenantName)) {
+            tenantName = defaultTenantName;
+        }
+
+        logger.debug("Tenant name resolved for current request: {}", tenantName);
+
+        SecurityUtils.setTenant(context.getRequest(), tenantName);
 
         processorChain.processRequest(context);
     }
+
+
 
 }
