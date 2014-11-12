@@ -55,12 +55,6 @@ function postObject(url, obj, $http) {
     });
 }
 
-function deleteObject(url, $http) {
-    return $http.delete(contextPath + url).then(function(result){
-        return result.data;
-    });
-}
-
 function hasAllActionsWildcard(actions) {
     return actions.indexOf('*') > -1;
 }
@@ -161,7 +155,7 @@ app.factory('tenantService', function($http) {
             return postObject('/tenant/update', tenant, $http);
         },
         deleteTenant: function(tenantName) {
-            return deleteObject('/tenant/' + tenantName + '/delete', $http);
+            return postObject('/tenant/' + tenantName + '/delete', $http);
         }
     }
 
@@ -201,7 +195,7 @@ app.factory('profileService', function($http) {
             return postObject('/profile/update', profile, $http);
         },
         deleteProfile: function(id) {
-            return deleteObject('/profile/' + id + '/delete', $http);
+            return postObject('/profile/' + id + '/delete', $http);
         }
     }
 });

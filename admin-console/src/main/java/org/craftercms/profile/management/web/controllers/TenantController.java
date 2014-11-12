@@ -132,7 +132,7 @@ public class TenantController {
         return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_UPDATED_FORMAT, tenant.getName()));
     }
 
-    @RequestMapping(value = URL_DELETE_TENANT, method = RequestMethod.DELETE)
+    @RequestMapping(value = URL_DELETE_TENANT, method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> deleteTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
         tenantService.deleteTenant(name);

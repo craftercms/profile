@@ -193,7 +193,7 @@ public class ProfileController {
         return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_PROFILE_UPDATED_FORMAT, profile.getId()));
     }
 
-    @RequestMapping(value = URL_DELETE_PROFILE, method = RequestMethod.DELETE)
+    @RequestMapping(value = URL_DELETE_PROFILE, method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> deleteProfile(@PathVariable(PATH_VAR_ID) String id) throws ProfileException {
         profileService.deleteProfile(id);
