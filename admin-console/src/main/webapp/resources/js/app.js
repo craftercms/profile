@@ -155,7 +155,7 @@ app.factory('tenantService', function($http) {
             return postObject('/tenant/update', tenant, $http);
         },
         deleteTenant: function(tenantName) {
-            return postObject('/tenant/' + tenantName + '/delete', $http);
+            return postObject('/tenant/' + tenantName + '/delete', null, $http);
         }
     }
 
@@ -195,7 +195,7 @@ app.factory('profileService', function($http) {
             return postObject('/profile/update', profile, $http);
         },
         deleteProfile: function(id) {
-            return postObject('/profile/' + id + '/delete', $http);
+            return postObject('/profile/' + id + '/delete', null, $http);
         }
     }
 });
