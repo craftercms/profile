@@ -51,20 +51,13 @@
     </bean>
 
 
-    <bean id="crafter.mongoClient" class="com.mongodb.MongoClient">
-        <constructor-arg>
-            <list>
-                <bean class="com.mongodb.ServerAddress">
-                    <constructor-arg value="${crafter.profile.mongodb.connection.host}"/>
-                    <constructor-arg value="${crafter.profile.mongodb.connection.port}"/>
-                </bean>
-            </list>
-        </constructor-arg>
-        <constructor-arg ref="crafter.mongoClientOptionsFactory"/>
+    <bean id="crafter.profile.mongoClient" class="org.craftercms.commons.mongo.MongoClientFactory">
+        <property name="connectionString" value="${crafter.profile.mongodb.connection.connectionStr}"/>
+        <property name="options" ref="crafter.mongoClientOptionsFactory"/>
     </bean>
 
     <bean id="crafter.jongo" class="org.craftercms.commons.mongo.JongoFactoryBean">
-        <property name="mongo" ref="crafter.mongoClient"/>
+        <property name="mongo" ref="crafter.profile.mongoClient"/>
         <property name="username" value="${crafter.profile.mongodb.connection.dbUsername}"/>
         <property name="password" value="${crafter.profile.mongodb.connection.dbPassword}"/>
         <property name="dbName" value="${crafter.profile.mongodb.connection.dbName}"/>
@@ -103,7 +96,7 @@
           parent="crafter.jongoRepositoryBase"/>
 
     <bean id="crafter.mongoInitScriptRunner" class="org.craftercms.commons.mongo.MongoScriptRunner">
-        <property name="mongo" ref="crafter.mongoClient"/>
+        <property name="mongo" ref="crafter.profile.mongoClient"/>
         <property name="dbName" value="${crafter.profile.mongodb.connection.dbName}"/>
         <property name="username" value="${crafter.profile.mongodb.connection.dbUsername}"/>
         <property name="password" value="${crafter.profile.mongodb.connection.dbPassword}"/>
