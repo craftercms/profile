@@ -14,30 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.craftercms.security.authentication;
+package org.craftercms.profile.exceptions;
 
-import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.exceptions.I10nProfileException;
 
 /**
- * Represents a successful authentication.
+ * Thrown if no persistent login with a specified ID was found.
  *
  * @author avasquez
  */
-public interface Authentication {
+public class NoSuchPersistentLoginException extends I10nProfileException {
 
-    /**
-     * Returns the ticket that identifies the authentication.
-     */
-    String getTicket();
+    public static final String KEY = "profile.auth.noSuchPersistentLogin";
 
-    /**
-     * Returns the profile associated to the authentication.
-     */
-    Profile getProfile();
-
-    /**
-     * Indicates if it's a remembered authentication.
-     */
-    boolean isRemembered();
+    public NoSuchPersistentLoginException(String loginId) {
+        super(KEY, loginId);
+    }
 
 }

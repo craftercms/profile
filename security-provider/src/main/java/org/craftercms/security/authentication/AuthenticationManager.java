@@ -31,6 +31,16 @@ public interface AuthenticationManager {
     Authentication authenticateUser(Profile profile) throws AuthenticationException;
 
     /**
+     * Authenticates a user just with it's profile ID. Use only when the user has already being identified.
+     *
+     * @param profile       the user's profile
+     * @param remembered    if the authentication was done through remember me.
+     *
+     * @return the authentication object, which contains the ticket and the user's profile
+     */
+    Authentication authenticateUser(Profile profile, boolean remembered) throws AuthenticationException;
+
+    /**
      * Returns the authentication associated to the given ticket ID
      *
      * @param ticket        the authentication ticket

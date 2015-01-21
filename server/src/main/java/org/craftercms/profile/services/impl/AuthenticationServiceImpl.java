@@ -16,8 +16,8 @@
  */
 package org.craftercms.profile.services.impl;
 
-import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.i10n.I10nLogger;
@@ -25,6 +25,7 @@ import org.craftercms.commons.logging.Logged;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
+import org.craftercms.profile.api.PersistentLogin;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.TenantAction;
@@ -35,8 +36,10 @@ import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.BadCredentialsException;
 import org.craftercms.profile.exceptions.DisabledProfileException;
+import org.craftercms.profile.exceptions.NoSuchPersistentLoginException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.permissions.Application;
+import org.craftercms.profile.repositories.PersistentLoginRepository;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -54,18 +57,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public static final String LOG_KEY_AUTHENTICATION_SUCCESSFUL = "profile.auth.authenticationSuccessful";
     public static final String LOG_KEY_TICKET_CREATED = "profile.auth.ticketCreated";
     public static final String LOG_KEY_TICKET_REQUESTED = "profile.auth.ticketRequested";
-    public static final String LOG_KEY_TICKET_EXPIRED = "profile.auth.ticketExpired";
     public static final String LOG_KEY_TICKET_INVALIDATED = "profile.auth.tickedInvalidated";
+    public static final String LOG_KEY_PERSISTENT_LOGIN_CREATED = "profile.auth.persistentLoginCreated";
+    public static final String LOG_KEY_PERSISTENT_LOGIN_TOKEN_UPDATED = "profile.auth.persistentLoginTokenUpdated";
+    public static final String LOG_KEY_PERSISTENT_LOGIN_INVALIDATED = "profile.auth.persistentLoginInvalidated";
 
     public static final String ERROR_KEY_CREATE_TICKET_ERROR = "profile.auth.createTicketError";
     public static final String ERROR_KEY_GET_TICKET_ERROR = "profile.auth.getTicketError";
     public static final String ERROR_KEY_UPDATE_TICKET_ERROR = "profile.auth.updateTicketError";
     public static final String ERROR_KEY_DELETE_TICKET_ERROR = "profile.auth.deleteTicketError";
+    public static final String ERROR_KEY_CREATE_PERSISTENT_LOGIN_ERROR = "profile.auth.createdPersistentLoginError";
+    public static final String ERROR_KEY_GET_PERSISTENT_LOGIN_ERROR = "profile.auth.getPersistentLoginError";
+    public static final String ERROR_KEY_UPDATED_PERSISTENT_LOGIN_ERROR = "profile.auth.updatePersistentLoginError";
+    public static final String ERROR_KEY_DELETE_PERSISTENT_LOGIN_ERROR = "profile.auth.deletePersistentLoginError";
 
     protected PermissionEvaluator<Application, String> permissionEvaluator;
     protected TicketRepository ticketRepository;
+    protected PersistentLoginRepository persistentLoginRepository;
     protected ProfileService profileService;
-    protected int ticketMaxAge;
 
     @Required
     public void setPermissionEvaluator(PermissionEvaluator<Application, String> permissionEvaluator) {
@@ -78,13 +87,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Required
-    public void setProfileService(ProfileService profileService) {
-        this.profileService = profileService;
+    public void setPersistentLoginRepository(PersistentLoginRepository persistentLoginRepository) {
+        this.persistentLoginRepository = persistentLoginRepository;
     }
 
     @Required
-    public void setTicketMaxAge(int ticketMaxAge) {
-        this.ticketMaxAge = ticketMaxAge;
+    public void setProfileService(ProfileService profileService) {
+        this.profileService = profileService;
     }
 
     @Override
@@ -107,6 +116,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         try {
             Ticket ticket = new Ticket();
+            ticket.setId(UUID.randomUUID().toString());
             ticket.setTenant(tenantName);
             ticket.setProfileId(profile.getId().toString());
             ticket.setLastRequestTime(new Date());
@@ -135,6 +145,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             try {
                 Ticket ticket = new Ticket();
+                ticket.setId(UUID.randomUUID().toString());
                 ticket.setTenant(tenantName);
                 ticket.setProfileId(profile.getId().toString());
                 ticket.setLastRequestTime(new Date());
@@ -156,7 +167,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public Ticket getTicket(String ticketId) throws ProfileException {
         Ticket ticket;
         try {
-            ticket = ticketRepository.findById(ticketId);
+            ticket = ticketRepository.findByStringId(ticketId);
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_GET_TICKET_ERROR, e, ticketId);
         }
@@ -164,31 +175,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (ticket != null) {
             checkIfManageTicketsIsAllowed(ticket.getTenant());
 
-            Calendar expirationTime = Calendar.getInstance();
-            expirationTime.setTime(ticket.getLastRequestTime());
-            expirationTime.add(Calendar.SECOND, ticketMaxAge);
+            ticket.setLastRequestTime(new Date());
 
-            if (Calendar.getInstance().before(expirationTime)) {
-                ticket.setLastRequestTime(new Date());
-
-                try {
-                    ticketRepository.save(ticket);
-                } catch (MongoDataException e) {
-                    throw new I10nProfileException(ERROR_KEY_UPDATE_TICKET_ERROR, ticketId);
-                }
-
-                logger.debug(LOG_KEY_TICKET_REQUESTED, ticket.getId());
-
-                return ticket;
-            } else {
-                try {
-                    ticketRepository.removeById(ticketId);
-                } catch (MongoDataException e) {
-                    throw new I10nProfileException(ERROR_KEY_DELETE_TICKET_ERROR, ticketId);
-                }
-
-                logger.debug(LOG_KEY_TICKET_EXPIRED, ticket.getId());
+            try {
+                ticketRepository.save(ticket);
+            } catch (MongoDataException e) {
+                throw new I10nProfileException(ERROR_KEY_UPDATE_TICKET_ERROR, ticketId);
             }
+
+            logger.debug(LOG_KEY_TICKET_REQUESTED, ticketId);
+
+            return ticket;
         }
 
         return null;
@@ -197,16 +194,99 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public void invalidateTicket(String ticketId) throws ProfileException {
         try {
-            Ticket ticket = ticketRepository.findById(ticketId);
+            Ticket ticket = ticketRepository.findByStringId(ticketId);
             if (ticket != null) {
                 checkIfManageTicketsIsAllowed(ticket.getTenant());
 
-                ticketRepository.removeById(ticketId);
+                ticketRepository.removeByStringId(ticketId);
 
-                logger.debug(LOG_KEY_TICKET_INVALIDATED, ticket.getId());
+                logger.debug(LOG_KEY_TICKET_INVALIDATED, ticketId);
             }
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_DELETE_TICKET_ERROR, ticketId);
+        }
+    }
+
+    @Override
+    public PersistentLogin createPersistentLogin(String profileId) throws ProfileException {
+        Profile profile = profileService.getProfile(profileId, ProfileConstants.NO_ATTRIBUTE);
+        if (profile != null) {
+            String tenantName = profile.getTenant();
+
+            checkIfManageTicketsIsAllowed(tenantName);
+
+            if (!profile.isEnabled()) {
+                throw new DisabledProfileException(profile.getId().toString(), tenantName);
+            }
+
+            try {
+                PersistentLogin login = new PersistentLogin();
+                login.setId(UUID.randomUUID().toString());
+                login.setTenant(tenantName);
+                login.setProfileId(profileId);
+                login.setToken(UUID.randomUUID().toString());
+                login.setTimestamp(new Date());
+
+                persistentLoginRepository.insert(login);
+
+                logger.debug(LOG_KEY_PERSISTENT_LOGIN_CREATED, profile.getId(), login);
+
+                return login;
+            } catch (MongoDataException e) {
+                throw new I10nProfileException(ERROR_KEY_CREATE_PERSISTENT_LOGIN_ERROR, profile.getId());
+            }
+        } else {
+            throw new NoSuchProfileException(profileId);
+        }
+    }
+
+    @Override
+    public PersistentLogin getPersistentLogin(String loginId) throws ProfileException {
+        try {
+            PersistentLogin login = persistentLoginRepository.findByStringId(loginId);
+            if (login != null) {
+                checkIfManageTicketsIsAllowed(login.getTenant());
+            }
+
+            return login;
+        } catch (MongoDataException e) {
+            throw new I10nProfileException(ERROR_KEY_GET_PERSISTENT_LOGIN_ERROR, e, loginId);
+        }
+    }
+
+    @Override
+    public PersistentLogin updatePersistentLoginToken(String loginId) throws ProfileException {
+        PersistentLogin login = getPersistentLogin(loginId);
+        if (login != null) {
+            try {
+                login.setToken(UUID.randomUUID().toString());
+
+                persistentLoginRepository.save(login);
+
+                logger.debug(LOG_KEY_PERSISTENT_LOGIN_TOKEN_UPDATED, loginId, login.getToken());
+
+                return login;
+            } catch (MongoDataException e) {
+                throw new I10nProfileException(ERROR_KEY_UPDATED_PERSISTENT_LOGIN_ERROR, loginId);
+            }
+        } else {
+            throw new NoSuchPersistentLoginException(loginId);
+        }
+    }
+
+    @Override
+    public void invalidatePersistentLogin(String loginId) throws ProfileException {
+        try {
+            PersistentLogin login = persistentLoginRepository.findByStringId(loginId);
+            if (login != null) {
+                checkIfManageTicketsIsAllowed(login.getTenant());
+
+                persistentLoginRepository.removeByStringId(loginId);
+
+                logger.debug(LOG_KEY_PERSISTENT_LOGIN_INVALIDATED, loginId);
+            }
+        } catch (MongoDataException e) {
+            throw new I10nProfileException(ERROR_KEY_DELETE_PERSISTENT_LOGIN_ERROR, loginId);
         }
     }
 

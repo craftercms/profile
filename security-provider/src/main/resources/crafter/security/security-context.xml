@@ -101,6 +101,11 @@
         <property name="path" value="/"/>
     </bean>
 
+    <bean id="crafter.rememberMeCookieManager" class="org.craftercms.commons.http.CookieManager">
+        <property name="maxAge" value="${crafter.security.cookie.rememberMe.maxAge}"/>
+        <property name="path" value="/"/>
+    </bean>
+
     <!-- ////////////////////////////////// -->
     <!--								 	-->
     <!--		       Cache			    -->
@@ -151,6 +156,7 @@
 
     <bean id="crafter.loginProcessor" class="org.craftercms.security.processors.impl.LoginProcessor">
         <property name="authenticationManager" ref="crafter.authenticationManager"/>
+        <property name="rememberMeManager" ref="crafter.rememberMeManager"/>
         <property name="loginSuccessHandler" ref="crafter.loginSuccessHandler"/>
         <property name="loginFailureHandler" ref="crafter.loginFailureHandler"/>
     </bean>
@@ -203,6 +209,20 @@
     <bean id="crafter.authenticationRequiredHandler"
           class="org.craftercms.security.authentication.impl.AuthenticationRequiredHandlerImpl">
         <property name="loginFormUrl" value="${crafter.security.login.form.url}"/>
+    </bean>
+
+    <!-- ////////////////////////////////// -->
+    <!--								 	-->
+    <!--		     Remember Me		    -->
+    <!--									-->
+    <!-- ////////////////////////////////// -->
+
+    <bean id="crafter.rememberMeManager" class="org.craftercms.security.authentication.impl.RememberMeManagerImpl">
+        <property name="authenticationService" ref="crafter.authenticationServiceRestClient"/>
+        <property name="authenticationManager" ref="crafter.authenticationManager"/>
+        <property name="rememberMeCookieManager" ref="crafter.rememberMeCookieManager"/>
+        <property name="profileService" ref="crafter.profileServiceRestClient"/>
+        <property name="encryptor" ref="crafter.textEncryptor"/>
     </bean>
 
     <!-- ////////////////////////////////// -->

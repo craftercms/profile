@@ -2,8 +2,6 @@ package org.craftercms.profile.api;
 
 import java.util.Date;
 
-import org.bson.types.ObjectId;
-
 /**
  * An authentication ticket for a profile. The ticket will later be encrypted for secure transmission.
  *
@@ -11,16 +9,16 @@ import org.bson.types.ObjectId;
  */
 public class Ticket {
 
-    private ObjectId _id;
+    private String _id;
     private String tenant;
     private String profileId;
     private Date lastRequestTime;
 
-    public ObjectId getId() {
+    public String getId() {
         return _id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this._id = id;
     }
 
@@ -46,6 +44,29 @@ public class Ticket {
 
     public void setLastRequestTime(Date lastRequestTime) {
         this.lastRequestTime = lastRequestTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Ticket ticket = (Ticket) o;
+
+        if (!_id.equals(ticket._id)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return _id.hashCode();
     }
 
     @Override

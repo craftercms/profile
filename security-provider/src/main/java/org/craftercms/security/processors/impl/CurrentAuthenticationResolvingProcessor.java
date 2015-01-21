@@ -35,7 +35,7 @@ import org.springframework.beans.factory.annotation.Required;
  */
 public class CurrentAuthenticationResolvingProcessor implements RequestSecurityProcessor {
 
-    public static final Logger logger = LoggerFactory.getLogger(CurrentAuthenticationResolvingProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(CurrentAuthenticationResolvingProcessor.class);
 
     protected AuthenticationManager authenticationManager;
 

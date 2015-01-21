@@ -33,6 +33,7 @@ import org.craftercms.profile.exceptions.InvalidEmailAddressException;
 import org.craftercms.profile.exceptions.InvalidQueryException;
 import org.craftercms.profile.exceptions.MissingAccessTokenIdParamException;
 import org.craftercms.profile.exceptions.NoSuchAccessTokenIdException;
+import org.craftercms.profile.exceptions.NoSuchPersistentLoginException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.exceptions.NoSuchTenantException;
 import org.craftercms.profile.exceptions.NoSuchTicketException;
@@ -107,6 +108,12 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NoSuchTicketException.class)
     public ResponseEntity<Object> handleNoSuchTicketException(NoSuchTicketException e, WebRequest request) {
         return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.NO_SUCH_TICKET, request);
+    }
+
+    @ExceptionHandler(NoSuchPersistentLoginException.class)
+    public ResponseEntity<Object> handleNoSuchPersistentLoginException(NoSuchPersistentLoginException e,
+                                                                       WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.NO_SUCH_PERSISTENT_LOGIN, request);
     }
 
     @ExceptionHandler(NoSuchVerificationTokenException.class)
