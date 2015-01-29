@@ -53,7 +53,7 @@ public interface AuthenticationService {
     void invalidateTicket(String ticketId) throws ProfileException;
 
     /**
-     * Create a persistent login, use for remember me functionality.
+     * Creates a persistent login, use for remember me functionality.
      *
      * @param profileId the ID of the profile
      *
@@ -62,6 +62,7 @@ public interface AuthenticationService {
     PersistentLogin createPersistentLogin(String profileId) throws ProfileException;
 
     /**
+     * Returns the persistent login object for the given ID.
      *
      * @param loginId the ID of the login
      *
@@ -70,19 +71,19 @@ public interface AuthenticationService {
     PersistentLogin getPersistentLogin(String loginId) throws ProfileException;
 
     /**
-     * Updates the token of the specified persistent login.
+     * Refreshes the token of the specified persistent login.
      *
      * @param loginId the ID of the persistent login
      *
-     * @return the persistent login with the updated token
+     * @return the persistent login with the refreshed token
      */
-    PersistentLogin updatePersistentLoginToken(String loginId) throws ProfileException;
+    PersistentLogin refreshPersistentLoginToken(String loginId) throws ProfileException;
 
     /**
-     * Invalidates the persistent login.
+     * Deletes the persistent login.
      *
      * @param loginId the ID of the login to invalidate
      */
-    void invalidatePersistentLogin(String loginId) throws ProfileException;
+    void deletePersistentLogin(String loginId) throws ProfileException;
 
 }

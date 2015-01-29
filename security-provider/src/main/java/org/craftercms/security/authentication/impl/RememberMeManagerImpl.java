@@ -148,7 +148,7 @@ public class RememberMeManagerImpl implements RememberMeManager {
         deleteRememberMeCookie(context.getResponse());
 
         try {
-            authenticationService.invalidatePersistentLogin(loginId);
+            authenticationService.deletePersistentLogin(loginId);
         } catch (ProfileException e) {
             throw new RememberMeException("Error invalidating persistent login '" + loginId + "'");
         }
@@ -159,7 +159,7 @@ public class RememberMeManagerImpl implements RememberMeManager {
     protected void updateRememberMe(String loginId, RequestContext context) throws RememberMeException {
         PersistentLogin login;
         try {
-            login = authenticationService.updatePersistentLoginToken(loginId);
+            login = authenticationService.refreshPersistentLoginToken(loginId);
         } catch (ProfileException e) {
             throw new RememberMeException("Unable to update persistent login '" + loginId + "'", e);
         }

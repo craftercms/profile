@@ -16,6 +16,7 @@
  */
 package org.craftercms.security.authentication.impl;
 
+import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
@@ -51,7 +52,7 @@ public class RestLoginSuccessHandlerTest extends AbstractRestHandlerTestBase {
         MockHttpServletResponse response = new MockHttpServletResponse();
         RequestContext context = new RequestContext(request, response);
 
-        ObjectId ticket = new ObjectId();
+        String ticket = UUID.randomUUID().toString();
         ObjectId profileId = new ObjectId();
 
         Profile profile = new Profile();
@@ -65,10 +66,11 @@ public class RestLoginSuccessHandlerTest extends AbstractRestHandlerTestBase {
         handler.handle(context, auth);
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        assertEquals("{\"ticket\":\"" + ticket + "\",\"profile\":{\"username\":\"jdoe\",\"password\":\"1234\"," +
-                "\"email\":\"jdoe@craftercms.org\",\"verified\":false,\"enabled\":false,\"createdOn\":null," +
-                "\"lastModified\":null,\"tenant\":null,\"roles\":[],\"attributes\":{},\"id\":" +
-                "\"" + profileId + "\"}}", response.getContentAsString());
+        assertEquals("{\"ticket\":\"" + ticket + "\",\"profile\":{\"username\":\"jdoe\"," +
+                     "\"password\":\"1234\",\"email\":\"jdoe@craftercms.org\",\"verified\":false," +
+                     "\"enabled\":false,\"createdOn\":null,\"lastModified\":null,\"tenant\":null,\"roles\":[]," +
+                     "\"attributes\":{},\"id\":\"" + profileId.toString() + "\"},\"remembered\":false}", response
+            .getContentAsString());
     }
 
 }

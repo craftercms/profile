@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.profile.api.Profile;
@@ -115,10 +114,10 @@ public class ProfileController {
     @RequestMapping(value = URL_GET_PROFILE_COUNT, method = RequestMethod.GET)
     @ResponseBody
     public long getProfileCount(@RequestParam(value = PARAM_TENANT_NAME, required = false) String tenantName,
-                                @RequestParam(value = PARAM_QUERY, required = false) String query,
-                                HttpServletRequest request) throws ProfileException {
+                                @RequestParam(value = PARAM_QUERY, required = false) String query)
+        throws ProfileException {
         if (StringUtils.isEmpty(tenantName)) {
-            tenantName = SecurityUtils.getTenant(request);
+            tenantName = getCurrentProfile().getTenant();
         }
 
         if (StringUtils.isNotEmpty(query)) {
@@ -142,10 +141,10 @@ public class ProfileController {
                                         @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
                                         @RequestParam(value = PARAM_SORT_ORDER, required = false) SortOrder sortOrder,
                                         @RequestParam(value = PARAM_START, required = false) Integer start,
-                                        @RequestParam(value = PARAM_COUNT, required = false) Integer limit,
-                                        HttpServletRequest request) throws ProfileException {
+                                        @RequestParam(value = PARAM_COUNT, required = false) Integer limit)
+        throws ProfileException {
         if (StringUtils.isEmpty(tenantName)) {
-            tenantName = SecurityUtils.getTenant(request);
+            tenantName = getCurrentProfile().getTenant();
         }
 
         if (StringUtils.isNotEmpty(query)) {
@@ -199,6 +198,10 @@ public class ProfileController {
         profileService.deleteProfile(id);
 
         return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_PROFILE_DELETED_FORMAT, id));
+    }
+
+    protected Profile getCurrentProfile() {
+        return SecurityUtils.getCurrentAuthentication().getProfile();
     }
 
 }

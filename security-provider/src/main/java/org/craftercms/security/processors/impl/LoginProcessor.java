@@ -19,10 +19,11 @@ package org.craftercms.security.processors.impl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;
+import org.craftercms.profile.social.utils.TenantsResolver;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.AuthenticationManager;
 import org.craftercms.security.authentication.LoginFailureHandler;
@@ -57,6 +58,7 @@ public class LoginProcessor implements RequestSecurityProcessor {
     protected String usernameParameter;
     protected String passwordParameter;
     protected String rememberMeParameter;
+    protected TenantsResolver tenantsResolver;
     protected AuthenticationManager authenticationManager;
     protected LoginSuccessHandler loginSuccessHandler;
     protected LoginFailureHandler loginFailureHandler;
@@ -113,6 +115,11 @@ public class LoginProcessor implements RequestSecurityProcessor {
         this.rememberMeManager = rememberMeManager;
     }
 
+    @Required
+    public void setTenantsResolver(final TenantsResolver tenantsResolver) {
+        this.tenantsResolver = tenantsResolver;
+    }
+
     /**
      * Checks if the request URL matches the {@code loginUrl} and the HTTP method matches the {@code loginMethod}. If
      * it does, it proceeds to login the user using the username/password specified in the parameters.
@@ -126,9 +133,10 @@ public class LoginProcessor implements RequestSecurityProcessor {
         if (isLoginRequest(request)) {
             logger.debug("Processing login request");
 
-            String tenant = SecurityUtils.getTenant(request);
-            if (StringUtils.isEmpty(tenant)) {
-                throw new IllegalArgumentException("Request context doesn't contain a tenant name");
+            String[] tenants = tenantsResolver.getTenants();
+
+            if (ArrayUtils.isEmpty(tenants)) {
+                throw new IllegalArgumentException("No tenants resolved for authentication");
             }
 
             String username = getUsername(request);
@@ -142,9 +150,9 @@ public class LoginProcessor implements RequestSecurityProcessor {
             }
 
             try {
-                logger.debug("Authenticating user '{}' for tenant '{}'", username, tenant);
+                logger.debug("Attempting authentication of user '{}' with tenants {}", username, tenants);
 
-                Authentication auth = authenticationManager.authenticateUser(tenant, username, password);
+                Authentication auth = authenticationManager.authenticateUser(tenants, username, password);
 
                 if (getRememberMe(request)) {
                     rememberMeManager.enableRememberMe(auth, context);

@@ -1,6 +1,7 @@
 <h1 class="page-header">Profile List</h1>
 
 <form class="form-inline" role="form">
+    <#if loggedInUser.roles?seq_contains("PROFILE_ADMIN")>
     <div class="form-group">
         <label for="tenant">Tenant:</label>
         <select name="tenant" class="form-control"
@@ -8,6 +9,7 @@
                 ng-change="resetSearchAndGetProfiles(selectedTenantName)">
         </select>
     </div>
+    </#if>
     <div class="form-group">
         <input type="text" class="form-control search-box" placeholder="Search by username" ng-model="searchText"/>
         <button class="btn btn-default" type="button" ng-disabled="searchText == null || searchText == ''"

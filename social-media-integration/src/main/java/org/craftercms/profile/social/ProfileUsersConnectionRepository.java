@@ -15,7 +15,7 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.social.exceptions.SocialMediaIntegrationException;
 import org.craftercms.profile.social.utils.ConnectionUtils;
-import org.craftercms.profile.social.utils.TenantResolver;
+import org.craftercms.profile.social.utils.TenantsResolver;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactoryLocator;
@@ -34,7 +34,7 @@ public class ProfileUsersConnectionRepository implements UsersConnectionReposito
         .CONNECTIONS_ATTRIBUTE_NAME + ".%s.providerUserId: {$in: [%s]}}";
 
     protected ProfileService profileService;
-    protected TenantResolver tenantResolver;
+    protected TenantsResolver tenantsResolver;
     protected ConnectionFactoryLocator connectionFactoryLocator;
     protected TextEncryptor encryptor;
 
@@ -44,8 +44,8 @@ public class ProfileUsersConnectionRepository implements UsersConnectionReposito
     }
 
     @Required
-    public void setTenantResolver(TenantResolver tenantResolver) {
-        this.tenantResolver = tenantResolver;
+    public void setTenantsResolver(TenantsResolver tenantsResolver) {
+        this.tenantsResolver = tenantsResolver;
     }
 
     @Required
@@ -112,13 +112,26 @@ public class ProfileUsersConnectionRepository implements UsersConnectionReposito
     }
 
     protected List<Profile> findProfilesByQuery(String query) {
-        String tenant = tenantResolver.getCurrentTenant();
+        String[] tenants = tenantsResolver.getTenants();
+        List<Profile> result = new ArrayList<>();
+
+        for (String tenant : tenants) {
+            List<Profile> profiles = findProfilesByQuery(tenant, query);
+            if (CollectionUtils.isNotEmpty(profiles)) {
+                result.addAll(profiles);
+            }
+        }
+
+        return result;
+    }
+
+    protected List<Profile> findProfilesByQuery(String tenant, String query) {
         try {
-            return profileService.getProfilesByQuery(tenant, query, null, null, null, null, ProfileConstants
-                .NO_ATTRIBUTE);
+            return profileService.getProfilesByQuery(tenant, query, null, null, null, null,
+                                                     ProfileConstants.NO_ATTRIBUTE);
         } catch (ProfileException e) {
             throw new SocialMediaIntegrationException("Unable to find profiles of tenant '" + tenant + "' by " +
-                "query " + query, e);
+                                                      "query " + query, e);
         }
     }
 

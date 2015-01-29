@@ -95,6 +95,20 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
     }
 
     @Override
+    public Authentication authenticateUser(String[] tenants, String username,
+                                           String password) throws AuthenticationException {
+        for (String tenant : tenants) {
+            try {
+                return authenticateUser(tenant, username, password);
+            } catch (BadCredentialsException e) {
+                logger.debug("Authentication attempt for user '{}' with tenant failed. Trying with next tenant...", e);
+            }
+        }
+
+        throw new BadCredentialsException("Invalid username and/or password");
+    }
+
+    @Override
     public Authentication authenticateUser(Profile profile) throws AuthenticationException {
         return authenticateUser(profile, false);
     }

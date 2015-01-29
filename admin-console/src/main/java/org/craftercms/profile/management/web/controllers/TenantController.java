@@ -16,7 +16,6 @@
  */
 package org.craftercms.profile.management.web.controllers;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +24,7 @@ import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.management.exceptions.ResourceNotFoundException;
+import org.craftercms.security.utils.tenant.TenantUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -95,14 +95,8 @@ public class TenantController {
     @RequestMapping(value = URL_GET_TENANT_NAMES, method = RequestMethod.GET)
     @ResponseBody
     public List<String> getTenantNames() throws ProfileException {
-        List<Tenant> tenants = tenantService.getAllTenants();
-        List<String> tenantNames = new ArrayList<>(tenants.size());
 
-        for (Tenant tenant : tenants) {
-            tenantNames.add(tenant.getName());
-        }
-
-        return tenantNames;
+        return TenantUtils.getTenantNames(tenantService);
     }
 
     @RequestMapping(value = URL_GET_TENANT, method = RequestMethod.GET)

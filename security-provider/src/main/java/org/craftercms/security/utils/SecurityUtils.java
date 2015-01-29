@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;
+import org.craftercms.profile.api.Profile;
 import org.craftercms.security.authentication.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,27 +79,6 @@ public class SecurityUtils {
     }
 
     /**
-     * Returns the tenant attribute from the specified request.
-     *
-     * @param request the request where to get the attribute from
-     *
-     * @return the tenant name
-     */
-    public static String getTenant(HttpServletRequest request) {
-        return (String) request.getAttribute(TENANT_REQUEST_ATTRIBUTE_NAME);
-    }
-
-    /**
-     * Sets the tenant attribute in the specified request.
-     *
-     * @param request   the request where to add the attribute to
-     * @param tenant    the tenant name to set as request attribute
-     */
-    public static void setTenant(HttpServletRequest request, String tenant) {
-        request.setAttribute(TENANT_REQUEST_ATTRIBUTE_NAME, tenant);
-    }
-
-    /**
      * Returns the authentication attribute from the current request.
      *
      * @return the authentication object
@@ -151,6 +131,29 @@ public class SecurityUtils {
      */
     public static void removeAuthentication(HttpServletRequest request) {
         request.removeAttribute(AUTHENTICATION_REQUEST_ATTRIBUTE_NAME);
+    }
+
+    /**
+     * Returns the profile from authentication attribute from the current request.
+     *
+     * @return the profile object, or null if there's no authentication
+     */
+    public static Profile getCurrentProfile() {
+        return getProfile(RequestContext.getCurrent().getRequest());
+    }
+
+    /**
+     * Returns the profile from authentication attribute from the specified request.
+     *
+     * @return the profile object, or null if there's no authentication
+     */
+    public static Profile getProfile(HttpServletRequest request) {
+        Authentication auth = getAuthentication(request);
+        if (auth != null) {
+            return auth.getProfile();
+        } else {
+            return null;
+        }
     }
 
 }

@@ -19,7 +19,9 @@
     </div>
 
     <div class="form-group">
-        <editable-list name="Available Roles" items="tenant.availableRoles"></editable-list>
+        <editable-list name="Available Roles" items="tenant.availableRoles"
+                       validation-callback="availableRolesValidationCallback(scope, item)"
+                       undeletable-items="undeletableAvailableRoles"></editable-list>
     </div>
 
     <div class="form-group">

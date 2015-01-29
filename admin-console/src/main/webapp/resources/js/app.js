@@ -315,7 +315,7 @@ app.controller('ProfileListController', function($scope, $location, tenantNames,
     }
 
     $scope.tenantNames = tenantNames;
-    $scope.selectedTenantName = $scope.tenantNames[0];
+    $scope.selectedTenantName = currentTenantName;
     $scope.itemsPerPage = 10;
 
     $scope.isValidUsername = function(text) {
@@ -378,9 +378,10 @@ app.controller('NewProfileController', function($scope, $location, tenantNames, 
 
     $scope.tenantNames = tenantNames;
     $scope.profile = profile;
-    $scope.profile.tenant = $scope.tenantNames[0];
+    $scope.profile.tenant = currentTenantName;
     $scope.profile.password = "";
     $scope.confirmPassword = "";
+    $scope.disabledRoles = superadmin? [] : ["PROFILE_ADMIN"];
 
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
@@ -414,6 +415,7 @@ app.controller('UpdateProfileController', function($scope, $location, profile, t
     $scope.profile = profile;
     $scope.profile.password = "";
     $scope.confirmPassword = "";
+    $scope.disabledRoles = superadmin? [] : ["PROFILE_ADMIN"];
 
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
@@ -467,9 +469,19 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
 
     $scope.tenant = tenant;
     $scope.newTenant = newTenant;
-
     $scope.attributeTypes = attributeTypes;
     $scope.attributeActions = attributeActions;
+    $scope.undeletableAvailableRoles = ["PROFILE_ADMIN"];
+
+    $scope.availableRolesValidationCallback = function(scope, item) {
+        if (item == "PROFILE_ADMIN") {
+            scope.errorMsg = '"PROFILE_ADMIN" is a reserved and unmodifiable role';
+
+            return false;
+        } else {
+            return true;
+        }
+    };
 
     $scope.getLabelForAttributeType = function(typeName) {
         for (var i = 0; i < $scope.attributeTypes.length; i++) {
@@ -611,7 +623,8 @@ app.directive('checkboxList', function() {
         scope: {
             name: '@',
             selected: '=',
-            options: '='
+            options: '=',
+            disabledOptions: '='
         },
         controller: function($scope) {
             $scope.toggleOption = function(option) {
@@ -633,7 +646,9 @@ app.directive('editableList', function() {
         restrict: 'E',
         scope: {
             name: '@',
-            items: '='
+            items: '=',
+            validationCallback: '&',
+            undeletableItems: '='
         },
         controller: function($scope) {
             if ($scope.items === undefined || $scope.items === null) {
@@ -641,7 +656,13 @@ app.directive('editableList', function() {
             }
 
             $scope.addItem = function(item) {
-                $scope.items.push(item);
+                if (!$scope.validationCallback || $scope.validationCallback({scope: $scope, item: item})) {
+                    $scope.addItemForm.itemToAdd.$setValidity('valid', true);
+
+                    $scope.items.push(item);
+                } else {
+                    $scope.addItemForm.itemToAdd.$setValidity('valid', false);
+                }
             };
 
             $scope.deleteItemAt = function(index) {

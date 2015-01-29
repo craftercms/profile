@@ -22,6 +22,17 @@ public interface AuthenticationManager {
     Authentication authenticateUser(String tenant, String username, String password) throws AuthenticationException;
 
     /**
+     * Authenticates a user.
+     *
+     * @param tenants   the tenant chain to try authentication with
+     * @param username  the user's username
+     * @param password  the user's password
+     *
+     * @return the authentication object, which contains the ticket and the user's profile
+     */
+    Authentication authenticateUser(String[] tenants, String username, String password) throws AuthenticationException;
+
+    /**
      * Authenticates a user just with it's profile ID. Use only when the user has already being identified.
      *
      * @param profile the user's profile

@@ -59,8 +59,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public static final String LOG_KEY_TICKET_REQUESTED = "profile.auth.ticketRequested";
     public static final String LOG_KEY_TICKET_INVALIDATED = "profile.auth.tickedInvalidated";
     public static final String LOG_KEY_PERSISTENT_LOGIN_CREATED = "profile.auth.persistentLoginCreated";
-    public static final String LOG_KEY_PERSISTENT_LOGIN_TOKEN_UPDATED = "profile.auth.persistentLoginTokenUpdated";
-    public static final String LOG_KEY_PERSISTENT_LOGIN_INVALIDATED = "profile.auth.persistentLoginInvalidated";
+    public static final String LOG_KEY_PERSISTENT_LOGIN_TOKEN_REFRESHED = "profile.auth.persistentLoginTokenRefreshed";
+    public static final String LOG_KEY_PERSISTENT_LOGIN_DELETED = "profile.auth.persistentLoginDeleted";
 
     public static final String ERROR_KEY_CREATE_TICKET_ERROR = "profile.auth.createTicketError";
     public static final String ERROR_KEY_GET_TICKET_ERROR = "profile.auth.getTicketError";
@@ -68,7 +68,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public static final String ERROR_KEY_DELETE_TICKET_ERROR = "profile.auth.deleteTicketError";
     public static final String ERROR_KEY_CREATE_PERSISTENT_LOGIN_ERROR = "profile.auth.createdPersistentLoginError";
     public static final String ERROR_KEY_GET_PERSISTENT_LOGIN_ERROR = "profile.auth.getPersistentLoginError";
-    public static final String ERROR_KEY_UPDATED_PERSISTENT_LOGIN_ERROR = "profile.auth.updatePersistentLoginError";
+    public static final String ERROR_KEY_UPDATE_PERSISTENT_LOGIN_ERROR = "profile.auth.updatePersistentLoginError";
     public static final String ERROR_KEY_DELETE_PERSISTENT_LOGIN_ERROR = "profile.auth.deletePersistentLoginError";
 
     protected PermissionEvaluator<Application, String> permissionEvaluator;
@@ -255,7 +255,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public PersistentLogin updatePersistentLoginToken(String loginId) throws ProfileException {
+    public PersistentLogin refreshPersistentLoginToken(String loginId) throws ProfileException {
         PersistentLogin login = getPersistentLogin(loginId);
         if (login != null) {
             try {
@@ -263,11 +263,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
                 persistentLoginRepository.save(login);
 
-                logger.debug(LOG_KEY_PERSISTENT_LOGIN_TOKEN_UPDATED, loginId, login.getToken());
+                logger.debug(LOG_KEY_PERSISTENT_LOGIN_TOKEN_REFRESHED, loginId, login.getToken());
 
                 return login;
             } catch (MongoDataException e) {
-                throw new I10nProfileException(ERROR_KEY_UPDATED_PERSISTENT_LOGIN_ERROR, loginId);
+                throw new I10nProfileException(ERROR_KEY_UPDATE_PERSISTENT_LOGIN_ERROR, loginId);
             }
         } else {
             throw new NoSuchPersistentLoginException(loginId);
@@ -275,7 +275,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void invalidatePersistentLogin(String loginId) throws ProfileException {
+    public void deletePersistentLogin(String loginId) throws ProfileException {
         try {
             PersistentLogin login = persistentLoginRepository.findByStringId(loginId);
             if (login != null) {
@@ -283,7 +283,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
                 persistentLoginRepository.removeByStringId(loginId);
 
-                logger.debug(LOG_KEY_PERSISTENT_LOGIN_INVALIDATED, loginId);
+                logger.debug(LOG_KEY_PERSISTENT_LOGIN_DELETED, loginId);
             }
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_DELETE_PERSISTENT_LOGIN_ERROR, loginId);
