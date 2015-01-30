@@ -29,6 +29,8 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.management.exceptions.InvalidRequestParameterException;
 import org.craftercms.profile.management.exceptions.ResourceNotFoundException;
+import org.craftercms.profile.management.exceptions.UnauthorizedException;
+import org.craftercms.profile.management.utils.AuthorizationUtils;
 import org.craftercms.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
@@ -117,7 +119,9 @@ public class ProfileController {
                                 @RequestParam(value = PARAM_QUERY, required = false) String query)
         throws ProfileException {
         if (StringUtils.isEmpty(tenantName)) {
-            tenantName = getCurrentProfile().getTenant();
+            tenantName = SecurityUtils.getCurrentProfile().getTenant();
+        } else {
+            AuthorizationUtils.checkCurrentUserIsAdminForTenant(tenantName);
         }
 
         if (StringUtils.isNotEmpty(query)) {
@@ -144,7 +148,9 @@ public class ProfileController {
                                         @RequestParam(value = PARAM_COUNT, required = false) Integer limit)
         throws ProfileException {
         if (StringUtils.isEmpty(tenantName)) {
-            tenantName = getCurrentProfile().getTenant();
+            tenantName = SecurityUtils.getCurrentProfile().getTenant();
+        } else {
+            AuthorizationUtils.checkCurrentUserIsAdminForTenant(tenantName);
         }
 
         if (StringUtils.isNotEmpty(query)) {
@@ -166,6 +172,8 @@ public class ProfileController {
     public Profile getProfile(@PathVariable(PATH_VAR_ID) String id) throws ProfileException {
         Profile profile = profileService.getProfile(id);
         if (profile != null) {
+            AuthorizationUtils.checkCurrentUserIsAdminForTenant(profile.getTenant());
+
             return profile;
         } else {
             throw new ResourceNotFoundException("No profile found for ID '" + id + "'");
@@ -175,9 +183,15 @@ public class ProfileController {
     @RequestMapping(value = URL_CREATE_PROFILE, method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> createProfile(@RequestBody Profile profile) throws ProfileException {
-        profile = profileService.createProfile(profile.getTenant(), profile.getUsername(),
-                profile.getPassword(), profile.getEmail(), profile.isEnabled(), profile.getRoles(),
-                profile.getAttributes(), verificationUrl);
+        AuthorizationUtils.checkCurrentUserIsAdminForTenant(profile.getTenant());
+
+        if (AuthorizationUtils.isCurrentUserTenantAdmin() && AuthorizationUtils.isSuperadmin(profile)) {
+            throw new UnauthorizedException("A tenant admin can't assign the super admin role");
+        }
+
+        profile = profileService.createProfile(profile.getTenant(), profile.getUsername(), profile.getPassword(),
+                                               profile.getEmail(), profile.isEnabled(), profile.getRoles(),
+                                               profile.getAttributes(), verificationUrl);
 
         return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_PROFILE_CREATED_FORMAT, profile.getId()));
     }
@@ -185,23 +199,40 @@ public class ProfileController {
     @RequestMapping(value = URL_UPDATE_PROFILE, method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> updateProfile(@RequestBody Profile profile) throws ProfileException {
-        profile = profileService.updateProfile(profile.getId().toString(), profile.getUsername(),
-                profile.getPassword(), profile.getEmail(), profile.isEnabled(), profile.getRoles(),
-                profile.getAttributes(), ProfileConstants.NO_ATTRIBUTE);
+        String id = profile.getId().toString();
+        Profile currentProfile = profileService.getProfile(id);
 
-        return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_PROFILE_UPDATED_FORMAT, profile.getId()));
+        if (currentProfile != null) {
+            AuthorizationUtils.checkCurrentUserIsAdminForTenant(currentProfile.getTenant());
+
+            if (AuthorizationUtils.isCurrentUserTenantAdmin() && AuthorizationUtils.isSuperadmin(currentProfile) &&
+                !AuthorizationUtils.isSuperadmin(profile)) {
+                throw new UnauthorizedException("A tenant admin can't un-assign the super admin role");
+            }
+
+            profileService.updateProfile(id, profile.getUsername(), profile.getPassword(), profile.getEmail(),
+                                         profile.isEnabled(), profile.getRoles(), profile.getAttributes(),
+                                         ProfileConstants.NO_ATTRIBUTE);
+
+            return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_PROFILE_UPDATED_FORMAT, id));
+        } else {
+            throw new ResourceNotFoundException("No profile found for ID '" + id + "'");
+        }
     }
 
     @RequestMapping(value = URL_DELETE_PROFILE, method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> deleteProfile(@PathVariable(PATH_VAR_ID) String id) throws ProfileException {
-        profileService.deleteProfile(id);
+        Profile profile = profileService.getProfile(id);
+        if (profile != null) {
+            AuthorizationUtils.checkCurrentUserIsAdminForTenant(profile.getTenant());
 
-        return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_PROFILE_DELETED_FORMAT, id));
-    }
+            profileService.deleteProfile(id);
 
-    protected Profile getCurrentProfile() {
-        return SecurityUtils.getCurrentAuthentication().getProfile();
+            return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_PROFILE_DELETED_FORMAT, id));
+        } else {
+            throw new ResourceNotFoundException("No profile found for ID '" + id + "'");
+        }
     }
 
 }

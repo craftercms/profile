@@ -471,11 +471,11 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
     $scope.newTenant = newTenant;
     $scope.attributeTypes = attributeTypes;
     $scope.attributeActions = attributeActions;
-    $scope.undeletableAvailableRoles = ["PROFILE_ADMIN"];
+    $scope.undeletableAvailableRoles = ['PROFILE_ADMIN'];
 
     $scope.availableRolesValidationCallback = function(scope, item) {
-        if (item == "PROFILE_ADMIN") {
-            scope.errorMsg = '"PROFILE_ADMIN" is a reserved and unmodifiable role';
+        if (item == 'PROFILE_ADMIN') {
+            scope.errorMsg = 'PROFILE_ADMIN is a system reserved role';
 
             return false;
         } else {

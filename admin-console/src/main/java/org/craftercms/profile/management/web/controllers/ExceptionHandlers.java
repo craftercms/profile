@@ -6,6 +6,7 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.ProfileRestServiceException;
 import org.craftercms.profile.management.exceptions.InvalidRequestParameterException;
 import org.craftercms.profile.management.exceptions.ResourceNotFoundException;
+import org.craftercms.profile.management.exceptions.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -19,7 +20,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 /**
  * {@link org.springframework.web.bind.annotation.ControllerAdvice} for controllers that includes exception
- * handling for all exceptions.
+ * handling for all known exceptions.
  *
  * @author avasquez
  */
@@ -51,6 +52,11 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Object> handleUnauthorizedException(UnauthorizedException e, WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, request);
+    }
+
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
                                                              HttpStatus status, WebRequest request) {
@@ -64,7 +70,7 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpHeaders headers, HttpStatus status,
                                                              WebRequest request) {
         logger.error("Request for " + ((ServletWebRequest) request).getRequest().getRequestURI() + " failed " +
-                "with HTTP status " + status, ex);
+                     "with HTTP status " + status, ex);
 
         String message = ex.getMessage();
 
