@@ -722,6 +722,14 @@ app.directive('editableList', function() {
                 }
             };
         },
+        link: function (scope, element, attrs) {
+            if (!attrs.validationCallback) {
+                scope.validationCallback = null;
+            }
+            if (!attrs.deleteCallback) {
+                scope.deleteCallback = null;
+            }
+        },
         templateUrl: contextPath + '/directives/editable-list',
         replace: true
     };

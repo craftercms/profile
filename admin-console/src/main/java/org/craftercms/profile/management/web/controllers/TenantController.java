@@ -141,6 +141,10 @@ public class TenantController {
         if (currentTenant != null) {
             AuthorizationUtils.checkCurrentUserIsAdminForTenant(name);
 
+            if (!currentTenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE) &&
+                tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
+                throw new UnauthorizedException(AuthorizationUtils.SUPERADMIN_ROLE + " is a system reserved role");
+            }
             if (currentTenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE) &&
                 !tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
                 throw new UnauthorizedException(AuthorizationUtils.SUPERADMIN_ROLE + " role can't be removed");
@@ -157,10 +161,10 @@ public class TenantController {
     @RequestMapping(value = URL_DELETE_TENANT, method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> deleteTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
+        AuthorizationUtils.checkCurrentUserIsSuperadmin();
+
         Tenant tenant = tenantService.getTenant(name);
         if (tenant != null) {
-            AuthorizationUtils.checkCurrentUserIsAdminForTenant(name);
-
             tenantService.deleteTenant(name);
 
             return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_DELETED_FORMAT, name));
