@@ -25,7 +25,7 @@
                 </td>
                 <td>
                     <div ng-if="!undeletableItems || undeletableItems.indexOf(item) < 0">
-                        <a ng-click="deleteItemAt($index)">Delete</a>
+                        <a ng-click="deleteItem(item, $index)">Delete</a>
                     </div>
                 </td>
             </tr>

@@ -205,9 +205,13 @@ public class ProfileController {
         if (currentProfile != null) {
             AuthorizationUtils.checkCurrentUserIsAdminForTenant(currentProfile.getTenant());
 
-            if (AuthorizationUtils.isCurrentUserTenantAdmin() && AuthorizationUtils.isSuperadmin(currentProfile) &&
-                !AuthorizationUtils.isSuperadmin(profile)) {
-                throw new UnauthorizedException("A tenant admin can't un-assign the super admin role");
+            if (AuthorizationUtils.isCurrentUserTenantAdmin()) {
+                if (!AuthorizationUtils.isSuperadmin(currentProfile) && AuthorizationUtils.isSuperadmin(profile)) {
+                    throw new UnauthorizedException("A tenant admin can't assign the super admin role");
+                }
+                if (AuthorizationUtils.isSuperadmin(currentProfile) && !AuthorizationUtils.isSuperadmin(profile)) {
+                    throw new UnauthorizedException("A tenant admin can't un-assign the super admin role");
+                }
             }
 
             profileService.updateProfile(id, profile.getUsername(), profile.getPassword(), profile.getEmail(),

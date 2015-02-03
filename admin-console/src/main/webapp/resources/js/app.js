@@ -87,6 +87,12 @@ function isLoggedIn() {
     return ticket !== undefined && ticket !== null && ticket !== '';
 }
 
+function hideModalIfShown(modal) {
+    if (modal.data('bs.modal') && modal.data('bs.modal').isShown) {
+        modal.modal('hide');
+    }
+}
+
 /**
  * Filters
  */
@@ -99,7 +105,7 @@ app.filter('prettyStringify', function() {
 /**
  * Http Interceptors
  */
-app.factory('httpErrorHandler', function ($q) {
+app.factory('httpErrorHandler', function ($q, $rootScope) {
     return {
         'response': function(response) {
             if (!isLoggedIn()) {
@@ -124,6 +130,8 @@ app.factory('httpErrorHandler', function ($q) {
 
                     message += '. Please contact IT support for more information';
                 }
+
+                $rootScope.$broadcast('httpError');
 
                 showGrowlMessage('danger', message);
             }
@@ -314,6 +322,10 @@ app.controller('ProfileListController', function($scope, $location, tenantNames,
         return;
     }
 
+    $scope.$on('httpError', function() {
+        hideModalIfShown($('#deleteConfirmationDialog'));
+    });
+
     $scope.tenantNames = tenantNames;
     $scope.selectedTenantName = currentTenantName;
     $scope.itemsPerPage = 10;
@@ -352,16 +364,17 @@ app.controller('ProfileListController', function($scope, $location, tenantNames,
 
     $scope.showDeleteConfirmationDialog = function(profile, index) {
         $scope.profileToDelete = {};
-        $scope.profileToDelete.username = profile.username;
         $scope.profileToDelete.id = profile.id;
         $scope.profileToDelete.index = index;
+        $scope.deleteConfirmationDialogMsg = 'Are you sure you want to delete profile "' + profile.username + '"? ' +
+            'You can\'t undo this action later.';
 
         $('#deleteConfirmationDialog').modal('show');
     };
 
-    $scope.deleteProfile = function(id, index) {
-        profileService.deleteProfile(id).then(function() {
-            $scope.profiles.splice(index, 1);
+    $scope.deleteProfile = function() {
+        profileService.deleteProfile($scope.profileToDelete.id).then(function() {
+            $scope.profiles.splice($scope.profileToDelete.index, 1);
 
             $('#deleteConfirmationDialog').modal('hide');
         });
@@ -444,17 +457,23 @@ app.controller('TenantListController', function($scope, tenantNames, tenantServi
 
     $scope.tenantNames = tenantNames;
 
+    $scope.$on('httpError', function() {
+        hideModalIfShown($('#deleteConfirmationDialog'));
+    });
+
     $scope.showDeleteConfirmationDialog = function(tenantName, index) {
         $scope.tenantToDelete = {};
         $scope.tenantToDelete.name = tenantName;
         $scope.tenantToDelete.index = index;
+        $scope.deleteConfirmationDialogMsg = 'Are you sure you wan to delete tenant "' + tenantName + '"? All its ' +
+            'profiles will be delete too. You can\'t undo this action later.';
 
         $('#deleteConfirmationDialog').modal('show');
     };
 
-    $scope.deleteTenant = function(name, index) {
-        tenantService.deleteTenant(name).then(function() {
-            $scope.tenantNames.splice(index, 1);
+    $scope.deleteTenant = function() {
+        tenantService.deleteTenant($scope.tenantToDelete.name).then(function() {
+            $scope.tenantNames.splice($scope.tenantToDelete.index, 1);
 
             $('#deleteConfirmationDialog').modal('hide');
         });
@@ -481,6 +500,39 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
         } else {
             return true;
         }
+    };
+
+    $scope.showDeleteRoleConfirmationDialog = function(scope, item, index) {
+        $scope.roleToDelete = {};
+        $scope.roleToDelete.name = item;
+        $scope.roleToDelete.index = index;
+        $scope.deleteRoleConfirmationMsg = 'Are you sure you wan to delete available role "' + item + '"? It ' +
+            'will also be deleted from all profiles using it. You can\'t undo this action after accepting the ' +
+            'changes.';
+
+        $('#deleteRoleConfirmationDialog').modal('show');
+    };
+
+    $scope.deleteRole = function() {
+        $scope.tenant.availableRoles.splice($scope.roleToDelete.index, 1);
+
+        $('#deleteRoleConfirmationDialog').modal('hide');
+    };
+
+    $scope.showDeleteAttribDefConfirmationDialog = function(definition, index) {
+        $scope.attribDefToDelete = {};
+        $scope.attribDefToDelete.index = index;
+        $scope.deleteAttribDefConfirmationMsg = 'Are you sure you wan to delete attribute definition "' +
+            definition.name + '"? The attribute will also be deleted from all profiles using it. You can\'t undo ' +
+            'this action after accepting the changes.';
+
+        $('#deleteAttribDefConfirmationDialog').modal('show');
+    };
+
+    $scope.deleteAttributeDefinition = function() {
+        $scope.tenant.attributeDefinitions.splice($scope.attribDefToDelete.index, 1);
+
+        $('#deleteAttribDefConfirmationDialog').modal('hide')
     };
 
     $scope.getLabelForAttributeType = function(typeName) {
@@ -537,10 +589,6 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
         }
 
         $('#attributeDefinitionModal').modal('hide');
-    };
-
-    $scope.deleteAttributeDefinitionAt = function(index) {
-        $scope.tenant.attributeDefinitions.splice(index, 1);
     };
 
     $scope.addPermission = function(definition, application) {
@@ -648,6 +696,7 @@ app.directive('editableList', function() {
             name: '@',
             items: '=',
             validationCallback: '&',
+            deleteCallback: '&',
             undeletableItems: '='
         },
         controller: function($scope) {
@@ -665,8 +714,12 @@ app.directive('editableList', function() {
                 }
             };
 
-            $scope.deleteItemAt = function(index) {
-                $scope.items.splice(index, 1);
+            $scope.deleteItem = function(item, index) {
+                if ($scope.deleteCallback) {
+                    $scope.deleteCallback({scope: $scope, item: item, index: index});
+                } else {
+                    $scope.items.splice(index, 1);
+                }
             };
         },
         templateUrl: contextPath + '/directives/editable-list',
@@ -726,5 +779,22 @@ app.directive('attributeNotRepeated', function () {
                 ctrl.$setValidity('attributeNotRepeated', currentValue);
             });
         }
+    };
+});
+
+app.directive('confirmationDialog', function () {
+    return {
+        restrict: 'E',
+        scope: {
+            id: '@',
+            title: '@',
+            message: '=',
+            confirmationCallback: '&'
+        },
+        link: function(scope, elem) {
+            elem.attr('id', scope.id);
+        },
+        templateUrl: contextPath + '/directives/confirmation-dialog',
+        replace: true
     };
 });

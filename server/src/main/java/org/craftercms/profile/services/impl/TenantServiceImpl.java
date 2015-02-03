@@ -31,7 +31,6 @@ import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.AttributeDefinition;
-import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.TenantAction;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
@@ -39,10 +38,8 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.exceptions.AttributeAlreadyDefinedException;
-import org.craftercms.profile.exceptions.AttributeDefinitionStillUsedException;
 import org.craftercms.profile.exceptions.AttributeNotDefinedException;
 import org.craftercms.profile.exceptions.NoSuchTenantException;
-import org.craftercms.profile.exceptions.RoleStillUsedException;
 import org.craftercms.profile.exceptions.TenantExistsException;
 import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.ProfileRepository;
@@ -58,7 +55,7 @@ import org.springframework.beans.factory.annotation.Required;
 public class TenantServiceImpl implements TenantService {
 
     private static final I10nLogger logger = new I10nLogger(TenantServiceImpl.class,
-            "crafter.profile.messages.logging");
+                                                            "crafter.profile.messages.logging");
 
     public static final String LOG_KEY_TENANT_CREATED = "profile.tenant.tenantCreated";
     public static final String LOG_KEY_TENANT_DELETED = "profile.tenant.tenantDeleted";
@@ -75,6 +72,11 @@ public class TenantServiceImpl implements TenantService {
     public static final String ERROR_KEY_DELETE_TENANT_ERROR = "profile.tenant.deleteTenantError";
     public static final String ERROR_KEY_GET_TENANT_COUNT_ERROR = "profile.tenant.getTenantCountError";
     public static final String ERROR_KEY_GET_ALL_TENANTS_ERROR = "profile.tenant.getAllTenantsError";
+
+    public static final String ERROR_KEY_DELETE_ALL_PROFILES_ERROR = "profile.profile.deleteAll";
+    public static final String ERROR_KEY_REMOVE_ROLE_FROM_ALL_PROFILES_ERROR = "profile.role.removeRoleFromAll";
+    public static final String ERROR_KEY_REMOVE_ATTRIBUTE_FROM_ALL_PROFILES_ERROR = "profile.attribute" +
+                                                                                    ".removeAttributeFromAll";
 
     protected PermissionEvaluator<Application, String> tenantPermissionEvaluator;
     protected PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator;
@@ -153,10 +155,10 @@ public class TenantServiceImpl implements TenantService {
                         .getAttributeDefinitions(), tenant.getAttributeDefinitions());
 
                 for (String removedRole : removedRoles) {
-                    checkIfRoleNotUsed(tenantName, removedRole);
+                    removeRoleFromProfiles(tenantName, removedRole);
                 }
                 for (AttributeDefinition removedDefinition : removedDefinitions) {
-                    checkIfAttributeDefinitionNotUsed(tenantName, removedDefinition);
+                    removeAttributeFromProfiles(tenantName, removedDefinition.getName());
                 }
 
                 originalTenant.setVerifyNewProfiles(tenant.isVerifyNewProfiles());
@@ -172,7 +174,12 @@ public class TenantServiceImpl implements TenantService {
         checkIfTenantActionIsAllowed(name, TenantAction.DELETE_TENANT);
 
         try {
-            profileRepository.removeAllForTenant(name);
+            profileRepository.removeAll(name);
+        } catch (MongoDataException e) {
+            throw new I10nProfileException(ERROR_KEY_DELETE_ALL_PROFILES_ERROR, e, name);
+        }
+
+        try {
             tenantRepository.removeByName(name);
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_DELETE_TENANT_ERROR, e, name);
@@ -242,7 +249,7 @@ public class TenantServiceImpl implements TenantService {
             @Override
             public void doWithTenant(Tenant tenant) throws ProfileException {
                 for (String role : roles) {
-                    checkIfRoleNotUsed(tenantName, role);
+                    removeRoleFromProfiles(tenantName, role);
                 }
 
                 tenant.getAvailableRoles().removeAll(roles);
@@ -321,7 +328,7 @@ public class TenantServiceImpl implements TenantService {
                     for (Iterator<AttributeDefinition> iter = allDefinitions.iterator(); iter.hasNext();) {
                         AttributeDefinition definition = iter.next();
                         if (definition.getName().equals(attributeName)) {
-                            checkIfAttributeDefinitionNotUsed(tenantName, definition);
+                            removeAttributeFromProfiles(tenantName, definition.getName());
 
                             iter.remove();
                             break;
@@ -384,20 +391,20 @@ public class TenantServiceImpl implements TenantService {
         });
     }
 
-    protected void checkIfRoleNotUsed(String tenantName, String role) throws ProfileException {
-        int count = profileService.getProfilesByRole(tenantName, role, null, null, ProfileConstants.NO_ATTRIBUTE)
-                .size();
-        if (count > 0) {
-            throw new RoleStillUsedException(role, tenantName);
+    protected void removeRoleFromProfiles(String tenantName, String role) throws ProfileException {
+        try {
+            profileRepository.removeRoleFromAll(tenantName, role);
+        } catch (MongoDataException e) {
+            throw new I10nProfileException(ERROR_KEY_REMOVE_ROLE_FROM_ALL_PROFILES_ERROR, e, role, tenantName);
         }
     }
 
-    protected void checkIfAttributeDefinitionNotUsed(String tenantName, AttributeDefinition definition)
-            throws ProfileException {
-        int count = profileService.getProfilesByExistingAttribute(tenantName, definition.getName(), null, null,
-                ProfileConstants.NO_ATTRIBUTE).size();
-        if (count > 0) {
-            throw new AttributeDefinitionStillUsedException(definition.getName(), tenantName);
+    protected void removeAttributeFromProfiles(String tenantName, String attributeName) throws ProfileException {
+        try {
+            profileRepository.removeAttributeFromAll(tenantName, attributeName);
+        } catch (MongoDataException e) {
+            throw new I10nProfileException(ERROR_KEY_REMOVE_ATTRIBUTE_FROM_ALL_PROFILES_ERROR, e, attributeName,
+                                           tenantName);
         }
     }
 
