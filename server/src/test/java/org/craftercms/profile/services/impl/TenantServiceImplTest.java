@@ -99,6 +99,7 @@ public class TenantServiceImplTest {
         tenantService.setTenantPermissionEvaluator(permissionEvaluator);
         tenantService.setTenantRepository(tenantRepository);
         tenantService.setProfileService(profileService);
+        tenantService.setProfileRepository(profileRepository);
     }
 
     @Test
