@@ -80,7 +80,7 @@
 
     <bean id="crafter.paramTenantResolver" class="org.craftercms.security.utils.tenant.ParamTenantsResolver"/>
 
-    <bean id="crafter.tenantResolver" class="org.craftercms.security.utils.tenant.TenantsResolverChain">
+    <bean id="crafter.tenantsResolver" class="org.craftercms.security.utils.tenant.TenantsResolverChain">
         <property name="resolvers">
             <list>
                 <ref bean="crafter.paramTenantResolver"/>
@@ -178,7 +178,7 @@
     </bean>
 
     <bean id="crafter.loginProcessor" class="org.craftercms.security.processors.impl.LoginProcessor">
-        <property name="tenantsResolver" ref="crafter.tenantResolver"/>
+        <property name="tenantsResolver" ref="crafter.tenantsResolver"/>
         <property name="authenticationManager" ref="crafter.authenticationManager"/>
         <property name="rememberMeManager" ref="crafter.rememberMeManager"/>
         <property name="loginSuccessHandler" ref="crafter.loginSuccessHandler"/>
@@ -285,7 +285,7 @@
 
     <bean id="crafter.usersConnectionRepository" class="org.craftercms.profile.social.ProfileUsersConnectionRepository">
         <property name="connectionFactoryLocator" ref="crafter.connectionFactoryLocator"/>
-        <property name="tenantsResolver" ref="crafter.tenantResolver"/>
+        <property name="tenantsResolver" ref="crafter.tenantsResolver"/>
         <property name="profileService" ref="crafter.profileServiceRestClient"/>
         <property name="encryptor" ref="crafter.textEncryptor"/>
     </bean>
