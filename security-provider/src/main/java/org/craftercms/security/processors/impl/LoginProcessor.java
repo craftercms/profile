@@ -19,13 +19,16 @@ package org.craftercms.security.processors.impl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;
+import org.craftercms.profile.social.utils.TenantsResolver;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.AuthenticationManager;
 import org.craftercms.security.authentication.LoginFailureHandler;
 import org.craftercms.security.authentication.LoginSuccessHandler;
+import org.craftercms.security.authentication.RememberMeManager;
 import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.BadCredentialsException;
 import org.craftercms.security.processors.RequestSecurityProcessor;
@@ -48,14 +51,18 @@ public class LoginProcessor implements RequestSecurityProcessor {
     public static final String DEFAULT_LOGIN_METHOD = "POST";
     public static final String DEFAULT_USERNAME_PARAM = "username";
     public static final String DEFAULT_PASSWORD_PARAM = "password";
+    public static final String DEFAULT_REMEMBER_ME_PARAM = "rememberMe";
 
     protected String loginUrl;
     protected String loginMethod;
     protected String usernameParameter;
     protected String passwordParameter;
+    protected String rememberMeParameter;
+    protected TenantsResolver tenantsResolver;
     protected AuthenticationManager authenticationManager;
     protected LoginSuccessHandler loginSuccessHandler;
     protected LoginFailureHandler loginFailureHandler;
+    protected RememberMeManager rememberMeManager;
 
     /**
      * Default constructor.
@@ -65,6 +72,7 @@ public class LoginProcessor implements RequestSecurityProcessor {
         loginMethod = DEFAULT_LOGIN_METHOD;
         usernameParameter = DEFAULT_USERNAME_PARAM;
         passwordParameter = DEFAULT_PASSWORD_PARAM;
+        rememberMeParameter = DEFAULT_REMEMBER_ME_PARAM;
     }
 
     public void setLoginUrl(String loginUrl) {
@@ -83,6 +91,10 @@ public class LoginProcessor implements RequestSecurityProcessor {
         this.usernameParameter = usernameParameter;
     }
 
+    public void setRememberMeParameter(final String rememberMeParameter) {
+        this.rememberMeParameter = rememberMeParameter;
+    }
+
     @Required
     public void setAuthenticationManager(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
@@ -98,6 +110,16 @@ public class LoginProcessor implements RequestSecurityProcessor {
         this.loginFailureHandler = loginFailureHandler;
     }
 
+    @Required
+    public void setRememberMeManager(RememberMeManager rememberMeManager) {
+        this.rememberMeManager = rememberMeManager;
+    }
+
+    @Required
+    public void setTenantsResolver(final TenantsResolver tenantsResolver) {
+        this.tenantsResolver = tenantsResolver;
+    }
+
     /**
      * Checks if the request URL matches the {@code loginUrl} and the HTTP method matches the {@code loginMethod}. If
      * it does, it proceeds to login the user using the username/password specified in the parameters.
@@ -111,9 +133,10 @@ public class LoginProcessor implements RequestSecurityProcessor {
         if (isLoginRequest(request)) {
             logger.debug("Processing login request");
 
-            String tenant = SecurityUtils.getTenant(request);
-            if (StringUtils.isEmpty(tenant)) {
-                throw new IllegalArgumentException("Request context doesn't contain a tenant name");
+            String[] tenants = tenantsResolver.getTenants();
+
+            if (ArrayUtils.isEmpty(tenants)) {
+                throw new IllegalArgumentException("No tenants resolved for authentication");
             }
 
             String username = getUsername(request);
@@ -127,9 +150,15 @@ public class LoginProcessor implements RequestSecurityProcessor {
             }
 
             try {
-                logger.debug("Authenticating user '{}' for tenant '{}'", username, tenant);
+                logger.debug("Attempting authentication of user '{}' with tenants {}", username, tenants);
 
-                Authentication auth = authenticationManager.authenticateUser(tenant, username, password);
+                Authentication auth = authenticationManager.authenticateUser(tenants, username, password);
+
+                if (getRememberMe(request)) {
+                    rememberMeManager.enableRememberMe(auth, context);
+                } else {
+                    rememberMeManager.disableRememberMe(context);
+                }
 
                 onLoginSuccess(context, auth);
             } catch (AuthenticationException e) {
@@ -151,6 +180,10 @@ public class LoginProcessor implements RequestSecurityProcessor {
 
     protected String getPassword(HttpServletRequest request) {
         return request.getParameter(passwordParameter);
+    }
+
+    protected boolean getRememberMe(HttpServletRequest request) {
+        return BooleanUtils.toBoolean(request.getParameter(rememberMeParameter));
     }
 
     protected void onLoginSuccess(RequestContext context, Authentication authentication) throws Exception {

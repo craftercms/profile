@@ -55,12 +55,6 @@ function postObject(url, obj, $http) {
     });
 }
 
-function deleteObject(url, $http) {
-    return $http.delete(contextPath + url).then(function(result){
-        return result.data;
-    });
-}
-
 function hasAllActionsWildcard(actions) {
     return actions.indexOf('*') > -1;
 }
@@ -93,6 +87,12 @@ function isLoggedIn() {
     return ticket !== undefined && ticket !== null && ticket !== '';
 }
 
+function hideModalIfShown(modal) {
+    if (modal.data('bs.modal') && modal.data('bs.modal').isShown) {
+        modal.modal('hide');
+    }
+}
+
 /**
  * Filters
  */
@@ -105,7 +105,7 @@ app.filter('prettyStringify', function() {
 /**
  * Http Interceptors
  */
-app.factory('httpErrorHandler', function ($q) {
+app.factory('httpErrorHandler', function ($q, $rootScope) {
     return {
         'response': function(response) {
             if (!isLoggedIn()) {
@@ -130,6 +130,8 @@ app.factory('httpErrorHandler', function ($q) {
 
                     message += '. Please contact IT support for more information';
                 }
+
+                $rootScope.$broadcast('httpError');
 
                 showGrowlMessage('danger', message);
             }
@@ -161,7 +163,7 @@ app.factory('tenantService', function($http) {
             return postObject('/tenant/update', tenant, $http);
         },
         deleteTenant: function(tenantName) {
-            return deleteObject('/tenant/' + tenantName + '/delete', $http);
+            return postObject('/tenant/' + tenantName + '/delete', null, $http);
         }
     }
 
@@ -201,7 +203,7 @@ app.factory('profileService', function($http) {
             return postObject('/profile/update', profile, $http);
         },
         deleteProfile: function(id) {
-            return deleteObject('/profile/' + id + '/delete', $http);
+            return postObject('/profile/' + id + '/delete', null, $http);
         }
     }
 });
@@ -320,8 +322,12 @@ app.controller('ProfileListController', function($scope, $location, tenantNames,
         return;
     }
 
+    $scope.$on('httpError', function() {
+        hideModalIfShown($('#deleteConfirmationDialog'));
+    });
+
     $scope.tenantNames = tenantNames;
-    $scope.selectedTenantName = $scope.tenantNames[0];
+    $scope.selectedTenantName = currentTenantName;
     $scope.itemsPerPage = 10;
 
     $scope.isValidUsername = function(text) {
@@ -358,16 +364,17 @@ app.controller('ProfileListController', function($scope, $location, tenantNames,
 
     $scope.showDeleteConfirmationDialog = function(profile, index) {
         $scope.profileToDelete = {};
-        $scope.profileToDelete.username = profile.username;
         $scope.profileToDelete.id = profile.id;
         $scope.profileToDelete.index = index;
+        $scope.deleteConfirmationDialogMsg = 'Are you sure you want to delete profile "' + profile.username + '"? ' +
+            'You can\'t undo this action later.';
 
         $('#deleteConfirmationDialog').modal('show');
     };
 
-    $scope.deleteProfile = function(id, index) {
-        profileService.deleteProfile(id).then(function() {
-            $scope.profiles.splice(index, 1);
+    $scope.deleteProfile = function() {
+        profileService.deleteProfile($scope.profileToDelete.id).then(function() {
+            $scope.profiles.splice($scope.profileToDelete.index, 1);
 
             $('#deleteConfirmationDialog').modal('hide');
         });
@@ -384,9 +391,10 @@ app.controller('NewProfileController', function($scope, $location, tenantNames, 
 
     $scope.tenantNames = tenantNames;
     $scope.profile = profile;
-    $scope.profile.tenant = $scope.tenantNames[0];
+    $scope.profile.tenant = currentTenantName;
     $scope.profile.password = "";
     $scope.confirmPassword = "";
+    $scope.disabledRoles = superadmin? [] : ["PROFILE_ADMIN"];
 
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
@@ -420,6 +428,7 @@ app.controller('UpdateProfileController', function($scope, $location, profile, t
     $scope.profile = profile;
     $scope.profile.password = "";
     $scope.confirmPassword = "";
+    $scope.disabledRoles = superadmin? [] : ["PROFILE_ADMIN"];
 
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
@@ -448,17 +457,23 @@ app.controller('TenantListController', function($scope, tenantNames, tenantServi
 
     $scope.tenantNames = tenantNames;
 
+    $scope.$on('httpError', function() {
+        hideModalIfShown($('#deleteConfirmationDialog'));
+    });
+
     $scope.showDeleteConfirmationDialog = function(tenantName, index) {
         $scope.tenantToDelete = {};
         $scope.tenantToDelete.name = tenantName;
         $scope.tenantToDelete.index = index;
+        $scope.deleteConfirmationDialogMsg = 'Are you sure you wan to delete tenant "' + tenantName + '"? All its ' +
+            'profiles will be delete too. You can\'t undo this action later.';
 
         $('#deleteConfirmationDialog').modal('show');
     };
 
-    $scope.deleteTenant = function(name, index) {
-        tenantService.deleteTenant(name).then(function() {
-            $scope.tenantNames.splice(index, 1);
+    $scope.deleteTenant = function() {
+        tenantService.deleteTenant($scope.tenantToDelete.name).then(function() {
+            $scope.tenantNames.splice($scope.tenantToDelete.index, 1);
 
             $('#deleteConfirmationDialog').modal('hide');
         });
@@ -473,9 +488,52 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
 
     $scope.tenant = tenant;
     $scope.newTenant = newTenant;
-
     $scope.attributeTypes = attributeTypes;
     $scope.attributeActions = attributeActions;
+    $scope.undeletableAvailableRoles = ['PROFILE_ADMIN'];
+
+    $scope.availableRolesValidationCallback = function(scope, item) {
+        if (item == 'PROFILE_ADMIN') {
+            scope.errorMsg = 'PROFILE_ADMIN is a system reserved role';
+
+            return false;
+        } else {
+            return true;
+        }
+    };
+
+    $scope.showDeleteRoleConfirmationDialog = function(scope, item, index) {
+        $scope.roleToDelete = {};
+        $scope.roleToDelete.name = item;
+        $scope.roleToDelete.index = index;
+        $scope.deleteRoleConfirmationMsg = 'Are you sure you wan to delete available role "' + item + '"? It ' +
+            'will also be deleted from all profiles using it. You can\'t undo this action after accepting the ' +
+            'changes.';
+
+        $('#deleteRoleConfirmationDialog').modal('show');
+    };
+
+    $scope.deleteRole = function() {
+        $scope.tenant.availableRoles.splice($scope.roleToDelete.index, 1);
+
+        $('#deleteRoleConfirmationDialog').modal('hide');
+    };
+
+    $scope.showDeleteAttribDefConfirmationDialog = function(definition, index) {
+        $scope.attribDefToDelete = {};
+        $scope.attribDefToDelete.index = index;
+        $scope.deleteAttribDefConfirmationMsg = 'Are you sure you wan to delete attribute definition "' +
+            definition.name + '"? The attribute will also be deleted from all profiles using it. You can\'t undo ' +
+            'this action after accepting the changes.';
+
+        $('#deleteAttribDefConfirmationDialog').modal('show');
+    };
+
+    $scope.deleteAttributeDefinition = function() {
+        $scope.tenant.attributeDefinitions.splice($scope.attribDefToDelete.index, 1);
+
+        $('#deleteAttribDefConfirmationDialog').modal('hide')
+    };
 
     $scope.getLabelForAttributeType = function(typeName) {
         for (var i = 0; i < $scope.attributeTypes.length; i++) {
@@ -531,10 +589,6 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
         }
 
         $('#attributeDefinitionModal').modal('hide');
-    };
-
-    $scope.deleteAttributeDefinitionAt = function(index) {
-        $scope.tenant.attributeDefinitions.splice(index, 1);
     };
 
     $scope.addPermission = function(definition, application) {
@@ -617,7 +671,8 @@ app.directive('checkboxList', function() {
         scope: {
             name: '@',
             selected: '=',
-            options: '='
+            options: '=',
+            disabledOptions: '='
         },
         controller: function($scope) {
             $scope.toggleOption = function(option) {
@@ -639,7 +694,10 @@ app.directive('editableList', function() {
         restrict: 'E',
         scope: {
             name: '@',
-            items: '='
+            items: '=',
+            validationCallback: '&',
+            deleteCallback: '&',
+            undeletableItems: '='
         },
         controller: function($scope) {
             if ($scope.items === undefined || $scope.items === null) {
@@ -647,12 +705,30 @@ app.directive('editableList', function() {
             }
 
             $scope.addItem = function(item) {
-                $scope.items.push(item);
+                if (!$scope.validationCallback || $scope.validationCallback({scope: $scope, item: item})) {
+                    $scope.addItemForm.itemToAdd.$setValidity('valid', true);
+
+                    $scope.items.push(item);
+                } else {
+                    $scope.addItemForm.itemToAdd.$setValidity('valid', false);
+                }
             };
 
-            $scope.deleteItemAt = function(index) {
-                $scope.items.splice(index, 1);
+            $scope.deleteItem = function(item, index) {
+                if ($scope.deleteCallback) {
+                    $scope.deleteCallback({scope: $scope, item: item, index: index});
+                } else {
+                    $scope.items.splice(index, 1);
+                }
             };
+        },
+        link: function (scope, element, attrs) {
+            if (!attrs.validationCallback) {
+                scope.validationCallback = null;
+            }
+            if (!attrs.deleteCallback) {
+                scope.deleteCallback = null;
+            }
         },
         templateUrl: contextPath + '/directives/editable-list',
         replace: true
@@ -711,5 +787,22 @@ app.directive('attributeNotRepeated', function () {
                 ctrl.$setValidity('attributeNotRepeated', currentValue);
             });
         }
+    };
+});
+
+app.directive('confirmationDialog', function () {
+    return {
+        restrict: 'E',
+        scope: {
+            id: '@',
+            title: '@',
+            message: '=',
+            confirmationCallback: '&'
+        },
+        link: function(scope, elem) {
+            elem.attr('id', scope.id);
+        },
+        templateUrl: contextPath + '/directives/confirmation-dialog',
+        replace: true
     };
 });

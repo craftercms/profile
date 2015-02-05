@@ -19,17 +19,16 @@ package org.craftercms.profile.exceptions;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 
 /**
- * Thrown if an attribute definition is to be removed from a tenant but there are some profiles still with the
- * attribute.
+ * Thrown if no persistent login with a specified ID was found.
  *
  * @author avasquez
  */
-public class AttributeDefinitionStillUsedException extends I10nProfileException {
+public class NoSuchPersistentLoginException extends I10nProfileException {
 
-    public static final String KEY = "profile.attribute.attributeDefinitionStillUsed";
+    public static final String KEY = "profile.auth.noSuchPersistentLogin";
 
-    public AttributeDefinitionStillUsedException(String attributeName, String tenant) {
-        super(KEY, attributeName, tenant);
+    public NoSuchPersistentLoginException(String loginId) {
+        super(KEY, loginId);
     }
 
 }

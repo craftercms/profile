@@ -11,12 +11,19 @@
         </span>
     </div>
 
+    <#if loggedInUser.roles?seq_contains("PROFILE_ADMIN")>
     <div class="form-group">
         <label for="tenant">Tenant</label>
         <select name="tenant" class="form-control" ng-model="profile.tenant"
                 ng-options="tenantName for tenantName in tenantNames" ng-change="getTenant(profile.tenant)">
         </select>
     </div>
+    <#else>
+    <div class="form-group">
+        <label for="tenant">Tenant</label>
+        <input name="tenant" type="text" class="form-control" disabled="disabled" ng-model="profile.tenant"/>
+    </div>
+    </#if>
 
     <div class="form-group" ng-class="{'has-error': form.email.$dirty && form.email.$invalid}">
         <label for="email">Email *</label>
@@ -58,7 +65,8 @@
     </div>
 
     <div class="form-group">
-        <checkbox-list name="Roles" selected="profile.roles" options="tenant.availableRoles"></checkbox-list>
+        <checkbox-list name="Roles" selected="profile.roles" options="tenant.availableRoles"
+                       disabled-options="disabledRoles"></checkbox-list>
     </div>
 
     <attributes definitions="tenant.attributeDefinitions" attributes="profile.attributes"></attributes>

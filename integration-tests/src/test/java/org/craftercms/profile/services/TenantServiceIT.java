@@ -182,28 +182,6 @@ public class TenantServiceIT {
             assertEquals(tenant.isVerifyNewProfiles(), result.isVerifyNewProfiles());
             assertEquals(tenant.getAvailableRoles(), result.getAvailableRoles());
             assertEqualAttributeDefinitionSets(tenant.getAttributeDefinitions(), result.getAttributeDefinitions());
-
-            tenant = tenantService.getTenant(DEFAULT_TENANT_NAME);
-            tenant.getAvailableRoles().remove(PROFILE_ADMIN_ROLE);
-
-            try {
-                tenantService.updateTenant(tenant);
-                fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-            } catch (ProfileRestServiceException e) {
-                assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
-                assertEquals(ErrorCode.ROLE_STILL_USED, e.getErrorCode());
-            }
-
-            tenant.getAvailableRoles().add(PROFILE_ADMIN_ROLE);
-            tenant.getAttributeDefinitions().remove(getLastNameAttributeDefinition());
-
-            try {
-                tenantService.updateTenant(tenant);
-                fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-            } catch (ProfileRestServiceException e) {
-                assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
-                assertEquals(ErrorCode.ATTRIBUTE_DEFINITION_STILL_USED, e.getErrorCode());
-            }
         } finally {
             tenantService.deleteTenant(CORPORATE_TENANT_NAME);
         }
@@ -283,14 +261,6 @@ public class TenantServiceIT {
 
             assertNotNull(tenant);
             assertEquals(expectedRoles, tenant.getAvailableRoles());
-
-            try {
-                tenantService.removeRoles(DEFAULT_TENANT_NAME, Arrays.asList(PROFILE_ADMIN_ROLE));
-                fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-            } catch (ProfileRestServiceException e) {
-                assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
-                assertEquals(ErrorCode.ROLE_STILL_USED, e.getErrorCode());
-            }
         } finally {
             tenantService.deleteTenant(CORPORATE_TENANT_NAME);
         }
@@ -334,14 +304,6 @@ public class TenantServiceIT {
             assertNotNull(tenant);
             assertNotNull(tenant.getAttributeDefinitions());
             assertEquals(1, tenant.getAttributeDefinitions().size());
-
-            try {
-                tenantService.removeAttributeDefinitions(DEFAULT_TENANT_NAME, attributeNames);
-                fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-            } catch (ProfileRestServiceException e) {
-                assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
-                assertEquals(ErrorCode.ATTRIBUTE_DEFINITION_STILL_USED, e.getErrorCode());
-            }
         } finally {
             tenantService.deleteTenant(CORPORATE_TENANT_NAME);
         }

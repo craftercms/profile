@@ -1,20 +1,13 @@
 package org.craftercms.profile.services.impl;
 
 import org.craftercms.commons.rest.RestClientUtils;
+import org.craftercms.profile.api.PersistentLogin;
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AuthenticationService;
 import org.springframework.util.MultiValueMap;
 
-import static org.craftercms.profile.api.ProfileConstants.BASE_URL_AUTHENTICATION;
-import static org.craftercms.profile.api.ProfileConstants.PARAM_PASSWORD;
-import static org.craftercms.profile.api.ProfileConstants.PARAM_PROFILE_ID;
-import static org.craftercms.profile.api.ProfileConstants.PARAM_TENANT_NAME;
-import static org.craftercms.profile.api.ProfileConstants.PARAM_USERNAME;
-import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_AUTHENTICATE;
-import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_CREATE_TICKET;
-import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_GET_TICKET;
-import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_INVALIDATE_TICKET;
+import static org.craftercms.profile.api.ProfileConstants.*;
 
 /**
  * REST client implementation of {@link org.craftercms.profile.api.services.AuthenticationService}.
@@ -36,7 +29,7 @@ public class AuthenticationServiceRestClient extends AbstractProfileRestClientBa
     }
 
     @Override
-    public Ticket createTicket(final String profileId) throws ProfileException {
+    public Ticket createTicket(String profileId) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         RestClientUtils.addValue(PARAM_PROFILE_ID, profileId, params);
 
@@ -57,6 +50,37 @@ public class AuthenticationServiceRestClient extends AbstractProfileRestClientBa
         String url = getAbsoluteUrl(BASE_URL_AUTHENTICATION + URL_AUTH_INVALIDATE_TICKET);
 
         doPostForLocation(url, createBaseParams(), ticketId);
+    }
+
+    @Override
+    public PersistentLogin createPersistentLogin(String profileId) throws ProfileException {
+        MultiValueMap<String, String> params = createBaseParams();
+        RestClientUtils.addValue(PARAM_PROFILE_ID, profileId, params);
+
+        String url = getAbsoluteUrl(BASE_URL_AUTHENTICATION + URL_AUTH_CREATE_PERSISTENT_LOGIN);
+
+        return doPostForObject(url, params, PersistentLogin.class);
+    }
+
+    @Override
+    public PersistentLogin getPersistentLogin(String loginId) throws ProfileException {
+        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_AUTHENTICATION + URL_AUTH_GET_PERSISTENT_LOGIN);
+
+        return doGetForObject(url, PersistentLogin.class, loginId);
+    }
+
+    @Override
+    public PersistentLogin refreshPersistentLoginToken(String loginId) throws ProfileException {
+        String url = getAbsoluteUrl(BASE_URL_AUTHENTICATION + URL_AUTH_REFRESH_PERSISTENT_LOGIN_TOKEN);
+
+        return doPostForObject(url, createBaseParams(), PersistentLogin.class, loginId);
+    }
+
+    @Override
+    public void deletePersistentLogin(String loginId) throws ProfileException {
+        String url = getAbsoluteUrl(BASE_URL_AUTHENTICATION + URL_AUTH_DELETE_PERSISTENT_LOGIN);
+
+        doPostForLocation(url, createBaseParams(), loginId);
     }
 
 }

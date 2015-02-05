@@ -16,20 +16,22 @@
  */
 package org.craftercms.security.processors.impl;
 
+import java.util.UUID;
 import javax.servlet.http.HttpSession;
 
-import org.bson.types.ObjectId;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.AuthenticationManager;
 import org.craftercms.security.authentication.LoginFailureHandler;
 import org.craftercms.security.authentication.LoginSuccessHandler;
+import org.craftercms.security.authentication.RememberMeManager;
 import org.craftercms.security.authentication.impl.DefaultAuthentication;
 import org.craftercms.security.exception.AuthenticationSystemException;
 import org.craftercms.security.exception.BadCredentialsException;
 import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.utils.SecurityUtils;
+import org.craftercms.security.utils.tenant.DefaultTenantsResolver;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -55,11 +57,11 @@ import static org.mockito.Mockito.when;
  */
 public class LoginProcessorTest {
 
-    private static final String TENANT =            "default";
-    private static final String USERNAME =          "jdoe";
-    private static final String VALID_PASSWORD =    "1234";
-    private static final String INVALID_PASSWORD =  "4321";
-    private static final String TICKET =            new ObjectId().toString();
+    private static final String[] TENANTS = new String[] {"default"};
+    private static final String USERNAME = "jdoe";
+    private static final String VALID_PASSWORD = "1234";
+    private static final String INVALID_PASSWORD = "4321";
+    private static final String TICKET = UUID.randomUUID().toString();
 
     private LoginProcessor processor;
     @Mock
@@ -68,22 +70,29 @@ public class LoginProcessorTest {
     private LoginSuccessHandler loginSuccessHandler;
     @Mock
     private LoginFailureHandler loginFailureHandler;
+    @Mock
+    private RememberMeManager rememberMeManager;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
+        DefaultTenantsResolver resolver = new DefaultTenantsResolver();
+        resolver.setDefaultTenantNames(TENANTS);
+
         processor = new LoginProcessor();
+        processor.setTenantsResolver(resolver);
         processor.setAuthenticationManager(authenticationManager);
         processor.setLoginSuccessHandler(loginSuccessHandler);
         processor.setLoginFailureHandler(loginFailureHandler);
+        processor.setRememberMeManager(rememberMeManager);
 
         Profile profile = new Profile();
         profile.setUsername(USERNAME);
 
-        when(authenticationManager.authenticateUser(TENANT, USERNAME, VALID_PASSWORD)).thenReturn(
+        when(authenticationManager.authenticateUser(TENANTS, USERNAME, VALID_PASSWORD)).thenReturn(
                 new DefaultAuthentication(TICKET, profile));
-        doThrow(BadCredentialsException.class).when(authenticationManager).authenticateUser(TENANT, USERNAME,
+        doThrow(BadCredentialsException.class).when(authenticationManager).authenticateUser(TENANTS, USERNAME,
                 INVALID_PASSWORD);
     }
 
@@ -95,8 +104,6 @@ public class LoginProcessorTest {
         HttpSession session = request.getSession(true);
         RequestContext context = new RequestContext(request, response);
         RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
-
-        SecurityUtils.setTenant(request, TENANT);
 
         request.setParameter(LoginProcessor.DEFAULT_USERNAME_PARAM, USERNAME);
         request.setParameter(LoginProcessor.DEFAULT_PASSWORD_PARAM, VALID_PASSWORD);
@@ -119,7 +126,7 @@ public class LoginProcessorTest {
         assertNotNull(auth.getProfile());
         assertEquals(USERNAME, auth.getProfile().getUsername());
 
-        verify(authenticationManager).authenticateUser(TENANT, USERNAME, VALID_PASSWORD);
+        verify(authenticationManager).authenticateUser(TENANTS, USERNAME, VALID_PASSWORD);
         verify(loginSuccessHandler).handle(context, auth);
     }
 
@@ -131,8 +138,6 @@ public class LoginProcessorTest {
         HttpSession session = request.getSession(true);
         RequestContext context = new RequestContext(request, response);
         RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
-
-        SecurityUtils.setTenant(request, TENANT);
 
         request.setParameter(LoginProcessor.DEFAULT_USERNAME_PARAM, USERNAME);
         request.setParameter(LoginProcessor.DEFAULT_PASSWORD_PARAM, INVALID_PASSWORD);
@@ -147,7 +152,7 @@ public class LoginProcessorTest {
 
         assertNull(auth);
 
-        verify(authenticationManager).authenticateUser(TENANT, USERNAME, INVALID_PASSWORD);
+        verify(authenticationManager).authenticateUser(TENANTS, USERNAME, INVALID_PASSWORD);
         verify(loginFailureHandler).handle(eq(context), any(BadCredentialsException.class));
     }
 

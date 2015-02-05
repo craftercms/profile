@@ -81,9 +81,13 @@ public class ProfileConstants {
     public static final String URL_PROFILE_DELETE_VERIFICATION_TOKEN = "/verification/delete_token";
 
     public static final String URL_AUTH_AUTHENTICATE = "/authenticate";
-    public static final String URL_AUTH_CREATE_TICKET = "/create_ticket";
-    public static final String URL_AUTH_GET_TICKET = "/{id}/ticket";
-    public static final String URL_AUTH_INVALIDATE_TICKET = "/{id}/invalidate_ticket";
+    public static final String URL_AUTH_CREATE_TICKET = "/ticket/create";
+    public static final String URL_AUTH_GET_TICKET = "/ticket/{id}";
+    public static final String URL_AUTH_INVALIDATE_TICKET = "/ticket/{id}/invalidate";
+    public static final String URL_AUTH_CREATE_PERSISTENT_LOGIN = "/persistent_login/create";
+    public static final String URL_AUTH_GET_PERSISTENT_LOGIN = "/persistent_login/{id}";
+    public static final String URL_AUTH_REFRESH_PERSISTENT_LOGIN_TOKEN = "/persistent_login/{id}/refresh_token";
+    public static final String URL_AUTH_DELETE_PERSISTENT_LOGIN = "/persistent_login/{id}/delete";
 
     public static final String PARAM_ACCESS_TOKEN_ID = "accessTokenId";
     public static final String PARAM_TENANT_NAME = "tenantName";

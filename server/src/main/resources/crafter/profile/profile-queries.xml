@@ -117,4 +117,14 @@
         {timestamp: {$lt: #}}
     </entry>
 
+    <!-- Persistent Login Queries -->
+
+    <entry key="profile.persistentLogin.byProfileIdAndToken">
+        {profileId: #, token: #}
+    </entry>
+
+    <entry key="profile.persistentLogin.removeOlderThan">
+        {timestamp: {$lt: #}}
+    </entry>
+
 </properties>

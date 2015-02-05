@@ -20,9 +20,13 @@
         </property>
     </bean>
 
+    <bean id="crafter.tenantResolver" class="org.craftercms.security.utils.tenant.AllTenantsResolver">
+        <property name="tenantService" ref="crafter.tenantServiceRestClient"/>
+    </bean>
+
     <util:map id="crafter.urlRestrictions">
         <entry key="/login" value="permitAll()"/>
-        <entry key="/**" value="hasRole('PROFILE_ADMIN')"/>
+        <entry key="/**" value="hasAnyRole({'PROFILE_ADMIN', 'PROFILE_TENANT_ADMIN'})"/>
     </util:map>
 
     <import resource="classpath*:crafter/profile/management/extension/services-context.xml"/>

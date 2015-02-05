@@ -16,7 +16,6 @@
  */
 package org.craftercms.profile.management.web.controllers;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +24,10 @@ import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.management.exceptions.ResourceNotFoundException;
+import org.craftercms.profile.management.exceptions.UnauthorizedException;
+import org.craftercms.profile.management.utils.AuthorizationUtils;
+import org.craftercms.security.utils.SecurityUtils;
+import org.craftercms.security.utils.tenant.TenantUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -95,19 +98,18 @@ public class TenantController {
     @RequestMapping(value = URL_GET_TENANT_NAMES, method = RequestMethod.GET)
     @ResponseBody
     public List<String> getTenantNames() throws ProfileException {
-        List<Tenant> tenants = tenantService.getAllTenants();
-        List<String> tenantNames = new ArrayList<>(tenants.size());
-
-        for (Tenant tenant : tenants) {
-            tenantNames.add(tenant.getName());
+        if (AuthorizationUtils.isCurrentUserSuperadmin()) {
+            return TenantUtils.getTenantNames(tenantService);
+        } else {
+            return Collections.singletonList(SecurityUtils.getCurrentProfile().getTenant());
         }
-
-        return tenantNames;
     }
 
     @RequestMapping(value = URL_GET_TENANT, method = RequestMethod.GET)
     @ResponseBody
     public Tenant getTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
+        AuthorizationUtils.checkCurrentUserIsAdminForTenant(name);
+
         Tenant tenant = tenantService.getTenant(name);
         if (tenant != null) {
             return tenant;
@@ -119,6 +121,12 @@ public class TenantController {
     @RequestMapping(value = URL_CREATE_TENANT, method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> createTenant(@RequestBody Tenant tenant) throws ProfileException {
+        AuthorizationUtils.checkCurrentUserIsSuperadmin();
+
+        if (tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
+            throw new UnauthorizedException(AuthorizationUtils.SUPERADMIN_ROLE + " is a system reserved role");
+        }
+
         tenant = tenantService.createTenant(tenant);
 
         return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_CREATED_FORMAT, tenant.getName()));
@@ -127,17 +135,42 @@ public class TenantController {
     @RequestMapping(value = URL_UPDATE_TENANT, method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> updateTenant(@RequestBody Tenant tenant) throws ProfileException {
-        tenant = tenantService.updateTenant(tenant);
+        String name = tenant.getName();
+        Tenant currentTenant = tenantService.getTenant(name);
 
-        return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_UPDATED_FORMAT, tenant.getName()));
+        if (currentTenant != null) {
+            AuthorizationUtils.checkCurrentUserIsAdminForTenant(name);
+
+            if (!currentTenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE) &&
+                tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
+                throw new UnauthorizedException(AuthorizationUtils.SUPERADMIN_ROLE + " is a system reserved role");
+            }
+            if (currentTenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE) &&
+                !tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
+                throw new UnauthorizedException(AuthorizationUtils.SUPERADMIN_ROLE + " role can't be removed");
+            }
+
+            tenantService.updateTenant(tenant);
+
+            return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_UPDATED_FORMAT, name));
+        } else {
+            throw new ResourceNotFoundException("No tenant found with name '" + name + "'");
+        }
     }
 
-    @RequestMapping(value = URL_DELETE_TENANT, method = RequestMethod.DELETE)
+    @RequestMapping(value = URL_DELETE_TENANT, method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> deleteTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
-        tenantService.deleteTenant(name);
+        AuthorizationUtils.checkCurrentUserIsSuperadmin();
 
-        return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_DELETED_FORMAT, name));
+        Tenant tenant = tenantService.getTenant(name);
+        if (tenant != null) {
+            tenantService.deleteTenant(name);
+
+            return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_DELETED_FORMAT, name));
+        } else {
+            throw new ResourceNotFoundException("No tenant found with name '" + name + "'");
+        }
     }
 
 }

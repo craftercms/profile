@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.SetUtils;
@@ -107,7 +108,7 @@ public class ProfileServiceImplTest {
     private static final String VERIFICATION_SUBJECT = "Verify Account";
     private static final String VERIFICATION_TEMPLATE_NAME = "verify-new-profile-email.ftl";
 
-    private static final ObjectId TICKET_ID = new ObjectId();
+    private static final String TICKET_ID = UUID.randomUUID().toString();
 
     private static final String SORT_BY = "username";
     private static final int START = 0;
@@ -118,8 +119,8 @@ public class ProfileServiceImplTest {
     private static final String RESET_PASSWORD_SUBJECT = "Reset Password";
     private static final String RESET_PASSWORD_TEMPLATE_NAME = "reset-password-email.ftl";
 
-    private static final ObjectId VERIFICATION_TOKEN_ID1 = new ObjectId();
-    private static final ObjectId VERIFICATION_TOKEN_ID2 = new ObjectId();
+    private static final String VERIFICATION_TOKEN_ID1 = UUID.randomUUID().toString();
+    private static final String VERIFICATION_TOKEN_ID2 = UUID.randomUUID().toString();
 
     private ProfileServiceImpl profileService;
     @Mock
@@ -152,7 +153,7 @@ public class ProfileServiceImplTest {
         when(tenantService.getTenant(TENANT1_NAME)).thenReturn(getTenant1());
         when(tenantService.getTenant(TENANT2_NAME)).thenReturn(getTenant2());
 
-        when(authenticationService.getTicket(TICKET_ID.toString())).thenReturn(getTicket());
+        when(authenticationService.getTicket(TICKET_ID)).thenReturn(getTicket());
 
         doAnswer(new Answer() {
 
@@ -232,10 +233,10 @@ public class ProfileServiceImplTest {
         token2.setProfileId(PROFILE2_ID.toString());
         token2.setTimestamp(new Date());
 
-        when(verificationService.verifyToken(VERIFICATION_TOKEN_ID1.toString()))
+        when(verificationService.verifyToken(VERIFICATION_TOKEN_ID1))
             .thenReturn(token1);
 
-        when(verificationService.verifyToken(VERIFICATION_TOKEN_ID2.toString()))
+        when(verificationService.verifyToken(VERIFICATION_TOKEN_ID2))
             .thenReturn(token2);
 
         profileService = new ProfileServiceImpl();
@@ -370,15 +371,15 @@ public class ProfileServiceImplTest {
         expected.setEnabled(true);
         expected.setAttributes(getAttributesWithoutPrivateAttribute());
 
-        Profile actual = profileService.verifyProfile(VERIFICATION_TOKEN_ID2.toString());
+        Profile actual = profileService.verifyProfile(VERIFICATION_TOKEN_ID2);
 
         assertEqualProfiles(expected, actual);
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT2_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE2_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
-        verify(verificationService).verifyToken(VERIFICATION_TOKEN_ID2.toString());
-        verify(verificationService).deleteToken(VERIFICATION_TOKEN_ID2.toString());
+        verify(verificationService).verifyToken(VERIFICATION_TOKEN_ID2);
+        verify(verificationService).deleteToken(VERIFICATION_TOKEN_ID2);
     }
 
     @Test
@@ -723,7 +724,7 @@ public class ProfileServiceImplTest {
         Profile expected = getTenant1Profile();
         expected.setAttributes(getAttributesWithoutPrivateAttribute());
 
-        Profile actual = profileService.changePassword(VERIFICATION_TOKEN_ID1.toString(), PASSWORD2);
+        Profile actual = profileService.changePassword(VERIFICATION_TOKEN_ID1, PASSWORD2);
 
         assertEqualProfiles(expected, actual);
         assertTrue(CipherUtils.matchPassword(actual.getPassword(), PASSWORD2));
@@ -731,8 +732,8 @@ public class ProfileServiceImplTest {
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
-        verify(verificationService).verifyToken(VERIFICATION_TOKEN_ID1.toString());
-        verify(verificationService).deleteToken(VERIFICATION_TOKEN_ID1.toString());
+        verify(verificationService).verifyToken(VERIFICATION_TOKEN_ID1);
+        verify(verificationService).deleteToken(VERIFICATION_TOKEN_ID1);
     }
 
     @Test
@@ -749,9 +750,9 @@ public class ProfileServiceImplTest {
 
     @Test
     public void deleteVerificationToken() throws Exception {
-        profileService.deleteVerificationToken(VERIFICATION_TOKEN_ID1.toString());
+        profileService.deleteVerificationToken(VERIFICATION_TOKEN_ID1);
 
-        verify(verificationService).deleteToken(VERIFICATION_TOKEN_ID1.toString());
+        verify(verificationService).deleteToken(VERIFICATION_TOKEN_ID1);
     }
 
     private Tenant getTenant1() {

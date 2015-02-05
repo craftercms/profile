@@ -66,6 +66,8 @@
 
     <bean id="crafter.exceptionHandlers" class="org.craftercms.profile.management.web.controllers.ExceptionHandlers"/>
 
+    <bean id="crafter.modelAttributes" class="org.craftercms.profile.management.web.controllers.ModelAttributes"/>
+
     <bean id="crafter.mainController" class="org.craftercms.profile.management.web.controllers.MainController"/>
 
     <bean id="crafter.profileController" class="org.craftercms.profile.management.web.controllers.ProfileController">

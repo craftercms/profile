@@ -157,6 +157,22 @@ public interface ProfileRepository extends CrudRepository<Profile> {
      *
      * @param tenantName the tenant's name
      */
-    void removeAllForTenant(String tenantName) throws MongoDataException;
+    void removeAll(String tenantName) throws MongoDataException;
+
+    /**
+     * Removes the role of all profiles of to the given tenant.
+     *
+     * @param tenantName    the tenant's name
+     * @param role          the name of the role to remove
+     */
+    void removeRoleFromAll(String tenantName, String role) throws MongoDataException;
+
+    /**
+     * Removes the attribute of all profiles of to the given tenant.
+     *
+     * @param tenantName    the tenant's name
+     * @param attributeName the name of the attribute to remove
+     */
+    void removeAttributeFromAll(String tenantName, String attributeName) throws MongoDataException;
 
 }

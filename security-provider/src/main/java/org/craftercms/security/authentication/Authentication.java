@@ -35,4 +35,9 @@ public interface Authentication {
      */
     Profile getProfile();
 
+    /**
+     * Indicates if it's a remembered authentication.
+     */
+    boolean isRemembered();
+
 }

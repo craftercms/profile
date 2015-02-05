@@ -32,9 +32,7 @@ import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.TenantPermission;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.AttributeAlreadyDefinedException;
-import org.craftercms.profile.exceptions.AttributeDefinitionStillUsedException;
 import org.craftercms.profile.exceptions.AttributeNotDefinedException;
-import org.craftercms.profile.exceptions.RoleStillUsedException;
 import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TenantRepository;
@@ -100,8 +98,8 @@ public class TenantServiceImplTest {
         tenantService = new TenantServiceImpl();
         tenantService.setTenantPermissionEvaluator(permissionEvaluator);
         tenantService.setTenantRepository(tenantRepository);
-        tenantService.setProfileRepository(profileRepository);
         tenantService.setProfileService(profileService);
+        tenantService.setProfileRepository(profileRepository);
     }
 
     @Test
@@ -141,22 +139,9 @@ public class TenantServiceImplTest {
     }
 
     @Test
-    public void testUpdateTenantRemoveRoleStillUsed() throws Exception {
-        Tenant tenant = getTenant2();
-        tenant.getAvailableRoles().remove(ROLE1);
-
-        try {
-            tenantService.updateTenant(tenant);
-            fail("Expected " + RoleStillUsedException.class.getSimpleName() + " exception");
-        } catch (RoleStillUsedException e) {
-        }
-    }
-
-    @Test
     public void testDeleteTenant() throws Exception {
         tenantService.deleteTenant(TENANT1_NAME);
 
-        verify(profileRepository).removeAllForTenant(TENANT1_NAME);
         verify(tenantRepository).removeByName(TENANT1_NAME);
     }
 
@@ -220,15 +205,6 @@ public class TenantServiceImplTest {
 
         verify(tenantRepository).findByName(TENANT1_NAME);
         verify(tenantRepository).save(actual);
-    }
-
-    @Test
-    public void testRemoveRolesStillUsed() throws Exception {
-        try {
-            tenantService.removeRoles(TENANT2_NAME, Arrays.asList(ROLE1));
-            fail("Expected " + RoleStillUsedException.class.getSimpleName() + " exception");
-        } catch (RoleStillUsedException e) {
-        }
     }
 
     @Test
@@ -302,17 +278,6 @@ public class TenantServiceImplTest {
         verify(tenantRepository).save(actual);
 
         Application.clear();
-    }
-
-    @Test
-    public void testRemoveAttributeDefinitionStillUsed() throws Exception {
-        Application.setCurrent(new Application(APP_NAME, Collections.<TenantPermission>emptyList()));
-
-        try {
-            tenantService.removeAttributeDefinitions(TENANT2_NAME, Arrays.asList(ATTRIB1_NAME));
-            fail("Expected " + AttributeDefinitionStillUsedException.class.getSimpleName() + " exception");
-        } catch (AttributeDefinitionStillUsedException e) {
-        }
     }
 
     private Tenant getTenant1() {

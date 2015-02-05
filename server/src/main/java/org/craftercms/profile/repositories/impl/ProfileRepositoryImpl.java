@@ -17,6 +17,7 @@
 package org.craftercms.profile.repositories.impl;
 
 import com.mongodb.MongoException;
+import com.mongodb.WriteResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.jongo.Find;
 import org.jongo.FindOne;
+import org.jongo.Update;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,11 +56,14 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
     public static final String KEY_FIND_BY_TENANT_QUERY = "profile.profile.byTenant";
     public static final String KEY_FIND_BY_TENANT_AND_ROLE_QUERY = "profile.profile.byTenantAndRole";
     public static final String KEY_FIND_BY_TENANT_AND_EXISTING_ATTRIB_QUERY = "profile.profile" +
-            ".byTenantAndExistingAttribute";
+                                                                              ".byTenantAndExistingAttribute";
     public static final String KEY_FIND_BY_TENANT_AND_ATTRIB_VALUE_QUERY = "profile.profile" +
-            ".byTenantAndAttributeValue";
+                                                                           ".byTenantAndAttributeValue";
 
     public static final String ATTRIBUTE_FIELD_PREFIX = "attributes.";
+
+    public static final String MODIFIER_REMOVE_ROLE = "{$pull: {roles: #}}";
+    public static final String MODIFIER_REMOVE_ATTRIBUTE = "{$unset: {attributes.#: ''}}";
 
     @Override
     public void init() throws Exception {
@@ -226,8 +231,8 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
     }
 
     @Override
-    public Profile findByTenantAndUsername(String tenantName, String username, String... attributesToReturn) throws
-        MongoDataException {
+    public Profile findByTenantAndUsername(String tenantName, String username, String... attributesToReturn)
+        throws MongoDataException {
         try {
             String query = getQueryFor(KEY_FIND_BY_TENANT_AND_USERNAME_QUERY);
             FindOne findOne = getCollection().findOne(query, tenantName, username);
@@ -250,8 +255,39 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
     }
 
     @Override
-    public void removeAllForTenant(String tenantName) throws MongoDataException {
+    public void removeAll(String tenantName) throws MongoDataException {
         remove(getQueryFor(KEY_REMOVE_BY_TENANT_QUERY), tenantName);
+    }
+
+    @Override
+    public void removeRoleFromAll(String tenantName, String role) throws MongoDataException {
+        try {
+            String query = getQueryFor(KEY_FIND_BY_TENANT_AND_ROLE_QUERY);
+            Update update = getCollection().update(query, tenantName, role).multi();
+
+            WriteResult result = update.with(MODIFIER_REMOVE_ROLE, role);
+            checkCommandResult(result);
+        } catch (MongoException ex) {
+            String msg = "Unable to remove role '" + role + "' from profiles of tenant '" + tenantName + "'";
+            logger.error(msg, ex);
+            throw new MongoDataException(msg, ex);
+        }
+    }
+
+    @Override
+    public void removeAttributeFromAll(String tenantName, String attributeName) throws MongoDataException {
+        try {
+            String query = getQueryFor(KEY_FIND_BY_TENANT_AND_EXISTING_ATTRIB_QUERY);
+            Update update = getCollection().update(query, tenantName, attributeName).multi();
+
+            WriteResult result = update.with(MODIFIER_REMOVE_ATTRIBUTE, attributeName);
+            checkCommandResult(result);
+        } catch (MongoException ex) {
+            String msg = "Unable to remove attribute with name '" + attributeName + "' from profiles of tenant '" +
+                         tenantName + "'";
+            logger.error(msg, ex);
+            throw new MongoDataException(msg, ex);
+        }
     }
 
     protected Find addSort(Find find, String sortBy, SortOrder sortOrder) {

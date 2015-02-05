@@ -133,7 +133,7 @@ public class AuthenticationServiceIT {
         assertEquals(DEFAULT_TENANT_NAME, ticket.getTenant());
         assertNotNull(ticket.getLastRequestTime());
 
-        authenticationService.invalidateTicket(ticket.getId().toString());
+        authenticationService.invalidateTicket(ticket.getId());
     }
 
     @Test
@@ -147,7 +147,7 @@ public class AuthenticationServiceIT {
         assertEquals(DEFAULT_TENANT_NAME, ticket.getTenant());
         assertNotNull(ticket.getLastRequestTime());
 
-        authenticationService.invalidateTicket(ticket.getId().toString());
+        authenticationService.invalidateTicket(ticket.getId());
     }
 
     @Test
@@ -188,12 +188,12 @@ public class AuthenticationServiceIT {
 
         Date lastRequestTime = ticket.getLastRequestTime();
 
-        ticket = authenticationService.getTicket(ticket.getId().toString());
+        ticket = authenticationService.getTicket(ticket.getId());
 
         assertNotNull(ticket);
         assertTrue(ticket.getLastRequestTime().after(lastRequestTime));
 
-        authenticationService.invalidateTicket(ticket.getId().toString());
+        authenticationService.invalidateTicket(ticket.getId());
     }
 
     @Test
@@ -204,7 +204,7 @@ public class AuthenticationServiceIT {
 
         Thread.sleep(TimeUnit.SECONDS.toMillis(4));
 
-        ticket = authenticationService.getTicket(ticket.getId().toString());
+        ticket = authenticationService.getTicket(ticket.getId());
 
         assertNull(ticket);
     }
@@ -215,9 +215,9 @@ public class AuthenticationServiceIT {
 
         assertNotNull(ticket);
 
-        authenticationService.invalidateTicket(ticket.getId().toString());
+        authenticationService.invalidateTicket(ticket.getId());
 
-        ticket = authenticationService.getTicket(ticket.getId().toString());
+        ticket = authenticationService.getTicket(ticket.getId());
 
         assertNull(ticket);
     }

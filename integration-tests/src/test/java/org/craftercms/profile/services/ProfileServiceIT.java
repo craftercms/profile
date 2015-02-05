@@ -86,7 +86,6 @@ public class ProfileServiceIT {
     private static final Set<String> ADMIN_ROLES = new HashSet<>(Arrays.asList("PROFILE_ADMIN", "SOCIAL_ADMIN"));
 
     private static final String JDOE_USERNAME = "jdoe";
-    private static final String JDOE_PASSWORD = "1234";
     private static final String JDOE_EMAIL = "john.doe@craftersoftware.com";
     private static final Set<String> JDOE_ROLES = new HashSet<>(Arrays.asList("SOCIAL_ADMIN"));
     private static final String JDOE_FIRST_NAME = "John";

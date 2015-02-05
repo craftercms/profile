@@ -39,7 +39,7 @@ if (db.tenant.count() == 0) {
     db.tenant.insert({
         "name" : "default",
         "verifyNewProfiles" : false,
-        "availableRoles" : [ "PROFILE_ADMIN", "SOCIAL_SUPERADMIN" ],
+        "availableRoles" : [ "PROFILE_ADMIN", "SOCIAL_SUPERADMIN", "PROFILE_TENANT_ADMIN" ],
         "attributeDefinitions" : [
             {
                 "name" : "firstName",

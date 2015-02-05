@@ -19,6 +19,7 @@ package org.craftercms.profile.services.impl;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.logging.Logged;
@@ -80,6 +81,7 @@ public class VerificationServiceImpl implements VerificationService {
     @Override
     public VerificationToken createToken(String profileId) throws ProfileException {
         VerificationToken token = new VerificationToken();
+        token.setId(UUID.randomUUID().toString());
         token.setProfileId(profileId);
         token.setTimestamp(new Date());
 
@@ -116,7 +118,7 @@ public class VerificationServiceImpl implements VerificationService {
     public VerificationToken verifyToken(String tokenId) throws ProfileException {
         VerificationToken token;
         try {
-            token = tokenRepository.findById(tokenId);
+            token = tokenRepository.findByStringId(tokenId);
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_GET_TOKEN_ERROR, tokenId);
         }
@@ -131,7 +133,7 @@ public class VerificationServiceImpl implements VerificationService {
     @Override
     public void deleteToken(String tokenId) throws ProfileException {
         try {
-            tokenRepository.removeById(tokenId);
+            tokenRepository.removeByStringId(tokenId);
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_DELETE_TOKEN_ERROR, tokenId);
         }

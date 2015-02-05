@@ -1,5 +1,6 @@
 package org.craftercms.profile.api.services;
 
+import org.craftercms.profile.api.PersistentLogin;
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.exceptions.ProfileException;
 
@@ -26,8 +27,8 @@ public interface AuthenticationService {
      *
      * <p>
      *     <strong>Note: </strong> this method should only be used when authentication is done through other means
-     *     (like when authenticating through Facebook or Twitter) different than profile.
-     * </p>
+     *     (like when authenticating through Facebook or Twitter) different than profile, or when authenticating
+     *     through a persistent login
      *
      * @param profileId the ID of the profile
      *
@@ -47,8 +48,42 @@ public interface AuthenticationService {
     /**
      * Invalidates the ticket.
      *
-     * @param ticketId      the ID of the ticket to invalidate
+     * @param ticketId the ID of the ticket to invalidate
      */
     void invalidateTicket(String ticketId) throws ProfileException;
+
+    /**
+     * Creates a persistent login, use for remember me functionality.
+     *
+     * @param profileId the ID of the profile
+     *
+     * @return the persistent login
+     */
+    PersistentLogin createPersistentLogin(String profileId) throws ProfileException;
+
+    /**
+     * Returns the persistent login object for the given ID.
+     *
+     * @param loginId the ID of the login
+     *
+     * @return the persistent login, or null if not found
+     */
+    PersistentLogin getPersistentLogin(String loginId) throws ProfileException;
+
+    /**
+     * Refreshes the token of the specified persistent login.
+     *
+     * @param loginId the ID of the persistent login
+     *
+     * @return the persistent login with the refreshed token
+     */
+    PersistentLogin refreshPersistentLoginToken(String loginId) throws ProfileException;
+
+    /**
+     * Deletes the persistent login.
+     *
+     * @param loginId the ID of the login to invalidate
+     */
+    void deletePersistentLogin(String loginId) throws ProfileException;
 
 }

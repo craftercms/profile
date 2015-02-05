@@ -28,10 +28,18 @@ public class DefaultAuthentication implements Authentication {
 
     private String ticket;
     private Profile profile;
+    private boolean remembered;
 
     public DefaultAuthentication(String ticket, Profile profile) {
         this.ticket = ticket;
         this.profile = profile;
+        this.remembered = false;
+    }
+
+    public DefaultAuthentication(String ticket, Profile profile, boolean remembered) {
+        this.ticket = ticket;
+        this.profile = profile;
+        this.remembered = remembered;
     }
 
     @Override
@@ -42,6 +50,11 @@ public class DefaultAuthentication implements Authentication {
     @Override
     public Profile getProfile() {
         return profile;
+    }
+
+    @Override
+    public boolean isRemembered() {
+        return remembered;
     }
 
     @Override

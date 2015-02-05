@@ -1,6 +1,7 @@
 <h1 class="page-header">Profile List</h1>
 
 <form class="form-inline" role="form">
+    <#if loggedInUser.roles?seq_contains("PROFILE_ADMIN")>
     <div class="form-group">
         <label for="tenant">Tenant:</label>
         <select name="tenant" class="form-control"
@@ -8,6 +9,7 @@
                 ng-change="resetSearchAndGetProfiles(selectedTenantName)">
         </select>
     </div>
+    </#if>
     <div class="form-group">
         <input type="text" class="form-control search-box" placeholder="Search by username" ng-model="searchText"/>
         <button class="btn btn-default" type="button" ng-disabled="searchText == null || searchText == ''"
@@ -59,22 +61,5 @@
     </table>
 </div>
 
-<div id="deleteConfirmationDialog" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Delete</h4>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete profile <strong>{{profileToDelete.username}}</strong>?
-                    You can't undo this action later.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary"
-                        ng-click="deleteProfile(profileToDelete.id, profileToDelete.index)">Ok</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            </div>
-        </div>
-    </div>
-</div>
+<confirmation-dialog id="deleteConfirmationDialog" title="Delete" message="deleteConfirmationDialogMsg"
+                     confirmation-callback="deleteProfile()"></confirmation-dialog>

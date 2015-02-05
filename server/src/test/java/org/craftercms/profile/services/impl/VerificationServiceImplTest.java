@@ -19,6 +19,7 @@ package org.craftercms.profile.services.impl;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bson.types.ObjectId;
 import org.craftercms.commons.mail.Email;
@@ -59,7 +60,7 @@ public class VerificationServiceImplTest {
 
     private static final String[] TO = {PROFILE_EMAIL};
 
-    private static final ObjectId TOKEN_ID = new ObjectId();
+    private static final String TOKEN_ID = UUID.randomUUID().toString();
 
     private static final String VERIFICATION_BASE_URL = "http://localhost:8080/verifyProfile";
     private static final Map<String, String> VERIFICATION_TEMPLATE_ARGS = Collections.singletonMap(
@@ -89,7 +90,7 @@ public class VerificationServiceImplTest {
             }
 
         }).when(tokenRepository).insert(any(VerificationToken.class));
-        when(tokenRepository.findById(TOKEN_ID.toString())).thenReturn(getToken());
+        when(tokenRepository.findByStringId(TOKEN_ID)).thenReturn(getToken());
 
         when(emailFactory.getEmail(FROM, TO, null, null, SUBJECT, TEMPLATE_NAME, VERIFICATION_TEMPLATE_ARGS, true))
                 .thenReturn(email);
@@ -128,9 +129,9 @@ public class VerificationServiceImplTest {
 
     @Test
     public void testVerifyToken() throws Exception {
-        verificationService.verifyToken(TOKEN_ID.toString());
+        verificationService.verifyToken(TOKEN_ID);
 
-        verify(tokenRepository).findById(TOKEN_ID.toString());
+        verify(tokenRepository).findByStringId(TOKEN_ID);
     }
 
     @Test(expected = NoSuchVerificationTokenException.class)
@@ -140,9 +141,9 @@ public class VerificationServiceImplTest {
 
     @Test
     public void testDeleteToken() throws Exception {
-        verificationService.deleteToken(TOKEN_ID.toString());
+        verificationService.deleteToken(TOKEN_ID);
 
-        verify(tokenRepository).removeById(TOKEN_ID.toString());
+        verify(tokenRepository).removeByStringId(TOKEN_ID);
     }
 
     private VerificationToken getToken() {

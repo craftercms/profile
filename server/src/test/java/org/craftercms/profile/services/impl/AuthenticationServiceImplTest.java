@@ -17,18 +17,21 @@
 package org.craftercms.profile.services.impl;
 
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import java.util.UUID;
 
 import org.bson.types.ObjectId;
 import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
+import org.craftercms.profile.api.PersistentLogin;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.BadCredentialsException;
 import org.craftercms.profile.exceptions.DisabledProfileException;
+import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.permissions.Application;
+import org.craftercms.profile.repositories.PersistentLoginRepository;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +40,6 @@ import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.verify;
@@ -52,20 +54,24 @@ public class AuthenticationServiceImplTest {
 
     private static final String TENANT_NAME = "tenant1";
 
-    private static final ObjectId PROFILE_ID = new ObjectId();
+    private static final ObjectId PROFILE1_ID = new ObjectId();
+    private static final ObjectId PROFILE2_ID = new ObjectId();
     private static final String USERNAME1 = "user1";
     private static final String USERNAME2 = "user2";
     private static final String PASSWORD = "12345";
 
-    private static final ObjectId NORMAL_TICKET_ID = new ObjectId();
-    private static final ObjectId EXPIRED_TICKET_ID = new ObjectId();
-    private static final int TICKET_MAX_AGE = 900;
+    private static final String TICKET_ID = UUID.randomUUID().toString();
+
+    private static final String PERSISTENT_LOGIN_ID = UUID.randomUUID().toString();
+    private static final String PERSISTENT_LOGIN_TOKEN = UUID.randomUUID().toString();
 
     private AuthenticationServiceImpl authenticationService;
     @Mock
     private PermissionEvaluator<Application, String> permissionEvaluator;
     @Mock
     private TicketRepository ticketRepository;
+    @Mock
+    private PersistentLoginRepository persistentLoginRepository;
     @Mock
     private ProfileService profileService;
 
@@ -75,21 +81,24 @@ public class AuthenticationServiceImplTest {
 
         when(permissionEvaluator.isAllowed(anyString(), anyString())).thenReturn(true);
 
-        when(ticketRepository.findById(NORMAL_TICKET_ID.toString())).thenReturn(getNormalTicket());
-        when(ticketRepository.findById(EXPIRED_TICKET_ID.toString())).thenReturn(getExpiredTicket());
+        when(ticketRepository.findByStringId(TICKET_ID)).thenReturn(getTicket());
+
+        when(persistentLoginRepository.findByStringId(PERSISTENT_LOGIN_ID)).thenReturn(getPersistentLogin());
 
         when(profileService.getProfileByUsername(TENANT_NAME, USERNAME1, ProfileConstants.NO_ATTRIBUTE))
             .thenReturn(getProfile1());
         when(profileService.getProfileByUsername(TENANT_NAME, USERNAME2, ProfileConstants.NO_ATTRIBUTE))
             .thenReturn(getProfile2());
-        when(profileService.getProfile(PROFILE_ID.toString(), ProfileConstants.NO_ATTRIBUTE))
+        when(profileService.getProfile(PROFILE1_ID.toString(), ProfileConstants.NO_ATTRIBUTE))
             .thenReturn(getProfile1());
+        when(profileService.getProfile(PROFILE2_ID.toString(), ProfileConstants.NO_ATTRIBUTE))
+            .thenReturn(getProfile2());
 
         authenticationService = new AuthenticationServiceImpl();
         authenticationService.setPermissionEvaluator(permissionEvaluator);
         authenticationService.setTicketRepository(ticketRepository);
+        authenticationService.setPersistentLoginRepository(persistentLoginRepository);
         authenticationService.setProfileService(profileService);
-        authenticationService.setTicketMaxAge(TICKET_MAX_AGE);
     }
 
     @Test
@@ -97,22 +106,10 @@ public class AuthenticationServiceImplTest {
         Ticket ticket = authenticationService.authenticate(TENANT_NAME, USERNAME1, PASSWORD);
 
         assertNotNull(ticket);
-        assertEquals(PROFILE_ID, ticket.getProfileId());
+        assertEquals(PROFILE1_ID, ticket.getProfileId());
         assertNotNull(ticket.getLastRequestTime());
 
         verify(profileService).getProfileByUsername(TENANT_NAME, USERNAME1, ProfileConstants.NO_ATTRIBUTE);
-        verify(ticketRepository).insert(ticket);
-    }
-
-    @Test
-    public void testCreateTicket() throws Exception {
-        Ticket ticket = authenticationService.createTicket(PROFILE_ID.toString());
-
-        assertNotNull(ticket);
-        assertEquals(PROFILE_ID, ticket.getProfileId());
-        assertNotNull(ticket.getLastRequestTime());
-
-        verify(profileService).getProfile(PROFILE_ID.toString(), ProfileConstants.NO_ATTRIBUTE);
         verify(ticketRepository).insert(ticket);
     }
 
@@ -135,71 +132,124 @@ public class AuthenticationServiceImplTest {
     }
 
     @Test
-    public void testGetTicket() throws Exception {
-        Ticket ticket = authenticationService.getTicket(NORMAL_TICKET_ID.toString());
+    public void testCreateTicket() throws Exception {
+        Ticket ticket = authenticationService.createTicket(PROFILE1_ID.toString());
 
         assertNotNull(ticket);
-        assertEquals(NORMAL_TICKET_ID, ticket.getId());
-        assertEquals(PROFILE_ID, ticket.getProfileId());
+        assertEquals(PROFILE1_ID, ticket.getProfileId());
         assertNotNull(ticket.getLastRequestTime());
 
-        verify(ticketRepository).findById(NORMAL_TICKET_ID.toString());
+        verify(profileService).getProfile(PROFILE1_ID.toString(), ProfileConstants.NO_ATTRIBUTE);
+        verify(ticketRepository).insert(ticket);
+    }
+
+    @Test(expected = NoSuchProfileException.class)
+    public void testCreateTicketWithInvalidProfile() throws Exception {
+        authenticationService.createTicket("1234");
+        fail("Expected " + NoSuchProfileException.class.getName() + " exception");
+    }
+
+    @Test
+    public void testGetTicket() throws Exception {
+        Ticket ticket = authenticationService.getTicket(TICKET_ID);
+
+        assertNotNull(ticket);
+        assertEquals(TICKET_ID, ticket.getId());
+        assertEquals(PROFILE1_ID, ticket.getProfileId());
+        assertNotNull(ticket.getLastRequestTime());
+
+        verify(ticketRepository).findByStringId(TICKET_ID);
         verify(ticketRepository).save(ticket);
     }
 
     @Test
-    public void testGetExpiredTicket() throws Exception {
-        Ticket ticket = authenticationService.getTicket(EXPIRED_TICKET_ID.toString());
+    public void testInvalidateTicket() throws Exception {
+        authenticationService.invalidateTicket(TICKET_ID);
 
-        assertNull(ticket);
-
-        verify(ticketRepository).findById(EXPIRED_TICKET_ID.toString());
-        verify(ticketRepository).removeById(EXPIRED_TICKET_ID.toString());
+        verify(ticketRepository).removeByStringId(TICKET_ID);
     }
 
     @Test
-    public void testInvalidateTicket() throws Exception {
-        authenticationService.invalidateTicket(NORMAL_TICKET_ID.toString());
+    public void testCreatePersistentLogin() throws Exception {
+        PersistentLogin login = authenticationService.createPersistentLogin(PROFILE1_ID.toString());
 
-        verify(ticketRepository).removeById(NORMAL_TICKET_ID.toString());
+        assertNotNull(login);
+        assertNotNull(login.getId());
+        assertEquals(TENANT_NAME, login.getTenant());
+        assertEquals(PROFILE1_ID.toString(), login.getProfileId());
+        assertNotNull(login.getToken());
+        assertNotNull(login.getTimestamp());
+
+        verify(profileService).getProfile(PROFILE1_ID.toString(), ProfileConstants.NO_ATTRIBUTE);
+        verify(persistentLoginRepository).insert(login);
+    }
+
+    @Test(expected = NoSuchProfileException.class)
+    public void testCreatePersistentLoginWithInvalidProfile() throws Exception {
+        authenticationService.createPersistentLogin("1234");
+        fail("Expected " + NoSuchProfileException.class.getName() + " exception");
+    }
+
+    @Test(expected = DisabledProfileException.class)
+    public void testCreatePersistentLoginWithDisabledProfile() throws Exception {
+        authenticationService.createPersistentLogin(PROFILE2_ID.toString());
+        fail("Expected " + DisabledProfileException.class.getName() + " exception");
+    }
+
+    @Test
+    public void testGetPersistentLogin() throws Exception {
+        PersistentLogin login = authenticationService.getPersistentLogin(PERSISTENT_LOGIN_ID);
+
+        assertNotNull(login);
+        assertEquals(PERSISTENT_LOGIN_ID, login.getId());
+        assertEquals(TENANT_NAME, login.getTenant());
+        assertEquals(PROFILE1_ID.toString(), login.getProfileId());
+        assertEquals(PERSISTENT_LOGIN_TOKEN, login.getToken());
+        assertNotNull(login.getTimestamp());
+
+        verify(persistentLoginRepository).findByStringId(PERSISTENT_LOGIN_ID);
     }
 
     private Profile getProfile1() {
         Profile profile = new Profile();
-        profile.setId(PROFILE_ID);
+        profile.setId(PROFILE1_ID);
         profile.setUsername(USERNAME1);
         profile.setPassword(CipherUtils.hashPassword(PASSWORD));
         profile.setEnabled(true);
+        profile.setTenant(TENANT_NAME);
 
         return profile;
     }
 
     private Profile getProfile2() {
         Profile profile = new Profile();
-        profile.setId(PROFILE_ID);
+        profile.setId(PROFILE2_ID);
         profile.setUsername(USERNAME2);
         profile.setPassword(CipherUtils.hashPassword(PASSWORD));
         profile.setEnabled(false);
+        profile.setTenant(TENANT_NAME);
 
         return profile;
     }
 
-    private Ticket getNormalTicket() {
+    private Ticket getTicket() {
         Ticket ticket = new Ticket();
-        ticket.setId(NORMAL_TICKET_ID);
-        ticket.setProfileId(PROFILE_ID.toString());
+        ticket.setId(TICKET_ID);
+        ticket.setProfileId(PROFILE1_ID.toString());
         ticket.setLastRequestTime(new Date());
 
         return ticket;
     }
 
-    private Ticket getExpiredTicket() {
-        Ticket ticket = new Ticket();
-        ticket.setId(EXPIRED_TICKET_ID);
-        ticket.setProfileId(PROFILE_ID.toString());
-        ticket.setLastRequestTime(new Date(System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(TICKET_MAX_AGE)));
+    private PersistentLogin getPersistentLogin() {
+        PersistentLogin login = new PersistentLogin();
+        login.setId(PERSISTENT_LOGIN_ID);
+        login.setTenant(TENANT_NAME);
+        login.setProfileId(PROFILE1_ID.toString());
+        login.setToken(PERSISTENT_LOGIN_TOKEN);
+        login.setTimestamp(new Date());
 
-        return ticket;
+        return login;
     }
 
 }

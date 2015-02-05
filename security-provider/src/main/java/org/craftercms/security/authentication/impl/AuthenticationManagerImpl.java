@@ -72,7 +72,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
                 throw new AuthenticationSystemException("No profile found for ID '" + ticket.getProfileId() + "'");
             }
 
-            String ticketId = ticket.getId().toString();
+            String ticketId = ticket.getId();
             DefaultAuthentication auth = new DefaultAuthentication(ticketId, profile);
 
             authenticationCache.putAuthentication(auth);
@@ -95,11 +95,30 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
     }
 
     @Override
+    public Authentication authenticateUser(String[] tenants, String username,
+                                           String password) throws AuthenticationException {
+        for (String tenant : tenants) {
+            try {
+                return authenticateUser(tenant, username, password);
+            } catch (BadCredentialsException e) {
+                logger.debug("Authentication attempt for user '{}' with tenant failed. Trying with next tenant...", e);
+            }
+        }
+
+        throw new BadCredentialsException("Invalid username and/or password");
+    }
+
+    @Override
     public Authentication authenticateUser(Profile profile) throws AuthenticationException {
+        return authenticateUser(profile, false);
+    }
+
+    @Override
+    public Authentication authenticateUser(Profile profile, boolean remembered) throws AuthenticationException {
         try {
             Ticket ticket = authenticationService.createTicket(profile.getId().toString());
-            String ticketId = ticket.getId().toString();
-            DefaultAuthentication auth = new DefaultAuthentication(ticketId, profile);
+            String ticketId = ticket.getId();
+            DefaultAuthentication auth = new DefaultAuthentication(ticketId, profile, remembered);
 
             authenticationCache.putAuthentication(auth);
 

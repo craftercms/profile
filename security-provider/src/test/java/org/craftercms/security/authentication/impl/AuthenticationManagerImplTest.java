@@ -17,6 +17,7 @@
 package org.craftercms.security.authentication.impl;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.bson.types.ObjectId;
 import org.craftercms.profile.api.Profile;
@@ -49,14 +50,14 @@ import static org.mockito.Mockito.when;
  */
 public class AuthenticationManagerImplTest {
 
-    private static final String TENANT =                "default";
-    private static final String USERNAME =              "avasquez";
-    private static final String DISABLED_USERNAME =     "jdoe";
-    private static final String PASSWORD =              "1234";
-    private static final String INVALID_PASSWORD =      "4321";
-    private static final ObjectId PROFILE_ID =          new ObjectId();
-    private static final ObjectId TICKET_ID =           new ObjectId();
-    private static final ObjectId INVALID_TICKET_ID =   new ObjectId();
+    private static final String TENANT = "default";
+    private static final String USERNAME = "avasquez";
+    private static final String DISABLED_USERNAME = "jdoe";
+    private static final String PASSWORD = "1234";
+    private static final String INVALID_PASSWORD = "4321";
+    private static final ObjectId PROFILE_ID = new ObjectId();
+    private static final String TICKET_ID = UUID.randomUUID().toString();
+    private static final String INVALID_TICKET_ID = UUID.randomUUID().toString();
 
     private AuthenticationManagerImpl authenticationManager;
     @Mock
@@ -77,11 +78,11 @@ public class AuthenticationManagerImplTest {
                 .when(authenticationService).authenticate(TENANT, DISABLED_USERNAME, PASSWORD);
 
         when(profileService.getProfile(PROFILE_ID.toString(), new String[0])).thenReturn(getDefaultProfile());
-        when(profileService.getProfileByTicket(TICKET_ID.toString(), new String[0])).thenReturn(getDefaultProfile());
+        when(profileService.getProfileByTicket(TICKET_ID, new String[0])).thenReturn(getDefaultProfile());
         doThrow(new ProfileRestServiceException(HttpStatus.BAD_REQUEST, ErrorCode.NO_SUCH_TICKET, ""))
-                .when(profileService).getProfileByTicket(INVALID_TICKET_ID.toString(), new String[0]);
+                .when(profileService).getProfileByTicket(INVALID_TICKET_ID, new String[0]);
 
-        when(authenticationCache.getAuthentication(TICKET_ID.toString())).thenReturn(getDefaultAuthentication());
+        when(authenticationCache.getAuthentication(TICKET_ID)).thenReturn(getDefaultAuthentication());
 
         authenticationManager = new AuthenticationManagerImpl();
         authenticationManager.setAuthenticationService(authenticationService);
@@ -114,16 +115,16 @@ public class AuthenticationManagerImplTest {
 
     @Test
     public void testGetAuthentication() throws Exception {
-        Authentication authentication = authenticationManager.getAuthentication(TICKET_ID.toString(), false);
+        Authentication authentication = authenticationManager.getAuthentication(TICKET_ID, false);
         Authentication expected = getDefaultAuthentication();
 
         assertNotNull(authentication);
         assertEquals(expected.getTicket(), authentication.getTicket());
         assertEquals(expected.getProfile().getId(), authentication.getProfile().getId());
 
-        verify(authenticationCache).getAuthentication(TICKET_ID.toString());
+        verify(authenticationCache).getAuthentication(TICKET_ID);
 
-        authentication = authenticationManager.getAuthentication(TICKET_ID.toString(), true);
+        authentication = authenticationManager.getAuthentication(TICKET_ID, true);
 
         assertNotNull(authentication);
         assertEquals(expected.getTicket(), authentication.getTicket());
@@ -134,7 +135,7 @@ public class AuthenticationManagerImplTest {
 
     @Test
     public void testGetAuthenticationInvalidTicket() throws Exception {
-        Authentication auth = authenticationManager.getAuthentication(INVALID_TICKET_ID.toString(), false);
+        Authentication auth = authenticationManager.getAuthentication(INVALID_TICKET_ID, false);
 
         assertNull(auth);
     }
@@ -167,7 +168,7 @@ public class AuthenticationManagerImplTest {
     }
 
     private Authentication getDefaultAuthentication() {
-        return new DefaultAuthentication(TICKET_ID.toString(), getDefaultProfile());
+        return new DefaultAuthentication(TICKET_ID, getDefaultProfile());
     }
 
 }

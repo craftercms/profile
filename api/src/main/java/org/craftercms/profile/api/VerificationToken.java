@@ -2,8 +2,6 @@ package org.craftercms.profile.api;
 
 import java.util.Date;
 
-import org.bson.types.ObjectId;
-
 /**
  * Verification token, used for verifying a new profile with the user or for verifying a reset password request.
  *
@@ -11,15 +9,15 @@ import org.bson.types.ObjectId;
  */
 public class VerificationToken {
 
-    private ObjectId _id;
+    private String _id;
     private String profileId;
     private Date timestamp;
 
-    public ObjectId getId() {
+    public String getId() {
         return _id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this._id = id;
     }
 

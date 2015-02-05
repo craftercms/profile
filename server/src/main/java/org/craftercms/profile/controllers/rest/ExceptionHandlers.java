@@ -23,7 +23,6 @@ import org.craftercms.profile.api.exceptions.ErrorCode;
 import org.craftercms.profile.api.exceptions.ErrorDetails;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.AttributeAlreadyDefinedException;
-import org.craftercms.profile.exceptions.AttributeDefinitionStillUsedException;
 import org.craftercms.profile.exceptions.AttributeNotDefinedException;
 import org.craftercms.profile.exceptions.AttributesDeserializationException;
 import org.craftercms.profile.exceptions.BadCredentialsException;
@@ -33,12 +32,12 @@ import org.craftercms.profile.exceptions.InvalidEmailAddressException;
 import org.craftercms.profile.exceptions.InvalidQueryException;
 import org.craftercms.profile.exceptions.MissingAccessTokenIdParamException;
 import org.craftercms.profile.exceptions.NoSuchAccessTokenIdException;
+import org.craftercms.profile.exceptions.NoSuchPersistentLoginException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.exceptions.NoSuchTenantException;
 import org.craftercms.profile.exceptions.NoSuchTicketException;
 import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
 import org.craftercms.profile.exceptions.ProfileExistsException;
-import org.craftercms.profile.exceptions.RoleStillUsedException;
 import org.craftercms.profile.exceptions.TenantExistsException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -109,6 +108,12 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.NO_SUCH_TICKET, request);
     }
 
+    @ExceptionHandler(NoSuchPersistentLoginException.class)
+    public ResponseEntity<Object> handleNoSuchPersistentLoginException(NoSuchPersistentLoginException e,
+                                                                       WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.NO_SUCH_PERSISTENT_LOGIN, request);
+    }
+
     @ExceptionHandler(NoSuchVerificationTokenException.class)
     public ResponseEntity<Object> handleNoSuchVerificationTokenException(NoSuchVerificationTokenException e,
                                                                          WebRequest request) {
@@ -126,11 +131,6 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.PERMISSION_ERROR, request);
     }
 
-    @ExceptionHandler(RoleStillUsedException.class)
-    public ResponseEntity<Object> handleRoleStillUsedException(RoleStillUsedException e, WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.ROLE_STILL_USED, request);
-    }
-
     @ExceptionHandler(AttributeAlreadyDefinedException.class)
     public ResponseEntity<Object> handleAttributeAlreadyDefinedException(AttributeAlreadyDefinedException e,
                                                                          WebRequest request) {
@@ -141,12 +141,6 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleAttributeNotDefinedDefinedException(AttributeNotDefinedException e,
                                                                             WebRequest request) {
         return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.ATTRIBUTE_NOT_DEFINED, request);
-    }
-
-    @ExceptionHandler(AttributeDefinitionStillUsedException.class)
-    public ResponseEntity<Object> handleAttributeDefinitionStillUsedException(AttributeDefinitionStillUsedException e,
-                                                                              WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.ATTRIBUTE_DEFINITION_STILL_USED, request);
     }
 
     @ExceptionHandler(AttributesDeserializationException.class)

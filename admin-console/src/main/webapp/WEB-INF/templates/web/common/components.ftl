@@ -39,7 +39,9 @@
                 </li>
                 <li>
                     <span class="navbar-text">
-                        Signed in as: <a href="#/profile/update/${loggedInUser.id}">${loggedInUser.username}</a>
+                        Signed in to
+                            <a href="#/tenant/update/${loggedInUser.tenant}">${loggedInUser.tenant}</a>
+                        as: <a href="#/profile/update/${loggedInUser.id}">${loggedInUser.username}</a>
                     </span>
                 </li>
             </ul>
@@ -55,8 +57,12 @@
         <li><a href="#/profile/new">New Profile</a></li>
     </ul>
     <ul class="nav nav-sidebar">
-        <li><a href="#/tenant/list">List Tenants</a></li>
-        <li><a href="#/tenant/new">New Tenant</a></li>
+        <#if loggedInUser.roles?seq_contains("PROFILE_ADMIN")>
+            <li><a href="#/tenant/list">List Tenants</a></li>
+            <li><a href="#/tenant/new">New Tenant</a></li>
+        <#else>
+            <li><a href="#/tenant/update/${loggedInUser.tenant}">Edit Tenant</a></li>
+        </#if>
     </ul>
 </div>
 </#macro>
@@ -72,5 +78,7 @@
 <script src="<@spring.url '/resources/js/app.js'/>"></script>
 <script type="text/javascript">
     var contextPath = "${requestContext.contextPath}";
+    var currentTenantName = "${loggedInUser.tenant}";
+    var superadmin = <#if loggedInUser.roles?seq_contains("PROFILE_ADMIN")>true<#else>false</#if>;
 </script>
 </#macro>

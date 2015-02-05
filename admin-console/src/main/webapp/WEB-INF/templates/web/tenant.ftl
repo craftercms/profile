@@ -19,7 +19,10 @@
     </div>
 
     <div class="form-group">
-        <editable-list name="Available Roles" items="tenant.availableRoles"></editable-list>
+        <editable-list name="Available Roles" items="tenant.availableRoles"
+                       validation-callback="availableRolesValidationCallback(scope, item)"
+                       delete-callback="showDeleteRoleConfirmationDialog(scope, item, index)"
+                       undeletable-items="undeletableAvailableRoles"></editable-list>
     </div>
 
     <div class="form-group">
@@ -55,7 +58,7 @@
                                 {{definition.metadata.displayOrder}}
                             </td>
                             <td>
-                                <a ng-click="deleteAttributeDefinitionAt($index)">Delete</a>
+                                <a ng-click="showDeleteAttribDefConfirmationDialog(definition, $index)">Delete</a>
                             </td>
                         </tr>
                     </tbody>
@@ -69,6 +72,12 @@
     </button>
     <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
 </form>
+
+<confirmation-dialog id="deleteRoleConfirmationDialog" title="Delete" message="deleteRoleConfirmationMsg"
+                     confirmation-callback="deleteRole()"></confirmation-dialog>
+
+<confirmation-dialog id="deleteAttribDefConfirmationDialog" title="Delete" message="deleteAttribDefConfirmationMsg"
+                     confirmation-callback="deleteAttributeDefinition()"></confirmation-dialog>
 
 <div id="attributeDefinitionModal" class="modal fade" tabindex="-1">
     <div class="modal-dialog">

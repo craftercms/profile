@@ -50,6 +50,16 @@ public class Connector {
 
     public String startConnection(String providerId, HttpServletRequest request,
                                   MultiValueMap<String, String> additionalUrlParams) {
+        return startConnection(providerId, request, additionalUrlParams, null);
+    }
+
+    public String startConnection(String providerId, HttpServletRequest request,
+                                  MultiValueMap<String, String> additionalUrlParams,
+                                  ConnectSupport connectSupport) {
+        if (connectSupport == null) {
+            connectSupport = this.connectSupport;
+        }
+
         ConnectionFactory<?> connectionFactory = getConnectionFactory(providerId);
         ServletWebRequest webRequest = new ServletWebRequest(request);
 
@@ -57,6 +67,15 @@ public class Connector {
     }
 
     public Connection<?> completeConnection(String providerId, HttpServletRequest request) throws OAuth2Exception {
+        return completeConnection(providerId, request, null);
+    }
+
+    public Connection<?> completeConnection(String providerId, HttpServletRequest request,
+                                            ConnectSupport connectSupport) throws OAuth2Exception {
+        if (connectSupport == null) {
+            connectSupport = this.connectSupport;
+        }
+
         if (StringUtils.isNotEmpty(request.getParameter(PARAM_OAUTH_TOKEN))) {
             OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>)getConnectionFactory(providerId);
             ServletWebRequest webRequest = new ServletWebRequest(request);

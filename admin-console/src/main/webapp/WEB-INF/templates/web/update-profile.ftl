@@ -57,7 +57,8 @@
     </div>
 
     <div class="form-group">
-        <checkbox-list name="Roles" selected="profile.roles" options="tenant.availableRoles"></checkbox-list>
+        <checkbox-list name="Roles" selected="profile.roles" options="tenant.availableRoles"
+                       disabled-options="disabledRoles"></checkbox-list>
     </div>
 
     <attributes definitions="tenant.attributeDefinitions" attributes="profile.attributes"></attributes>

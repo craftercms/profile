@@ -62,6 +62,35 @@
 
     <!-- ////////////////////////////////// -->
     <!--								 	-->
+    <!--	        Encryption	            -->
+    <!--									-->
+    <!-- ////////////////////////////////// -->
+
+    <bean id="crafter.textEncryptor" class="org.craftercms.commons.crypto.impl.NoOpTextEncryptor"/>
+
+    <!-- ////////////////////////////////// -->
+    <!--								 	-->
+    <!--	          Tenant	            -->
+    <!--									-->
+    <!-- ////////////////////////////////// -->
+
+    <bean id="crafter.defaultTenantResolver" class="org.craftercms.security.utils.tenant.DefaultTenantsResolver">
+        <property name="defaultTenantNames" value="${crafter.security.tenant.default.names}"/>
+    </bean>
+
+    <bean id="crafter.paramTenantResolver" class="org.craftercms.security.utils.tenant.ParamTenantsResolver"/>
+
+    <bean id="crafter.tenantsResolver" class="org.craftercms.security.utils.tenant.TenantsResolverChain">
+        <property name="resolvers">
+            <list>
+                <ref bean="crafter.paramTenantResolver"/>
+                <ref bean="crafter.defaultTenantResolver"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ////////////////////////////////// -->
+    <!--								 	-->
     <!--			 Filters				-->
     <!--									-->
     <!-- ////////////////////////////////// -->
@@ -75,7 +104,6 @@
 
     <util:list id="crafter.securityProcessors">
         <ref bean="crafter.addSecurityCookiesProcessor"/>
-        <ref bean="crafter.tenantNameResolvingProcessor"/>
         <ref bean="crafter.currentAuthenticationResolvingProcessor"/>
         <ref bean="crafter.returnCurrentAuthenticationProcessor"/>
         <ref bean="crafter.loginProcessor"/>
@@ -98,6 +126,11 @@
 
     <bean id="crafter.profileLastModifiedCookieManager" class="org.craftercms.commons.http.CookieManager">
         <property name="maxAge" value="${crafter.security.cookie.profileLastModified.maxAge}"/>
+        <property name="path" value="/"/>
+    </bean>
+
+    <bean id="crafter.rememberMeCookieManager" class="org.craftercms.commons.http.CookieManager">
+        <property name="maxAge" value="${crafter.security.cookie.rememberMe.maxAge}"/>
         <property name="path" value="/"/>
     </bean>
 
@@ -134,11 +167,6 @@
         <property name="profileLastModifiedCookieManager" ref="crafter.profileLastModifiedCookieManager"/>
     </bean>
 
-    <bean id="crafter.tenantNameResolvingProcessor"
-          class="org.craftercms.security.processors.impl.TenantNameResolvingProcessor">
-        <property name="defaultTenantName" value="${crafter.security.tenant.default.name}"/>
-    </bean>
-
     <bean id="crafter.currentAuthenticationResolvingProcessor"
           class="org.craftercms.security.processors.impl.CurrentAuthenticationResolvingProcessor">
         <property name="authenticationManager" ref="crafter.authenticationManager"/>
@@ -150,7 +178,9 @@
     </bean>
 
     <bean id="crafter.loginProcessor" class="org.craftercms.security.processors.impl.LoginProcessor">
+        <property name="tenantsResolver" ref="crafter.tenantsResolver"/>
         <property name="authenticationManager" ref="crafter.authenticationManager"/>
+        <property name="rememberMeManager" ref="crafter.rememberMeManager"/>
         <property name="loginSuccessHandler" ref="crafter.loginSuccessHandler"/>
         <property name="loginFailureHandler" ref="crafter.loginFailureHandler"/>
     </bean>
@@ -207,6 +237,20 @@
 
     <!-- ////////////////////////////////// -->
     <!--								 	-->
+    <!--		     Remember Me		    -->
+    <!--									-->
+    <!-- ////////////////////////////////// -->
+
+    <bean id="crafter.rememberMeManager" class="org.craftercms.security.authentication.impl.RememberMeManagerImpl">
+        <property name="authenticationService" ref="crafter.authenticationServiceRestClient"/>
+        <property name="authenticationManager" ref="crafter.authenticationManager"/>
+        <property name="rememberMeCookieManager" ref="crafter.rememberMeCookieManager"/>
+        <property name="profileService" ref="crafter.profileServiceRestClient"/>
+        <property name="encryptor" ref="crafter.textEncryptor"/>
+    </bean>
+
+    <!-- ////////////////////////////////// -->
+    <!--								 	-->
     <!--		   Authorization			-->
     <!--									-->
     <!-- ////////////////////////////////// -->
@@ -239,13 +283,9 @@
         <property name="connectionFactories" ref="crafter.connectionFactories"/>
     </bean>
 
-    <bean id="crafter.textEncryptor" class="org.craftercms.commons.crypto.impl.NoOpTextEncryptor"/>
-
-    <bean id="crafter.tenantResolver" class="org.craftercms.security.utils.social.RequestTenantResolver"/>
-
     <bean id="crafter.usersConnectionRepository" class="org.craftercms.profile.social.ProfileUsersConnectionRepository">
         <property name="connectionFactoryLocator" ref="crafter.connectionFactoryLocator"/>
-        <property name="tenantResolver" ref="crafter.tenantResolver"/>
+        <property name="tenantsResolver" ref="crafter.tenantsResolver"/>
         <property name="profileService" ref="crafter.profileServiceRestClient"/>
         <property name="encryptor" ref="crafter.textEncryptor"/>
     </bean>
