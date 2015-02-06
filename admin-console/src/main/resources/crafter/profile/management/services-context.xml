@@ -20,7 +20,7 @@
         </property>
     </bean>
 
-    <bean id="crafter.tenantResolver" class="org.craftercms.security.utils.tenant.AllTenantsResolver">
+    <bean id="crafter.tenantsResolver" class="org.craftercms.security.utils.tenant.AllTenantsResolver">
         <property name="tenantService" ref="crafter.tenantServiceRestClient"/>
     </bean>
 
