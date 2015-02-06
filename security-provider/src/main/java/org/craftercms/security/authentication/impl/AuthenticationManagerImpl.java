@@ -101,7 +101,10 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
             try {
                 return authenticateUser(tenant, username, password);
             } catch (BadCredentialsException e) {
-                logger.debug("Authentication attempt for user '{}' with tenant failed. Trying with next tenant...", e);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Authentication attempt for user '" + username + "' with tenant '" + tenant +
+                                 "' failed. Trying with next tenant...", e);
+                }
             }
         }
 
