@@ -83,9 +83,10 @@ public class DefaultAuthentication implements Authentication {
     @Override
     public String toString() {
         return "DefaultAuthentication{" +
-                "ticket='" + ticket + '\'' +
-                ", profile=" + profile +
-                '}';
+               "ticket='" + ticket + '\'' +
+               ", profile=" + profile +
+               ", remembered=" + remembered +
+               '}';
     }
 
 }
