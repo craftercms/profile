@@ -24,6 +24,7 @@ import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.AuthenticationManager;
 import org.craftercms.security.authentication.LogoutSuccessHandler;
+import org.craftercms.security.authentication.RememberMeManager;
 import org.craftercms.security.processors.RequestSecurityProcessor;
 import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.utils.SecurityUtils;
@@ -47,6 +48,7 @@ public class LogoutProcessor implements RequestSecurityProcessor {
     protected String logoutMethod;
     protected AuthenticationManager authenticationManager;
     protected LogoutSuccessHandler logoutSuccessHandler;
+    protected RememberMeManager rememberMeManager;
 
     /**
      * Default constructor.
@@ -72,6 +74,11 @@ public class LogoutProcessor implements RequestSecurityProcessor {
     @Required
     public void setLogoutSuccessHandler(LogoutSuccessHandler logoutSuccessHandler) {
         this.logoutSuccessHandler = logoutSuccessHandler;
+    }
+
+    @Required
+    public void setRememberMeManager(final RememberMeManager rememberMeManager) {
+        this.rememberMeManager = rememberMeManager;
     }
 
     /**
@@ -105,6 +112,10 @@ public class LogoutProcessor implements RequestSecurityProcessor {
 
     protected void onLogoutSuccess(Authentication authentication, RequestContext context) throws IOException {
         logger.debug("Logout for user '" + authentication.getProfile().getUsername() + "' successful");
+
+        if (authentication.isRemembered()) {
+            rememberMeManager.disableRememberMe(context);
+        }
 
         SecurityUtils.removeAuthentication(context.getRequest());
 

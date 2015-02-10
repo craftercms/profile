@@ -136,7 +136,7 @@ public class AuthenticationServiceImplTest {
         Ticket ticket = authenticationService.createTicket(PROFILE1_ID.toString());
 
         assertNotNull(ticket);
-        assertEquals(PROFILE1_ID, ticket.getProfileId());
+        assertEquals(PROFILE1_ID.toString(), ticket.getProfileId());
         assertNotNull(ticket.getLastRequestTime());
 
         verify(profileService).getProfile(PROFILE1_ID.toString(), ProfileConstants.NO_ATTRIBUTE);
@@ -155,7 +155,7 @@ public class AuthenticationServiceImplTest {
 
         assertNotNull(ticket);
         assertEquals(TICKET_ID, ticket.getId());
-        assertEquals(PROFILE1_ID, ticket.getProfileId());
+        assertEquals(PROFILE1_ID.toString(), ticket.getProfileId());
         assertNotNull(ticket.getLastRequestTime());
 
         verify(ticketRepository).findByStringId(TICKET_ID);
@@ -187,13 +187,11 @@ public class AuthenticationServiceImplTest {
     @Test(expected = NoSuchProfileException.class)
     public void testCreatePersistentLoginWithInvalidProfile() throws Exception {
         authenticationService.createPersistentLogin("1234");
-        fail("Expected " + NoSuchProfileException.class.getName() + " exception");
     }
 
     @Test(expected = DisabledProfileException.class)
     public void testCreatePersistentLoginWithDisabledProfile() throws Exception {
         authenticationService.createPersistentLogin(PROFILE2_ID.toString());
-        fail("Expected " + DisabledProfileException.class.getName() + " exception");
     }
 
     @Test

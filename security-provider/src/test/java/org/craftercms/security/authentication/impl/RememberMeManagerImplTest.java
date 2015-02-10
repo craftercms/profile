@@ -14,6 +14,8 @@ import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.AuthenticationManager;
+import org.craftercms.security.exception.rememberme.CookieTheftException;
+import org.craftercms.security.exception.rememberme.InvalidCookieException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -21,10 +23,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import static org.craftercms.security.authentication.impl.RememberMeManagerImpl.*;
 
 /**
  * Unit tests for {@link org.craftercms.security.authentication.impl.RememberMeManagerImpl}.
@@ -72,7 +73,7 @@ public class RememberMeManagerImplTest {
 
         rememberMeManager.enableRememberMe(getAuthentication(), context);
 
-        String cookieValue = response.getCookie(RememberMeManagerImpl.REMEMBER_ME_COOKIE_NAME).getValue();
+        String cookieValue = response.getCookie(REMEMBER_ME_COOKIE_NAME).getValue();
 
         assertEquals(getSerializedLogin(), cookieValue);
     }
@@ -83,11 +84,11 @@ public class RememberMeManagerImplTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
         RequestContext context = new RequestContext(request, response);
 
-        request.setCookies(new Cookie(RememberMeManagerImpl.REMEMBER_ME_COOKIE_NAME, getSerializedLogin()));
+        request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLogin()));
 
         rememberMeManager.disableRememberMe(context);
 
-        assertNull(response.getCookie(RememberMeManagerImpl.REMEMBER_ME_COOKIE_NAME).getValue());
+        assertNull(response.getCookie(REMEMBER_ME_COOKIE_NAME).getValue());
 
         verify(authenticationService).deletePersistentLogin(LOGIN_ID);
     }
@@ -98,29 +99,80 @@ public class RememberMeManagerImplTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
         RequestContext context = new RequestContext(request, response);
 
-        request.setCookies(new Cookie(RememberMeManagerImpl.REMEMBER_ME_COOKIE_NAME, getSerializedLogin()));
+        request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLogin()));
+
+        Authentication auth = rememberMeManager.autoLogin(context);
+
+        assertNotNull(auth);
+        assertEquals(getProfile(), auth.getProfile());
+
+        String cookieValue = response.getCookie(REMEMBER_ME_COOKIE_NAME).getValue();
+
+        assertEquals(getSerializedLoginWithRefreshedToken(), cookieValue);
+    }
+
+    @Test
+    public void testAutoLoginWithInvalidId() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        RequestContext context = new RequestContext(request, response);
+
+        request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLoginWithInvalidId()));
+
+        Authentication auth = rememberMeManager.autoLogin(context);
+
+        assertNull(auth);
+
+        assertNull(response.getCookie(REMEMBER_ME_COOKIE_NAME).getValue());
+    }
+
+    @Test(expected = InvalidCookieException.class)
+    public void testAutoLoginWithInvalidProfile() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        RequestContext context = new RequestContext(request, response);
+
+        request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLoginWithInvalidProfile()));
 
         rememberMeManager.autoLogin(context);
+    }
 
-        String cookieValue = response.getCookie(RememberMeManagerImpl.REMEMBER_ME_COOKIE_NAME).getValue();
+    @Test(expected = CookieTheftException.class)
+    public void testAutoLoginWithInvalidToken() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        RequestContext context = new RequestContext(request, response);
 
-        assertEquals(getSerializedLogin2(), cookieValue);
+        request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLoginWithInvalidToken()));
+
+        rememberMeManager.autoLogin(context);
     }
 
     protected String getSerializedLogin() {
-        StringBuilder serializedLogin = new StringBuilder();
-        serializedLogin.append(LOGIN_ID).append(RememberMeManagerImpl.SERIALIZED_LOGIN_SEPARATOR);
-        serializedLogin.append(PROFILE_ID.toString()).append(RememberMeManagerImpl.SERIALIZED_LOGIN_SEPARATOR);
-        serializedLogin.append(LOGIN_TOKEN);
-
-        return serializedLogin.toString();
+        return serializeLogin(LOGIN_ID, PROFILE_ID.toString(), LOGIN_TOKEN);
     }
 
-    protected String getSerializedLogin2() {
+    protected String getSerializedLoginWithRefreshedToken() {
+        return serializeLogin(LOGIN_ID, PROFILE_ID.toString(), LOGIN_TOKEN2);
+    }
+
+    protected String getSerializedLoginWithInvalidId() {
+        return serializeLogin(UUID.randomUUID().toString(), PROFILE_ID.toString(), LOGIN_TOKEN);
+    }
+
+    protected String getSerializedLoginWithInvalidProfile() {
+        return serializeLogin(LOGIN_ID, ObjectId.get().toString(), LOGIN_TOKEN);
+    }
+
+    protected String getSerializedLoginWithInvalidToken() {
+        return serializeLogin(LOGIN_ID, PROFILE_ID.toString(), UUID.randomUUID().toString());
+    }
+
+    protected String serializeLogin(String id, String profileId, String token) {
         StringBuilder serializedLogin = new StringBuilder();
-        serializedLogin.append(LOGIN_ID).append(RememberMeManagerImpl.SERIALIZED_LOGIN_SEPARATOR);
-        serializedLogin.append(PROFILE_ID.toString()).append(RememberMeManagerImpl.SERIALIZED_LOGIN_SEPARATOR);
-        serializedLogin.append(LOGIN_TOKEN2);
+        serializedLogin.append(id).append(SERIALIZED_LOGIN_SEPARATOR);
+        serializedLogin.append(profileId).append(SERIALIZED_LOGIN_SEPARATOR);
+        serializedLogin.append(token);
 
         return serializedLogin.toString();
     }

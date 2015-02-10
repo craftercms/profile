@@ -6,6 +6,7 @@ import org.craftercms.security.authentication.RememberMeManager;
 import org.craftercms.security.processors.RequestSecurityProcessor;
 import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.utils.SecurityUtils;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * {@link org.craftercms.security.processors.RequestSecurityProcessor} that executes auto login when a valid remember
@@ -16,6 +17,11 @@ import org.craftercms.security.utils.SecurityUtils;
 public class RememberMeAutoLoginProcessor implements RequestSecurityProcessor {
 
     protected RememberMeManager rememberMeManager;
+
+    @Required
+    public void setRememberMeManager(final RememberMeManager rememberMeManager) {
+        this.rememberMeManager = rememberMeManager;
+    }
 
     @Override
     public void processRequest(RequestContext context,

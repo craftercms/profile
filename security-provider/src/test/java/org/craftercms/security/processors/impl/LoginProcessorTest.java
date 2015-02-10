@@ -91,9 +91,9 @@ public class LoginProcessorTest {
         profile.setUsername(USERNAME);
 
         when(authenticationManager.authenticateUser(TENANTS, USERNAME, VALID_PASSWORD)).thenReturn(
-                new DefaultAuthentication(TICKET, profile));
+            new DefaultAuthentication(TICKET, profile));
         doThrow(BadCredentialsException.class).when(authenticationManager).authenticateUser(TENANTS, USERNAME,
-                INVALID_PASSWORD);
+                                                                                            INVALID_PASSWORD);
     }
 
     @Test
@@ -108,9 +108,9 @@ public class LoginProcessorTest {
         request.setParameter(LoginProcessor.DEFAULT_USERNAME_PARAM, USERNAME);
         request.setParameter(LoginProcessor.DEFAULT_PASSWORD_PARAM, VALID_PASSWORD);
         session.setAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE,
-                new BadCredentialsException());
+                             new BadCredentialsException());
         session.setAttribute(SecurityUtils.AUTHENTICATION_EXCEPTION_SESSION_ATTRIBUTE,
-                new AuthenticationSystemException());
+                             new AuthenticationSystemException());
 
         processor.processRequest(context, chain);
 
@@ -127,13 +127,24 @@ public class LoginProcessorTest {
         assertEquals(USERNAME, auth.getProfile().getUsername());
 
         verify(authenticationManager).authenticateUser(TENANTS, USERNAME, VALID_PASSWORD);
+        verify(rememberMeManager).disableRememberMe(context);
         verify(loginSuccessHandler).handle(context, auth);
+
+        request.setParameter(LoginProcessor.DEFAULT_REMEMBER_ME_PARAM, "true");
+
+        processor.processRequest(context, chain);
+
+        auth = SecurityUtils.getAuthentication(request);
+
+        assertNotNull(auth);
+
+        verify(rememberMeManager).enableRememberMe(auth, context);
     }
 
     @Test
     public void testLoginFailure() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest(LoginProcessor.DEFAULT_LOGIN_METHOD,
-                LoginProcessor.DEFAULT_LOGIN_URL);
+                                                                    LoginProcessor.DEFAULT_LOGIN_URL);
         MockHttpServletResponse response = new MockHttpServletResponse();
         HttpSession session = request.getSession(true);
         RequestContext context = new RequestContext(request, response);
