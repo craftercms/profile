@@ -104,6 +104,7 @@ public class AuthenticationController {
 
     @ApiOperation("Creates a persistent login, use for remember me functionality")
     @RequestMapping(value = URL_AUTH_CREATE_PERSISTENT_LOGIN, method = RequestMethod.POST)
+    @ResponseBody
     public PersistentLogin createPersistentLogin(@ApiParam("The ID ID of the profile") @RequestParam(PARAM_PROFILE_ID)
                                                  String profileId) throws ProfileException {
         return authenticationService.createPersistentLogin(profileId);
@@ -111,6 +112,7 @@ public class AuthenticationController {
 
     @ApiOperation("Returns the persistent login object for the given ID")
     @RequestMapping(value = URL_AUTH_GET_PERSISTENT_LOGIN, method = RequestMethod.GET)
+    @ResponseBody
     public PersistentLogin getPersistentLogin(
         @ApiParam("The ID of the persistent login") @PathVariable(PATH_VAR_ID) String loginId) throws ProfileException {
         return authenticationService.getPersistentLogin(loginId);
@@ -118,6 +120,7 @@ public class AuthenticationController {
 
     @ApiOperation("Refreshes the token of the specified persistent login")
     @RequestMapping(value = URL_AUTH_REFRESH_PERSISTENT_LOGIN_TOKEN, method = RequestMethod.POST)
+    @ResponseBody
     public PersistentLogin refreshPersistentLoginToken(
         @ApiParam("The ID of the persistent login") @PathVariable(PATH_VAR_ID) String loginId) throws ProfileException {
         return authenticationService.refreshPersistentLoginToken(loginId);

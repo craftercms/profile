@@ -108,6 +108,7 @@
         <ref bean="crafter.returnCurrentAuthenticationProcessor"/>
         <ref bean="crafter.loginProcessor"/>
         <ref bean="crafter.logoutProcessor"/>
+        <ref bean="crafter.rememberMeAutoLoginProcessor"/>
         <ref bean="crafter.saveRequestAwareProcessor"/>
         <ref bean="crafter.securityExceptionProcessor"/>
         <ref bean="crafter.urlAccessRestrictionCheckingProcessor"/>
@@ -188,6 +189,7 @@
     <bean id="crafter.logoutProcessor" class="org.craftercms.security.processors.impl.LogoutProcessor">
         <property name="authenticationManager" ref="crafter.authenticationManager"/>
         <property name="logoutSuccessHandler" ref="crafter.logoutSuccessHandler"/>
+        <property name="rememberMeManager" ref="crafter.rememberMeManager"/>
     </bean>
 
     <bean id="crafter.saveRequestAwareProcessor"
@@ -202,6 +204,11 @@
     <bean id="crafter.urlAccessRestrictionCheckingProcessor"
           class="org.craftercms.security.processors.impl.UrlAccessRestrictionCheckingProcessor">
         <property name="urlRestrictions" ref="crafter.urlRestrictions"/>
+    </bean>
+
+    <bean id="crafter.rememberMeAutoLoginProcessor"
+          class="org.craftercms.security.processors.impl.RememberMeAutoLoginProcessor">
+        <property name="rememberMeManager" ref="crafter.rememberMeManager"/>
     </bean>
 
     <!-- ////////////////////////////////// -->

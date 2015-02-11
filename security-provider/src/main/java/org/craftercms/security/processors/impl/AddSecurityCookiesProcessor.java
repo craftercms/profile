@@ -179,7 +179,7 @@ public class AddSecurityCookiesProcessor implements RequestSecurityProcessor {
 
         protected void addProfileLastModifiedCookie(long lastModified) {
             profileLastModifiedCookieManager.addCookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME,
-                    String.valueOf(lastModified), this);
+                                                       String.valueOf(lastModified), this);
         }
 
         protected void deleteTicketCookie() {

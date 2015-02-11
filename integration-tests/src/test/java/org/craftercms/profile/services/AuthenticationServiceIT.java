@@ -19,6 +19,8 @@ package org.craftercms.profile.services;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import org.bson.types.ObjectId;
+import org.craftercms.profile.api.PersistentLogin;
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.exceptions.ErrorCode;
 import org.craftercms.profile.api.services.AuthenticationService;
@@ -34,6 +36,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -59,6 +62,8 @@ public class AuthenticationServiceIT {
     private static final String INVALID_PASSWORD = "nopassword";
     private static final String DISABLED_USER_USERNAME = "jdoe";
     private static final String DISABLED_USER_PASSWORD = "1234";
+    private static final String INVALID_PROFILE_ID = ObjectId.get().toString();
+    private static final String INVALID_PERSISTENT_LOGIN_ID = ObjectId.get().toString();
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -154,6 +159,7 @@ public class AuthenticationServiceIT {
     public void testAuthenticateWithInvalidUsername() throws Exception {
         try {
             authenticationService.authenticate(DEFAULT_TENANT_NAME, INVALID_USERNAME, ADMIN_PASSWORD);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
         } catch (ProfileRestServiceException e) {
             assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
             assertEquals(ErrorCode.BAD_CREDENTIALS, e.getErrorCode());
@@ -164,6 +170,7 @@ public class AuthenticationServiceIT {
     public void testAuthenticateWithInvalidPassword() throws Exception {
         try {
             authenticationService.authenticate(DEFAULT_TENANT_NAME, ADMIN_USERNAME, INVALID_PASSWORD);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
         } catch (ProfileRestServiceException e) {
             assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
             assertEquals(ErrorCode.BAD_CREDENTIALS, e.getErrorCode());
@@ -174,6 +181,7 @@ public class AuthenticationServiceIT {
     public void testAuthenticateWithDisabledProfile() throws Exception {
         try {
             authenticationService.authenticate(DEFAULT_TENANT_NAME, DISABLED_USER_USERNAME, DISABLED_USER_PASSWORD);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
         } catch (ProfileRestServiceException e) {
             assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
             assertEquals(ErrorCode.DISABLED_PROFILE, e.getErrorCode());
@@ -220,6 +228,122 @@ public class AuthenticationServiceIT {
         ticket = authenticationService.getTicket(ticket.getId());
 
         assertNull(ticket);
+    }
+
+    @Test
+    public void testCreatePersistentLogin() throws Exception {
+        String profileId = profileService.getProfileByUsername(DEFAULT_TENANT_NAME, ADMIN_USERNAME).getId().toString();
+        PersistentLogin login = authenticationService.createPersistentLogin(profileId);
+
+        assertNotNull(login);
+        assertNotNull(login.getId());
+        assertEquals(profileId, login.getProfileId());
+        assertEquals(DEFAULT_TENANT_NAME, login.getTenant());
+        assertNotNull(login.getToken());
+        assertNotNull(login.getTimestamp());
+
+        authenticationService.invalidateTicket(login.getId());
+    }
+
+    @Test
+    public void testCreatePersistentLoginWithInvalidProfile() throws Exception {
+        try {
+            authenticationService.createPersistentLogin(INVALID_PROFILE_ID);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals(ErrorCode.NO_SUCH_PROFILE, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void testCreatePersistentLoginWithDisabledProfile() throws Exception {
+        String profileId = profileService.getProfileByUsername(DEFAULT_TENANT_NAME,
+                                                               DISABLED_USER_USERNAME).getId().toString();
+
+        try {
+            authenticationService.createPersistentLogin(profileId);
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
+            assertEquals(ErrorCode.DISABLED_PROFILE, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void testGetPersistentLogin() throws Exception {
+        String profileId = profileService.getProfileByUsername(DEFAULT_TENANT_NAME, ADMIN_USERNAME).getId().toString();
+        PersistentLogin expectedLogin = authenticationService.createPersistentLogin(profileId);
+
+        assertNotNull(expectedLogin);
+
+        PersistentLogin login = authenticationService.getPersistentLogin(expectedLogin.getId());
+
+        assertNotNull(login);
+        assertEquals(expectedLogin.getId(), login.getId());
+        assertEquals(expectedLogin.getProfileId(), login.getProfileId());
+        assertEquals(expectedLogin.getTenant(), login.getTenant());
+        assertEquals(expectedLogin.getToken(), login.getToken());
+        assertEquals(expectedLogin.getTimestamp(), login.getTimestamp());
+
+        authenticationService.invalidateTicket(expectedLogin.getId());
+    }
+
+    @Test
+    public void testGetExpiredPersistentLogin() throws Exception {
+        String profileId = profileService.getProfileByUsername(DEFAULT_TENANT_NAME, ADMIN_USERNAME).getId().toString();
+        PersistentLogin login = authenticationService.createPersistentLogin(profileId);
+
+        assertNotNull(login);
+
+        Thread.sleep(TimeUnit.SECONDS.toMillis(4));
+
+        login = authenticationService.getPersistentLogin(login.getId());
+
+        assertNull(login);
+    }
+
+    @Test
+    public void testRefreshPersistentLoginToken() throws Exception {
+        String profileId = profileService.getProfileByUsername(DEFAULT_TENANT_NAME, ADMIN_USERNAME).getId().toString();
+        PersistentLogin login = authenticationService.createPersistentLogin(profileId);
+
+        assertNotNull(login);
+
+        PersistentLogin refreshedLogin = authenticationService.refreshPersistentLoginToken(login.getId());
+
+        assertNotNull(refreshedLogin);
+        assertEquals(login.getId(), refreshedLogin.getId());
+        assertEquals(login.getProfileId(), refreshedLogin.getProfileId());
+        assertEquals(login.getTenant(), refreshedLogin.getTenant());
+        assertNotEquals(login.getToken(), refreshedLogin.getToken());
+        assertEquals(login.getTimestamp(), refreshedLogin.getTimestamp());
+
+        authenticationService.invalidateTicket(login.getId());
+    }
+
+    @Test
+    public void testRefreshPersistentLoginTokenWithInvalidLoginId() throws Exception {
+        try {
+            authenticationService.refreshPersistentLoginToken(INVALID_PERSISTENT_LOGIN_ID);
+            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+        } catch (ProfileRestServiceException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals(ErrorCode.NO_SUCH_PERSISTENT_LOGIN, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void testDeletePersistentLogin() throws Exception {
+        String profileId = profileService.getProfileByUsername(DEFAULT_TENANT_NAME, ADMIN_USERNAME).getId().toString();
+        PersistentLogin login = authenticationService.createPersistentLogin(profileId);
+
+        assertNotNull(login);
+
+        authenticationService.deletePersistentLogin(login.getId());
+
+        login = authenticationService.getPersistentLogin(login.getId());
+
+        assertNull(login);
     }
 
 }
