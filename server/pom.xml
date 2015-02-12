@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-profile-parent</artifactId>
-        <version>2.3.8-SNAPSHOT</version>
+        <version>2.3.7</version>
     </parent>
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-profile</artifactId>
-    <version>2.3.8-SNAPSHOT</version>
+    <version>2.3.7</version>
     <name>Crafter Profile</name>
     <description>Crafter Profile</description>
     <url>https://github.com/craftercms/profile/tree/master/server</url>
@@ -109,7 +109,7 @@
         <dependency>
             <groupId>org.craftercms</groupId>
             <artifactId>crafter-profile-client</artifactId>
-            <version>2.3.8-SNAPSHOT</version>
+            <version>2.3.7</version>
         </dependency>
         <!-- Spring -->
         <dependency>
