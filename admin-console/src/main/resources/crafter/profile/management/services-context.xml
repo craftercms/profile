@@ -26,7 +26,7 @@
 
     <util:map id="crafter.urlRestrictions">
         <entry key="/login" value="permitAll()"/>
-        <entry key="/**" value="hasAnyRole({'PROFILE_ADMIN', 'PROFILE_TENANT_ADMIN'})"/>
+        <entry key="/**" value="hasAnyRole({'PROFILE_SUPERADMIN', 'PROFILE_TENANT_ADMIN', 'PROFILE_ADMIN'})"/>
     </util:map>
 
     <import resource="classpath*:crafter/profile/management/extension/services-context.xml"/>

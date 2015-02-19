@@ -106,6 +106,16 @@ public class Profile {
         return getRoles().contains(role);
     }
 
+    public boolean hasAnyRole(String... roles) {
+        for (String role : roles) {
+            if (hasRole(role)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public boolean hasAnyRole(Collection<String> roles) {
         for (String role : roles) {
             if (hasRole(role)) {

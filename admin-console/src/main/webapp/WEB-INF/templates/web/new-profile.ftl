@@ -11,7 +11,7 @@
         </span>
     </div>
 
-    <#if loggedInUser.roles?seq_contains("PROFILE_ADMIN")>
+    <#if loggedInUser.roles?seq_contains("PROFILE_SUPERADMIN")>
     <div class="form-group">
         <label for="tenant">Tenant</label>
         <select name="tenant" class="form-control" ng-model="profile.tenant"

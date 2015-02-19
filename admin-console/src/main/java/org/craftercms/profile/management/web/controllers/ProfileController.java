@@ -121,7 +121,7 @@ public class ProfileController {
         if (StringUtils.isEmpty(tenantName)) {
             tenantName = SecurityUtils.getCurrentProfile().getTenant();
         } else {
-            AuthorizationUtils.checkCurrentUserIsAdminForTenant(tenantName);
+            AuthorizationUtils.checkCurrentUserIsProfileAdmin(tenantName);
         }
 
         if (StringUtils.isNotEmpty(query)) {
@@ -130,8 +130,8 @@ public class ProfileController {
 
                 return profileService.getProfileCountByQuery(tenantName, query);
             } else {
-                throw new InvalidRequestParameterException(
-                        "Parameter '" + PARAM_QUERY + "' must match regex " + QUERY_PATTERN.pattern());
+                throw new InvalidRequestParameterException("Parameter '" + PARAM_QUERY + "' must match regex " +
+                                                           QUERY_PATTERN.pattern());
             }
         } else {
             return profileService.getProfileCount(tenantName);
@@ -150,7 +150,7 @@ public class ProfileController {
         if (StringUtils.isEmpty(tenantName)) {
             tenantName = SecurityUtils.getCurrentProfile().getTenant();
         } else {
-            AuthorizationUtils.checkCurrentUserIsAdminForTenant(tenantName);
+            AuthorizationUtils.checkCurrentUserIsProfileAdmin(tenantName);
         }
 
         if (StringUtils.isNotEmpty(query)) {
@@ -159,8 +159,8 @@ public class ProfileController {
 
                 return profileService.getProfilesByQuery(tenantName, query, sortBy, sortOrder, start, limit);
             } else {
-                throw new InvalidRequestParameterException(
-                        "Parameter '" + PARAM_QUERY + "' must match regex " + QUERY_PATTERN.pattern());
+                throw new InvalidRequestParameterException("Parameter '" + PARAM_QUERY + "' must match regex " +
+                                                           QUERY_PATTERN.pattern());
             }
         } else {
             return profileService.getProfileRange(tenantName, sortBy, sortOrder, start, limit);
@@ -172,7 +172,7 @@ public class ProfileController {
     public Profile getProfile(@PathVariable(PATH_VAR_ID) String id) throws ProfileException {
         Profile profile = profileService.getProfile(id);
         if (profile != null) {
-            AuthorizationUtils.checkCurrentUserIsAdminForTenant(profile.getTenant());
+            AuthorizationUtils.checkCurrentUserIsProfileAdmin(profile.getTenant());
 
             return profile;
         } else {
@@ -183,10 +183,15 @@ public class ProfileController {
     @RequestMapping(value = URL_CREATE_PROFILE, method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> createProfile(@RequestBody Profile profile) throws ProfileException {
-        AuthorizationUtils.checkCurrentUserIsAdminForTenant(profile.getTenant());
+        AuthorizationUtils.checkCurrentUserIsProfileAdmin(profile.getTenant());
 
-        if (AuthorizationUtils.isCurrentUserTenantAdmin() && AuthorizationUtils.isSuperadmin(profile)) {
-            throw new UnauthorizedException("A tenant admin can't assign the super admin role");
+        if (AuthorizationUtils.isOnlyTenantAdmin(SecurityUtils.getCurrentProfile()) &&
+            AuthorizationUtils.isSuperadmin(profile)) {
+            throw new UnauthorizedException("A tenant admin can't create a superadmin");
+        }
+        if (AuthorizationUtils.isOnlyProfileAdmin(SecurityUtils.getCurrentProfile()) &&
+            AuthorizationUtils.isTenantAdmin(profile)) {
+            throw new UnauthorizedException("A profile admin can't create a superadmin or a tenant admin");
         }
 
         profile = profileService.createProfile(profile.getTenant(), profile.getUsername(), profile.getPassword(),
@@ -200,18 +205,18 @@ public class ProfileController {
     @ResponseBody
     public Map<String, String> updateProfile(@RequestBody Profile profile) throws ProfileException {
         String id = profile.getId().toString();
-        Profile currentProfile = profileService.getProfile(id);
+        Profile oldProfile = profileService.getProfile(id);
 
-        if (currentProfile != null) {
-            AuthorizationUtils.checkCurrentUserIsAdminForTenant(currentProfile.getTenant());
+        if (oldProfile != null) {
+            AuthorizationUtils.checkCurrentUserIsProfileAdmin(oldProfile.getTenant());
 
-            if (AuthorizationUtils.isCurrentUserTenantAdmin()) {
-                if (!AuthorizationUtils.isSuperadmin(currentProfile) && AuthorizationUtils.isSuperadmin(profile)) {
-                    throw new UnauthorizedException("A tenant admin can't assign the super admin role");
-                }
-                if (AuthorizationUtils.isSuperadmin(currentProfile) && !AuthorizationUtils.isSuperadmin(profile)) {
-                    throw new UnauthorizedException("A tenant admin can't un-assign the super admin role");
-                }
+            if (AuthorizationUtils.isOnlyTenantAdmin(SecurityUtils.getCurrentProfile()) &&
+                AuthorizationUtils.isSuperadmin(oldProfile)) {
+                throw new UnauthorizedException("A tenant admin can't update a superadmin");
+            }
+            if (AuthorizationUtils.isOnlyProfileAdmin(SecurityUtils.getCurrentProfile()) &&
+                AuthorizationUtils.isTenantAdmin(oldProfile)) {
+                throw new UnauthorizedException("A profile admin can't update a superadmin or a tenant admin");
             }
 
             profileService.updateProfile(id, profile.getUsername(), profile.getPassword(), profile.getEmail(),
@@ -229,7 +234,16 @@ public class ProfileController {
     public Map<String, String> deleteProfile(@PathVariable(PATH_VAR_ID) String id) throws ProfileException {
         Profile profile = profileService.getProfile(id);
         if (profile != null) {
-            AuthorizationUtils.checkCurrentUserIsAdminForTenant(profile.getTenant());
+            AuthorizationUtils.checkCurrentUserIsProfileAdmin(profile.getTenant());
+
+            if (AuthorizationUtils.isOnlyTenantAdmin(SecurityUtils.getCurrentProfile()) &&
+                AuthorizationUtils.isSuperadmin(profile)) {
+                throw new UnauthorizedException("A tenant admin can't delete a superadmin");
+            }
+            if (AuthorizationUtils.isOnlyProfileAdmin(SecurityUtils.getCurrentProfile()) &&
+                AuthorizationUtils.isTenantAdmin(profile)) {
+                throw new UnauthorizedException("A profile admin can't delete a superadmin or a tenant admin");
+            }
 
             profileService.deleteProfile(id);
 

@@ -394,7 +394,7 @@ app.controller('NewProfileController', function($scope, $location, tenantNames, 
     $scope.profile.tenant = currentTenantName;
     $scope.profile.password = "";
     $scope.confirmPassword = "";
-    $scope.disabledRoles = superadmin? [] : ["PROFILE_ADMIN"];
+    $scope.disabledRoles = superadmin? [] : ["PROFILE_SUPERADMIN"];
 
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
@@ -428,7 +428,7 @@ app.controller('UpdateProfileController', function($scope, $location, profile, t
     $scope.profile = profile;
     $scope.profile.password = "";
     $scope.confirmPassword = "";
-    $scope.disabledRoles = superadmin? [] : ["PROFILE_ADMIN"];
+    $scope.disabledRoles = superadmin? [] : ["PROFILE_SUPERADMIN"];
 
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
@@ -490,11 +490,11 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
     $scope.newTenant = newTenant;
     $scope.attributeTypes = attributeTypes;
     $scope.attributeActions = attributeActions;
-    $scope.undeletableAvailableRoles = ['PROFILE_ADMIN'];
+    $scope.undeletableAvailableRoles = ['PROFILE_SUPERADMIN'];
 
     $scope.availableRolesValidationCallback = function(scope, item) {
-        if (item == 'PROFILE_ADMIN') {
-            scope.errorMsg = 'PROFILE_ADMIN is a system reserved role';
+        if (item == 'PROFILE_SUPERADMIN') {
+            scope.errorMsg = 'PROFILE_SUPERADMIN is a system reserved role';
 
             return false;
         } else {

@@ -98,7 +98,7 @@ public class TenantController {
     @RequestMapping(value = URL_GET_TENANT_NAMES, method = RequestMethod.GET)
     @ResponseBody
     public List<String> getTenantNames() throws ProfileException {
-        if (AuthorizationUtils.isCurrentUserSuperadmin()) {
+        if (AuthorizationUtils.isSuperadmin(SecurityUtils.getCurrentProfile())) {
             return TenantUtils.getTenantNames(tenantService);
         } else {
             return Collections.singletonList(SecurityUtils.getCurrentProfile().getTenant());
@@ -108,7 +108,7 @@ public class TenantController {
     @RequestMapping(value = URL_GET_TENANT, method = RequestMethod.GET)
     @ResponseBody
     public Tenant getTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
-        AuthorizationUtils.checkCurrentUserIsAdminForTenant(name);
+        AuthorizationUtils.checkCurrentUserIsProfileAdmin(name);
 
         Tenant tenant = tenantService.getTenant(name);
         if (tenant != null) {
@@ -139,15 +139,17 @@ public class TenantController {
         Tenant currentTenant = tenantService.getTenant(name);
 
         if (currentTenant != null) {
-            AuthorizationUtils.checkCurrentUserIsAdminForTenant(name);
+            AuthorizationUtils.checkCurrentUserIsTenantAdmin(name);
 
             if (!currentTenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE) &&
                 tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
-                throw new UnauthorizedException(AuthorizationUtils.SUPERADMIN_ROLE + " is a system reserved role");
+                throw new UnauthorizedException(AuthorizationUtils.SUPERADMIN_ROLE + " role can't be added " +
+                                                "(it's system reserved)");
             }
             if (currentTenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE) &&
                 !tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
-                throw new UnauthorizedException(AuthorizationUtils.SUPERADMIN_ROLE + " role can't be removed");
+                throw new UnauthorizedException(AuthorizationUtils.SUPERADMIN_ROLE + " role can't be removed " +
+                                                "(it's system reserved)");
             }
 
             tenantService.updateTenant(tenant);
