@@ -43,6 +43,44 @@ app.constant('paginationConfig', {
 /**
  * Global functions
  */
+function isSuperadmin() {
+    return hasRole('PROFILE_SUPERADMIN');
+}
+
+function isTenantAdmin() {
+    return hasRole('PROFILE_TENANT_ADMIN');
+}
+
+function hasRole(role) {
+    return currentRoles.indexOf(role) > 0;
+}
+
+function getUnavailableRoles() {
+    var unavailableRoles = [];
+
+    if (!isSuperadmin()) {
+        unavailableRoles.push('PROFILE_SUPERADMIN');
+
+        if(!isTenantAdmin()) {
+            unavailableRoles.push('PROFILE_TENANT_ADMIN');
+        }
+    }
+
+    return unavailableRoles;
+}
+
+function hasSameRights(profile) {
+    var unavailableRoles = getUnavailableRoles();
+
+    for (var i = 0; i < profile.roles.length; i++) {
+        if (unavailableRoles.indexOf(profile.roles[i]) > 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 function getObject(url, $http) {
     return $http.get(contextPath + url).then(function(result){
         return result.data;
@@ -394,7 +432,7 @@ app.controller('NewProfileController', function($scope, $location, tenantNames, 
     $scope.profile.tenant = currentTenantName;
     $scope.profile.password = "";
     $scope.confirmPassword = "";
-    $scope.disabledRoles = superadmin? [] : ["PROFILE_SUPERADMIN"];
+    $scope.disabledRoles = getUnavailableRoles();
 
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
@@ -428,7 +466,7 @@ app.controller('UpdateProfileController', function($scope, $location, profile, t
     $scope.profile = profile;
     $scope.profile.password = "";
     $scope.confirmPassword = "";
-    $scope.disabledRoles = superadmin? [] : ["PROFILE_SUPERADMIN"];
+    $scope.disabledRoles = getUnavailableRoles();
 
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {

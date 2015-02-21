@@ -8,10 +8,15 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.SetUtils;
 import org.craftercms.commons.http.RequestContext;
+import org.craftercms.commons.security.exception.ActionDeniedException;
+import org.craftercms.commons.security.permissions.SubjectResolver;
+import org.craftercms.commons.security.permissions.impl.PermissionEvaluatorImpl;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.services.ProfileService;
-import org.craftercms.profile.management.exceptions.UnauthorizedException;
+import org.craftercms.profile.management.security.permissions.CurrentUserSubjectResolver;
+import org.craftercms.profile.management.security.permissions.ProfilePermissionResolver;
+import org.craftercms.profile.management.security.permissions.TenantPermissionResolver;
 import org.craftercms.security.authentication.impl.DefaultAuthentication;
 import org.craftercms.security.utils.SecurityUtils;
 import org.junit.After;
@@ -22,9 +27,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import static org.craftercms.profile.management.utils.AuthorizationUtils.PROFILE_ADMIN_ROLE;
-import static org.craftercms.profile.management.utils.AuthorizationUtils.SUPERADMIN_ROLE;
-import static org.craftercms.profile.management.utils.AuthorizationUtils.TENANT_ADMIN_ROLE;
+import static org.craftercms.profile.management.security.AuthorizationUtils.PROFILE_ADMIN_ROLE;
+import static org.craftercms.profile.management.security.AuthorizationUtils.SUPERADMIN_ROLE;
+import static org.craftercms.profile.management.security.AuthorizationUtils.TENANT_ADMIN_ROLE;
 import static org.craftercms.profile.management.web.controllers.ProfileController.FINAL_QUERY_FORMAT;
 import static org.craftercms.profile.management.web.controllers.ProfileController.MODEL_MESSAGE;
 import static org.craftercms.profile.management.web.controllers.ProfileController.MSG_PROFILE_CREATED_FORMAT;
@@ -76,8 +81,22 @@ public class ProfileControllerTest {
         when(profileService.createProfile(TENANT_NAME1, USERNAME2, null, null, false, SetUtils.asSet(
             PROFILE_ADMIN_ROLE), new HashMap<String, Object>(), null)).thenReturn(profile2);
 
+        SubjectResolver<Profile> subjectResolver = new CurrentUserSubjectResolver();
+        TenantPermissionResolver tenantPermissionResolver = new TenantPermissionResolver();
+        ProfilePermissionResolver profilePermissionResolver = new ProfilePermissionResolver();
+
+        PermissionEvaluatorImpl<Profile, String> tenantPermissionEvaluator = new PermissionEvaluatorImpl<>();
+        tenantPermissionEvaluator.setSubjectResolver(subjectResolver);
+        tenantPermissionEvaluator.setPermissionResolver(tenantPermissionResolver);
+
+        PermissionEvaluatorImpl<Profile, Profile> profilePermissionEvaluator = new PermissionEvaluatorImpl<>();
+        profilePermissionEvaluator.setSubjectResolver(subjectResolver);
+        profilePermissionEvaluator.setPermissionResolver(profilePermissionResolver);
+
         controller = new ProfileController();
         controller.setProfileService(profileService);
+        controller.setTenantPermissionEvaluator(tenantPermissionEvaluator);
+        controller.setProfilePermissionEvaluator(profilePermissionEvaluator);
 
         setCurrentRequestContext();
     }
@@ -96,14 +115,14 @@ public class ProfileControllerTest {
         assertEquals(1L, count);
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testGetProfileCountByInvalidTenantAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME2, PROFILE_ID1, USERNAME1, TENANT_ADMIN_ROLE));
 
         controller.getProfileCount(TENANT_NAME1, USERNAME1);
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testGetProfileCountByInvalidProfileAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME2, PROFILE_ID1, USERNAME1, PROFILE_ADMIN_ROLE));
 
@@ -123,14 +142,14 @@ public class ProfileControllerTest {
         assertProfiles(currentUser, profiles.get(0));
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testGetProfileListByInvalidTenantAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME2, PROFILE_ID1, USERNAME1, TENANT_ADMIN_ROLE));
 
         controller.getProfileList(TENANT_NAME1, USERNAME1, null, null, null, null);
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testGetProfileListByInvalidProfileAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME2, PROFILE_ID1, USERNAME1, PROFILE_ADMIN_ROLE));
 
@@ -149,14 +168,14 @@ public class ProfileControllerTest {
         assertProfiles(currentUser, profile);
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testGetProfileByInvalidTenantAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME2, PROFILE_ID1, USERNAME1, TENANT_ADMIN_ROLE));
 
         controller.getProfile(PROFILE_ID1.toString());
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testGetProfileByInvalidProfileAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME2, PROFILE_ID1, USERNAME1, PROFILE_ADMIN_ROLE));
 
@@ -178,34 +197,34 @@ public class ProfileControllerTest {
                                              SetUtils.asSet(PROFILE_ADMIN_ROLE), new HashMap<String, Object>(), null);
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testCreateProfileByInvalidTenantAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME2, PROFILE_ID1, USERNAME1, TENANT_ADMIN_ROLE));
 
         controller.createProfile(getProfile(TENANT_NAME1, null, USERNAME2, PROFILE_ADMIN_ROLE));
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testCreateProfileByInvalidProfileAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME2, PROFILE_ID1, USERNAME1, PROFILE_ADMIN_ROLE));
 
         controller.createProfile(getProfile(TENANT_NAME1, null, USERNAME2, PROFILE_ADMIN_ROLE));
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testCreateSuperAdminByTenantAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME1, PROFILE_ID1, USERNAME1, TENANT_ADMIN_ROLE));
 
         controller.createProfile(getProfile(TENANT_NAME1, null, USERNAME2, SUPERADMIN_ROLE));
     }
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testCreateSuperAdminByProfileAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME1, PROFILE_ID1, USERNAME1, PROFILE_ADMIN_ROLE));
 
         controller.createProfile(getProfile(TENANT_NAME1, null, USERNAME2, SUPERADMIN_ROLE));
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testCreateTenantAdminByProfileAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME1, PROFILE_ID1, USERNAME1, PROFILE_ADMIN_ROLE));
 
@@ -229,35 +248,35 @@ public class ProfileControllerTest {
                                              ProfileConstants.NO_ATTRIBUTE);
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testUpdateProfileByInvalidTenantAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME2, PROFILE_ID1, USERNAME1, TENANT_ADMIN_ROLE));
 
         controller.updateProfile(getProfile(TENANT_NAME1, PROFILE_ID1, USERNAME1, PROFILE_ADMIN_ROLE));
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testUpdateProfileByInvalidProfileAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME2, PROFILE_ID1, USERNAME1, PROFILE_ADMIN_ROLE));
 
         controller.updateProfile(getProfile(TENANT_NAME1, PROFILE_ID1, USERNAME1, PROFILE_ADMIN_ROLE));
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testUpdateSuperadminByTenantAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME1, PROFILE_ID1, USERNAME1, TENANT_ADMIN_ROLE));
 
         controller.updateProfile(getProfile(TENANT_NAME1, PROFILE_ID3, USERNAME3, SUPERADMIN_ROLE));
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testUpdateSuperadminByProfileAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME1, PROFILE_ID1, USERNAME1, PROFILE_ADMIN_ROLE));
 
         controller.updateProfile(getProfile(TENANT_NAME1, PROFILE_ID3, USERNAME3, SUPERADMIN_ROLE));
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testUpdateTenantAdminByProfileAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME1, PROFILE_ID1, USERNAME1, PROFILE_ADMIN_ROLE));
 
@@ -277,35 +296,35 @@ public class ProfileControllerTest {
         verify(profileService).deleteProfile(PROFILE_ID1.toString());
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testDeleteProfileByInvalidTenantAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME2, PROFILE_ID1, USERNAME1, TENANT_ADMIN_ROLE));
 
         controller.deleteProfile(PROFILE_ID1.toString());
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testDeleteProfileByInvalidProfileAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME2, PROFILE_ID1, USERNAME1, PROFILE_ADMIN_ROLE));
 
         controller.deleteProfile(PROFILE_ID1.toString());
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testDeleteSuperadminByTenantAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME1, PROFILE_ID1, USERNAME1, TENANT_ADMIN_ROLE));
 
         controller.deleteProfile(PROFILE_ID3.toString());
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testDeleteSuperadminByProfileAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME1, PROFILE_ID1, USERNAME1, PROFILE_ADMIN_ROLE));
 
         controller.deleteProfile(PROFILE_ID3.toString());
     }
 
-    @Test(expected = UnauthorizedException.class)
+    @Test(expected = ActionDeniedException.class)
     public void testDeleteTenantAdminByProfileAdmin() throws Exception {
         setCurrentUser(getProfile(TENANT_NAME1, PROFILE_ID1, USERNAME1, PROFILE_ADMIN_ROLE));
 

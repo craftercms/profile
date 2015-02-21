@@ -81,8 +81,13 @@
 <script src="<@spring.url '/resources/js/jquery.cookie.js'/>"></script>
 <script src="<@spring.url '/resources/js/app.js'/>"></script>
 <script type="text/javascript">
-    var contextPath = "${requestContext.contextPath}";
-    var currentTenantName = "${loggedInUser.tenant}";
-    var superadmin = <#if loggedInUser.roles?seq_contains("PROFILE_SUPERADMIN")>true<#else>false</#if>;
+    var contextPath = '${requestContext.contextPath}';
+    var currentTenantName = '${loggedInUser.tenant}';
+    <#assign rolesArray = ""/>
+    <#list loggedInUser.roles as role>
+        <#assign rolesArray = "${rolesArray}'${role}'"/>
+        <#if role_has_next><#assign rolesArray = "${rolesArray}, "/></#if>
+    </#list>
+    var currentRoles = [${rolesArray}];
 </script>
 </#macro>
