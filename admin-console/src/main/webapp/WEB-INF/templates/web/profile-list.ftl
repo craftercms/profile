@@ -39,7 +39,12 @@
         <tbody>
             <tr ng-repeat="profile in profiles">
                 <td>
-                    <a href="#/profile/update/{{profile.id}}">{{profile.id}}</a>
+                    <div ng-if="isCurrentRoleNotInferior(profile)">
+                        <a href="#/profile/update/{{profile.id}}">{{profile.id}}</a>
+                    </div>
+                    <div ng-if="!isCurrentRoleNotInferior(profile)">
+                        {{profile.id}}
+                    </div>
                 </td>
                 <td>
                     {{profile.username}}
@@ -54,7 +59,9 @@
                     {{profile.roles.join(', ')}}
                 </td>
                 <td>
-                    <a ng-click="showDeleteConfirmationDialog(profile, $index)">Delete</a>
+                    <div ng-if="isCurrentRoleNotInferior(profile)">
+                        <a ng-click="showDeleteConfirmationDialog(profile, $index)">Delete</a>
+                    </div>
                 </td>
             </tr>
         </tbody>

@@ -52,28 +52,28 @@ function isTenantAdmin() {
 }
 
 function hasRole(role) {
-    return currentRoles.indexOf(role) > 0;
+    return currentRoles.indexOf(role) >= 0;
 }
 
-function getUnavailableRoles() {
-    var unavailableRoles = [];
+function getSuperiorRoles() {
+    var superiorRoles = [];
 
     if (!isSuperadmin()) {
-        unavailableRoles.push('PROFILE_SUPERADMIN');
+        superiorRoles.push('PROFILE_SUPERADMIN');
 
         if(!isTenantAdmin()) {
-            unavailableRoles.push('PROFILE_TENANT_ADMIN');
+            superiorRoles.push('PROFILE_TENANT_ADMIN');
         }
     }
 
-    return unavailableRoles;
+    return superiorRoles;
 }
 
-function hasSameRights(profile) {
-    var unavailableRoles = getUnavailableRoles();
+function isCurrentRoleNotInferior(profile) {
+    var superiorRoles = getSuperiorRoles();
 
     for (var i = 0; i < profile.roles.length; i++) {
-        if (unavailableRoles.indexOf(profile.roles[i]) > 0) {
+        if (superiorRoles.indexOf(profile.roles[i]) >= 0) {
             return false;
         }
     }
@@ -368,10 +368,13 @@ app.controller('ProfileListController', function($scope, $location, tenantNames,
     $scope.selectedTenantName = currentTenantName;
     $scope.itemsPerPage = 10;
 
+    $scope.isCurrentRoleNotInferior = function(profile) {
+       return isCurrentRoleNotInferior(profile);
+    };
+
     $scope.isValidUsername = function(text) {
         return /^\w+$/.test(text);
     };
-
 
     $scope.getCurrentPage = function(tenantName, searchText, currentPage, itemsPerPage) {
         var start = (currentPage - 1) * itemsPerPage;
@@ -432,7 +435,7 @@ app.controller('NewProfileController', function($scope, $location, tenantNames, 
     $scope.profile.tenant = currentTenantName;
     $scope.profile.password = "";
     $scope.confirmPassword = "";
-    $scope.disabledRoles = getUnavailableRoles();
+    $scope.disabledRoles = getSuperiorRoles();
 
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
@@ -466,7 +469,7 @@ app.controller('UpdateProfileController', function($scope, $location, profile, t
     $scope.profile = profile;
     $scope.profile.password = "";
     $scope.confirmPassword = "";
-    $scope.disabledRoles = getUnavailableRoles();
+    $scope.disabledRoles = getSuperiorRoles();
 
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
