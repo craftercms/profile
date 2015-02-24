@@ -11,10 +11,10 @@
     </parent>
 
     <groupId>org.craftercms</groupId>
-    <artifactId>crafter-profile-social-medial-integration</artifactId>
-    <name>Crafter Profile Social Media Integration</name>
-    <description>Crafter Profile Social Media Integration</description>
-    <url>https://github.com/craftercms/profile/tree/master/social-medial-integration</url>
+    <artifactId>crafter-profile-social-services-integration</artifactId>
+    <name>Crafter Profile Social Services Integration</name>
+    <description>Crafter Profile Social Services Integration</description>
+    <url>https://github.com/craftercms/profile/tree/master/social-services-integration</url>
     <packaging>jar</packaging>
 
     <organization>
@@ -39,11 +39,11 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/craftercms/profile/tree/master/social-medial-integration</connection>
+        <connection>scm:git:git://github.com/craftercms/profile/tree/master/social-services-integration</connection>
         <developerConnection>
-            scm:git:git://github.com/craftercms/profile/tree/master/social-medial-integration
+            scm:git:git://github.com/craftercms/profile/tree/master/social-services-integration
         </developerConnection>
-        <url>scm:git:git://github.com/craftercms/profile/tree/master/social-medial-integration</url>
+        <url>scm:git:git://github.com/craftercms/profile/tree/master/social-services-integration</url>
     </scm>
 
     <properties>
