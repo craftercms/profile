@@ -99,7 +99,19 @@
 
     <!-- Swagger -->
 
-    <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+    <bean id="crafter.swaggerConfig" class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />
+
+    <mvc:resources mapping="css/, images/, lib/, swagger-ui.js" location="classpath:META-INF/resources/"
+                   cache-period="0"/>
+
+    <bean id="crafter.swaggerViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="classpath:/resources/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <mvc:default-servlet-handler/>
+
+    <!--bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
         <property name="templateLoaderPaths" value="classpath:/views/"/>
     </bean>
 
@@ -109,7 +121,7 @@
         <property name="suffix" value=".ftl"/>
     </bean>
 
-    <import resource="classpath:crafter/api-documentation/api-documentation-context.xml"/>
+    <import resource="classpath:crafter/api-documentation/api-documentation-context.xml"/-->
 
     <import resource="classpath*:crafter/profile/extension/web-context.xml"/>
 

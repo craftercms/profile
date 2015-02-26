@@ -17,6 +17,7 @@
 package org.craftercms.profile.controllers.rest;
 
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
@@ -74,6 +75,8 @@ public class TenantController {
 
     @ApiOperation(value = "Creates the given tenant", notes = "The method will fail if there's already a tenant " +
         "with the given name")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_CREATE, method = RequestMethod.POST)
     @ResponseBody
     public Tenant createTenant(@ApiParam("The tenant to create")
@@ -82,6 +85,8 @@ public class TenantController {
     }
 
     @ApiOperation(value = "Returns a tenant")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_GET, method = RequestMethod.GET)
     @ResponseBody
     public Tenant getTenant(@ApiParam("The tenant's name")
@@ -90,6 +95,8 @@ public class TenantController {
     }
 
     @ApiOperation(value = "Updates the given tenant")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_UPDATE, method = RequestMethod.POST)
     @ResponseBody
     public Tenant updateTenant(@ApiParam("The tenant to update")
@@ -98,6 +105,8 @@ public class TenantController {
     }
 
     @ApiOperation(value = "Deletes a tenant")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_DELETE, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void deleteTenant(@ApiParam("The tenant's name")
@@ -106,6 +115,8 @@ public class TenantController {
     }
 
     @ApiOperation(value = "Returns the total number of tenants")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_COUNT, method = RequestMethod.GET)
     @ResponseBody
     public long getTenantCount() throws ProfileException {
@@ -113,6 +124,8 @@ public class TenantController {
     }
 
     @ApiOperation(value = "Returns a list with all the tenants")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_GET_ALL, method = RequestMethod.GET)
     @ResponseBody
     public Iterable<Tenant> getAllTenants() throws ProfileException {
@@ -120,6 +133,8 @@ public class TenantController {
     }
 
     @ApiOperation(value = "Sets if new profiles for the specified tenant should be verified or not")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_VERIFY_NEW_PROFILES, method = RequestMethod.POST)
     @ResponseBody
     public Tenant verifyNewProfiles(@ApiParam("The tenant's name")
@@ -130,6 +145,8 @@ public class TenantController {
     }
 
     @ApiOperation(value = "Adds the given roles to the specified tenant")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_ADD_ROLES, method = RequestMethod.POST)
     @ResponseBody
     public Tenant addRoles(@ApiParam("The tenant's name")
@@ -140,6 +157,8 @@ public class TenantController {
     }
 
     @ApiOperation(value = "Removes the given roles from the specified tenant")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_REMOVE_ROLES, method = RequestMethod.POST)
     @ResponseBody
     public Tenant removeRoles(@ApiParam("The tenant's name")
@@ -150,6 +169,8 @@ public class TenantController {
     }
 
     @ApiOperation(value = "Adds the given attribute definitions to the specified tenant")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_ADD_ATTRIBUTE_DEFINITIONS, method = RequestMethod.POST)
     @ResponseBody
     public Tenant addAttributeDefinitions(@ApiParam("The tenant's name")
@@ -161,6 +182,8 @@ public class TenantController {
     }
 
     @ApiOperation(value = "Updates the given attribute definitions of the specified tenant")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_UPDATE_ATTRIBUTE_DEFINITIONS, method = RequestMethod.POST)
     @ResponseBody
     public Tenant updateAttributeDefinitions(@ApiParam("The tenant's name")
@@ -173,6 +196,8 @@ public class TenantController {
     }
 
     @ApiOperation(value = "Removes the given attribute definitions from the specified tenant")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_REMOVE_ATTRIBUTE_DEFINITIONS, method = RequestMethod.POST)
     @ResponseBody
     public Tenant removeAttributeDefinitions(@ApiParam("The tenant's name")

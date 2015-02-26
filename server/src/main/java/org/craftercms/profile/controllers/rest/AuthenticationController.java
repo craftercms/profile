@@ -17,6 +17,7 @@
 package org.craftercms.profile.controllers.rest;
 
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
@@ -67,6 +68,8 @@ public class AuthenticationController {
     }
 
     @ApiOperation("Authenticates the user, and returns a ticket identifying the authentication")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_AUTH_AUTHENTICATE, method = RequestMethod.POST)
     @ResponseBody
     public Ticket authenticate(@ApiParam("The tenant's name") @RequestParam(PARAM_TENANT_NAME) String tenantName,
@@ -79,6 +82,8 @@ public class AuthenticationController {
     @ApiOperation(value = "Create a new ticket for the specified profile", notes = "This method should only be " +
         "used when authentication is done through other means (like when authenticating through Facebook or " +
         "Twitter) different than profile.")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_AUTH_CREATE_TICKET, method = RequestMethod.POST)
     @ResponseBody
     public Ticket createTicket(
@@ -87,6 +92,8 @@ public class AuthenticationController {
     }
 
     @ApiOperation("Returns the ticket object for the given ticket ID")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_AUTH_GET_TICKET, method = RequestMethod.GET)
     @ResponseBody
     public Ticket getTicket(
@@ -95,6 +102,8 @@ public class AuthenticationController {
     }
 
     @ApiOperation("Invalidates the given ticket")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_AUTH_INVALIDATE_TICKET, method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
     public void invalidateTicket(
@@ -103,6 +112,8 @@ public class AuthenticationController {
     }
 
     @ApiOperation("Creates a persistent login, use for remember me functionality")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_AUTH_CREATE_PERSISTENT_LOGIN, method = RequestMethod.POST)
     @ResponseBody
     public PersistentLogin createPersistentLogin(@ApiParam("The ID ID of the profile") @RequestParam(PARAM_PROFILE_ID)
@@ -111,6 +122,8 @@ public class AuthenticationController {
     }
 
     @ApiOperation("Returns the persistent login object for the given ID")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_AUTH_GET_PERSISTENT_LOGIN, method = RequestMethod.GET)
     @ResponseBody
     public PersistentLogin getPersistentLogin(
@@ -119,6 +132,8 @@ public class AuthenticationController {
     }
 
     @ApiOperation("Refreshes the token of the specified persistent login")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_AUTH_REFRESH_PERSISTENT_LOGIN_TOKEN, method = RequestMethod.POST)
     @ResponseBody
     public PersistentLogin refreshPersistentLoginToken(
@@ -127,6 +142,8 @@ public class AuthenticationController {
     }
 
     @ApiOperation("Deletes the persistent login")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_AUTH_DELETE_PERSISTENT_LOGIN, method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
     public void deletePersistentLogin(
