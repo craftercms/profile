@@ -99,7 +99,7 @@
 
     <!-- Swagger -->
 
-    <bean id="crafter.swaggerConfig" class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />
+    <bean id="crafter.swaggerConfig" class="org.craftercms.profile.utils.swagger.SwaggerConfig" />
 
     <mvc:resources mapping="css/, images/, lib/, swagger-ui.js" location="classpath:META-INF/resources/"
                    cache-period="0"/>
