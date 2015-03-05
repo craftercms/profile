@@ -72,8 +72,8 @@ import org.springframework.beans.factory.annotation.Required;
 @Logged
 public class ProfileServiceImpl implements ProfileService {
 
-    private static final I10nLogger logger = new I10nLogger(ProfileServiceImpl.class,
-            "crafter.profile.messages.logging");
+    private static final I10nLogger logger = new I10nLogger(ProfileServiceImpl.class, "crafter.profile.messages" +
+                                                                                      ".logging");
 
     public static final String LOG_KEY_PROFILE_CREATED = "profile.profile.profileCreated";
     public static final String LOG_KEY_PROFILE_UPDATED = "profile.profile.profileUpdated";
@@ -92,19 +92,18 @@ public class ProfileServiceImpl implements ProfileService {
     public static final String ERROR_KEY_GET_PROFILE_ERROR = "profile.profile.getProfileError";
     public static final String ERROR_KEY_UPDATE_PROFILE_ERROR = "profile.profile.updateProfileError";
     public static final String ERROR_KEY_DELETE_PROFILE_ERROR = "profile.profile.deleteProfileError";
-    public static final String ERROR_KEY_GET_PROFILE_COUNT_BY_QUERY_ERROR =
-            "profile.profile.getProfileCountByQueryError";
+    public static final String ERROR_KEY_GET_PROFILE_COUNT_BY_QUERY_ERROR = "profile.profile" +
+                                                                            ".getProfileCountByQueryError";
     public static final String ERROR_KEY_GET_PROFILES_BY_QUERY_ERROR = "profile.profile.getProfilesByQueryError";
     public static final String ERROR_KEY_GET_PROFILE_BY_USERNAME_ERROR = "profile.profile.getProfileByUsernameError";
     public static final String ERROR_KEY_GET_PROFILE_COUNT_ERROR = "profile.profile.getProfileCountError";
     public static final String ERROR_KEY_GET_PROFILES_ERROR = "profile.profile.getProfilesError";
     public static final String ERROR_KEY_GET_PROFILE_RANGE_ERROR = "profile.profile.getProfileRangeError";
     public static final String ERROR_KEY_GET_PROFILES_BY_ROLE_ERROR = "profile.profile.getProfilesByRoleError";
-    public static final String ERROR_KEY_GET_PROFILES_BY_EXISTING_ATTRIB_ERROR =
-            "profile.profile.getProfilesByExistingAttributeError";
-    public static final String ERROR_KEY_GET_PROFILES_BY_ATTRIB_VALUE_ERROR =
-            "profile.profile.getProfilesByAttributeValueError";
-    public static final String ERROR_KEY_RESET_PASSWORD_ERROR = "profile.profile.resetPasswordError";
+    public static final String ERROR_KEY_GET_PROFILES_BY_EXISTING_ATTRIB_ERROR = "profile.profile" +
+                                                                                 ".getProfilesByExistingAttributeError";
+    public static final String ERROR_KEY_GET_PROFILES_BY_ATTRIB_VALUE_ERROR = "profile.profile" +
+                                                                              ".getProfilesByAttributeValueError";
     public static final String ERROR_KEY_TENANT_NOT_ALLOWED = "profile.profile.query.tenantNotAllowed";
     public static final String ERROR_KEY_WHERE_NOT_ALLOWED = "profile.profile.query.whereNotAllowed";
     public static final String ERROR_KEY_ATTRIBUTE_NOT_ALLOWED = "profile.profile.query.attributeNotAllowed";
@@ -134,7 +133,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Required
     public void setAttributePermissionEvaluator(
-            PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator) {
+        PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator) {
         this.attributePermissionEvaluator = attributePermissionEvaluator;
     }
 
@@ -190,8 +189,8 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Profile createProfile(String tenantName, String username, String password, String email, boolean enabled,
-                                 Set<String> roles, Map<String, Object> attributes, String verificationUrl)
-            throws ProfileException {
+                                 Set<String> roles, Map<String, Object> attributes,
+                                 String verificationUrl) throws ProfileException {
         checkIfManageProfilesIsAllowed(tenantName);
 
         if (!EmailUtils.validateEmail(email)) {
@@ -232,7 +231,7 @@ public class ProfileServiceImpl implements ProfileService {
             if (emailNewProfiles && StringUtils.isNotEmpty(verificationUrl)) {
                 VerificationToken token = verificationService.createToken(profile.getId().toString());
                 verificationService.sendEmail(token, profile, verificationUrl, newProfileEmailFromAddress,
-                    newProfileEmailSubject, newProfileEmailTemplateName);
+                                              newProfileEmailSubject, newProfileEmailTemplateName);
             }
 
             return profile;
@@ -246,8 +245,8 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile updateProfile(final String profileId, final String username, final String password,
                                  final String email, final Boolean enabled, final Set<String> roles,
-                                 final Map<String, Object> attributes , String... attributesToReturn)
-            throws ProfileException {
+                                 final Map<String, Object> attributes,
+                                 String... attributesToReturn) throws ProfileException {
         if (StringUtils.isNotEmpty(email) && !EmailUtils.validateEmail(email)) {
             throw new InvalidEmailAddressException(email);
         }
@@ -274,7 +273,8 @@ public class ProfileServiceImpl implements ProfileService {
                 if (MapUtils.isNotEmpty(attributes)) {
                     String tenantName = profile.getTenant();
 
-                    rejectAttributesIfActionNotAllowed(tenantName, attributes.keySet(), AttributeAction.WRITE_ATTRIBUTE);
+                    rejectAttributesIfActionNotAllowed(tenantName, attributes.keySet(), AttributeAction
+                        .WRITE_ATTRIBUTE);
 
                     profile.getAttributes().putAll(attributes);
                 }
@@ -288,8 +288,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Profile verifyProfile(String verificationTokenId, final String... attributesToReturn)
-            throws ProfileException {
+    public Profile verifyProfile(String verificationTokenId,
+                                 final String... attributesToReturn) throws ProfileException {
         VerificationToken token = verificationService.verifyToken(verificationTokenId);
 
         Profile profile = updateProfile(token.getProfileId(), new UpdateCallback() {
@@ -310,8 +310,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Profile enableProfile(String profileId, String... attributesToReturn)
-            throws ProfileException {
+    public Profile enableProfile(String profileId, String... attributesToReturn) throws ProfileException {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
@@ -327,8 +326,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Profile disableProfile(String profileId, String... attributesToReturn)
-            throws ProfileException {
+    public Profile disableProfile(String profileId, String... attributesToReturn) throws ProfileException {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
@@ -344,8 +342,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Profile addRoles(String profileId, final Collection<String> roles, String... attributesToReturn)
-            throws ProfileException {
+    public Profile addRoles(String profileId, final Collection<String> roles,
+                            String... attributesToReturn) throws ProfileException {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
@@ -361,8 +359,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Profile removeRoles(String profileId, final Collection<String> roles, String... attributesToReturn)
-            throws ProfileException {
+    public Profile removeRoles(String profileId, final Collection<String> roles,
+                               String... attributesToReturn) throws ProfileException {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
@@ -445,8 +443,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Profile getProfileByQuery(String tenantName, String query, String... attributesToReturn)
-            throws ProfileException {
+    public Profile getProfileByQuery(String tenantName, String query,
+                                     String... attributesToReturn) throws ProfileException {
         checkIfManageProfilesIsAllowed(tenantName);
 
         Tenant tenant = getTenant(tenantName);
@@ -477,8 +475,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Profile getProfileByUsername(String tenantName, String username, String... attributesToReturn)
-            throws ProfileException {
+    public Profile getProfileByUsername(String tenantName, String username,
+                                        String... attributesToReturn) throws ProfileException {
         checkIfManageProfilesIsAllowed(tenantName);
 
         try {
@@ -527,15 +525,16 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public List<Profile> getProfilesByQuery(String tenantName, String query, String sortBy, SortOrder sortOrder,
-                                            Integer start, Integer count, String... attributesToReturn)
-            throws ProfileException {
+                                            Integer start, Integer count,
+                                            String... attributesToReturn) throws ProfileException {
         checkIfManageProfilesIsAllowed(tenantName);
 
         Tenant tenant = getTenant(tenantName);
 
         try {
             List<Profile> profiles = IterableUtils.toList(profileRepository.findByQuery(getFinalQuery(tenant, query),
-                    sortBy, sortOrder, start, count, attributesToReturn));
+                                                                                        sortBy, sortOrder, start,
+                                                                                        count, attributesToReturn));
             filterNonReadableAttributes(tenant, profiles);
 
             return profiles;
@@ -549,7 +548,7 @@ public class ProfileServiceImpl implements ProfileService {
                                           String... attributesToReturn) throws ProfileException {
         try {
             List<Profile> profiles = IterableUtils.toList(profileRepository.findByIds(profileIds, sortBy, sortOrder,
-                attributesToReturn));
+                                                                                      attributesToReturn));
             if (profiles != null) {
                 for (Profile profile : profiles) {
                     checkIfManageProfilesIsAllowed(profile.getTenant());
@@ -570,7 +569,8 @@ public class ProfileServiceImpl implements ProfileService {
 
         try {
             List<Profile> profiles = IterableUtils.toList(profileRepository.findRange(tenantName, sortBy, sortOrder,
-                start, count, attributesToReturn));
+                                                                                      start, count,
+                                                                                      attributesToReturn));
             filterNonReadableAttributes(profiles);
 
             return profiles;
@@ -586,7 +586,8 @@ public class ProfileServiceImpl implements ProfileService {
 
         try {
             List<Profile> profiles = IterableUtils.toList(profileRepository.findByTenantAndRole(tenantName, role,
-                sortBy, sortOrder, attributesToReturn));
+                                                                                                sortBy, sortOrder,
+                                                                                                attributesToReturn));
             filterNonReadableAttributes(profiles);
 
             return profiles;
@@ -597,55 +598,56 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public List<Profile> getProfilesByExistingAttribute(String tenantName, String attributeName, String sortBy,
-                                                        SortOrder sortOrder, String... attributesToReturn)
-            throws ProfileException {
+                                                        SortOrder sortOrder,
+                                                        String... attributesToReturn) throws ProfileException {
         checkIfManageProfilesIsAllowed(tenantName);
 
         try {
-            List<Profile> profiles = IterableUtils.toList(profileRepository.findByTenantAndExistingAttribute(
-                tenantName, attributeName, sortBy, sortOrder, attributesToReturn));
+            List<Profile> profiles = IterableUtils.toList(profileRepository.findByTenantAndExistingAttribute
+                (tenantName, attributeName, sortBy, sortOrder, attributesToReturn));
             filterNonReadableAttributes(profiles);
 
             return profiles;
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_GET_PROFILES_BY_EXISTING_ATTRIB_ERROR, e, attributeName,
-                    tenantName);
+                                           tenantName);
         }
     }
 
     @Override
     public List<Profile> getProfilesByAttributeValue(String tenantName, String attributeName, String attributeValue,
-                                                     String sortBy, SortOrder sortOrder, String... attributesToReturn)
-            throws ProfileException {
+                                                     String sortBy, SortOrder sortOrder,
+                                                     String... attributesToReturn) throws ProfileException {
         checkIfManageProfilesIsAllowed(tenantName);
 
         try {
-            List<Profile> profiles = IterableUtils.toList(profileRepository.findByTenantAndAttributeValue(tenantName,
-                attributeName, attributeValue, sortBy, sortOrder, attributesToReturn));
+            List<Profile> profiles = IterableUtils.toList(
+                profileRepository.findByTenantAndAttributeValue(tenantName, attributeName, attributeValue, sortBy,
+                                                                sortOrder, attributesToReturn));
             filterNonReadableAttributes(profiles);
 
             return profiles;
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_GET_PROFILES_BY_ATTRIB_VALUE_ERROR, e, attributeName,
-                    attributeValue, tenantName);
+                                           attributeValue, tenantName);
         }
     }
 
     @Override
-    public Profile resetPassword(String profileId, String resetPasswordUrl, String... attributesToReturn)
-            throws ProfileException {
+    public Profile resetPassword(String profileId, String resetPasswordUrl,
+                                 String... attributesToReturn) throws ProfileException {
         Profile profile = getNonNullProfile(profileId, attributesToReturn);
         VerificationToken token = verificationService.createToken(profileId);
 
         verificationService.sendEmail(token, profile, resetPasswordUrl, resetPwdEmailFromAddress,
-            resetPwdEmailSubject, resetPwdEmailTemplateName);
+                                      resetPwdEmailSubject, resetPwdEmailTemplateName);
 
         return profile;
     }
 
     @Override
-    public Profile changePassword(String resetTokenId, final String newPassword, final String... attributesToReturn)
-            throws ProfileException {
+    public Profile changePassword(String resetTokenId, final String newPassword,
+                                  final String... attributesToReturn) throws ProfileException {
         VerificationToken token = verificationService.verifyToken(resetTokenId);
 
         Profile profile = updateProfile(token.getProfileId(), new UpdateCallback() {
@@ -698,8 +700,8 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
-    protected Profile updateProfile(String profileId, UpdateCallback callback, String... attributesToReturn)
-            throws ProfileException {
+    protected Profile updateProfile(String profileId, UpdateCallback callback,
+                                    String... attributesToReturn) throws ProfileException {
         // We need to filter the attributes after save, if not, the attributes to return will replace all the
         // attributes
         Profile profile = getNonNullProfile(profileId);
@@ -780,8 +782,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     protected void filterAttributeIfReadNotAllowed(Tenant tenant, Iterator<String> attributeNamesIter,
-                                                   Set<AttributeDefinition> attributeDefinitions)
-            throws PermissionException, AttributeNotDefinedException {
+                                                   Set<AttributeDefinition> attributeDefinitions) throws
+        PermissionException, AttributeNotDefinedException {
         String tenantName = tenant.getName();
         String attributeName = attributeNamesIter.next();
         AttributeDefinition definition = findAttributeDefinition(attributeDefinitions, attributeName);
@@ -796,8 +798,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     protected void rejectAttributeIfActionNotAllowed(Tenant tenant, String attributeName, AttributeAction action,
-                                                     Set<AttributeDefinition> attributeDefinitions)
-            throws PermissionException, AttributeNotDefinedException {
+                                                     Set<AttributeDefinition> attributeDefinitions) throws
+        PermissionException, AttributeNotDefinedException {
         AttributeDefinition definition = findAttributeDefinition(attributeDefinitions, attributeName);
         if (definition != null) {
             if (!attributePermissionEvaluator.isAllowed(definition, action.toString())) {

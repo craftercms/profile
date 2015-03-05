@@ -54,8 +54,8 @@ import org.springframework.beans.factory.annotation.Required;
 @Logged
 public class TenantServiceImpl implements TenantService {
 
-    private static final I10nLogger logger = new I10nLogger(TenantServiceImpl.class,
-                                                            "crafter.profile.messages.logging");
+    private static final I10nLogger logger = new I10nLogger(TenantServiceImpl.class, "crafter.profile.messages" +
+                                                                                     ".logging");
 
     public static final String LOG_KEY_TENANT_CREATED = "profile.tenant.tenantCreated";
     public static final String LOG_KEY_TENANT_DELETED = "profile.tenant.tenantDeleted";
@@ -75,8 +75,8 @@ public class TenantServiceImpl implements TenantService {
 
     public static final String ERROR_KEY_DELETE_ALL_PROFILES_ERROR = "profile.profile.deleteAll";
     public static final String ERROR_KEY_REMOVE_ROLE_FROM_ALL_PROFILES_ERROR = "profile.role.removeRoleFromAll";
-    public static final String ERROR_KEY_REMOVE_ATTRIBUTE_FROM_ALL_PROFILES_ERROR = "profile.attribute" +
-                                                                                    ".removeAttributeFromAll";
+    public static final String ERROR_KEY_REMOVE_ATTRIBUTE_FROM_ALL_PROFILES_ERROR =
+        "profile.attribute" + ".removeAttributeFromAll";
 
     protected PermissionEvaluator<Application, String> tenantPermissionEvaluator;
     protected PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator;
@@ -91,7 +91,7 @@ public class TenantServiceImpl implements TenantService {
 
     @Required
     public void setAttributePermissionEvaluator(
-            PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator) {
+        PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator) {
         this.attributePermissionEvaluator = attributePermissionEvaluator;
     }
 
@@ -150,9 +150,9 @@ public class TenantServiceImpl implements TenantService {
             @Override
             public void doWithTenant(Tenant originalTenant) throws ProfileException {
                 Collection<String> removedRoles = CollectionUtils.subtract(originalTenant.getAvailableRoles(),
-                        tenant.getAvailableRoles());
-                Collection<AttributeDefinition> removedDefinitions = CollectionUtils.subtract(originalTenant
-                        .getAttributeDefinitions(), tenant.getAttributeDefinitions());
+                                                                           tenant.getAvailableRoles());
+                Collection<AttributeDefinition> removedDefinitions = CollectionUtils.subtract(
+                    originalTenant.getAttributeDefinitions(), tenant.getAttributeDefinitions());
 
                 for (String removedRole : removedRoles) {
                     removeRoleFromProfiles(tenantName, removedRole);
@@ -189,7 +189,7 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public long getTenantCount() throws ProfileException  {
+    public long getTenantCount() throws ProfileException {
         checkIfTenantActionIsAllowed(null, TenantAction.READ_TENANT);
 
         try {
@@ -264,8 +264,8 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public Tenant addAttributeDefinitions(final String tenantName,
-                                          final Collection<AttributeDefinition> attributeDefinitions)
-            throws ProfileException {
+                                          final Collection<AttributeDefinition> attributeDefinitions) throws
+        ProfileException {
         Tenant tenant = updateTenant(tenantName, new UpdateCallback() {
 
             @Override
@@ -288,8 +288,8 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public Tenant updateAttributeDefinitions(final String tenantName,
-                                             final Collection<AttributeDefinition> attributeDefinitions)
-            throws ProfileException {
+                                             final Collection<AttributeDefinition> attributeDefinitions) throws
+        ProfileException {
         Tenant tenant = updateTenant(tenantName, new UpdateCallback() {
 
             @Override
@@ -325,7 +325,7 @@ public class TenantServiceImpl implements TenantService {
                 Set<AttributeDefinition> allDefinitions = tenant.getAttributeDefinitions();
 
                 for (String attributeName : attributeNames) {
-                    for (Iterator<AttributeDefinition> iter = allDefinitions.iterator(); iter.hasNext();) {
+                    for (Iterator<AttributeDefinition> iter = allDefinitions.iterator(); iter.hasNext(); ) {
                         AttributeDefinition definition = iter.next();
                         if (definition.getName().equals(attributeName)) {
                             removeAttributeFromProfiles(tenantName, definition.getName());
