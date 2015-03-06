@@ -3,7 +3,9 @@ package org.craftercms.profile.management.security.permissions;
 import org.craftercms.commons.security.permissions.PermissionBase;
 
 /**
- * Created by alfonsovasquez on 20/2/15.
+ * Permission for the PROFILE_SUPERADMIN role (can do anything).
+ *
+ * @author avasquez
  */
 public class SuperadminPermission extends PermissionBase {
 

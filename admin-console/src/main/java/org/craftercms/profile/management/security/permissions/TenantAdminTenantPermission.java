@@ -9,7 +9,9 @@ import static org.craftercms.profile.management.security.permissions.Action.GET_
 import static org.craftercms.profile.management.security.permissions.Action.UPDATE_TENANT;
 
 /**
- * Created by alfonsovasquez on 20/2/15.
+ * Tenant permission for the PROFILE_TENANT_ADMIN role.
+ *
+ * @author avasquez
  */
 public class TenantAdminTenantPermission extends CompositePermission {
 

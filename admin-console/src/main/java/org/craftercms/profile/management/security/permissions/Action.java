@@ -1,7 +1,9 @@
 package org.craftercms.profile.management.security.permissions;
 
 /**
- * Created by alfonsovasquez on 20/2/15.
+ * The actions that a user can execute in the admin console.
+ *
+ * @author avasquez
  */
 public enum Action {
     GET_TENANT_NAMES,

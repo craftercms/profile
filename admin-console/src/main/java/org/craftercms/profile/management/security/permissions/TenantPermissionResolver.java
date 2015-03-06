@@ -7,7 +7,9 @@ import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.management.security.AuthorizationUtils;
 
 /**
- * Created by alfonsovasquez on 20/2/15.
+ * {@link org.craftercms.commons.security.permissions.PermissionResolver} for tenant permissions.
+ *
+ * @author avasquez
  */
 public class TenantPermissionResolver implements PermissionResolver<Profile, String> {
 

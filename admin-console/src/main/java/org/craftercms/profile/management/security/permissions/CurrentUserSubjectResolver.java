@@ -5,7 +5,10 @@ import org.craftercms.profile.api.Profile;
 import org.craftercms.security.utils.SecurityUtils;
 
 /**
- * Created by alfonsovasquez on 20/2/15.
+ * {@link org.craftercms.commons.security.permissions.SubjectResolver} that returns the currently authenticated
+ * profile
+ *
+ * @author avasquez
  */
 public class CurrentUserSubjectResolver implements SubjectResolver<Profile> {
 

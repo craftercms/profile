@@ -9,9 +9,10 @@ import static org.craftercms.profile.management.security.permissions.Action.GET_
 import static org.craftercms.profile.management.security.permissions.Action.UPDATE_PROFILE;
 import static org.craftercms.profile.management.security.AuthorizationUtils.PROFILE_ADMIN_ROLE;
 
-
 /**
- * Created by alfonsovasquez on 20/2/15.
+ * Profile permission for the PROFILE_ADMIN role.
+ *
+ * @author avasquez
  */
 public class ProfileAdminProfilePermission extends CompositePermission {
 

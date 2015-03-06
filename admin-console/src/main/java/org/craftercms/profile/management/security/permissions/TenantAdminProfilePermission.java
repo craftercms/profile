@@ -9,9 +9,10 @@ import static org.craftercms.profile.management.security.permissions.Action.GET_
 import static org.craftercms.profile.management.security.permissions.Action.UPDATE_PROFILE;
 import static org.craftercms.profile.management.security.AuthorizationUtils.TENANT_ADMIN_ROLE;
 
-
 /**
- * Created by alfonsovasquez on 20/2/15.
+ * Profile permission for the PROFILE_TENANT_ADMIN role.
+ *
+ * @author avasquez
  */
 public class TenantAdminProfilePermission extends CompositePermission {
 

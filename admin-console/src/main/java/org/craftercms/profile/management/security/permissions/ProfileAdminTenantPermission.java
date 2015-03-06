@@ -8,7 +8,9 @@ import static org.craftercms.profile.management.security.permissions.Action.GET_
 import static org.craftercms.profile.management.security.permissions.Action.GET_TENANT;
 
 /**
- * Created by alfonsovasquez on 20/2/15.
+ * Tenant permission for the PROFILE_ADMIN role.
+ *
+ * @author avasquez
  */
 public class ProfileAdminTenantPermission extends CompositePermission {
 

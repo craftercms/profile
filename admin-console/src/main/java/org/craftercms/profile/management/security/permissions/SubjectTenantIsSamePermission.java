@@ -3,7 +3,10 @@ package org.craftercms.profile.management.security.permissions;
 import org.craftercms.commons.security.permissions.Permission;
 
 /**
- * Created by alfonsovasquez on 20/2/15.
+ * Permission that ensures that the current profile isn't trying to modify a tenant that it's not its own tenant or
+ * a profile that doesn't correspond to its own tenant.
+ *
+ * @author avasquez
  */
 public class SubjectTenantIsSamePermission implements Permission {
 

@@ -11,7 +11,10 @@ import static org.craftercms.profile.management.security.AuthorizationUtils.SUPE
 import static org.craftercms.profile.management.security.AuthorizationUtils.TENANT_ADMIN_ROLE;
 
 /**
- * Created by alfonsovasquez on 20/2/15.
+ * Permission that ensures that the current profile isn't trying to modify another profile if the former has an
+ * inferior role than the later.
+ *
+ * @author avasquez
  */
 public class SubjectRoleIsNotInferiorPermission implements Permission {
 

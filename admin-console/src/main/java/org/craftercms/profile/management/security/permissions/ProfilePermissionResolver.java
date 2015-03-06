@@ -7,7 +7,9 @@ import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.management.security.AuthorizationUtils;
 
 /**
- * Created by alfonsovasquez on 20/2/15.
+ * {@link org.craftercms.commons.security.permissions.PermissionResolver} for profile permissions.
+ *
+ * @author avasquez
  */
 public class ProfilePermissionResolver implements PermissionResolver<Profile, Profile> {
 
