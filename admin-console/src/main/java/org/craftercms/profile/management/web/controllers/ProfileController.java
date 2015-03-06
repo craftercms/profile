@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.craftercms.commons.security.exception.ActionDeniedException;
+import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.SortOrder;
@@ -29,8 +31,7 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.management.exceptions.InvalidRequestParameterException;
 import org.craftercms.profile.management.exceptions.ResourceNotFoundException;
-import org.craftercms.profile.management.exceptions.UnauthorizedException;
-import org.craftercms.profile.management.utils.AuthorizationUtils;
+import org.craftercms.profile.management.security.permissions.Action;
 import org.craftercms.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
@@ -86,8 +87,9 @@ public class ProfileController {
     public static final String FINAL_QUERY_FORMAT = "{username: {$regex: '.*%s.*', $options: 'i'}}";
 
     private String verificationUrl;
-
     private ProfileService profileService;
+    private PermissionEvaluator<Profile, String> tenantPermissionEvaluator;
+    private PermissionEvaluator<Profile, Profile> profilePermissionEvaluator;
 
     public void setVerificationUrl(String verificationUrl) {
         this.verificationUrl = verificationUrl;
@@ -96,6 +98,16 @@ public class ProfileController {
     @Required
     public void setProfileService(ProfileService profileService) {
         this.profileService = profileService;
+    }
+
+    @Required
+    public void setTenantPermissionEvaluator(PermissionEvaluator<Profile, String> tenantPermissionEvaluator) {
+        this.tenantPermissionEvaluator = tenantPermissionEvaluator;
+    }
+
+    @Required
+    public void setProfilePermissionEvaluator(PermissionEvaluator<Profile, Profile> profilePermissionEvaluator) {
+        this.profilePermissionEvaluator = profilePermissionEvaluator;
     }
 
     @RequestMapping(value = URL_VIEW_PROFILE_LIST, method = RequestMethod.GET)
@@ -121,7 +133,7 @@ public class ProfileController {
         if (StringUtils.isEmpty(tenantName)) {
             tenantName = SecurityUtils.getCurrentProfile().getTenant();
         } else {
-            AuthorizationUtils.checkCurrentUserIsAdminForTenant(tenantName);
+            checkIfAllowed(tenantName, Action.GET_PROFILE_COUNT);
         }
 
         if (StringUtils.isNotEmpty(query)) {
@@ -130,8 +142,8 @@ public class ProfileController {
 
                 return profileService.getProfileCountByQuery(tenantName, query);
             } else {
-                throw new InvalidRequestParameterException(
-                        "Parameter '" + PARAM_QUERY + "' must match regex " + QUERY_PATTERN.pattern());
+                throw new InvalidRequestParameterException("Parameter '" + PARAM_QUERY + "' must match regex " +
+                                                           QUERY_PATTERN.pattern());
             }
         } else {
             return profileService.getProfileCount(tenantName);
@@ -150,7 +162,7 @@ public class ProfileController {
         if (StringUtils.isEmpty(tenantName)) {
             tenantName = SecurityUtils.getCurrentProfile().getTenant();
         } else {
-            AuthorizationUtils.checkCurrentUserIsAdminForTenant(tenantName);
+            checkIfAllowed(tenantName, Action.GET_PROFILE_LIST);
         }
 
         if (StringUtils.isNotEmpty(query)) {
@@ -159,8 +171,8 @@ public class ProfileController {
 
                 return profileService.getProfilesByQuery(tenantName, query, sortBy, sortOrder, start, limit);
             } else {
-                throw new InvalidRequestParameterException(
-                        "Parameter '" + PARAM_QUERY + "' must match regex " + QUERY_PATTERN.pattern());
+                throw new InvalidRequestParameterException("Parameter '" + PARAM_QUERY + "' must match regex " +
+                                                           QUERY_PATTERN.pattern());
             }
         } else {
             return profileService.getProfileRange(tenantName, sortBy, sortOrder, start, limit);
@@ -172,7 +184,7 @@ public class ProfileController {
     public Profile getProfile(@PathVariable(PATH_VAR_ID) String id) throws ProfileException {
         Profile profile = profileService.getProfile(id);
         if (profile != null) {
-            AuthorizationUtils.checkCurrentUserIsAdminForTenant(profile.getTenant());
+            checkIfAllowed(profile, Action.GET_PROFILE);
 
             return profile;
         } else {
@@ -183,11 +195,7 @@ public class ProfileController {
     @RequestMapping(value = URL_CREATE_PROFILE, method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> createProfile(@RequestBody Profile profile) throws ProfileException {
-        AuthorizationUtils.checkCurrentUserIsAdminForTenant(profile.getTenant());
-
-        if (AuthorizationUtils.isCurrentUserTenantAdmin() && AuthorizationUtils.isSuperadmin(profile)) {
-            throw new UnauthorizedException("A tenant admin can't assign the super admin role");
-        }
+        checkIfAllowed(profile, Action.CREATE_PROFILE);
 
         profile = profileService.createProfile(profile.getTenant(), profile.getUsername(), profile.getPassword(),
                                                profile.getEmail(), profile.isEnabled(), profile.getRoles(),
@@ -203,16 +211,7 @@ public class ProfileController {
         Profile currentProfile = profileService.getProfile(id);
 
         if (currentProfile != null) {
-            AuthorizationUtils.checkCurrentUserIsAdminForTenant(currentProfile.getTenant());
-
-            if (AuthorizationUtils.isCurrentUserTenantAdmin()) {
-                if (!AuthorizationUtils.isSuperadmin(currentProfile) && AuthorizationUtils.isSuperadmin(profile)) {
-                    throw new UnauthorizedException("A tenant admin can't assign the super admin role");
-                }
-                if (AuthorizationUtils.isSuperadmin(currentProfile) && !AuthorizationUtils.isSuperadmin(profile)) {
-                    throw new UnauthorizedException("A tenant admin can't un-assign the super admin role");
-                }
-            }
+            checkIfAllowed(currentProfile, Action.UPDATE_PROFILE);
 
             profileService.updateProfile(id, profile.getUsername(), profile.getPassword(), profile.getEmail(),
                                          profile.isEnabled(), profile.getRoles(), profile.getAttributes(),
@@ -229,13 +228,33 @@ public class ProfileController {
     public Map<String, String> deleteProfile(@PathVariable(PATH_VAR_ID) String id) throws ProfileException {
         Profile profile = profileService.getProfile(id);
         if (profile != null) {
-            AuthorizationUtils.checkCurrentUserIsAdminForTenant(profile.getTenant());
+            checkIfAllowed(profile, Action.DELETE_PROFILE);
 
             profileService.deleteProfile(id);
 
             return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_PROFILE_DELETED_FORMAT, id));
         } else {
             throw new ResourceNotFoundException("No profile found for ID '" + id + "'");
+        }
+    }
+
+    private void checkIfAllowed(String tenant, Action action) throws ActionDeniedException {
+        if (!tenantPermissionEvaluator.isAllowed(tenant, action.toString())) {
+            if (tenant != null) {
+                throw new ActionDeniedException(action.toString(), tenant);
+            } else {
+                throw new ActionDeniedException(action.toString());
+            }
+        }
+    }
+
+    private void checkIfAllowed(Profile profile, Action action) throws ActionDeniedException {
+        if (!profilePermissionEvaluator.isAllowed(profile, action.toString())) {
+            if (profile != null) {
+                throw new ActionDeniedException(action.toString(), profile);
+            } else {
+                throw new ActionDeniedException(action.toString());
+            }
         }
     }
 

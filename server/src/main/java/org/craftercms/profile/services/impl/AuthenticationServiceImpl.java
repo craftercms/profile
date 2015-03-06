@@ -51,8 +51,8 @@ import org.springframework.beans.factory.annotation.Required;
 @Logged
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private static final I10nLogger logger = new I10nLogger(AuthenticationServiceImpl.class,
-            "crafter.profile.messages.logging");
+    private static final I10nLogger logger = new I10nLogger(AuthenticationServiceImpl.class, "crafter.profile" +
+                                                                                             ".messages.logging");
 
     public static final String LOG_KEY_AUTHENTICATION_SUCCESSFUL = "profile.auth.authenticationSuccessful";
     public static final String LOG_KEY_TICKET_CREATED = "profile.auth.ticketCreated";

@@ -19,6 +19,7 @@ package org.craftercms.profile.controllers.rest;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
@@ -75,6 +76,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Creates a new profile for a specific tenant name")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_CREATE, method = RequestMethod.POST)
     @ResponseBody
     public Profile createProfile(
@@ -97,6 +100,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Updates the profile's info")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_UPDATE, method = RequestMethod.POST)
     @ResponseBody
     public Profile updateProfile(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId,
@@ -122,6 +127,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Enables a profile")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_ENABLE, method = RequestMethod.POST)
     @ResponseBody
     public Profile enableProfile(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId,
@@ -132,6 +139,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Disables a profile")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_DISABLE, method = RequestMethod.POST)
     @ResponseBody
     public Profile disableProfile(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId,
@@ -142,6 +151,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Assigns roles to a profile")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_ADD_ROLES, method = RequestMethod.POST)
     @ResponseBody
     public Profile addRoles(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId,
@@ -153,6 +164,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Removes assigned roles from a profile")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_REMOVE_ROLES, method = RequestMethod.POST)
     @ResponseBody
     public Profile removeRoles(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId,
@@ -164,6 +177,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Sets the profile as verified if the verification token is valid")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_VERIFY, method = RequestMethod.POST)
     @ResponseBody
     public Profile verifyProfile(
@@ -176,6 +191,8 @@ public class ProfileController {
 
 
     @ApiOperation("Returns the attributes of a profile")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_ATTRIBUTES, method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> getAttributes(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId,
@@ -188,6 +205,8 @@ public class ProfileController {
 
     @ApiOperation(value = "Updates the attributes of a profile", notes = "The specified attributes will be merged " +
         "with existing attributes")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_UPDATE_ATTRIBUTES, method = RequestMethod.POST)
     @ResponseBody
     public Profile updateAttributes(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId,
@@ -199,6 +218,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Removes a list of attributes of a profile")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_REMOVE_ATTRIBUTES, method = RequestMethod.POST)
     @ResponseBody
     public Profile removeAttributes(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId,
@@ -211,6 +232,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Deletes a profile")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_DELETE_PROFILE, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void deleteProfile(
@@ -219,6 +242,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Returns the single profile that matches the specified query")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_ONE_BY_QUERY, method = RequestMethod.GET)
     @ResponseBody
     public Profile getProfileByQuery(@ApiParam("The tenant's name") @RequestParam(PARAM_TENANT_NAME) String tenantName,
@@ -233,6 +258,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Returns the profile for the specified ID")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET, method = RequestMethod.GET)
     @ResponseBody
     public Profile getProfile(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId,
@@ -243,6 +270,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Returns the user for the specified tenant and username")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_BY_USERNAME, method = RequestMethod.GET)
     @ResponseBody
     public Profile getProfileByUsername(
@@ -255,6 +284,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Returns the profile for the specified ticket")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_BY_TICKET, method = RequestMethod.GET)
     @ResponseBody
     public Profile getProfileByTicket(
@@ -266,6 +297,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Returns the number of profiles of the specified tenant")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_COUNT, method = RequestMethod.GET)
     @ResponseBody
     public long getProfileCount(
@@ -274,6 +307,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Returns the number of profiles that match the query for the specified tenant")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_COUNT_BY_QUERY, method = RequestMethod.GET)
     @ResponseBody
     public long getProfileCount(@ApiParam("The tenant's name") @RequestParam(PARAM_TENANT_NAME) String tenantName,
@@ -285,6 +320,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Returns the profiles that match the specified query")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_BY_QUERY, method = RequestMethod.GET)
     @ResponseBody
     public List<Profile> getProfilesByQuery(
@@ -308,6 +345,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Returns a list of profiles for the specified list of IDs")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_BY_IDS, method = RequestMethod.GET)
     @ResponseBody
     public Iterable<Profile> getProfileByIds(
@@ -322,6 +361,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Returns a range of profiles for the specified tenant")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_RANGE, method = RequestMethod.GET)
     @ResponseBody
     public Iterable<Profile> getProfileRange(
@@ -341,6 +382,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Returns a list of profiles for a specific role and tenant")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_BY_ROLE, method = RequestMethod.GET)
     @ResponseBody
     public Iterable<Profile> getProfilesByRole(
@@ -356,6 +399,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Returns the list of profiles that have the given attribute, with any value")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_BY_EXISTING_ATTRIB, method = RequestMethod.GET)
     @ResponseBody
     public Iterable<Profile> getProfilesByExistingAttribute(
@@ -373,6 +418,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Returns the list of profiles that have the given attribute with the given value")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_BY_ATTRIB_VALUE, method = RequestMethod.GET)
     @ResponseBody
     public Iterable<Profile> getProfilesByAttributeValue(
@@ -392,6 +439,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Sends an email to the profile's user to indicate that the password needs to be reset")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_RESET_PASSWORD, method = RequestMethod.POST)
     @ResponseBody
     public Profile resetPassword(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId,
@@ -405,6 +454,8 @@ public class ProfileController {
     }
 
     @ApiOperation("Resets a profile's password")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_CHANGE_PASSWORD, method = RequestMethod.POST)
     @ResponseBody
     public Profile changePassword(
@@ -419,6 +470,8 @@ public class ProfileController {
     @ApiOperation(value = "Creates a token that can be sent to the user in an email as a link", notes = "After the " +
         "user clicks the link, the token then can be passed to verifyProfile or changePassword to verify that the " +
         "user agrees")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_CREATE_VERIFICATION_TOKEN, method = RequestMethod.POST)
     @ResponseBody
     public VerificationToken createVerificationToken(
@@ -429,6 +482,8 @@ public class ProfileController {
 
     @ApiOperation(value = "Deletes a verification token when it's not needed anymore", notes = "Not necessary to " +
         "call if verifyProfile or changePassword, since they already delete the token")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_DELETE_VERIFICATION_TOKEN, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void deleteVerificationToken(@ApiParam("The ID of the token to delete") @RequestParam(PARAM_TOKEN_ID)

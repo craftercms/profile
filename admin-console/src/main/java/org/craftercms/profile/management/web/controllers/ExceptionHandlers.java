@@ -2,11 +2,11 @@ package org.craftercms.profile.management.web.controllers;
 
 import java.util.Collections;
 
+import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.ProfileRestServiceException;
 import org.craftercms.profile.management.exceptions.InvalidRequestParameterException;
 import org.craftercms.profile.management.exceptions.ResourceNotFoundException;
-import org.craftercms.profile.management.exceptions.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -52,8 +52,8 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<Object> handleUnauthorizedException(UnauthorizedException e, WebRequest request) {
+    @ExceptionHandler(ActionDeniedException.class)
+    public ResponseEntity<Object> handleUnauthorizedException(ActionDeniedException e, WebRequest request) {
         return handleExceptionInternal(e, HttpStatus.FORBIDDEN, request);
     }
 

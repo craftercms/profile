@@ -43,6 +43,44 @@ app.constant('paginationConfig', {
 /**
  * Global functions
  */
+function isSuperadmin() {
+    return hasRole('PROFILE_SUPERADMIN');
+}
+
+function isTenantAdmin() {
+    return hasRole('PROFILE_TENANT_ADMIN');
+}
+
+function hasRole(role) {
+    return currentRoles.indexOf(role) >= 0;
+}
+
+function getSuperiorRoles() {
+    var superiorRoles = [];
+
+    if (!isSuperadmin()) {
+        superiorRoles.push('PROFILE_SUPERADMIN');
+
+        if(!isTenantAdmin()) {
+            superiorRoles.push('PROFILE_TENANT_ADMIN');
+        }
+    }
+
+    return superiorRoles;
+}
+
+function isCurrentRoleNotInferior(profile) {
+    var superiorRoles = getSuperiorRoles();
+
+    for (var i = 0; i < profile.roles.length; i++) {
+        if (superiorRoles.indexOf(profile.roles[i]) >= 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 function getObject(url, $http) {
     return $http.get(contextPath + url).then(function(result){
         return result.data;
@@ -330,10 +368,13 @@ app.controller('ProfileListController', function($scope, $location, tenantNames,
     $scope.selectedTenantName = currentTenantName;
     $scope.itemsPerPage = 10;
 
+    $scope.isCurrentRoleNotInferior = function(profile) {
+       return isCurrentRoleNotInferior(profile);
+    };
+
     $scope.isValidUsername = function(text) {
         return /^\w+$/.test(text);
     };
-
 
     $scope.getCurrentPage = function(tenantName, searchText, currentPage, itemsPerPage) {
         var start = (currentPage - 1) * itemsPerPage;
@@ -394,7 +435,7 @@ app.controller('NewProfileController', function($scope, $location, tenantNames, 
     $scope.profile.tenant = currentTenantName;
     $scope.profile.password = "";
     $scope.confirmPassword = "";
-    $scope.disabledRoles = superadmin? [] : ["PROFILE_ADMIN"];
+    $scope.disabledRoles = getSuperiorRoles();
 
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
@@ -428,7 +469,7 @@ app.controller('UpdateProfileController', function($scope, $location, profile, t
     $scope.profile = profile;
     $scope.profile.password = "";
     $scope.confirmPassword = "";
-    $scope.disabledRoles = superadmin? [] : ["PROFILE_ADMIN"];
+    $scope.disabledRoles = getSuperiorRoles();
 
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
@@ -490,11 +531,11 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
     $scope.newTenant = newTenant;
     $scope.attributeTypes = attributeTypes;
     $scope.attributeActions = attributeActions;
-    $scope.undeletableAvailableRoles = ['PROFILE_ADMIN'];
+    $scope.undeletableAvailableRoles = ['PROFILE_SUPERADMIN'];
 
     $scope.availableRolesValidationCallback = function(scope, item) {
-        if (item == 'PROFILE_ADMIN') {
-            scope.errorMsg = 'PROFILE_ADMIN is a system reserved role';
+        if (item == 'PROFILE_SUPERADMIN') {
+            scope.errorMsg = 'PROFILE_SUPERADMIN is a system reserved role';
 
             return false;
         } else {

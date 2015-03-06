@@ -82,7 +82,7 @@
         <module>security-provider</module>
         <module>admin-console</module>
         <module>integration-tests</module>
-        <module>social-media-integration</module>
+        <module>social-services-integration</module>
     </modules>
 
     <build>

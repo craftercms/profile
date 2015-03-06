@@ -60,11 +60,11 @@ public class TenantServiceIT {
     private static final String DEFAULT_TENANT_NAME = "default";
     private static final String CORPORATE_TENANT_NAME = "corporate";
 
-    private static final String PROFILE_ADMIN_ROLE = "PROFILE_ADMIN";
     private static final String ADMIN_ROLE = "ADMIN";
     private static final String USER_ROLE = "USER";
-    private static final Set<String> DEFAULT_ROLES = SetUtils.asSet("PROFILE_ADMIN", "SOCIAL_USER", "SOCIAL_MODERATOR",
-            "SOCIAL_AUTHOR", "SOCIAL_ADMIN");
+    private static final Set<String> DEFAULT_ROLES = SetUtils.asSet("PROFILE_SUPERADMIN", "SOCIAL_USER",
+                                                                    "SOCIAL_MODERATOR", "SOCIAL_AUTHOR",
+                                                                    "SOCIAL_ADMIN");
     private static final Set<String> CORPORATE_ROLES = SetUtils.asSet(ADMIN_ROLE);
 
     private static final String FIRST_NAME_ATTRIBUTE_NAME = "firstName";

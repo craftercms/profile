@@ -20,12 +20,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.craftercms.commons.security.exception.ActionDeniedException;
+import org.craftercms.commons.security.permissions.PermissionEvaluator;
+import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.management.exceptions.ResourceNotFoundException;
-import org.craftercms.profile.management.exceptions.UnauthorizedException;
-import org.craftercms.profile.management.utils.AuthorizationUtils;
+import org.craftercms.profile.management.security.AuthorizationUtils;
+import org.craftercms.profile.management.security.permissions.Action;
 import org.craftercms.security.utils.SecurityUtils;
 import org.craftercms.security.utils.tenant.TenantUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -74,10 +77,16 @@ public class TenantController {
     public static final String MSG_TENANT_DELETED_FORMAT = "Tenant '%s' deleted";
 
     private TenantService tenantService;
+    private PermissionEvaluator<Profile, String> tenantPermissionEvaluator;
 
     @Required
     public void setTenantService(TenantService tenantService) {
         this.tenantService = tenantService;
+    }
+
+    @Required
+    public void setTenantPermissionEvaluator(PermissionEvaluator<Profile, String> tenantPermissionEvaluator) {
+        this.tenantPermissionEvaluator = tenantPermissionEvaluator;
     }
 
     @RequestMapping(value = URL_VIEW_TENANT_LIST, method = RequestMethod.GET)
@@ -98,7 +107,7 @@ public class TenantController {
     @RequestMapping(value = URL_GET_TENANT_NAMES, method = RequestMethod.GET)
     @ResponseBody
     public List<String> getTenantNames() throws ProfileException {
-        if (AuthorizationUtils.isCurrentUserSuperadmin()) {
+        if (AuthorizationUtils.isSuperadmin(SecurityUtils.getCurrentProfile())) {
             return TenantUtils.getTenantNames(tenantService);
         } else {
             return Collections.singletonList(SecurityUtils.getCurrentProfile().getTenant());
@@ -108,10 +117,10 @@ public class TenantController {
     @RequestMapping(value = URL_GET_TENANT, method = RequestMethod.GET)
     @ResponseBody
     public Tenant getTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
-        AuthorizationUtils.checkCurrentUserIsAdminForTenant(name);
-
         Tenant tenant = tenantService.getTenant(name);
         if (tenant != null) {
+            checkIfAllowed(tenant.getName(), Action.GET_TENANT);
+
             return tenant;
         } else {
             throw new ResourceNotFoundException("No tenant found with name '" + name + "'");
@@ -121,10 +130,10 @@ public class TenantController {
     @RequestMapping(value = URL_CREATE_TENANT, method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> createTenant(@RequestBody Tenant tenant) throws ProfileException {
-        AuthorizationUtils.checkCurrentUserIsSuperadmin();
+        checkIfAllowed(tenant.getName(), Action.CREATE_TENANT);
 
         if (tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
-            throw new UnauthorizedException(AuthorizationUtils.SUPERADMIN_ROLE + " is a system reserved role");
+            throw new ActionDeniedException(Action.CREATE_TENANT.toString(), tenant.getName());
         }
 
         tenant = tenantService.createTenant(tenant);
@@ -136,18 +145,18 @@ public class TenantController {
     @ResponseBody
     public Map<String, String> updateTenant(@RequestBody Tenant tenant) throws ProfileException {
         String name = tenant.getName();
+
+        checkIfAllowed(name, Action.UPDATE_TENANT);
+
         Tenant currentTenant = tenantService.getTenant(name);
-
         if (currentTenant != null) {
-            AuthorizationUtils.checkCurrentUserIsAdminForTenant(name);
-
             if (!currentTenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE) &&
                 tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
-                throw new UnauthorizedException(AuthorizationUtils.SUPERADMIN_ROLE + " is a system reserved role");
+                throw new ActionDeniedException(Action.UPDATE_TENANT.toString(), name);
             }
             if (currentTenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE) &&
                 !tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
-                throw new UnauthorizedException(AuthorizationUtils.SUPERADMIN_ROLE + " role can't be removed");
+                throw new ActionDeniedException(Action.UPDATE_TENANT.toString(), name);
             }
 
             tenantService.updateTenant(tenant);
@@ -161,7 +170,7 @@ public class TenantController {
     @RequestMapping(value = URL_DELETE_TENANT, method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> deleteTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
-        AuthorizationUtils.checkCurrentUserIsSuperadmin();
+        checkIfAllowed(name, Action.DELETE_TENANT);
 
         Tenant tenant = tenantService.getTenant(name);
         if (tenant != null) {
@@ -170,6 +179,16 @@ public class TenantController {
             return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_DELETED_FORMAT, name));
         } else {
             throw new ResourceNotFoundException("No tenant found with name '" + name + "'");
+        }
+    }
+
+    private void checkIfAllowed(String tenant, Action action) throws ActionDeniedException {
+        if (!tenantPermissionEvaluator.isAllowed(tenant, action.toString())) {
+            if (tenant != null) {
+                throw new ActionDeniedException(action.toString(), tenant);
+            } else {
+                throw new ActionDeniedException(action.toString());
+            }
         }
     }
 

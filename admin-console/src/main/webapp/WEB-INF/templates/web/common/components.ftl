@@ -40,7 +40,11 @@
                 <li>
                     <span class="navbar-text">
                         Signed in to
+                        <#if loggedInUser.roles?seq_contains("PROFILE_ADMIN")>
+                            ${loggedInUser.tenant}
+                        <#else>
                             <a href="#/tenant/update/${loggedInUser.tenant}">${loggedInUser.tenant}</a>
+                        </#if>
                         as: <a href="#/profile/update/${loggedInUser.id}">${loggedInUser.username}</a>
                     </span>
                 </li>
@@ -57,10 +61,10 @@
         <li><a href="#/profile/new">New Profile</a></li>
     </ul>
     <ul class="nav nav-sidebar">
-        <#if loggedInUser.roles?seq_contains("PROFILE_ADMIN")>
+        <#if loggedInUser.roles?seq_contains("PROFILE_SUPERADMIN")>
             <li><a href="#/tenant/list">List Tenants</a></li>
             <li><a href="#/tenant/new">New Tenant</a></li>
-        <#else>
+        <#elseif loggedInUser.roles?seq_contains("PROFILE_TENANT_ADMIN")>
             <li><a href="#/tenant/update/${loggedInUser.tenant}">Edit Tenant</a></li>
         </#if>
     </ul>
@@ -77,8 +81,13 @@
 <script src="<@spring.url '/resources/js/jquery.cookie.js'/>"></script>
 <script src="<@spring.url '/resources/js/app.js'/>"></script>
 <script type="text/javascript">
-    var contextPath = "${requestContext.contextPath}";
-    var currentTenantName = "${loggedInUser.tenant}";
-    var superadmin = <#if loggedInUser.roles?seq_contains("PROFILE_ADMIN")>true<#else>false</#if>;
+    var contextPath = '${requestContext.contextPath}';
+    var currentTenantName = '${loggedInUser.tenant}';
+    <#assign rolesArray = ""/>
+    <#list loggedInUser.roles as role>
+        <#assign rolesArray = "${rolesArray}'${role}'"/>
+        <#if role_has_next><#assign rolesArray = "${rolesArray}, "/></#if>
+    </#list>
+    var currentRoles = [${rolesArray}];
 </script>
 </#macro>

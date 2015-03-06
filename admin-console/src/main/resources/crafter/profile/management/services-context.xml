@@ -26,8 +26,29 @@
 
     <util:map id="crafter.urlRestrictions">
         <entry key="/login" value="permitAll()"/>
-        <entry key="/**" value="hasAnyRole({'PROFILE_ADMIN', 'PROFILE_TENANT_ADMIN'})"/>
+        <entry key="/**" value="hasAnyRole({'PROFILE_SUPERADMIN', 'PROFILE_TENANT_ADMIN', 'PROFILE_ADMIN'})"/>
     </util:map>
+
+    <bean id="crafter.subjectResolver"
+          class="org.craftercms.profile.management.security.permissions.CurrentUserSubjectResolver"/>
+
+    <bean id="crafter.tenantPermissionResolver"
+          class="org.craftercms.profile.management.security.permissions.TenantPermissionResolver"/>
+
+    <bean id="crafter.profilePermissionResolver"
+          class="org.craftercms.profile.management.security.permissions.ProfilePermissionResolver"/>
+
+    <bean id="crafter.tenantPermissionEvaluator"
+          class="org.craftercms.commons.security.permissions.impl.PermissionEvaluatorImpl">
+        <property name="subjectResolver" ref="crafter.subjectResolver"/>
+        <property name="permissionResolver" ref="crafter.tenantPermissionResolver"/>
+    </bean>
+
+    <bean id="crafter.profilePermissionEvaluator"
+          class="org.craftercms.commons.security.permissions.impl.PermissionEvaluatorImpl">
+        <property name="subjectResolver" ref="crafter.subjectResolver"/>
+        <property name="permissionResolver" ref="crafter.profilePermissionResolver"/>
+    </bean>
 
     <import resource="classpath*:crafter/profile/management/extension/services-context.xml"/>
 

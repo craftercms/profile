@@ -56,8 +56,8 @@ public class VerificationServiceImpl implements VerificationService {
     public static final String ERROR_KEY_DELETE_TOKEN_ERROR = "profile.verification.deleteTokenError";
     public static final String ERROR_KEY_EMAIL_ERROR = "profile.verification.emailError";
 
-    private static final I10nLogger logger = new I10nLogger(VerificationServiceImpl.class,
-        "crafter.profile.messages.logging");
+    private static final I10nLogger logger = new I10nLogger(VerificationServiceImpl.class, "crafter.profile.messages" +
+                                                                                           ".logging");
 
     protected VerificationTokenRepository tokenRepository;
     protected EmailFactory emailFactory;

@@ -83,7 +83,7 @@ public class ProfileServiceIT {
     private static final String ADMIN_USERNAME = "admin";
     private static final String ADMIN_PASSWORD = "admin";
     private static final String ADMIN_EMAIL = "admin@craftersoftware.com";
-    private static final Set<String> ADMIN_ROLES = new HashSet<>(Arrays.asList("PROFILE_ADMIN", "SOCIAL_ADMIN"));
+    private static final Set<String> ADMIN_ROLES = new HashSet<>(Arrays.asList("PROFILE_SUPERADMIN", "SOCIAL_ADMIN"));
 
     private static final String JDOE_USERNAME = "jdoe";
     private static final String JDOE_EMAIL = "john.doe@craftersoftware.com";
@@ -99,7 +99,7 @@ public class ProfileServiceIT {
     private static final String AVASQUEZ_PASSWORD2 = "4321";
     private static final String AVASQUEZ_EMAIL1 = "alfonso.vasquez@craftersoftware.com";
     private static final String AVASQUEZ_EMAIL2 = "avasquez@rivetlogic.com";
-    private static final Set<String> AVASQUEZ_ROLES1 = SetUtils.asSet("PROFILE_ADMIN", "SOCIAL_MODERATOR");
+    private static final Set<String> AVASQUEZ_ROLES1 = SetUtils.asSet("PROFILE_SUPERADMIN", "SOCIAL_MODERATOR");
     private static final Set<String> AVASQUEZ_ROLES2 = SetUtils.asSet("SOCIAL_AUTHOR");
     private static final String AVASQUEZ_FIRST_NAME = "Alfonso";
     private static final String AVASQUEZ_LAST_NAME = "Vasquez";
