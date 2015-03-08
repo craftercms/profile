@@ -7,7 +7,7 @@
     <import resource="classpath:crafter/profile/client-context.xml"/>
 
     <bean name="crafter.profileProperties"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+          class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="locations">
             <list>

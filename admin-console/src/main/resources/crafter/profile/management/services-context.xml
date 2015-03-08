@@ -9,7 +9,7 @@
     <import resource="classpath:crafter/security/security-context.xml"/>
 
     <bean name="crafter.adminConsoleProperties"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+          class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="order" value="0"/>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="locations">

@@ -7,7 +7,7 @@
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <bean name="crafter.profileProperties"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+          class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="order" value="1000"/>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="locations">
