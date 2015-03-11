@@ -25,7 +25,7 @@
     <bean id="crafter.loggedAspect" class="org.craftercms.commons.logging.LoggedAspect"/>
 
     <bean name="crafter.profileProperties"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+          class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <!-- <property name="ignoreResourceNotFound" value="true"/> -->
         <property name="locations">
