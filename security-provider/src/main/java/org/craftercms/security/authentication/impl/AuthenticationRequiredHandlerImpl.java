@@ -62,6 +62,10 @@ public class AuthenticationRequiredHandlerImpl implements AuthenticationRequired
         this.loginFormUrl = loginFormUrl;
     }
 
+    protected String getLoginFormUrl() {
+        return loginFormUrl;
+    }
+
     /**
      * Sets the cache where the current request is saved.
      */
@@ -78,6 +82,8 @@ public class AuthenticationRequiredHandlerImpl implements AuthenticationRequired
     public void handle(RequestContext context, AuthenticationException e) throws SecurityProviderException,
             IOException {
         saveRequest(context);
+
+        String loginFormUrl = getLoginFormUrl();
 
         if (StringUtils.isNotEmpty(loginFormUrl)) {
             RedirectUtils.redirect(context.getRequest(), context.getResponse(), loginFormUrl);

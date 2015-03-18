@@ -54,6 +54,10 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         this.errorPageUrl = errorPageUrl;
     }
 
+    protected String getErrorPageUrl() {
+        return errorPageUrl;
+    }
+
     /**
      * Forwards to the error page, but if not error page was specified, a 403 error is sent.
      *
@@ -64,7 +68,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     public void handle(RequestContext context, AccessDeniedException e) throws SecurityProviderException, IOException {
         saveException(context, e);
 
-        if (StringUtils.isNotEmpty(errorPageUrl)) {
+        if (StringUtils.isNotEmpty(getErrorPageUrl())) {
             forwardToErrorPage(context);
         } else {
             sendError(e, context);
@@ -80,6 +84,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     protected void forwardToErrorPage(RequestContext context) throws SecurityProviderException, IOException {
         HttpServletRequest request = context.getRequest();
         HttpServletResponse response = context.getResponse();
+        String errorPageUrl = getErrorPageUrl();
 
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 

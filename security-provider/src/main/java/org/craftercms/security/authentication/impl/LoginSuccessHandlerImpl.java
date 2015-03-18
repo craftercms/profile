@@ -62,8 +62,16 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
         this.defaultTargetUrl = defaultTargetUrl;
     }
 
+    protected String getDefaultTargetUrl() {
+        return defaultTargetUrl;
+    }
+
     public void setAlwaysUseDefaultTargetUrl(boolean alwaysUseDefaultTargetUrl) {
         this.alwaysUseDefaultTargetUrl = alwaysUseDefaultTargetUrl;
+    }
+
+    protected boolean isAlwaysUseDefaultTargetUrl() {
+        return alwaysUseDefaultTargetUrl;
     }
 
     @Override
@@ -74,10 +82,10 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
 
     protected void redirectToSavedRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         SavedRequest savedRequest = requestCache.getRequest(request, response);
-        if (!alwaysUseDefaultTargetUrl && savedRequest != null) {
+        if (!isAlwaysUseDefaultTargetUrl() && savedRequest != null) {
             RedirectUtils.redirect(request, response, savedRequest.getRedirectUrl());
         } else {
-            RedirectUtils.redirect(request, response, defaultTargetUrl);
+            RedirectUtils.redirect(request, response, getDefaultTargetUrl());
         }
     }
 

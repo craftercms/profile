@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.crypto.CryptoException;
 import org.craftercms.commons.crypto.TextEncryptor;
 import org.craftercms.profile.api.Profile;
-import org.craftercms.profile.social.exceptions.SocialMediaIntegrationException;
+import org.craftercms.profile.social.exceptions.SocialServicesIntegrationException;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.UserProfile;
@@ -233,7 +233,7 @@ public class ConnectionUtils {
         try {
             return encryptor != null && StringUtils.isNotEmpty(clear) ? encryptor.encrypt(clear) : clear;
         } catch (CryptoException e) {
-            throw new SocialMediaIntegrationException("Encryption error", e);
+            throw new SocialServicesIntegrationException("Encryption error", e);
         }
     }
 
@@ -241,7 +241,7 @@ public class ConnectionUtils {
         try {
             return encryptor != null && StringUtils.isNotEmpty(encrypted) ? encryptor.decrypt(encrypted) : encrypted;
         } catch (CryptoException e) {
-            throw new SocialMediaIntegrationException("Decryption error", e);
+            throw new SocialServicesIntegrationException("Decryption error", e);
         }
     }
 

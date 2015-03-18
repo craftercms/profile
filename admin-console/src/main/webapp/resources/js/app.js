@@ -507,7 +507,7 @@ app.controller('TenantListController', function($scope, tenantNames, tenantServi
         $scope.tenantToDelete.name = tenantName;
         $scope.tenantToDelete.index = index;
         $scope.deleteConfirmationDialogMsg = 'Are you sure you wan to delete tenant "' + tenantName + '"? All its ' +
-            'profiles will be delete too. You can\'t undo this action later.';
+            'profiles will be deleted too. You can\'t undo this action later.';
 
         $('#deleteConfirmationDialog').modal('show');
     };
