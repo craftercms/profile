@@ -26,10 +26,13 @@ var paginationConfig = {
     itemsPerPage: 10
 };
 
+var defaultAvailableRoles = ['PROFILE_TENANT_ADMIN', 'PROFILE_ADMIN'];
+
 /**
  * Constants
  */
 app.constant('paginationConfig', {
+    maxSize: 10,
     itemsPerPage: 10,
     boundaryLinks: true,
     directionLinks: true,
@@ -323,7 +326,7 @@ app.config(function($routeProvider) {
                 return {
                     name: null,
                     verifyNewProfiles: false,
-                    availableRoles: [],
+                    availableRoles: defaultAvailableRoles,
                     attributeDefinitions: []
                 };
             },
