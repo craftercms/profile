@@ -134,6 +134,15 @@ function hideModalIfShown(modal) {
     }
 }
 
+function setDefaultAttributeValues(attributes, attributeDefinitions) {
+    for (var i = 0; i < attributeDefinitions.length; i++) {
+        var definition = attributeDefinitions[i];
+        if (definition.metadata.defaultValue != null && attributes[definition.name] == null) {
+            attributes[definition.name] = definition.metadata.defaultValue;
+        }
+    }
+}
+
 /**
  * Filters
  */
@@ -169,7 +178,7 @@ app.factory('httpErrorHandler', function ($q, $rootScope) {
                         message += ': <strong>' + rejection.data.message + '</strong>';
                     }
 
-                    message += '. Please contact IT support for more information';
+                    message += '. If you need more information, please contact IT support';
                 }
 
                 $rootScope.$broadcast('httpError');
@@ -447,6 +456,8 @@ app.controller('NewProfileController', function($scope, $location, tenantNames, 
             // Different tenant, Different roles and attributes
             $scope.profile.roles = [];
             $scope.profile.attributes = {};
+
+            setDefaultAttributeValues($scope.profile.attributes, tenant.attributeDefinitions);
         });
     };
 
@@ -477,6 +488,8 @@ app.controller('UpdateProfileController', function($scope, $location, profile, t
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
             $scope.tenant = tenant;
+
+            setDefaultAttributeValues($scope.profile.attributes, tenant.attributeDefinitions);
         });
     };
 

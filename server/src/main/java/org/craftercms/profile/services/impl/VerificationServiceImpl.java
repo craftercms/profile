@@ -49,7 +49,6 @@ public class VerificationServiceImpl implements VerificationService {
 
     public static final String LOG_KEY_TOKEN_CREATED = "profile.verification.tokenCreated";
     public static final String LOG_KEY_EMAIL_SENT = "profile.verification.emailSent";
-    public static final String LOG_KEY_TOKEN_VERIFIED = "profile.verification.tokenVerified";
     public static final String LOG_KEY_TOKEN_DELETED = "profile.verification.tokenDeleted";
     public static final String ERROR_KEY_CREATE_TOKEN_ERROR = "profile.verification.createTokenError";
     public static final String ERROR_KEY_GET_TOKEN_ERROR = "profile.verification.getTokenError";
