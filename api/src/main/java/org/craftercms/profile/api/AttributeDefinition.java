@@ -14,6 +14,7 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
 
     private String name;
     private Map<String, Object> metadata;
+    private Object defaultValue;
 
     public AttributeDefinition() {
     }
@@ -48,6 +49,20 @@ public class AttributeDefinition extends SecuredObjectBase<AttributePermission> 
      */
     public void setMetadata(Map<String, Object> metadata) {
         this.metadata = metadata;
+    }
+
+    /**
+     * Returns the default value for all attributes.
+     */
+    public Object getDefaultValue() {
+        return defaultValue;
+    }
+
+    /**
+     * Sets the default value of all attributes.
+     */
+    public void setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
     @Override

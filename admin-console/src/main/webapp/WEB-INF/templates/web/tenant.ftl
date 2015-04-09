@@ -131,21 +131,21 @@
                         <div class="form-group" ng-switch-when="TEXT">
                             <label for="defaultValue">Default Value</label>
                             <input name="defaultValue" type="text" class="form-control"
-                                   ng-model="currentDefinition.metadata.defaultValue"/>
+                                   ng-model="currentDefinition.defaultValue"/>
                         </div>
                         <div class="form-group" ng-switch-when="LARGE_TEXT">
                             <label for="defaultValue">Default Value</label>
                             <input name="defaultValue" type="text" class="form-control"
-                                   ng-model="currentDefinition.metadata.defaultValue"/>
+                                   ng-model="currentDefinition.defaultValue"/>
                         </div>
                         <div class="form-group" ng-switch-when="NUMBER">
                             <label for="defaultValue">Default Value</label>
                             <input name="defaultValue" type="number" class="form-control"
-                                   ng-model="currentDefinition.metadata.defaultValue"/>
+                                   ng-model="currentDefinition.defaultValue"/>
                         </div>
                         <div class="checkbox" ng-switch-when="BOOLEAN">
                             <label>
-                                <input type="checkbox" ng-model="currentDefinition.metadata.defaultValue"/> Default Value
+                                <input type="checkbox" ng-model="currentDefinition.defaultValue"/> Default Value
                             </label>
                         </div>
                     </div>

@@ -137,8 +137,8 @@ function hideModalIfShown(modal) {
 function setDefaultAttributeValues(attributes, attributeDefinitions) {
     for (var i = 0; i < attributeDefinitions.length; i++) {
         var definition = attributeDefinitions[i];
-        if (definition.metadata.defaultValue != null && attributes[definition.name] == null) {
-            attributes[definition.name] = definition.metadata.defaultValue;
+        if (definition.defaultValue != null && attributes[definition.name] == null) {
+            attributes[definition.name] = definition.defaultValue;
         }
     }
 }
@@ -488,8 +488,6 @@ app.controller('UpdateProfileController', function($scope, $location, profile, t
     $scope.getTenant = function(tenantName) {
         tenantService.getTenant(tenantName).then(function(tenant) {
             $scope.tenant = tenant;
-
-            setDefaultAttributeValues($scope.profile.attributes, tenant.attributeDefinitions);
         });
     };
 

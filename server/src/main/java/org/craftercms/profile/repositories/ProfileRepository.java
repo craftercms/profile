@@ -175,4 +175,15 @@ public interface ProfileRepository extends CrudRepository<Profile> {
      */
     void removeAttributeFromAll(String tenantName, String attributeName) throws MongoDataException;
 
+    /**
+     * Updates all the profiles of a given tenant with the default value of an attribute, only if they don't have
+     * the attribute value set yet.
+     *
+     * @param tenantName    the tenant's name
+     * @param attributeName the attribute's name
+     * @param defaultValue  the default attribute value
+     */
+    void updateAllWithDefaultValue(String tenantName, String attributeName,
+                                   Object defaultValue) throws MongoDataException;
+
 }

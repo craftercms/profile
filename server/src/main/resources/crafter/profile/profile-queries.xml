@@ -83,6 +83,10 @@
         {tenant: #, attributes.#: {$exists: true}}
     </entry>
 
+    <entry key="profile.profile.byTenantAndNonExistingAttribute">
+        {tenant: #, attributes.#: {$exists: false}}
+    </entry>
+
     <entry key="profile.profile.byTenantAndAttributeValue">
         {tenant: #, attributes.#: #}
     </entry>

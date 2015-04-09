@@ -75,8 +75,9 @@ public class TenantServiceImpl implements TenantService {
 
     public static final String ERROR_KEY_DELETE_ALL_PROFILES_ERROR = "profile.profile.deleteAll";
     public static final String ERROR_KEY_REMOVE_ROLE_FROM_ALL_PROFILES_ERROR = "profile.role.removeRoleFromAll";
-    public static final String ERROR_KEY_REMOVE_ATTRIBUTE_FROM_ALL_PROFILES_ERROR =
-        "profile.attribute" + ".removeAttributeFromAll";
+    public static final String ERROR_KEY_REMOVE_ATTRIBUTE_FROM_ALL_PROFILES_ERROR = "profile.attribute" +
+                                                                                    ".removeAttributeFromAllError";
+    public static final String ERROR_KEY_ADD_DEFAULT_VALUE_ERROR = "profile.attribute.addDefaultValueError";
 
     protected PermissionEvaluator<Application, String> tenantPermissionEvaluator;
     protected PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator;
@@ -159,6 +160,10 @@ public class TenantServiceImpl implements TenantService {
                 }
                 for (AttributeDefinition removedDefinition : removedDefinitions) {
                     removeAttributeFromProfiles(tenantName, removedDefinition.getName());
+                }
+
+                for (AttributeDefinition updatedDefinition : tenant.getAttributeDefinitions()) {
+                    addDefaultValue(tenantName, updatedDefinition.getName(), updatedDefinition.getDefaultValue());
                 }
 
                 originalTenant.setVerifyNewProfiles(tenant.isVerifyNewProfiles());
@@ -405,6 +410,17 @@ public class TenantServiceImpl implements TenantService {
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_REMOVE_ATTRIBUTE_FROM_ALL_PROFILES_ERROR, e, attributeName,
                                            tenantName);
+        }
+    }
+
+    protected void addDefaultValue(String tenantName, String attributeName,
+                                   Object defaultValue) throws ProfileException {
+        if (defaultValue != null) {
+            try {
+                profileRepository.updateAllWithDefaultValue(tenantName, attributeName, defaultValue);
+            } catch (MongoDataException e) {
+                throw new I10nProfileException(ERROR_KEY_ADD_DEFAULT_VALUE_ERROR, e, attributeName, tenantName);
+            }
         }
     }
 
