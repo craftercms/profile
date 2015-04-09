@@ -13,7 +13,7 @@ import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
-import org.craftercms.profile.social.exceptions.SocialMediaIntegrationException;
+import org.craftercms.profile.social.exceptions.SocialServicesIntegrationException;
 import org.craftercms.profile.social.utils.ConnectionUtils;
 import org.craftercms.profile.social.utils.TenantsResolver;
 import org.springframework.beans.factory.annotation.Required;
@@ -130,7 +130,7 @@ public class ProfileUsersConnectionRepository implements UsersConnectionReposito
             return profileService.getProfilesByQuery(tenant, query, null, null, null, null,
                                                      ProfileConstants.NO_ATTRIBUTE);
         } catch (ProfileException e) {
-            throw new SocialMediaIntegrationException("Unable to find profiles of tenant '" + tenant + "' by " +
+            throw new SocialServicesIntegrationException("Unable to find profiles of tenant '" + tenant + "' by " +
                                                       "query " + query, e);
         }
     }
@@ -139,7 +139,7 @@ public class ProfileUsersConnectionRepository implements UsersConnectionReposito
         try {
             return profileService.getProfile(profileId);
         } catch (ProfileException e) {
-            throw new SocialMediaIntegrationException("Unable to find profile '" + profileId + "'", e);
+            throw new SocialServicesIntegrationException("Unable to find profile '" + profileId + "'", e);
         }
     }
 

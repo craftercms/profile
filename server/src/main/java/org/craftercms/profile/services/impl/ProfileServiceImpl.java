@@ -218,10 +218,16 @@ public class ProfileServiceImpl implements ProfileService {
             if (CollectionUtils.isNotEmpty(roles)) {
                 profile.setRoles(roles);
             }
+
+            for (AttributeDefinition definition : tenant.getAttributeDefinitions()) {
+                if (definition.getDefaultValue() != null) {
+                    profile.setAttribute(definition.getName(), definition.getDefaultValue());
+                }
+            }
             if (MapUtils.isNotEmpty(attributes)) {
                 rejectAttributesIfActionNotAllowed(tenant, attributes.keySet(), AttributeAction.WRITE_ATTRIBUTE);
 
-                profile.setAttributes(attributes);
+                profile.getAttributes().putAll(attributes);
             }
 
             profileRepository.insert(profile);
@@ -273,8 +279,8 @@ public class ProfileServiceImpl implements ProfileService {
                 if (MapUtils.isNotEmpty(attributes)) {
                     String tenantName = profile.getTenant();
 
-                    rejectAttributesIfActionNotAllowed(tenantName, attributes.keySet(), AttributeAction
-                        .WRITE_ATTRIBUTE);
+                    rejectAttributesIfActionNotAllowed(tenantName, attributes.keySet(),
+                                                       AttributeAction.WRITE_ATTRIBUTE);
 
                     profile.getAttributes().putAll(attributes);
                 }
@@ -603,8 +609,7 @@ public class ProfileServiceImpl implements ProfileService {
         checkIfManageProfilesIsAllowed(tenantName);
 
         try {
-            List<Profile> profiles = IterableUtils.toList(profileRepository.findByTenantAndExistingAttribute
-                (tenantName, attributeName, sortBy, sortOrder, attributesToReturn));
+            List<Profile> profiles = IterableUtils.toList(profileRepository.findByTenantAndExistingAttribute(tenantName, attributeName, sortBy, sortOrder, attributesToReturn));
             filterNonReadableAttributes(profiles);
 
             return profiles;
@@ -719,6 +724,10 @@ public class ProfileServiceImpl implements ProfileService {
         return filterAttributes(profile, attributesToReturn);
     }
 
+    protected boolean isAttributeActionAllowed(AttributeDefinition definition, AttributeAction action) {
+        return attributePermissionEvaluator.isAllowed(definition, action.toString());
+    }
+
     protected Profile filterAttributes(Profile profile, String[] attributesToReturn) {
         if (ArrayUtils.isNotEmpty(attributesToReturn) && MapUtils.isNotEmpty(profile.getAttributes())) {
             Iterator<String> keyIter = profile.getAttributes().keySet().iterator();
@@ -789,7 +798,7 @@ public class ProfileServiceImpl implements ProfileService {
         AttributeDefinition definition = findAttributeDefinition(attributeDefinitions, attributeName);
 
         if (definition != null) {
-            if (!attributePermissionEvaluator.isAllowed(definition, AttributeAction.READ_ATTRIBUTE.toString())) {
+            if (!isAttributeActionAllowed(definition, AttributeAction.READ_ATTRIBUTE)) {
                 attributeNamesIter.remove();
             }
         } else {
@@ -802,7 +811,7 @@ public class ProfileServiceImpl implements ProfileService {
         PermissionException, AttributeNotDefinedException {
         AttributeDefinition definition = findAttributeDefinition(attributeDefinitions, attributeName);
         if (definition != null) {
-            if (!attributePermissionEvaluator.isAllowed(definition, action.toString())) {
+            if (!isAttributeActionAllowed(definition, action)) {
                 throw new ActionDeniedException(action.toString(), "attribute \"" + attributeName + "\"");
             }
         } else {

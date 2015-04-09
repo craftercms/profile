@@ -6,7 +6,7 @@ package org.craftercms.profile.social.exceptions;
  *
  * @author avasquez
  */
-public class OAuth2Exception extends SocialMediaIntegrationException {
+public class OAuth2Exception extends SocialServicesIntegrationException {
 
     private String error;
     private String errorDescription;

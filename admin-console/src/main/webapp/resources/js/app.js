@@ -26,10 +26,13 @@ var paginationConfig = {
     itemsPerPage: 10
 };
 
+var defaultAvailableRoles = ['PROFILE_TENANT_ADMIN', 'PROFILE_ADMIN'];
+
 /**
  * Constants
  */
 app.constant('paginationConfig', {
+    maxSize: 10,
     itemsPerPage: 10,
     boundaryLinks: true,
     directionLinks: true,
@@ -131,6 +134,15 @@ function hideModalIfShown(modal) {
     }
 }
 
+function setDefaultAttributeValues(attributes, attributeDefinitions) {
+    for (var i = 0; i < attributeDefinitions.length; i++) {
+        var definition = attributeDefinitions[i];
+        if (definition.defaultValue != null && attributes[definition.name] == null) {
+            attributes[definition.name] = definition.defaultValue;
+        }
+    }
+}
+
 /**
  * Filters
  */
@@ -166,7 +178,7 @@ app.factory('httpErrorHandler', function ($q, $rootScope) {
                         message += ': <strong>' + rejection.data.message + '</strong>';
                     }
 
-                    message += '. Please contact IT support for more information';
+                    message += '. If you need more information, please contact IT support';
                 }
 
                 $rootScope.$broadcast('httpError');
@@ -323,7 +335,7 @@ app.config(function($routeProvider) {
                 return {
                     name: null,
                     verifyNewProfiles: false,
-                    availableRoles: [],
+                    availableRoles: defaultAvailableRoles,
                     attributeDefinitions: []
                 };
             },
@@ -444,6 +456,8 @@ app.controller('NewProfileController', function($scope, $location, tenantNames, 
             // Different tenant, Different roles and attributes
             $scope.profile.roles = [];
             $scope.profile.attributes = {};
+
+            setDefaultAttributeValues($scope.profile.attributes, tenant.attributeDefinitions);
         });
     };
 
@@ -507,7 +521,7 @@ app.controller('TenantListController', function($scope, tenantNames, tenantServi
         $scope.tenantToDelete.name = tenantName;
         $scope.tenantToDelete.index = index;
         $scope.deleteConfirmationDialogMsg = 'Are you sure you wan to delete tenant "' + tenantName + '"? All its ' +
-            'profiles will be delete too. You can\'t undo this action later.';
+            'profiles will be deleted too. You can\'t undo this action later.';
 
         $('#deleteConfirmationDialog').modal('show');
     };

@@ -59,11 +59,15 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
                                                                               ".byTenantAndExistingAttribute";
     public static final String KEY_FIND_BY_TENANT_AND_ATTRIB_VALUE_QUERY = "profile.profile" +
                                                                            ".byTenantAndAttributeValue";
+    public static final String KEY_FIND_BY_TENANT_AND_NON_EXISTING_ATTRIB_QUERY = "profile.profile" +
+                                                                                  ".byTenantAndNonExistingAttribute";
+    public static final String KEY_UPDATE_ATTRIB = "profile.profile.updateAttribute";
 
     public static final String ATTRIBUTE_FIELD_PREFIX = "attributes.";
 
     public static final String MODIFIER_REMOVE_ROLE = "{$pull: {roles: #}}";
     public static final String MODIFIER_REMOVE_ATTRIBUTE = "{$unset: {attributes.#: ''}}";
+    public static final String MODIFIER_UPDATE_ATTRIBUTE = "{$set: {attributes.#: #}}";
 
     @Override
     public void init() throws Exception {
@@ -284,6 +288,23 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
             checkCommandResult(result);
         } catch (MongoException ex) {
             String msg = "Unable to remove attribute with name '" + attributeName + "' from profiles of tenant '" +
+                         tenantName + "'";
+            logger.error(msg, ex);
+            throw new MongoDataException(msg, ex);
+        }
+    }
+
+    @Override
+    public void updateAllWithDefaultValue(String tenantName, String attributeName,
+                                          Object defaultValue) throws MongoDataException {
+        try {
+            String query = getQueryFor(KEY_FIND_BY_TENANT_AND_NON_EXISTING_ATTRIB_QUERY);
+            Update update = getCollection().update(query, tenantName, attributeName).multi();
+
+            WriteResult result = update.with(MODIFIER_UPDATE_ATTRIBUTE, attributeName, defaultValue);
+            checkCommandResult(result);
+        } catch (MongoException ex) {
+            String msg = "Unable to add attribute with name '" + attributeName + "' to profiles of tenant '" +
                          tenantName + "'";
             logger.error(msg, ex);
             throw new MongoDataException(msg, ex);

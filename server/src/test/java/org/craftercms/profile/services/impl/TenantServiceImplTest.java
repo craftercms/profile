@@ -67,6 +67,7 @@ public class TenantServiceImplTest {
     private static final String ATTRIB1_LABEL = "Attribute #1";
     private static final String ATTRIB2_NAME = "attrib2";
     private static final String ATTRIB2_LABEL = "Attribute #2";
+    private static final Object DEFAULT_ATTRIB_VALUE = "test";
     private static final String APP_NAME = "app";
 
     private TenantServiceImpl tenantService;
@@ -124,17 +125,25 @@ public class TenantServiceImplTest {
 
     @Test
     public void testUpdateTenant() throws Exception {
-        AttributeDefinition def = new AttributeDefinition();
-        def.setName(ATTRIB1_NAME);
+        AttributeDefinition def1 = new AttributeDefinition();
+        def1.setName(ATTRIB1_NAME);
+
+        AttributeDefinition def2 = new AttributeDefinition();
+        def2.setName(ATTRIB2_NAME);
+        def2.setDefaultValue(DEFAULT_ATTRIB_VALUE);
 
         Tenant expected = getTenant1();
         expected.getAvailableRoles().remove(ROLE1);
-        expected.getAttributeDefinitions().remove(def);
+        expected.getAttributeDefinitions().remove(def1);
+        expected.getAttributeDefinitions().add(def2);
 
         Tenant actual = tenantService.updateTenant(expected);
 
         assertEqualTenants(expected, actual);
 
+        verify(profileRepository).removeRoleFromAll(TENANT1_NAME, ROLE1);
+        verify(profileRepository).removeAttributeFromAll(TENANT1_NAME, ATTRIB1_NAME);
+        verify(profileRepository).updateAllWithDefaultValue(TENANT1_NAME, ATTRIB2_NAME, DEFAULT_ATTRIB_VALUE);
         verify(tenantRepository).save(actual);
     }
 
@@ -142,6 +151,7 @@ public class TenantServiceImplTest {
     public void testDeleteTenant() throws Exception {
         tenantService.deleteTenant(TENANT1_NAME);
 
+        verify(profileRepository).removeAll(TENANT1_NAME);
         verify(tenantRepository).removeByName(TENANT1_NAME);
     }
 
@@ -203,6 +213,7 @@ public class TenantServiceImplTest {
 
         assertEqualTenants(expected, actual);
 
+        verify(profileRepository).removeRoleFromAll(TENANT1_NAME, ROLE1);
         verify(tenantRepository).findByName(TENANT1_NAME);
         verify(tenantRepository).save(actual);
     }
@@ -218,6 +229,7 @@ public class TenantServiceImplTest {
 
         assertEqualTenants(expected, actual);
 
+        verify(profileRepository).updateAllWithDefaultValue(TENANT1_NAME, ATTRIB2_NAME, DEFAULT_ATTRIB_VALUE);
         verify(tenantRepository).findByName(TENANT1_NAME);
         verify(tenantRepository).save(actual);
     }
@@ -320,6 +332,7 @@ public class TenantServiceImplTest {
         def.setName(ATTRIB2_NAME);
         def.setMetadata(Collections.<String, Object>singletonMap(LABEL_KEY, ATTRIB2_LABEL));
         def.addPermission(permission);
+        def.setDefaultValue(DEFAULT_ATTRIB_VALUE);
 
         return def;
     }

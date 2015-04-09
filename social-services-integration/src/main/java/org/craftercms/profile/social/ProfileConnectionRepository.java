@@ -11,7 +11,7 @@ import org.craftercms.commons.crypto.TextEncryptor;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
-import org.craftercms.profile.social.exceptions.SocialMediaIntegrationException;
+import org.craftercms.profile.social.exceptions.SocialServicesIntegrationException;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactory;
@@ -81,7 +81,7 @@ public class ProfileConnectionRepository implements ConnectionRepository {
         try {
             connectionDataList = getConnectionData(profile, providerId, encryptor);
         } catch (CryptoException e) {
-            throw new SocialMediaIntegrationException("Decryption error", e);
+            throw new SocialServicesIntegrationException("Decryption error", e);
         }
 
         if (CollectionUtils.isNotEmpty(connectionDataList)) {
@@ -112,7 +112,7 @@ public class ProfileConnectionRepository implements ConnectionRepository {
             try {
                 connectionDataList = getConnectionData(profile, providerId, encryptor);
             } catch (CryptoException e) {
-                throw new SocialMediaIntegrationException("Decryption error", e);
+                throw new SocialServicesIntegrationException("Decryption error", e);
             }
 
             for (String providerUserId : entry.getValue()) {
@@ -132,7 +132,7 @@ public class ProfileConnectionRepository implements ConnectionRepository {
         try {
             connectionDataList = getConnectionData(profile, providerId, encryptor);
         } catch (CryptoException e) {
-            throw new SocialMediaIntegrationException("Decryption error", e);
+            throw new SocialServicesIntegrationException("Decryption error", e);
         }
 
         Connection<?> connection = findConnection(connectionDataList, connectionKey.getProviderUserId());
@@ -228,7 +228,8 @@ public class ProfileConnectionRepository implements ConnectionRepository {
         try {
             profile = profileService.updateAttributes(profile.getId().toString(), profile.getAttributes());
         } catch (ProfileException e) {
-            throw new SocialMediaIntegrationException("Unable to update profile of user '" + profile.getId() + "'", e);
+            throw new SocialServicesIntegrationException("Unable to update profile of user '" + profile.getId() +
+                                                         "'", e);
         }
     }
 

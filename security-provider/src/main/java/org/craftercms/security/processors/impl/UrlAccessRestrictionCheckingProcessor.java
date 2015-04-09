@@ -103,6 +103,10 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
         }
     }
 
+    protected Map<String, Expression> getUrlRestrictions() {
+        return urlRestrictions;
+    }
+
     /**
      * Matches the request URL against the keys of the {@code restriction} map, which are ANT-style path patterns. If
      * a key matches, the value is interpreted as a Spring EL expression, the expression is executed, and if it returns
@@ -112,6 +116,8 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
      * @param processorChain the processor chain, used to call the next processor
      */
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
+        Map<String, Expression> urlRestrictions = getUrlRestrictions();
+
         if (MapUtils.isNotEmpty(urlRestrictions)) {
             logger.debug("Checking URL access restrictions");
 
@@ -127,12 +133,13 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
 
                     if (isAccessAllowed(request, expression)) {
                         logger.debug("Restriction [{}' => {}] evaluated to true for user: access allowed", requestUrl,
-                                expression.getExpressionString());
+                                     expression.getExpressionString());
 
                         break;
                     } else {
-                        throw new AccessDeniedException("Restriction ['" + requestUrl + "' => " + expression
-                            .getExpressionString() + "] evaluated to false for user: access denied");
+                        throw new AccessDeniedException("Restriction ['" + requestUrl + "' => " +
+                                                        expression.getExpressionString() + "] evaluated to false " +
+                                                        "for user: access denied");
                     }
                 }
             }

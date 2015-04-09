@@ -40,6 +40,10 @@ public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler {
         this.targetUrl = targetUrl;
     }
 
+    protected String getTargetUrl() {
+        return targetUrl;
+    }
+
     /**
      * Redirects to the target URL.
      *
@@ -49,7 +53,7 @@ public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler {
     @Override
     public void handle(RequestContext context, Authentication authentication) throws SecurityProviderException,
             IOException {
-        RedirectUtils.redirect(context.getRequest(), context.getResponse(), targetUrl);
+        RedirectUtils.redirect(context.getRequest(), context.getResponse(), getTargetUrl());
     }
 
 }

@@ -48,6 +48,10 @@ public class LoginFailureHandlerImpl implements LoginFailureHandler {
         this.targetUrl = targetUrl;
     }
 
+    protected String getTargetUrl() {
+        return targetUrl;
+    }
+
     /**
      * Redirects the response to target URL if target URL is not empty. If not, a 401 UNAUTHORIZED error is sent.
      *
@@ -57,6 +61,7 @@ public class LoginFailureHandlerImpl implements LoginFailureHandler {
     @Override
     public void handle(RequestContext context, AuthenticationException e) throws SecurityProviderException,
             IOException {
+        String targetUrl = getTargetUrl();
         if (StringUtils.isNotEmpty(targetUrl)) {
             RedirectUtils.redirect(context.getRequest(), context.getResponse(), targetUrl);
         } else {
