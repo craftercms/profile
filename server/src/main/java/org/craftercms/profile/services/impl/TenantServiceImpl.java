@@ -146,7 +146,7 @@ public class TenantServiceImpl implements TenantService {
     public Tenant updateTenant(final Tenant tenant) throws ProfileException {
         final String tenantName = tenant.getName();
 
-        return updateTenant(tenant.getName(), new UpdateCallback() {
+        Tenant updatedTenant = updateTenant(tenant.getName(), new UpdateCallback() {
 
             @Override
             public void doWithTenant(Tenant originalTenant) throws ProfileException {
@@ -162,16 +162,18 @@ public class TenantServiceImpl implements TenantService {
                     removeAttributeFromProfiles(tenantName, removedDefinition.getName());
                 }
 
-                for (AttributeDefinition updatedDefinition : tenant.getAttributeDefinitions()) {
-                    addDefaultValue(tenantName, updatedDefinition.getName(), updatedDefinition.getDefaultValue());
-                }
-
                 originalTenant.setVerifyNewProfiles(tenant.isVerifyNewProfiles());
                 originalTenant.setAvailableRoles(tenant.getAvailableRoles());
                 originalTenant.setAttributeDefinitions(tenant.getAttributeDefinitions());
             }
 
         });
+
+        for (AttributeDefinition definition : updatedTenant.getAttributeDefinitions()) {
+            addDefaultValue(tenantName, definition.getName(), definition.getDefaultValue());
+        }
+
+        return updatedTenant;
     }
 
     @Override
@@ -285,6 +287,10 @@ public class TenantServiceImpl implements TenantService {
             }
 
         });
+
+        for (AttributeDefinition definition : tenant.getAttributeDefinitions()) {
+            addDefaultValue(tenantName, definition.getName(), definition.getDefaultValue());
+        }
 
         logger.debug(LOG_KEY_ATTRIBUTE_DEFINITIONS_ADDED, attributeDefinitions, tenantName);
 

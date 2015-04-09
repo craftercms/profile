@@ -258,6 +258,7 @@ public class ProfileServiceImplTest {
         Profile expected = getTenant2Profile();
         expected.setTenant(TENANT1_NAME);
         expected.setAttributes(getAttributesWithoutPrivateAttribute());
+        expected.setAttribute(ATTRIB_NAME_GENDER, GENDER);
 
         Profile actual = profileService.createProfile(TENANT1_NAME, USERNAME2, PASSWORD2, EMAIL2, true, ROLES2,
                 getAttributesWithoutPrivateAttribute(), VERIFICATION_URL);
@@ -303,6 +304,7 @@ public class ProfileServiceImplTest {
         Profile expected = getTenant2Profile();
         expected.setEnabled(true);
         expected.setAttributes(getAttributesWithoutPrivateAttribute());
+        expected.setAttribute(ATTRIB_NAME_GENDER, GENDER);
 
         Profile actual = profileService.createProfile(TENANT2_NAME, USERNAME2, PASSWORD2, EMAIL2, true, ROLES2,
                 getAttributesWithoutPrivateAttribute(), VERIFICATION_URL);
@@ -788,6 +790,7 @@ public class ProfileServiceImplTest {
         AttributeDefinition genderDefinition = new AttributeDefinition();
         genderDefinition.setName(ATTRIB_NAME_GENDER);
         genderDefinition.addPermission(anyAppCanDoAnything);
+        genderDefinition.setDefaultValue(GENDER);
 
         AttributeDefinition privateDefinition = new AttributeDefinition();
         privateDefinition.setName(ATTRIB_NAME_PRIVATE);
