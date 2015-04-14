@@ -52,13 +52,13 @@ public interface VerificationService {
                    String templateName) throws ProfileException;
 
     /**
-     * Verify that the token ID received from the user corresponds to an existing token.
+     * Returns the token that corresponds to the specified ID
      *
      * @param tokenId   the token ID, sent in the verification email
      *
      * @return the verification token object associated to the ID
      */
-    VerificationToken verifyToken(String tokenId) throws ProfileException;
+    VerificationToken getToken(String tokenId) throws ProfileException;
 
     /**
      * Deletes the token corresponding the specified ID.

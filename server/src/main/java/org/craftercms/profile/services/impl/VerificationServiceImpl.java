@@ -31,7 +31,6 @@ import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
-import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
 import org.craftercms.profile.repositories.VerificationTokenRepository;
 import org.craftercms.profile.services.VerificationService;
 import org.springframework.beans.factory.annotation.Required;
@@ -114,19 +113,12 @@ public class VerificationServiceImpl implements VerificationService {
     }
 
     @Override
-    public VerificationToken verifyToken(String tokenId) throws ProfileException {
-        VerificationToken token;
+    public VerificationToken getToken(String tokenId) throws ProfileException {
         try {
-            token = tokenRepository.findByStringId(tokenId);
+            return tokenRepository.findByStringId(tokenId);
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_GET_TOKEN_ERROR, tokenId);
         }
-
-        if (token == null) {
-            throw new NoSuchVerificationTokenException(tokenId);
-        }
-
-        return token;
     }
 
     @Override

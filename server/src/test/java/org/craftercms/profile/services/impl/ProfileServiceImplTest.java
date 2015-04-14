@@ -233,11 +233,8 @@ public class ProfileServiceImplTest {
         token2.setProfileId(PROFILE2_ID.toString());
         token2.setTimestamp(new Date());
 
-        when(verificationService.verifyToken(VERIFICATION_TOKEN_ID1))
-            .thenReturn(token1);
-
-        when(verificationService.verifyToken(VERIFICATION_TOKEN_ID2))
-            .thenReturn(token2);
+        when(verificationService.getToken(VERIFICATION_TOKEN_ID1)).thenReturn(token1);
+        when(verificationService.getToken(VERIFICATION_TOKEN_ID2)).thenReturn(token2);
 
         profileService = new ProfileServiceImpl();
         profileService.setTenantPermissionEvaluator(tenantPermissionEvaluator);
@@ -380,7 +377,7 @@ public class ProfileServiceImplTest {
         verify(tenantPermissionEvaluator).isAllowed(TENANT2_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE2_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
-        verify(verificationService).verifyToken(VERIFICATION_TOKEN_ID2);
+        verify(verificationService).getToken(VERIFICATION_TOKEN_ID2);
         verify(verificationService).deleteToken(VERIFICATION_TOKEN_ID2);
     }
 
@@ -544,8 +541,8 @@ public class ProfileServiceImplTest {
         assertEqualProfiles(expected, actual);
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
-        verify(profileRepository).findOneByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT,
-                TENANT1_NAME, QUERY), new String[0]);
+        verify(profileRepository).findOneByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT, TENANT1_NAME,
+                                                               QUERY), new String[0]);
     }
 
     @Test
@@ -588,8 +585,8 @@ public class ProfileServiceImplTest {
         assertEqualProfileLists(expected, actual);
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
-        verify(profileRepository).findByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT,
-                TENANT1_NAME, QUERY), SORT_BY, SortOrder.ASC, START, COUNT, new String[0]);
+        verify(profileRepository).findByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT, TENANT1_NAME,
+                                                            QUERY), SORT_BY, SortOrder.ASC, START, COUNT, new String[0]);
     }
 
     @Test
@@ -734,7 +731,7 @@ public class ProfileServiceImplTest {
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
-        verify(verificationService).verifyToken(VERIFICATION_TOKEN_ID1);
+        verify(verificationService).getToken(VERIFICATION_TOKEN_ID1);
         verify(verificationService).deleteToken(VERIFICATION_TOKEN_ID1);
     }
 

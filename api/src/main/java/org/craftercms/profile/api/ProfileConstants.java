@@ -77,8 +77,9 @@ public class ProfileConstants {
     public static final String URL_PROFILE_GET_BY_ATTRIB_VALUE = "/by_attribute_value";
     public static final String URL_PROFILE_RESET_PASSWORD = "/{id}/reset_password";
     public static final String URL_PROFILE_CHANGE_PASSWORD = "/change_password";
-    public static final String URL_PROFILE_CREATE_VERIFICATION_TOKEN = "/{id}/verification/create_token";
-    public static final String URL_PROFILE_DELETE_VERIFICATION_TOKEN = "/verification/delete_token";
+    public static final String URL_PROFILE_CREATE_VERIFICATION_TOKEN = "/{id}/verification_token/create";
+    public static final String URL_PROFILE_GET_VERIFICATION_TOKEN = "/verification_token/{id}";
+    public static final String URL_PROFILE_DELETE_VERIFICATION_TOKEN = "/verification_token/{id}/delete";
 
     public static final String URL_AUTH_AUTHENTICATE = "/authenticate";
     public static final String URL_AUTH_CREATE_TICKET = "/ticket/create";

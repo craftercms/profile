@@ -10,6 +10,7 @@ import java.util.Date;
 public class VerificationToken {
 
     private String _id;
+    private String tenant;
     private String profileId;
     private Date timestamp;
 
@@ -20,6 +21,8 @@ public class VerificationToken {
     public void setId(String id) {
         this._id = id;
     }
+
+
 
     public String getProfileId() {
         return profileId;

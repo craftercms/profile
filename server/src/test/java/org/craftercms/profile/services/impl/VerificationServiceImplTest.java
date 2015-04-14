@@ -24,10 +24,9 @@ import java.util.UUID;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.mail.Email;
 import org.craftercms.commons.mail.EmailFactory;
-import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.ProfileConstants;
-import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
+import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.repositories.VerificationTokenRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -128,15 +127,15 @@ public class VerificationServiceImplTest {
     }
 
     @Test
-    public void testVerifyToken() throws Exception {
-        verificationService.verifyToken(TOKEN_ID);
+    public void testGetToken() throws Exception {
+        VerificationToken token = verificationService.getToken(TOKEN_ID);
+
+        assertNotNull(token);
+        assertEquals(TOKEN_ID, token.getId());
+        assertEquals(PROFILE_ID.toString(), token.getProfileId());
+        assertNotNull(token.getTimestamp());
 
         verify(tokenRepository).findByStringId(TOKEN_ID);
-    }
-
-    @Test(expected = NoSuchVerificationTokenException.class)
-    public void testVerifyInvalidToken() throws Exception {
-        verificationService.verifyToken("1");
     }
 
     @Test

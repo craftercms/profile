@@ -58,6 +58,7 @@ import org.craftercms.profile.exceptions.InvalidQueryException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.exceptions.NoSuchTenantException;
 import org.craftercms.profile.exceptions.NoSuchTicketException;
+import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
 import org.craftercms.profile.exceptions.ProfileExistsException;
 import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.ProfileRepository;
@@ -296,7 +297,11 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile verifyProfile(String verificationTokenId,
                                  final String... attributesToReturn) throws ProfileException {
-        VerificationToken token = verificationService.verifyToken(verificationTokenId);
+        VerificationToken token = verificationService.getToken(verificationTokenId);
+
+        if (token == null) {
+            throw new NoSuchVerificationTokenException(verificationTokenId);
+        }
 
         Profile profile = updateProfile(token.getProfileId(), new UpdateCallback() {
 
@@ -609,7 +614,8 @@ public class ProfileServiceImpl implements ProfileService {
         checkIfManageProfilesIsAllowed(tenantName);
 
         try {
-            List<Profile> profiles = IterableUtils.toList(profileRepository.findByTenantAndExistingAttribute(tenantName, attributeName, sortBy, sortOrder, attributesToReturn));
+            List<Profile> profiles = IterableUtils.toList(profileRepository.findByTenantAndExistingAttribute
+                (tenantName, attributeName, sortBy, sortOrder, attributesToReturn));
             filterNonReadableAttributes(profiles);
 
             return profiles;
@@ -653,7 +659,11 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile changePassword(String resetTokenId, final String newPassword,
                                   final String... attributesToReturn) throws ProfileException {
-        VerificationToken token = verificationService.verifyToken(resetTokenId);
+        VerificationToken token = verificationService.getToken(resetTokenId);
+
+        if (token == null) {
+            throw new NoSuchVerificationTokenException(resetTokenId);
+        }
 
         Profile profile = updateProfile(token.getProfileId(), new UpdateCallback() {
 
@@ -674,6 +684,11 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public VerificationToken createVerificationToken(String profileId) throws ProfileException {
         return verificationService.createToken(profileId);
+    }
+
+    @Override
+    public VerificationToken getVerificationToken(String tokenId) throws ProfileException {
+        return verificationService.getToken(tokenId);
     }
 
     @Override
