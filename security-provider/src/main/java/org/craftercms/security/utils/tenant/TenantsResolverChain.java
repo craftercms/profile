@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.craftercms.profile.social.utils.TenantsResolver;
 import org.springframework.beans.factory.annotation.Required;
 
 /**

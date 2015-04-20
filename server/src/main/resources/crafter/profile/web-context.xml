@@ -42,7 +42,7 @@
     
     <bean id="crafter.accessTokenCheckingInterceptor"
           class="org.craftercms.profile.interceptors.AccessTokenCheckingInterceptor">
-        <property name="tokenRepository" ref="crafter.accessTokenRepository"/>
+        <property name="accessTokenRepository" ref="crafter.accessTokenRepository"/>
         <property name="urlsToInclude" value="/api/1/.*"/>
     </bean>
 
@@ -82,6 +82,11 @@
     <!-- Controllers -->
 
     <bean id="crafter.exceptionHandlers" class="org.craftercms.profile.controllers.rest.ExceptionHandlers"/>
+
+    <bean id="crafter.accessTokenController"
+          class="org.craftercms.profile.controllers.rest.AccessTokenController">
+        <property name="accessTokenService" ref="crafter.accessTokenService"/>
+    </bean>
 
     <bean id="crafter.tenantController" class="org.craftercms.profile.controllers.rest.TenantController">
         <property name="tenantService" ref="crafter.tenantService"/>

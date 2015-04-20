@@ -22,6 +22,7 @@ import java.util.UUID;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
+import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.PersistentLogin;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.ProfileConstants;
@@ -30,7 +31,6 @@ import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.BadCredentialsException;
 import org.craftercms.profile.exceptions.DisabledProfileException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
-import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.PersistentLoginRepository;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.junit.Before;
@@ -67,7 +67,7 @@ public class AuthenticationServiceImplTest {
 
     private AuthenticationServiceImpl authenticationService;
     @Mock
-    private PermissionEvaluator<Application, String> permissionEvaluator;
+    private PermissionEvaluator<AccessToken, String> permissionEvaluator;
     @Mock
     private TicketRepository ticketRepository;
     @Mock

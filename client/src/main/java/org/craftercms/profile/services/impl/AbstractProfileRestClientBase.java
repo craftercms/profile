@@ -65,7 +65,7 @@ public abstract class AbstractProfileRestClientBase extends AbstractRestClientBa
     protected MultiValueMap<String, String> createBaseParams() {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         RestClientUtils.addValue(ProfileConstants.PARAM_ACCESS_TOKEN_ID, accessTokenIdResolver.getAccessTokenId(),
-                params);
+                                 params);
 
         return params;
     }

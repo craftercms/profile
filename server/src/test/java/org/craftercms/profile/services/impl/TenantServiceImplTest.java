@@ -24,16 +24,15 @@ import java.util.Set;
 
 import org.craftercms.commons.collections.SetUtils;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
+import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.AttributePermission;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.Tenant;
-import org.craftercms.profile.api.TenantPermission;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.AttributeAlreadyDefinedException;
 import org.craftercms.profile.exceptions.AttributeNotDefinedException;
-import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TenantRepository;
 import org.junit.Before;
@@ -72,7 +71,7 @@ public class TenantServiceImplTest {
 
     private TenantServiceImpl tenantService;
     @Mock
-    private PermissionEvaluator<Application, String> permissionEvaluator;
+    private PermissionEvaluator<AccessToken, String> permissionEvaluator;
     @Mock
     private TenantRepository tenantRepository;
     @Mock
@@ -277,8 +276,6 @@ public class TenantServiceImplTest {
 
     @Test
     public void testRemoveAttributeDefinitions() throws Exception {
-        Application.setCurrent(new Application(APP_NAME, Collections.<TenantPermission>emptyList()));
-
         Tenant expected = getTenant1();
         expected.getAttributeDefinitions().clear();
 
@@ -288,8 +285,6 @@ public class TenantServiceImplTest {
 
         verify(tenantRepository).findByName(TENANT1_NAME);
         verify(tenantRepository).save(actual);
-
-        Application.clear();
     }
 
     private Tenant getTenant1() {

@@ -3,7 +3,7 @@ package org.craftercms.profile.exceptions;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 
 /**
- * Thrown when the attributes sent as JSON in a param can't be correctly deserialized.
+ * Thrown the JSON in a param can't be correctly deserialized.
  *
  * @author avasquez
  */

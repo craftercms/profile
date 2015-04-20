@@ -19,6 +19,7 @@ import org.craftercms.security.exception.OAuth2Exception;
 import org.craftercms.security.social.ProviderLoginSupport;
 import org.craftercms.security.utils.SecurityUtils;
 import org.craftercms.security.utils.social.ConnectionUtils;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
@@ -50,29 +51,52 @@ public class ProviderLoginSupportImpl implements ProviderLoginSupport {
     protected AuthenticationManager authenticationManager;
     protected TextEncryptor textEncryptor;
 
-    public ProviderLoginSupportImpl(ConnectionFactoryLocator connectionFactoryLocator, ProfileService profileService,
-                                    AuthenticationManager authenticationManager, TextEncryptor textEncryptor) {
-        this(new ConnectSupport(), connectionFactoryLocator, profileService, authenticationManager, textEncryptor);
+    public ProviderLoginSupportImpl() {
+        connectSupport = new ConnectSupport();
     }
 
-    public ProviderLoginSupportImpl(ConnectSupport connectSupport, ConnectionFactoryLocator connectionFactoryLocator,
-                                    ProfileService profileService, AuthenticationManager authenticationManager,
-                                    TextEncryptor textEncryptor) {
+    public void setConnectSupport(ConnectSupport connectSupport) {
         this.connectSupport = connectSupport;
+    }
+
+    @Required
+    public void setConnectionFactoryLocator(ConnectionFactoryLocator connectionFactoryLocator) {
         this.connectionFactoryLocator = connectionFactoryLocator;
+    }
+
+    @Required
+    public void setProfileService(ProfileService profileService) {
         this.profileService = profileService;
+    }
+
+    @Required
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
+    }
+
+    @Required
+    public void setTextEncryptor(TextEncryptor textEncryptor) {
         this.textEncryptor = textEncryptor;
     }
 
     @Override
     public String start(String tenant, String providerId, HttpServletRequest request) throws AuthenticationException {
-        return start(tenant, providerId, request, null);
+        return start(tenant, providerId, request, null, null);
+    }
+    @Override
+    public String start(String tenant, String providerId, HttpServletRequest request,
+                        MultiValueMap<String, String> additionalUrlParams) throws AuthenticationException {
+        return start(tenant, providerId, request, additionalUrlParams, null);
     }
 
     @Override
     public String start(String tenant, String providerId, HttpServletRequest request,
-                        MultiValueMap<String, String> additionalUrlParams) throws AuthenticationException {
+                        MultiValueMap<String, String> additionalUrlParams, ConnectSupport connectSupport)
+        throws AuthenticationException {
+        if (connectSupport == null) {
+            connectSupport = this.connectSupport;
+        }
+
         ConnectionFactory<?> connectionFactory = getConnectionFactory(providerId);
         ServletWebRequest webRequest = new ServletWebRequest(request);
 
@@ -82,14 +106,25 @@ public class ProviderLoginSupportImpl implements ProviderLoginSupport {
     @Override
     public Authentication complete(String tenant, String providerId,
                                    HttpServletRequest request) throws AuthenticationException {
-        return complete(tenant, providerId, request, null, null);
+        return complete(tenant, providerId, request, null, null, null);
     }
 
     @Override
     public Authentication complete(String tenant, String providerId, HttpServletRequest request,
-                                   Set<String> newUserRoles,
-                                   Map<String, Object> newUserAttributes) throws AuthenticationException {
-        Connection<?> connection = completeConnection(providerId, request);
+                                   Set<String> newUserRoles, Map<String, Object> newUserAttributes)
+        throws AuthenticationException {
+        return complete(tenant, providerId, request, newUserRoles, newUserAttributes, null);
+    }
+
+    @Override
+    public Authentication complete(String tenant, String providerId, HttpServletRequest request,
+                                   Set<String> newUserRoles, Map<String, Object> newUserAttributes,
+                                   ConnectSupport connectSupport) throws AuthenticationException {
+        if (connectSupport == null) {
+            connectSupport = this.connectSupport;
+        }
+
+        Connection<?> connection = completeConnection(connectSupport, providerId, request);
         if (connection != null) {
             Profile userData = ConnectionUtils.createProfile(connection);
             Profile profile = getProfile(tenant, userData);
@@ -116,7 +151,8 @@ public class ProviderLoginSupportImpl implements ProviderLoginSupport {
         }
     }
 
-    protected Connection<?> completeConnection(String providerId, HttpServletRequest request) throws OAuth2Exception {
+    protected Connection<?> completeConnection(ConnectSupport connectSupport, String providerId,
+                                               HttpServletRequest request) throws OAuth2Exception {
         if (StringUtils.isNotEmpty(request.getParameter(PARAM_OAUTH_TOKEN))) {
             OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>)getConnectionFactory(providerId);
             ServletWebRequest webRequest = new ServletWebRequest(request);

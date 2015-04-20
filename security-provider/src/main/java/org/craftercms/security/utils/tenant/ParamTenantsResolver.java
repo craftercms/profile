@@ -1,7 +1,6 @@
 package org.craftercms.security.utils.tenant;
 
 import org.craftercms.commons.http.RequestContext;
-import org.craftercms.profile.social.utils.TenantsResolver;
 
 /**
  * {@link org.craftercms.profile.social.utils.TenantsResolver} that resolves the tenants through a param.

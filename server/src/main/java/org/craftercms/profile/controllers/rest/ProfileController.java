@@ -23,6 +23,7 @@ import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
-import org.craftercms.profile.exceptions.AttributesDeserializationException;
+import org.craftercms.profile.exceptions.ParamDeserializationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -58,9 +59,8 @@ import static org.craftercms.profile.api.ProfileConstants.*;
 @Api(value = "profile", basePath = BASE_URL_PROFILE, description = "Profile operations")
 public class ProfileController {
 
-    private static final TypeReference<Map<String, Object>> ATTRIBUTES_TYPE_REFERENCE = new TypeReference<Map<String,
-        Object>>() {
-    };
+    private static final TypeReference<Map<String, Object>> ATTRIBUTES_TYPE_REFERENCE =
+        new TypeReference<Map<String, Object>>() {};
 
     protected ProfileService profileService;
     protected ObjectMapper objectMapper;
@@ -491,14 +491,15 @@ public class ProfileController {
         profileService.deleteVerificationToken(tokenId);
     }
 
-    protected Map<String, Object> deserializeAttributes(
-        String serializedAttributes) throws AttributesDeserializationException {
+    protected Map<String, Object> deserializeAttributes(String serializedAttributes)
+        throws ParamDeserializationException {
         Map<String, Object> attributes = null;
+
         if (StringUtils.isNotEmpty(serializedAttributes)) {
             try {
                 attributes = objectMapper.readValue(serializedAttributes, ATTRIBUTES_TYPE_REFERENCE);
-            } catch (Exception e) {
-                throw new AttributesDeserializationException(e);
+            } catch (IOException e) {
+                throw new ParamDeserializationException(e);
             }
         }
 

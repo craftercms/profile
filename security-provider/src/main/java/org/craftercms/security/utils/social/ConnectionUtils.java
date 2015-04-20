@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.crypto.CryptoException;
 import org.craftercms.commons.crypto.TextEncryptor;
 import org.craftercms.profile.api.Profile;
-import org.craftercms.profile.social.exceptions.SocialServicesIntegrationException;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.UserProfile;
@@ -38,7 +37,8 @@ public class ConnectionUtils {
      *
      * @return the connection data as a map
      */
-    public static Map<String, Object> connectionDataToMap(ConnectionData connectionData, TextEncryptor encryptor) {
+    public static Map<String, Object> connectionDataToMap(ConnectionData connectionData,
+                                                          TextEncryptor encryptor) throws CryptoException {
         Map<String, Object> map = new HashMap<>();
         map.put("providerUserId", connectionData.getProviderUserId());
         map.put("displayName", connectionData.getDisplayName());
@@ -63,7 +63,7 @@ public class ConnectionUtils {
      * @return the map as {@link ConnectionData}
      */
     public static ConnectionData mapToConnectionData(String providerId, Map<String, Object> map,
-                                                     TextEncryptor encryptor) {
+                                                     TextEncryptor encryptor) throws CryptoException {
         String providerUserId = (String) map.get("providerUserId");
         String displayName = (String) map.get("displayName");
         String profileUrl = (String) map.get("profileUrl");
@@ -85,7 +85,8 @@ public class ConnectionUtils {
      * @param connectionData    the connection data to add
      * @param encryptor         the encryptor used to encrypt the accessToken, secret and refreshToken
      */
-    public static void addConnectionData(Profile profile, ConnectionData connectionData, TextEncryptor encryptor) {
+    public static void addConnectionData(Profile profile, ConnectionData connectionData,
+                                         TextEncryptor encryptor) throws CryptoException {
         Map<String, List<Map<String, Object>>> allConnections = profile.getAttribute(CONNECTIONS_ATTRIBUTE_NAME);
         List<Map<String, Object>> connectionsForProvider = null;
 
@@ -221,7 +222,7 @@ public class ConnectionUtils {
      *
      * @return
      */
-    public static Profile createProfileFromConnection(Connection<?> connection) {
+    public static Profile createProfile(Connection<?> connection) {
         Profile profile = new Profile();
 
         addProviderProfileInfo(profile, connection.fetchUserProfile());
@@ -229,20 +230,12 @@ public class ConnectionUtils {
         return profile;
     }
 
-    private static String encrypt(String clear, TextEncryptor encryptor) {
-        try {
-            return encryptor != null && StringUtils.isNotEmpty(clear) ? encryptor.encrypt(clear) : clear;
-        } catch (CryptoException e) {
-            throw new SocialServicesIntegrationException("Encryption error", e);
-        }
+    private static String encrypt(String clear, TextEncryptor encryptor) throws CryptoException {
+        return encryptor != null && StringUtils.isNotEmpty(clear) ? encryptor.encrypt(clear) : clear;
     }
 
-    private static String decrypt(String encrypted, TextEncryptor encryptor)  {
-        try {
-            return encryptor != null && StringUtils.isNotEmpty(encrypted) ? encryptor.decrypt(encrypted) : encrypted;
-        } catch (CryptoException e) {
-            throw new SocialServicesIntegrationException("Decryption error", e);
-        }
+    private static String decrypt(String encrypted, TextEncryptor encryptor) throws CryptoException {
+        return encryptor != null && StringUtils.isNotEmpty(encrypted) ? encryptor.decrypt(encrypted) : encrypted;
     }
 
 }

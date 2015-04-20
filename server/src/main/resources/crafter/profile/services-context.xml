@@ -20,7 +20,8 @@
     <aop:aspectj-autoproxy/>
 
     <task:annotation-driven executor="taskExecutor"/>
-    <task:executor id="taskExecutor" pool-size="${crafter.profile.task.executor.poolSize}" queue-capacity="${crafter.profile.task.executor.queueCapacity}"/>
+    <task:executor id="taskExecutor" pool-size="${crafter.profile.task.executor.poolSize}"
+                   queue-capacity="${crafter.profile.task.executor.queueCapacity}"/>
 
     <bean id="crafter.loggedAspect" class="org.craftercms.commons.logging.LoggedAspect"/>
 
@@ -139,7 +140,7 @@
 
     <!-- Permissions -->
 
-    <bean id="crafter.appSubjectResolver" class="org.craftercms.profile.permissions.ApplicationSubjectResolver"/>
+    <bean id="crafter.accessTokenSubjectResolver" class="org.craftercms.profile.permissions.AccessTokenSubjectResolver"/>
 
     <bean id="crafter.tenantPermissionResolver" class="org.craftercms.profile.permissions.TenantPermissionResolver"/>
 
@@ -148,17 +149,21 @@
 
     <bean id="crafter.tenantPermissionEvaluator"
           class="org.craftercms.commons.security.permissions.impl.PermissionEvaluatorImpl">
-        <property name="subjectResolver" ref="crafter.appSubjectResolver"/>
+        <property name="subjectResolver" ref="crafter.accessTokenSubjectResolver"/>
         <property name="permissionResolver" ref="crafter.tenantPermissionResolver"/>
     </bean>
 
     <bean id="crafter.attributePermissionEvaluator"
           class="org.craftercms.commons.security.permissions.impl.PermissionEvaluatorImpl">
-        <property name="subjectResolver" ref="crafter.appSubjectResolver"/>
+        <property name="subjectResolver" ref="crafter.accessTokenSubjectResolver"/>
         <property name="permissionResolver" ref="crafter.attributePermissionResolver"/>
     </bean>
 
     <!-- Services -->
+
+    <bean id="crafter.accessTokenService" class="org.craftercms.profile.services.impl.AccessTokenServiceImpl">
+        <property name="accessTokenRepository" ref="crafter.accessTokenRepository"/>
+    </bean>
 
     <bean id="crafter.verificationService" class="org.craftercms.profile.services.impl.VerificationServiceImpl">
         <property name="emailFactory" ref="crafter.emailFactory"/>

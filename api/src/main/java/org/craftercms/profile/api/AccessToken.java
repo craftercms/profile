@@ -12,6 +12,7 @@ public class AccessToken {
 
     private String _id;
     private String application;
+    private boolean master;
     private List<TenantPermission> tenantPermissions;
     private Date expiresOn;
 
@@ -45,6 +46,22 @@ public class AccessToken {
      */
     public void setApplication(String application) {
         this.application = application;
+    }
+
+    /**
+     * Returns true if this is a master token. A master token can be used to create and delete other tokens.
+     */
+    public boolean isMaster() {
+        return master;
+    }
+
+    /**
+     * Sets if this is a master token. A master token can be used to create and delete other tokens.
+     *
+     * @param master trues if this should be a master token, false otherwise
+     */
+    public void setMaster(boolean master) {
+        this.master = master;
     }
 
     /**

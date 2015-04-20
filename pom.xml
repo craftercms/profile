@@ -76,13 +76,11 @@
 
     <modules>
         <module>api</module>
-        <module>access-token-manager</module>
         <module>server</module>
         <module>client</module>
         <module>security-provider</module>
         <module>admin-console</module>
         <module>integration-tests</module>
-        <module>social-services-integration</module>
     </modules>
 
     <build>

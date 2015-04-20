@@ -31,6 +31,7 @@ import org.craftercms.commons.collections.SetUtils;
 import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
+import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.AttributePermission;
@@ -43,7 +44,6 @@ import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.exceptions.InvalidEmailAddressException;
 import org.craftercms.profile.exceptions.InvalidQueryException;
-import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.services.VerificationService;
 import org.junit.Before;
@@ -124,9 +124,9 @@ public class ProfileServiceImplTest {
 
     private ProfileServiceImpl profileService;
     @Mock
-    private PermissionEvaluator<Application, String> tenantPermissionEvaluator;
+    private PermissionEvaluator<AccessToken, String> tenantPermissionEvaluator;
     @Mock
-    private PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator;
+    private PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator;
     @Mock
     private ProfileRepository profileRepository;
     @Mock
@@ -586,7 +586,8 @@ public class ProfileServiceImplTest {
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT, TENANT1_NAME,
-                                                            QUERY), SORT_BY, SortOrder.ASC, START, COUNT, new String[0]);
+                                                            QUERY), SORT_BY, SortOrder.ASC, START, COUNT, new
+            String[0]);
     }
 
     @Test

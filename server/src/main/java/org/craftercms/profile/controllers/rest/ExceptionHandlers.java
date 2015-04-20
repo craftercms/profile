@@ -24,7 +24,7 @@ import org.craftercms.profile.api.exceptions.ErrorDetails;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.AttributeAlreadyDefinedException;
 import org.craftercms.profile.exceptions.AttributeNotDefinedException;
-import org.craftercms.profile.exceptions.AttributesDeserializationException;
+import org.craftercms.profile.exceptions.ParamDeserializationException;
 import org.craftercms.profile.exceptions.BadCredentialsException;
 import org.craftercms.profile.exceptions.DisabledProfileException;
 import org.craftercms.profile.exceptions.ExpiredAccessTokenException;
@@ -143,10 +143,10 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.ATTRIBUTE_NOT_DEFINED, request);
     }
 
-    @ExceptionHandler(AttributesDeserializationException.class)
-    public ResponseEntity<Object> handleAttributesDeserializationException(AttributesDeserializationException e,
-                                                                           WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.ATTRIBUTES_DESERIALIZATION_ERROR, request);
+    @ExceptionHandler(ParamDeserializationException.class)
+    public ResponseEntity<Object> handleParamDeserializationException(ParamDeserializationException e,
+                                                                      WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.PARAM_DESERIALIZATION_ERROR, request);
     }
 
     @ExceptionHandler(TenantExistsException.class)

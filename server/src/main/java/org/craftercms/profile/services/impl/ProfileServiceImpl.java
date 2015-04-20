@@ -39,6 +39,7 @@ import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.exception.PermissionException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
+import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.AttributeAction;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Profile;
@@ -60,7 +61,6 @@ import org.craftercms.profile.exceptions.NoSuchTenantException;
 import org.craftercms.profile.exceptions.NoSuchTicketException;
 import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
 import org.craftercms.profile.exceptions.ProfileExistsException;
-import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.services.VerificationService;
 import org.springframework.beans.factory.annotation.Required;
@@ -114,8 +114,8 @@ public class ProfileServiceImpl implements ProfileService {
     public static final String QUERY_ATTRIBUTE_PATTERN_FORMAT = "['\"]?attributes\\.%s(\\.[^'\":]+)?['\"]?\\s*:";
     public static final String QUERY_FINAL_FORMAT = "{$and: [{tenant: '%s'}, %s]}";
 
-    protected PermissionEvaluator<Application, String> tenantPermissionEvaluator;
-    protected PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator;
+    protected PermissionEvaluator<AccessToken, String> tenantPermissionEvaluator;
+    protected PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator;
     protected ProfileRepository profileRepository;
     protected TenantService tenantService;
     protected AuthenticationService authenticationService;
@@ -128,13 +128,13 @@ public class ProfileServiceImpl implements ProfileService {
     protected String resetPwdEmailTemplateName;
 
     @Required
-    public void setTenantPermissionEvaluator(PermissionEvaluator<Application, String> tenantPermissionEvaluator) {
+    public void setTenantPermissionEvaluator(PermissionEvaluator<AccessToken, String> tenantPermissionEvaluator) {
         this.tenantPermissionEvaluator = tenantPermissionEvaluator;
     }
 
     @Required
     public void setAttributePermissionEvaluator(
-        PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator) {
+        PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator) {
         this.attributePermissionEvaluator = attributePermissionEvaluator;
     }
 
@@ -614,8 +614,7 @@ public class ProfileServiceImpl implements ProfileService {
         checkIfManageProfilesIsAllowed(tenantName);
 
         try {
-            List<Profile> profiles = IterableUtils.toList(profileRepository.findByTenantAndExistingAttribute
-                (tenantName, attributeName, sortBy, sortOrder, attributesToReturn));
+            List<Profile> profiles = IterableUtils.toList(profileRepository.findByTenantAndExistingAttribute(tenantName, attributeName, sortBy, sortOrder, attributesToReturn));
             filterNonReadableAttributes(profiles);
 
             return profiles;

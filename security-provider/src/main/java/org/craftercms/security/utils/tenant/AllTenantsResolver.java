@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.TenantService;
-import org.craftercms.profile.social.utils.TenantsResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;

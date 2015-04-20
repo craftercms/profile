@@ -32,12 +32,18 @@ public class ProfileConstants {
     // ********** REST Constants **********
 
     public static final String BASE_URL_REST_API = "/api/1";
+    public static final String BASE_URL_ACCESS_TOKEN = BASE_URL_REST_API + "/access_token";
     public static final String BASE_URL_TENANT = BASE_URL_REST_API + "/tenant";
     public static final String BASE_URL_PROFILE = BASE_URL_REST_API + "/profile";
     public static final String BASE_URL_AUTHENTICATION = BASE_URL_REST_API + "/authentication";
 
     public static final String PATH_VAR_NAME = "name";
     public static final String PATH_VAR_ID = "id";
+
+    public static final String URL_ACCESS_TOKEN_CREATE = "/create";
+    public static final String URL_ACCESS_TOKEN_GET = "/{id}";
+    public static final String URL_ACCESS_TOKEN_GET_ALL = "/all";
+    public static final String URL_ACCESS_TOKEN_DELETE = "/{id}/delete";
 
     public static final String URL_TENANT_CREATE = "/create";
     public static final String URL_TENANT_GET = "/{name}";
@@ -78,8 +84,8 @@ public class ProfileConstants {
     public static final String URL_PROFILE_RESET_PASSWORD = "/{id}/reset_password";
     public static final String URL_PROFILE_CHANGE_PASSWORD = "/change_password";
     public static final String URL_PROFILE_CREATE_VERIFICATION_TOKEN = "/{id}/verification_token/create";
-    public static final String URL_PROFILE_GET_VERIFICATION_TOKEN = "/verification_token/{id}";
-    public static final String URL_PROFILE_DELETE_VERIFICATION_TOKEN = "/verification_token/{id}/delete";
+    public static final String URL_PROFILE_GET_VERIFICATION_TOKEN = "/verification_token";
+    public static final String URL_PROFILE_DELETE_VERIFICATION_TOKEN = "/verification_token/delete";
 
     public static final String URL_AUTH_AUTHENTICATE = "/authenticate";
     public static final String URL_AUTH_CREATE_TICKET = "/ticket/create";

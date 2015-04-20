@@ -6,7 +6,6 @@ package org.craftercms.profile.management.security.permissions;
  * @author avasquez
  */
 public enum Action {
-    GET_TENANT_NAMES,
     GET_TENANT,
     CREATE_TENANT,
     UPDATE_TENANT,

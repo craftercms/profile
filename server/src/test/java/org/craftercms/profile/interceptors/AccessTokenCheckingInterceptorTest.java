@@ -25,8 +25,8 @@ import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.TenantPermission;
 import org.craftercms.profile.exceptions.ExpiredAccessTokenException;
 import org.craftercms.profile.exceptions.MissingAccessTokenIdParamException;
-import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.AccessTokenRepository;
+import org.craftercms.profile.utils.AccessTokenUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -35,6 +35,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -45,7 +46,7 @@ import static org.mockito.Mockito.when;
  */
 public class AccessTokenCheckingInterceptorTest {
 
-    private static final String APPLICATION = "crafterengine";
+    private static final String APPLICATION = "adminconsole";
 
     private static final String NORMAL_TOKEN_ID =    "bfb7fb40-c04c-11e3-8a33-0800200c9a66";
     private static final String EXPIRED_TOKEN_ID =   "d09bb640-c04c-11e3-8a33-0800200c9a66";
@@ -58,33 +59,32 @@ public class AccessTokenCheckingInterceptorTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        when(tokenRepository.findById(NORMAL_TOKEN_ID.toString())).thenReturn(getNormalToken());
-        when(tokenRepository.findById(EXPIRED_TOKEN_ID.toString())).thenReturn(getExpiredToken());
+        when(tokenRepository.findByStringId(NORMAL_TOKEN_ID)).thenReturn(getNormalToken());
+        when(tokenRepository.findByStringId(EXPIRED_TOKEN_ID)).thenReturn(getExpiredToken());
         
         interceptor = new AccessTokenCheckingInterceptor();
-        interceptor.setTokenRepository(tokenRepository);
+        interceptor.setAccessTokenRepository(tokenRepository);
         interceptor.setUrlsToInclude(new String[] { ".*" });
     }
 
     @Test
     public void testPreHandle() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setParameter(ProfileConstants.PARAM_ACCESS_TOKEN_ID, NORMAL_TOKEN_ID.toString());
+        request.setParameter(ProfileConstants.PARAM_ACCESS_TOKEN_ID, NORMAL_TOKEN_ID);
 
         interceptor.preHandle(request, null, null);
 
-        Application app = Application.getCurrent();
+        AccessToken token = AccessTokenUtils.getAccessToken(request);
 
         TenantPermission permission = new TenantPermission();
         permission.allow("*");
 
-        assertNotNull(app);
-        assertEquals(APPLICATION, app.getName());
-        assertEquals(Arrays.asList(permission), app.getTenantPermissions());
+        assertNotNull(token);
+        assertEquals(APPLICATION, token.getApplication());
+        assertTrue(token.isMaster());
+        assertEquals(Arrays.asList(permission), token.getTenantPermissions());
 
-        verify(tokenRepository).findById(NORMAL_TOKEN_ID.toString());
-
-        Application.clear();
+        verify(tokenRepository).findByStringId(NORMAL_TOKEN_ID);
     }
 
     @Test(expected = MissingAccessTokenIdParamException.class)
@@ -97,7 +97,7 @@ public class AccessTokenCheckingInterceptorTest {
     @Test(expected = ExpiredAccessTokenException.class)
     public void testPreHandleExpiredAccessToken() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setParameter(ProfileConstants.PARAM_ACCESS_TOKEN_ID, EXPIRED_TOKEN_ID.toString());
+        request.setParameter(ProfileConstants.PARAM_ACCESS_TOKEN_ID, EXPIRED_TOKEN_ID);
 
         interceptor.preHandle(request, null, null);
     }
@@ -109,6 +109,7 @@ public class AccessTokenCheckingInterceptorTest {
         AccessToken token = new AccessToken();
         token.setId(NORMAL_TOKEN_ID);
         token.setApplication(APPLICATION);
+        token.setMaster(true);
         token.setTenantPermissions(Arrays.asList(permission));
         token.setExpiresOn(new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(24)));
 
@@ -122,6 +123,7 @@ public class AccessTokenCheckingInterceptorTest {
         AccessToken token = new AccessToken();
         token.setId(EXPIRED_TOKEN_ID);
         token.setApplication(APPLICATION);
+        token.setMaster(true);
         token.setTenantPermissions(Arrays.asList(permission));
         token.setExpiresOn(new Date());
 

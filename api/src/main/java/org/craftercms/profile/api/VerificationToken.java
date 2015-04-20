@@ -3,7 +3,7 @@ package org.craftercms.profile.api;
 import java.util.Date;
 
 /**
- * Verification token, used for verifying a new profile with the user or for verifying a reset password request.
+ * Verification token, used for email related verification.
  *
  * @author avasquez
  */
@@ -22,7 +22,13 @@ public class VerificationToken {
         this._id = id;
     }
 
+    public String getTenant() {
+        return tenant;
+    }
 
+    public void setTenant(String tenant) {
+        this.tenant = tenant;
+    }
 
     public String getProfileId() {
         return profileId;
@@ -66,10 +72,11 @@ public class VerificationToken {
     @Override
     public String toString() {
         return "VerificationToken{" +
-                "id=" + _id +
-                ", profileId='" + profileId + '\'' +
-                ", timestamp=" + timestamp +
-                '}';
+               "id='" + _id + '\'' +
+               ", tenant='" + tenant + '\'' +
+               ", profileId='" + profileId + '\'' +
+               ", timestamp=" + timestamp +
+               '}';
     }
 
 }

@@ -17,7 +17,6 @@
 package org.craftercms.profile.repositories.impl;
 
 import org.craftercms.commons.mongo.AbstractJongoRepository;
-import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.repositories.AccessTokenRepository;
 
@@ -27,18 +26,5 @@ import org.craftercms.profile.repositories.AccessTokenRepository;
  * @author avasquez
  */
 public class AccessTokenRepositoryImpl extends AbstractJongoRepository<AccessToken> implements AccessTokenRepository {
-
-    public static final String FIND_BY_ID_QUERY_KEY =   "accessToken.byId";
-    public static final String REMOVE_BY_ID_QUERY_KEY = "accessToken.removeById";
-
-    @Override
-    public AccessToken findById(String id) throws MongoDataException {
-        return findOne(getQueryFor(FIND_BY_ID_QUERY_KEY), id);
-    }
-
-    @Override
-    public void removeById(String id) throws MongoDataException {
-        remove(getQueryFor(REMOVE_BY_ID_QUERY_KEY), id);
-    }
 
 }

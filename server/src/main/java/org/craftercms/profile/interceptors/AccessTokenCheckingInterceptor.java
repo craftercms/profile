@@ -28,38 +28,36 @@ import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
+import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.ExpiredAccessTokenException;
 import org.craftercms.profile.exceptions.MissingAccessTokenIdParamException;
 import org.craftercms.profile.exceptions.NoSuchAccessTokenIdException;
-import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.AccessTokenRepository;
+import org.craftercms.profile.services.impl.AccessTokenServiceImpl;
+import org.craftercms.profile.utils.AccessTokenUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
  * Filter that checks that in every call the access token ID is specified. If no access token ID is specified, a 401
- * is returned to the caller. If a token ID is found, and the token's expiration date hasn't been reached, a new
- * {@link org.craftercms.profile.permissions.Application} is created and bound to the current thread.
+ * is returned to the caller. If a token ID is found, and the token's expiration date hasn't been reached, the access
+ * token is bound to the current request.
  *
  * @author avasquez
  */
 public class AccessTokenCheckingInterceptor extends HandlerInterceptorAdapter {
 
     private static final I10nLogger logger = new I10nLogger(AccessTokenCheckingInterceptor.class,
-            "crafter.profile.messages.logging");
-
-    public static final String ERROR_KEY_GET_ACCESS_TOKEN_ERROR = "profile.accessToken.getAccessTokenError";
+                                                            "crafter.profile.messages.logging");
 
     public static final String LOG_KEY_ACCESS_TOKEN_FOUND = "profile.accessToken.accessTokenFound";
-    public static final String LOG_KEY_APP_BINDING_APP = "profile.app.bindingApp";
-    public static final String LOG_KEY_APP_UNBINDING_APP = "profile.app.unbindingApp";
 
-    protected AccessTokenRepository tokenRepository;
+    protected AccessTokenRepository accessTokenRepository ;
     protected String[] urlsToInclude;
 
     @Required
-    public void setTokenRepository(AccessTokenRepository tokenRepository) {
-        this.tokenRepository = tokenRepository;
+    public void setAccessTokenRepository(AccessTokenRepository accessTokenRepository) {
+        this.accessTokenRepository = accessTokenRepository;
     }
 
     @Required
@@ -72,22 +70,16 @@ public class AccessTokenCheckingInterceptor extends HandlerInterceptorAdapter {
             throws Exception {
         if (includeRequest(request)) {
             AccessToken token = getAccessToken(request);
-            Application application = getApplication(token);
+            Date now = new Date();
 
-            logger.debug(LOG_KEY_APP_BINDING_APP, application, Thread.currentThread().getName());
-
-            Application.setCurrent(application);
+            if (token.getExpiresOn() == null || now.before(token.getExpiresOn())) {
+                AccessTokenUtils.setAccessToken(request, token);
+            } else {
+                throw new ExpiredAccessTokenException(token.getId(), token.getApplication(), token.getExpiresOn());
+            }
         }
 
         return true;
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-            throws Exception {
-        logger.debug(LOG_KEY_APP_UNBINDING_APP, Application.getCurrent(), Thread.currentThread().getName());
-
-        Application.clear();
     }
 
     protected boolean includeRequest(HttpServletRequest request) {
@@ -102,25 +94,15 @@ public class AccessTokenCheckingInterceptor extends HandlerInterceptorAdapter {
         return false;
     }
 
-    protected Application getApplication(AccessToken token) throws I10nProfileException {
-        Date now = new Date();
-
-        if (token.getExpiresOn() == null || now.before(token.getExpiresOn())) {
-            return new Application(token.getApplication(), token.getTenantPermissions());
-        } else {
-            throw new ExpiredAccessTokenException(token.getId(), token.getApplication(), token.getExpiresOn());
-        }
-    }
-
-    protected AccessToken getAccessToken(HttpServletRequest request) throws I10nProfileException {
+    protected AccessToken getAccessToken(HttpServletRequest request) throws ProfileException {
         String tokenId = request.getParameter(ProfileConstants.PARAM_ACCESS_TOKEN_ID);
 
         if (StringUtils.isNotEmpty(tokenId)) {
             AccessToken token;
             try {
-                token = tokenRepository.findById(tokenId);
+                token = accessTokenRepository.findByStringId(tokenId);
             } catch (MongoDataException e) {
-                throw new I10nProfileException(ERROR_KEY_GET_ACCESS_TOKEN_ERROR, e, tokenId);
+                throw new I10nProfileException(AccessTokenServiceImpl.ERROR_KEY_GET_ACCESS_TOKEN_ERROR, e, tokenId);
             }
 
             if (token != null) {

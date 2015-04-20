@@ -275,30 +275,4 @@
     <util:map id="crafter.urlRestrictions">
     </util:map>
 
-    <!-- ////////////////////////////////// -->
-    <!--								 	-->
-    <!--	 Social Media Integration	    -->
-    <!--									-->
-    <!-- ////////////////////////////////// -->
-
-    <util:list id="crafter.connectionFactories">
-        <!-- Override to provide the ConnectionFactories-->
-    </util:list>
-
-    <bean id="crafter.connectionFactoryLocator"
-          class="org.springframework.social.connect.support.ConnectionFactoryRegistry">
-        <property name="connectionFactories" ref="crafter.connectionFactories"/>
-    </bean>
-
-    <bean id="crafter.usersConnectionRepository" class="org.craftercms.profile.social.ProfileUsersConnectionRepository">
-        <property name="connectionFactoryLocator" ref="crafter.connectionFactoryLocator"/>
-        <property name="tenantsResolver" ref="crafter.tenantsResolver"/>
-        <property name="profileService" ref="crafter.profileServiceRestClient"/>
-        <property name="encryptor" ref="crafter.textEncryptor"/>
-    </bean>
-
-    <bean id="crafter.connector" class="org.craftercms.profile.social.Connector">
-        <property name="connectionFactoryLocator" ref="crafter.connectionFactoryLocator"/>
-    </bean>
-
 </beans>
