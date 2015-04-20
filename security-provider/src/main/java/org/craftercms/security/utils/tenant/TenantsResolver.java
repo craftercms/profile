@@ -1,4 +1,4 @@
-package org.craftercms.profile.social.utils;
+package org.craftercms.security.utils.tenant;
 
 /**
  * Utility interface that can be implemented to resolve the tenants usable by the application.

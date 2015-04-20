@@ -7,11 +7,11 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  *
  * @author avasquez
  */
-public class AttributesDeserializationException extends I10nProfileException {
+public class ParamDeserializationException extends I10nProfileException {
 
     public static final String KEY = "profile.attribute.deserializationError";
 
-    public AttributesDeserializationException(Throwable cause) {
+    public ParamDeserializationException(Throwable cause) {
         super(KEY, cause);
     }
 

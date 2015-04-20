@@ -1,4 +1,4 @@
-package org.craftercms.profile.social.utils;
+package org.craftercms.security.utils.social;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +30,7 @@ public class ConnectionUtils {
     public static final String LAST_NAME_ATTRIBUTE_NAME = "lastName";
 
     /**
-     * Creates a new map from the specified {@link org.springframework.social.connect.ConnectionData}. Used when
+     * Creates a new map from the specified {@link ConnectionData}. Used when
      * connection data needs to be stored in a profile.
      *
      * @param connectionData    the connection data to convert
@@ -53,14 +53,14 @@ public class ConnectionUtils {
     }
 
     /**
-     * Creates a new instance of {@link org.springframework.social.connect.ConnectionData} from the specified map.
+     * Creates a new instance of {@link ConnectionData} from the specified map.
      * Used when connection data needs to be retrieved from a profile.
      *
      * @param providerId    the provider ID of the connection (which is not stored in the map)
      * @param map           the map to convert
      * @param encryptor     the encryptor used to decrypt the accessToken, secret and refreshToken (optional)
      *
-     * @return the map as {@link org.springframework.social.connect.ConnectionData}
+     * @return the map as {@link ConnectionData}
      */
     public static ConnectionData mapToConnectionData(String providerId, Map<String, Object> map,
                                                      TextEncryptor encryptor) {
@@ -78,7 +78,7 @@ public class ConnectionUtils {
     }
 
     /**
-     * Adds the specified {@link org.springframework.social.connect.ConnectionData} to the profile. If a connection
+     * Adds the specified {@link ConnectionData} to the profile. If a connection
      * data with the same user ID already exists, it will be replaced with the new data.
      *
      * @param profile           the profile
@@ -120,7 +120,7 @@ public class ConnectionUtils {
     }
 
     /**
-     * Returns the list of {@link org.springframework.social.connect.ConnectionData} associated to the provider ID of
+     * Returns the list of {@link ConnectionData} associated to the provider ID of
      * the specified profile
      *
      * @param profile       the profile that contains the connection data in its attributes
@@ -151,7 +151,7 @@ public class ConnectionUtils {
     }
 
     /**
-     * Remove all {@link org.springframework.social.connect.ConnectionData} associated to the specified provider ID.
+     * Remove all {@link ConnectionData} associated to the specified provider ID.
      *
      * @param profile       the profile where to remove the data from
      * @param providerId    the provider ID of the connection
@@ -164,7 +164,7 @@ public class ConnectionUtils {
     }
 
     /**
-     * Remove the {@link org.springframework.social.connect.ConnectionData} associated to the provider ID and user ID.
+     * Remove the {@link ConnectionData} associated to the provider ID and user ID.
      *
      * @param providerId        the provider ID of the connection
      * @param providerUserId    the provider user ID

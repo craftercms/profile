@@ -1,4 +1,6 @@
-package org.craftercms.profile.social.exceptions;
+package org.craftercms.security.exception;
+
+import org.craftercms.profile.social.exceptions.SocialServicesIntegrationException;
 
 /**
  * Exception used when a OAuth2 provider returns an error on a login attempt. See http://tools.ietf

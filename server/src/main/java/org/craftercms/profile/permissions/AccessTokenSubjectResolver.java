@@ -17,18 +17,20 @@
 package org.craftercms.profile.permissions;
 
 import org.craftercms.commons.security.permissions.SubjectResolver;
+import org.craftercms.profile.api.AccessToken;
+import org.craftercms.profile.utils.AccessTokenUtils;
 
 /**
  * {@link org.craftercms.commons.security.permissions.SubjectResolver} that resolves to the current
- * {@link org.craftercms.profile.permissions.Application}.
+ * {@link org.craftercms.profile.api.AccessToken}.
  *
  * @author avasquez
  */
-public class ApplicationSubjectResolver implements SubjectResolver<Application> {
+public class AccessTokenSubjectResolver implements SubjectResolver<AccessToken> {
 
     @Override
-    public Application getCurrentSubject() {
-        return Application.getCurrent();
+    public AccessToken getCurrentSubject() {
+        return AccessTokenUtils.getCurrentToken();
     }
 
 }
