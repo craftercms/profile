@@ -40,7 +40,7 @@
             <tr ng-repeat="profile in profiles">
                 <td>
                     <div ng-if="isCurrentRoleNotInferior(profile)">
-                        <a href="#/profile/update/{{profile.id}}">{{profile.id}}</a>
+                        <a href="#/profile/{{profile.id}}">{{profile.id}}</a>
                     </div>
                     <div ng-if="!isCurrentRoleNotInferior(profile)">
                         {{profile.id}}

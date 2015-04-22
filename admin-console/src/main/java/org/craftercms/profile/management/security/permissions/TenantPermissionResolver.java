@@ -14,8 +14,8 @@ import org.craftercms.profile.management.security.AuthorizationUtils;
 public class TenantPermissionResolver implements PermissionResolver<Profile, String> {
 
     @Override
-    public Permission getGlobalPermission(Profile subject) throws PermissionException {
-        if (AuthorizationUtils.isSuperadmin(subject)) {
+    public Permission getGlobalPermission(Profile currentUser) throws PermissionException {
+        if (AuthorizationUtils.isSuperadmin(currentUser)) {
             return new SuperadminPermission();
         } else {
             return null;

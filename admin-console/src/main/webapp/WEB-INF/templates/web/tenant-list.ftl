@@ -11,7 +11,7 @@
         <tbody>
             <tr ng-repeat="tenantName in tenantNames">
                 <td>
-                    <a href="#/tenant/update/{{tenantName}}">{{tenantName}}</a>
+                    <a href="#/tenant/{{tenantName}}">{{tenantName}}</a>
                 </td>
                 <td>
                     <a ng-click="showDeleteConfirmationDialog(tenantName, $index)">Delete</a>

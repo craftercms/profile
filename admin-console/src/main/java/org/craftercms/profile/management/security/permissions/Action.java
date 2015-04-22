@@ -6,6 +6,10 @@ package org.craftercms.profile.management.security.permissions;
  * @author avasquez
  */
 public enum Action {
+    GET_ACCESS_TOKEN,
+    GET_ALL_ACCESS_TOKENS,
+    CREATE_ACCESS_TOKEN,
+    DELETE_ACCESS_TOKEN,
     GET_TENANT,
     CREATE_TENANT,
     UPDATE_TENANT,

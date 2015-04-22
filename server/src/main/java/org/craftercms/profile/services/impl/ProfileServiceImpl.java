@@ -614,7 +614,8 @@ public class ProfileServiceImpl implements ProfileService {
         checkIfManageProfilesIsAllowed(tenantName);
 
         try {
-            List<Profile> profiles = IterableUtils.toList(profileRepository.findByTenantAndExistingAttribute(tenantName, attributeName, sortBy, sortOrder, attributesToReturn));
+            List<Profile> profiles = IterableUtils.toList(profileRepository.findByTenantAndExistingAttribute(
+                tenantName, attributeName, sortBy, sortOrder, attributesToReturn));
             filterNonReadableAttributes(profiles);
 
             return profiles;
