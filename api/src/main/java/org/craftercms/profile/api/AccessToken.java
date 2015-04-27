@@ -97,6 +97,26 @@ public class AccessToken {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        AccessToken token = (AccessToken)o;
+
+        return _id.equals(token._id);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return _id.hashCode();
+    }
+
+    @Override
     public String toString() {
         return "AccessToken{" +
                 "id='" + _id + '\'' +

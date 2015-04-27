@@ -236,7 +236,7 @@ public class ProfileServiceImpl implements ProfileService {
             logger.debug(LOG_KEY_PROFILE_CREATED, profile);
 
             if (emailNewProfiles && StringUtils.isNotEmpty(verificationUrl)) {
-                VerificationToken token = verificationService.createToken(profile.getId().toString());
+                VerificationToken token = verificationService.createToken(profile);
                 verificationService.sendEmail(token, profile, verificationUrl, newProfileEmailFromAddress,
                                               newProfileEmailSubject, newProfileEmailTemplateName);
             }
@@ -648,7 +648,7 @@ public class ProfileServiceImpl implements ProfileService {
     public Profile resetPassword(String profileId, String resetPasswordUrl,
                                  String... attributesToReturn) throws ProfileException {
         Profile profile = getNonNullProfile(profileId, attributesToReturn);
-        VerificationToken token = verificationService.createToken(profileId);
+        VerificationToken token = verificationService.createToken(profile);
 
         verificationService.sendEmail(token, profile, resetPasswordUrl, resetPwdEmailFromAddress,
                                       resetPwdEmailSubject, resetPwdEmailTemplateName);
@@ -683,7 +683,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public VerificationToken createVerificationToken(String profileId) throws ProfileException {
-        return verificationService.createToken(profileId);
+        return verificationService.createToken(getNonNullProfile(profileId));
     }
 
     @Override

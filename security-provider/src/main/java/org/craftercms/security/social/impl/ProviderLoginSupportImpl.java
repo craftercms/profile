@@ -180,7 +180,7 @@ public class ProviderLoginSupportImpl implements ProviderLoginSupport {
 
     protected Profile getProfile(String tenant, Profile userData) {
         try {
-            return profileService.getProfile(tenant, userData.getUsername());
+            return profileService.getProfileByUsername(tenant, userData.getUsername());
         } catch (ProfileException e) {
             throw new AuthenticationException("Unable to retrieve current profile for user '" +
                                               userData.getUsername() + "' of tenant '" + tenant + "'", e);

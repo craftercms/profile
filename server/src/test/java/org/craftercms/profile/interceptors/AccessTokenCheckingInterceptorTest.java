@@ -18,6 +18,7 @@ package org.craftercms.profile.interceptors;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.craftercms.profile.api.AccessToken;
@@ -46,10 +47,10 @@ import static org.mockito.Mockito.when;
  */
 public class AccessTokenCheckingInterceptorTest {
 
-    private static final String APPLICATION = "adminconsole";
+    private static final String NORMAL_TOKEN_ID = UUID.randomUUID().toString();
+    private static final String EXPIRED_TOKEN_ID =   UUID.randomUUID().toString();
 
-    private static final String NORMAL_TOKEN_ID =    "bfb7fb40-c04c-11e3-8a33-0800200c9a66";
-    private static final String EXPIRED_TOKEN_ID =   "d09bb640-c04c-11e3-8a33-0800200c9a66";
+    private static final String APPLICATION = "adminconsole";
 
     private AccessTokenCheckingInterceptor interceptor;
     @Mock
@@ -104,7 +105,7 @@ public class AccessTokenCheckingInterceptorTest {
 
     private AccessToken getNormalToken() {
         TenantPermission permission = new TenantPermission();
-        permission.allow("*");
+        permission.allowAny();
 
         AccessToken token = new AccessToken();
         token.setId(NORMAL_TOKEN_ID);
@@ -118,7 +119,7 @@ public class AccessTokenCheckingInterceptorTest {
 
     private AccessToken getExpiredToken() {
         TenantPermission permission = new TenantPermission();
-        permission.allow("*");
+        permission.allowAny();
 
         AccessToken token = new AccessToken();
         token.setId(EXPIRED_TOKEN_ID);

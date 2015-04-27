@@ -72,9 +72,6 @@ public class ProfileServiceIT {
 
     private static final String VERIFICATION_EMAIL_REGEX = ".+<a id=\"verificationLink\" href=\".+\\?tokenId=(.+)\">.+";
 
-    private static final String INVALID_ACCESS_TOKEN_ID = "ab785de0-c327-11e3-9c1a-0800200c9a66";
-    private static final String EXPIRED_ACCESS_TOKEN_ID = "9161fb80-c329-11e3-9c1a-0800200c9a66";
-    private static final String UNALLOWED_ACCESS_TOKEN_ID = "f9929b40-c358-11e3-9c1a-0800200c9a66";
     private static final String ADMIN_CONSOLE_ACCESS_TOKEN_ID = "e8f5170c-877b-416f-b70f-4b09772f8e2d";
     private static final String RANDOM_APP_ACCESS_TOKEN_ID = "f91cdaf0-e5c6-11e3-ac10-0800200c9a66";
 
@@ -105,9 +102,9 @@ public class ProfileServiceIT {
     private static final String AVASQUEZ_LAST_NAME = "Vasquez";
 
     private static final String VERIFICATION_URL = "http://localhost:8983/crafter-profile" + BASE_URL_PROFILE +
-            URL_PROFILE_VERIFY;
+                                                   URL_PROFILE_VERIFY;
     private static final String RESET_PASSWORD_URL = "http://localhost:8983/crafter-profile" + BASE_URL_PROFILE +
-        URL_PROFILE_CHANGE_PASSWORD;
+                                                     URL_PROFILE_CHANGE_PASSWORD;
 
     private static final String QUERY1 = "{email: 'admin@craftersoftware.com'}";
     private static final String QUERY2 = "{attributes.subscriptions.targets: 'news'}";
@@ -125,73 +122,14 @@ public class ProfileServiceIT {
     private SingleAccessTokenIdResolver accessTokenIdResolver;
 
     @Test
-    @DirtiesContext
-    public void testMissingAccessTokenIdParamError() throws Exception {
-        accessTokenIdResolver.setAccessTokenId(null);
-
-        try {
-            profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1, AVASQUEZ_EMAIL1, true,
-                    AVASQUEZ_ROLES1, null, VERIFICATION_URL);
-            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-        } catch (ProfileRestServiceException e) {
-            assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
-            assertEquals(ErrorCode.MISSING_ACCESS_TOKEN_ID_PARAM, e.getErrorCode());
-        }
-    }
-
-    @Test
-    @DirtiesContext
-    public void testNoSuchAccessTokenIdError() throws Exception {
-        accessTokenIdResolver.setAccessTokenId(INVALID_ACCESS_TOKEN_ID);
-
-        try {
-            profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1, AVASQUEZ_EMAIL1, true,
-                    AVASQUEZ_ROLES1, null, VERIFICATION_URL);
-            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-        } catch (ProfileRestServiceException e) {
-            assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
-            assertEquals(ErrorCode.NO_SUCH_ACCESS_TOKEN_ID, e.getErrorCode());
-        }
-    }
-
-    @Test
-    @DirtiesContext
-    public void testExpiredAccessTokenError() throws Exception {
-        accessTokenIdResolver.setAccessTokenId(EXPIRED_ACCESS_TOKEN_ID);
-
-        try {
-            profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1, AVASQUEZ_EMAIL1, true,
-                    AVASQUEZ_ROLES1, null, VERIFICATION_URL);
-            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-        } catch (ProfileRestServiceException e) {
-            assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
-            assertEquals(ErrorCode.EXPIRED_ACCESS_TOKEN, e.getErrorCode());
-        }
-    }
-
-    @Test
-    @DirtiesContext
-    public void testUnallowedAccessTokenError() throws Exception {
-        accessTokenIdResolver.setAccessTokenId(UNALLOWED_ACCESS_TOKEN_ID);
-
-        try {
-            profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1, AVASQUEZ_EMAIL1, true,
-                    AVASQUEZ_ROLES1, null, VERIFICATION_URL);
-            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-        } catch (ProfileRestServiceException e) {
-            assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
-            assertEquals(ErrorCode.ACTION_DENIED, e.getErrorCode());
-        }
-    }
-
-    @Test
     public void testCreateProfile() throws Exception {
         Map<String, Object> attributes = new LinkedHashMap<>(2);
         attributes.put("firstName", AVASQUEZ_FIRST_NAME);
         attributes.put("lastName", AVASQUEZ_LAST_NAME);
 
         Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
-                AVASQUEZ_EMAIL1, true, AVASQUEZ_ROLES1, attributes, VERIFICATION_URL);
+                                                       AVASQUEZ_EMAIL1, true, AVASQUEZ_ROLES1, attributes,
+                                                       VERIFICATION_URL);
         try {
             assertNotNull(profile);
             assertNotNull(profile.getId());
@@ -219,8 +157,7 @@ public class ProfileServiceIT {
         tenantService.verifyNewProfiles(DEFAULT_TENANT, true);
 
         Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
-                AVASQUEZ_EMAIL1, true, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
-
+                                                       AVASQUEZ_EMAIL1, true, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
         try {
             assertNotNull(profile);
             assertNotNull(profile.getId());
@@ -268,7 +205,7 @@ public class ProfileServiceIT {
     @Test
     public void testUpdateProfile() throws Exception {
         Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
-                AVASQUEZ_EMAIL1, true, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
+                                                       AVASQUEZ_EMAIL1, true, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
         try {
             assertNotNull(profile);
 
@@ -277,7 +214,8 @@ public class ProfileServiceIT {
             attributes.put("lastName", AVASQUEZ_LAST_NAME);
 
             Profile updatedProfile = profileService.updateProfile(profile.getId().toString(), AVASQUEZ_USERNAME,
-                    AVASQUEZ_PASSWORD2, AVASQUEZ_EMAIL2, false, AVASQUEZ_ROLES2, attributes);
+                                                                  AVASQUEZ_PASSWORD2, AVASQUEZ_EMAIL2, false,
+                                                                  AVASQUEZ_ROLES2, attributes);
 
             assertNotNull(updatedProfile);
             assertEquals(profile.getId(), updatedProfile.getId());
@@ -299,7 +237,7 @@ public class ProfileServiceIT {
     @Test
     public void testEnableProfile() throws Exception {
         Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
-                AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
+                                                       AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
         try {
             assertNotNull(profile);
             assertFalse(profile.isEnabled());
@@ -326,7 +264,7 @@ public class ProfileServiceIT {
     @Test
     public void testDisableProfile() throws Exception {
         Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
-                AVASQUEZ_EMAIL1, true, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
+                                                       AVASQUEZ_EMAIL1, true, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
         try {
             assertNotNull(profile);
             assertTrue(profile.isEnabled());
@@ -353,13 +291,13 @@ public class ProfileServiceIT {
     @Test
     public void testAddRoles() throws Exception {
         Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
-                AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
+                                                       AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
         try {
             assertNotNull(profile);
             assertEquals(AVASQUEZ_ROLES1, profile.getRoles());
 
-            Profile updatedProfile = profileService.addRoles(profile.getId().toString(), Arrays.asList(
-                    "SOCIAL_AUTHOR"));
+            Profile updatedProfile = profileService.addRoles(profile.getId().toString(),
+                                                             Arrays.asList("SOCIAL_AUTHOR"));
 
             Set<String> expectedRoles = new HashSet<>(AVASQUEZ_ROLES1);
             expectedRoles.add("SOCIAL_AUTHOR");
@@ -384,13 +322,13 @@ public class ProfileServiceIT {
     @Test
     public void testRemoveRoles() throws Exception {
         Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
-                AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
+                                                       AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
         try {
             assertNotNull(profile);
             assertEquals(AVASQUEZ_ROLES1, profile.getRoles());
 
-            Profile updatedProfile = profileService.removeRoles(profile.getId().toString(), Arrays.asList(
-                    "SOCIAL_MODERATOR"));
+            Profile updatedProfile = profileService.removeRoles(profile.getId().toString(),
+                                                                Arrays.asList("SOCIAL_MODERATOR"));
 
             Set<String> expectedRoles = new HashSet<>(AVASQUEZ_ROLES1);
             expectedRoles.remove("SOCIAL_MODERATOR");
@@ -424,7 +362,7 @@ public class ProfileServiceIT {
         assertEquals(JDOE_FIRST_NAME, attributes.get("firstName"));
         assertEquals(JDOE_LAST_NAME, attributes.get("lastName"));
 
-        Map<String, Object> subscriptions = (Map<String, Object>) attributes.get("subscriptions");
+        Map<String, Object> subscriptions = (Map<String, Object>)attributes.get("subscriptions");
 
         assertNotNull(subscriptions);
         assertEquals(3, subscriptions.size());
@@ -461,7 +399,7 @@ public class ProfileServiceIT {
     public void testUpdateAttributes() throws Exception {
         // Update a bunch attributes
         Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
-                AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
+                                                       AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
         Map<String, Object> attributes = new HashMap<>();
         try {
             Map<String, Object> subscriptions = new HashMap<>();
@@ -477,7 +415,7 @@ public class ProfileServiceIT {
             assertNotNull(attributes);
             assertEquals(1, attributes.size());
 
-            subscriptions = (Map<String, Object>) attributes.get("subscriptions");
+            subscriptions = (Map<String, Object>)attributes.get("subscriptions");
 
             assertNotNull(subscriptions);
             assertEquals(3, subscriptions.size());
@@ -504,7 +442,7 @@ public class ProfileServiceIT {
     @DirtiesContext
     public void testDeleteAttributes() throws Exception {
         Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
-                AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
+                                                       AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
         Map<String, Object> attributes = new HashMap<>();
         try {
             Map<String, Object> subscriptions = new HashMap<>();
@@ -543,7 +481,9 @@ public class ProfileServiceIT {
     @Test
     public void testDeleteProfile() throws Exception {
         Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
-                AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
+                                                       AVASQUEZ_EMAIL1, false, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
+
+        assertNotNull(profile);
 
         profileService.deleteProfile(profile.getId().toString());
 
@@ -719,7 +659,7 @@ public class ProfileServiceIT {
         ObjectId jdoeProfileId = profileService.getProfileByUsername(DEFAULT_TENANT, JDOE_USERNAME).getId();
 
         List<Profile> profiles = profileService.getProfilesByIds(Arrays.asList(adminProfileId.toString(),
-                jdoeProfileId.toString()), null, null);
+                                                                               jdoeProfileId.toString()), null, null);
 
         assertNotNull(profiles);
         assertEquals(2, profiles.size());
@@ -728,7 +668,7 @@ public class ProfileServiceIT {
 
         // With sort
         profiles = profileService.getProfilesByIds(Arrays.asList(adminProfileId.toString(), jdoeProfileId.toString()),
-                "username", SortOrder.DESC);
+                                                   "username", SortOrder.DESC);
 
         assertNotNull(profiles);
         assertEquals(2, profiles.size());
@@ -773,15 +713,15 @@ public class ProfileServiceIT {
     @Test
     public void testGetProfileByExistingAttribute() throws Exception {
         List<Profile> profiles = profileService.getProfilesByExistingAttribute(DEFAULT_TENANT, "subscriptions." +
-                "frequency", null, null);
+                                                                                               "frequency", null, null);
 
         assertNotNull(profiles);
         assertEquals(1, profiles.size());
         assertJdoeProfile(profiles.get(0));
 
         // With sort
-        profiles = profileService.getProfilesByExistingAttribute(DEFAULT_TENANT,  "subscriptions.frequency",
-                "username", SortOrder.DESC);
+        profiles = profileService.getProfilesByExistingAttribute(DEFAULT_TENANT, "subscriptions.frequency",
+                                                                 "username", SortOrder.DESC);
 
         assertNotNull(profiles);
         assertEquals(1, profiles.size());
@@ -791,15 +731,16 @@ public class ProfileServiceIT {
     @Test
     public void testGetProfileByAttributeValue() throws Exception {
         List<Profile> profiles = profileService.getProfilesByAttributeValue(DEFAULT_TENANT, "subscriptions." +
-                "frequency", "instant", null, null);
+                                                                                            "frequency", "instant",
+                                                                            null, null);
 
         assertNotNull(profiles);
         assertEquals(1, profiles.size());
         assertJdoeProfile(profiles.get(0));
 
         // With sort
-        profiles = profileService.getProfilesByAttributeValue(DEFAULT_TENANT,  "subscriptions.frequency", "instant",
-                "username", SortOrder.DESC);
+        profiles = profileService.getProfilesByAttributeValue(DEFAULT_TENANT, "subscriptions.frequency", "instant",
+                                                              "username", SortOrder.DESC);
 
         assertNotNull(profiles);
         assertEquals(1, profiles.size());
@@ -812,7 +753,7 @@ public class ProfileServiceIT {
         mailServer.start();
 
         Profile profile = profileService.createProfile(DEFAULT_TENANT, AVASQUEZ_USERNAME, AVASQUEZ_PASSWORD1,
-                AVASQUEZ_EMAIL1, true, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
+                                                       AVASQUEZ_EMAIL1, true, AVASQUEZ_ROLES1, null, VERIFICATION_URL);
 
         try {
             profile = profileService.resetPassword(profile.getId().toString(), RESET_PASSWORD_URL);
@@ -898,7 +839,7 @@ public class ProfileServiceIT {
         assertEquals(JDOE_FIRST_NAME, attributes.get("firstName"));
         assertEquals(JDOE_LAST_NAME, attributes.get("lastName"));
 
-        Map<String, Object> subscriptions = (Map<String, Object>) attributes.get("subscriptions");
+        Map<String, Object> subscriptions = (Map<String, Object>)attributes.get("subscriptions");
         assertNotNull(subscriptions);
         assertEquals(3, subscriptions.size());
         assertEquals(JDOE_SUBSCRIPTIONS_FREQUENCY, subscriptions.get("frequency"));

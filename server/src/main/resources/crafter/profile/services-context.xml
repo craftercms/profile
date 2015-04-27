@@ -166,6 +166,7 @@
     </bean>
 
     <bean id="crafter.verificationService" class="org.craftercms.profile.services.impl.VerificationServiceImpl">
+        <property name="permissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
         <property name="emailFactory" ref="crafter.emailFactory"/>
         <property name="tokenRepository" ref="crafter.verificationTokenRepository"/>
         <property name="tokenMaxAge" value="${crafter.profile.verification.token.maxAge}"/>

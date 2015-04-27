@@ -30,7 +30,6 @@ import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ErrorCode;
 import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.exceptions.ProfileRestServiceException;
-import org.craftercms.profile.services.impl.SingleAccessTokenIdResolver;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,10 +52,6 @@ import static org.junit.Assert.fail;
 @ContextConfiguration("classpath:crafter/profile/extension/client-context.xml")
 public class TenantServiceIT {
 
-    private static final String INVALID_ACCESS_TOKEN_ID = "ab785de0-c327-11e3-9c1a-0800200c9a66";
-    private static final String EXPIRED_ACCESS_TOKEN_ID = "9161fb80-c329-11e3-9c1a-0800200c9a66";
-    private static final String UNALLOWED_ACCESS_TOKEN_ID = "f9929b40-c358-11e3-9c1a-0800200c9a66";
-
     private static final String DEFAULT_TENANT_NAME = "default";
     private static final String CORPORATE_TENANT_NAME = "corporate";
 
@@ -74,84 +69,27 @@ public class TenantServiceIT {
 
     @Autowired
     private TenantService tenantService;
-    @Autowired
-    private SingleAccessTokenIdResolver accessTokenIdResolver;
-
-    @Test
-    @DirtiesContext
-    public void testMissingAccessTokenIdParamError() throws Exception {
-        accessTokenIdResolver.setAccessTokenId(null);
-
-        try {
-            tenantService.createTenant(getCorporateTenant());
-            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-        } catch (ProfileRestServiceException e) {
-            assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
-            assertEquals(ErrorCode.MISSING_ACCESS_TOKEN_ID_PARAM, e.getErrorCode());
-        }
-    }
-
-    @Test
-    @DirtiesContext
-    public void testNoSuchAccessTokenIdError() throws Exception {
-        accessTokenIdResolver.setAccessTokenId(INVALID_ACCESS_TOKEN_ID);
-
-        try {
-            tenantService.createTenant(getCorporateTenant());
-            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-        } catch (ProfileRestServiceException e) {
-            assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
-            assertEquals(ErrorCode.NO_SUCH_ACCESS_TOKEN_ID, e.getErrorCode());
-        }
-    }
-
-    @Test
-    @DirtiesContext
-    public void testExpiredAccessTokenError() throws Exception {
-        accessTokenIdResolver.setAccessTokenId(EXPIRED_ACCESS_TOKEN_ID);
-
-        try {
-            tenantService.createTenant(getCorporateTenant());
-            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-        } catch (ProfileRestServiceException e) {
-            assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
-            assertEquals(ErrorCode.EXPIRED_ACCESS_TOKEN, e.getErrorCode());
-        }
-    }
-
-    @Test
-    @DirtiesContext
-    public void testUnallowedAccessTokenError() throws Exception {
-        accessTokenIdResolver.setAccessTokenId(UNALLOWED_ACCESS_TOKEN_ID);
-
-        try {
-            tenantService.createTenant(getCorporateTenant());
-            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-        } catch (ProfileRestServiceException e) {
-            assertEquals(HttpStatus.FORBIDDEN, e.getStatus());
-            assertEquals(ErrorCode.ACTION_DENIED, e.getErrorCode());
-        }
-    }
 
     @Test
     public void testCreateTenant() throws Exception {
         Tenant tenant = tenantService.createTenant(getCorporateTenant());
-
-        assertNotNull(tenant);
-        assertNotNull(tenant.getId());
-        assertEquals(CORPORATE_TENANT_NAME, tenant.getName());
-        assertEquals(false, tenant.isVerifyNewProfiles());
-        assertEquals(CORPORATE_ROLES, tenant.getAvailableRoles());
-
         try {
-            tenantService.createTenant(getCorporateTenant());
-            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-        } catch (ProfileRestServiceException e) {
-            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-            assertEquals(ErrorCode.TENANT_EXISTS, e.getErrorCode());
-        }
+            assertNotNull(tenant);
+            assertNotNull(tenant.getId());
+            assertEquals(CORPORATE_TENANT_NAME, tenant.getName());
+            assertEquals(false, tenant.isVerifyNewProfiles());
+            assertEquals(CORPORATE_ROLES, tenant.getAvailableRoles());
 
-        tenantService.deleteTenant(CORPORATE_TENANT_NAME);
+            try {
+                tenantService.createTenant(getCorporateTenant());
+                fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
+            } catch (ProfileRestServiceException e) {
+                assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+                assertEquals(ErrorCode.TENANT_EXISTS, e.getErrorCode());
+            }
+        } finally {
+            tenantService.deleteTenant(CORPORATE_TENANT_NAME);
+        }
     }
 
     @Test
@@ -189,15 +127,13 @@ public class TenantServiceIT {
 
     @Test
     public void testDeleteTenant() throws Exception {
-        tenantService.createTenant(getCorporateTenant());
-
-        Tenant tenant = tenantService.getTenant(CORPORATE_TENANT_NAME);
+        Tenant tenant = tenantService.createTenant(getCorporateTenant());
 
         assertNotNull(tenant);
 
-        tenantService.deleteTenant(CORPORATE_TENANT_NAME);
+        tenantService.deleteTenant(tenant.getName());
 
-        tenant = tenantService.getTenant(CORPORATE_TENANT_NAME);
+        tenant = tenantService.getTenant(tenant.getName());
 
         assertNull(tenant);
     }
