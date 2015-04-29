@@ -364,7 +364,7 @@ public interface ProfileService {
     /**
      * Returns the verification token that corresponds to the given ID.
      *
-     * @param tokenId the token  ID
+     * @param tokenId the token ID
      *
      * @return the verification token, or null if not found
      */
