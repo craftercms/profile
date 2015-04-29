@@ -31,6 +31,7 @@ import org.craftercms.commons.collections.SetUtils;
 import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
+import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.AttributePermission;
@@ -43,7 +44,6 @@ import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.exceptions.InvalidEmailAddressException;
 import org.craftercms.profile.exceptions.InvalidQueryException;
-import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.services.VerificationService;
 import org.junit.Before;
@@ -124,9 +124,9 @@ public class ProfileServiceImplTest {
 
     private ProfileServiceImpl profileService;
     @Mock
-    private PermissionEvaluator<Application, String> tenantPermissionEvaluator;
+    private PermissionEvaluator<AccessToken, String> tenantPermissionEvaluator;
     @Mock
-    private PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator;
+    private PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator;
     @Mock
     private ProfileRepository profileRepository;
     @Mock
@@ -140,14 +140,9 @@ public class ProfileServiceImplTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        when(tenantPermissionEvaluator.isAllowed(
-            anyString(), anyString()))
-            .thenReturn(true);
-        when(attributePermissionEvaluator.isAllowed(
-            any(AttributeDefinition.class), anyString()))
-            .thenReturn(true);
-        when(attributePermissionEvaluator.isAllowed(
-            eq(new AttributeDefinition(ATTRIB_NAME_PRIVATE)), anyString()))
+        when(tenantPermissionEvaluator.isAllowed(anyString(), anyString())).thenReturn(true);
+        when(attributePermissionEvaluator.isAllowed(any(AttributeDefinition.class), anyString())).thenReturn(true);
+        when(attributePermissionEvaluator.isAllowed(eq(new AttributeDefinition(ATTRIB_NAME_PRIVATE)), anyString()))
             .thenReturn(false);
 
         when(tenantService.getTenant(TENANT1_NAME)).thenReturn(getTenant1());
@@ -159,7 +154,7 @@ public class ProfileServiceImplTest {
 
             @Override
             public Object answer(final InvocationOnMock invocation) throws Throwable {
-                Profile profile = (Profile) invocation.getArguments()[0];
+                Profile profile = (Profile)invocation.getArguments()[0];
                 profile.setId(new ObjectId());
 
                 return null;
@@ -168,60 +163,60 @@ public class ProfileServiceImplTest {
         }).when(profileRepository).insert(any(Profile.class));
 
         when(profileRepository.findOneByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT, TENANT1_NAME,
-            QUERY), new String[0]))
-            .thenReturn(getTenant1Profile());
+                                                            QUERY), new String[0])).thenReturn(getTenant1Profile());
 
         when(profileRepository.findById(PROFILE1_ID.toString(), new String[0])).thenReturn(getTenant1Profile());
 
-        when(profileRepository.findById(PROFILE1_ID.toString(), NO_ATTRIBUTE))
-            .thenReturn(getTenant1ProfileNoAttributes());
+        when(profileRepository.findById(PROFILE1_ID.toString(), NO_ATTRIBUTE)).thenReturn(
+            getTenant1ProfileNoAttributes());
 
-        when(profileRepository.findById(PROFILE1_ID.toString(), ATTRIB_NAME_FIRST_NAME))
-            .thenReturn(getTenant1ProfileNoLastName());
+        when(profileRepository.findById(PROFILE1_ID.toString(), ATTRIB_NAME_FIRST_NAME)).thenReturn(
+            getTenant1ProfileNoLastName());
 
-        when(profileRepository.findById(PROFILE2_ID.toString(), new String[0]))
-            .thenReturn(getTenant2Profile());
+        when(profileRepository.findById(PROFILE2_ID.toString(), new String[0])).thenReturn(
+            getTenant2Profile());
 
         when(profileRepository.findByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT, TENANT1_NAME, QUERY),
-            SORT_BY, SortOrder.ASC, START, COUNT, new String[0]))
-            .thenReturn(getAllTenant1Profiles());
+                                           SORT_BY, SortOrder.ASC, START, COUNT, new String[0])).thenReturn(
+            getAllTenant1Profiles());
 
-        when(profileRepository.findByTenantAndUsername(TENANT1_NAME, USERNAME1, new String[0]))
-            .thenReturn(getTenant1Profile());
+        when(profileRepository.findByTenantAndUsername(TENANT1_NAME, USERNAME1, new String[0])).thenReturn(
+            getTenant1Profile());
 
-        when(profileRepository.findByIds(TENANT1_PROFILE_IDS, SORT_BY, SortOrder.ASC))
-            .thenReturn(getAllTenant1Profiles());
+        when(profileRepository.findByIds(TENANT1_PROFILE_IDS, SORT_BY, SortOrder.ASC)).thenReturn(
+            getAllTenant1Profiles());
 
-        when(profileRepository.findRange(TENANT1_NAME, SORT_BY, SortOrder.ASC, START, COUNT))
-            .thenReturn(getAllTenant1Profiles());
+        when(profileRepository.findRange(TENANT1_NAME, SORT_BY, SortOrder.ASC, START, COUNT)).thenReturn(
+            getAllTenant1Profiles());
 
-        when(profileRepository.findByTenantAndRole(TENANT1_NAME, ROLE1, SORT_BY, SortOrder.ASC))
-            .thenReturn(getAllTenant1Profiles());
+        when(profileRepository.findByTenantAndRole(TENANT1_NAME, ROLE1, SORT_BY, SortOrder.ASC)).thenReturn(
+            getAllTenant1Profiles());
 
         when(profileRepository.findByTenantAndAttributeValue(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME, FIRST_NAME,
-            SORT_BY, SortOrder.ASC))
-            .thenReturn(getAllTenant1Profiles());
+                                                             SORT_BY, SortOrder.ASC)).thenReturn(
+            getAllTenant1Profiles());
 
-        when(profileRepository.countByTenant(TENANT1_NAME))
-            .thenReturn(10L);
+        when(profileRepository.countByTenant(TENANT1_NAME)).thenReturn(10L);
 
         when(profileRepository.count(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT, TENANT1_NAME, QUERY)))
             .thenReturn(1L);
 
-        when(verificationService.createToken(anyString()))
-            .then(new Answer<VerificationToken>() {
+        when(verificationService.createToken(any(Profile.class))).then(new Answer<VerificationToken>() {
 
-                @Override
-                public VerificationToken answer(final InvocationOnMock invocation) throws Throwable {
-                    VerificationToken token = new VerificationToken();
-                    token.setId(VERIFICATION_TOKEN_ID1);
-                    token.setProfileId((String) invocation.getArguments()[0]);
-                    token.setTimestamp(new Date());
+            @Override
+            public VerificationToken answer(final InvocationOnMock invocation) throws Throwable {
+                Profile profile = (Profile)invocation.getArguments()[0];
 
-                    return token;
-                }
+                VerificationToken token = new VerificationToken();
+                token.setId(VERIFICATION_TOKEN_ID1);
+                token.setTenant(profile.getTenant());
+                token.setProfileId(profile.getId().toString());
+                token.setTimestamp(new Date());
 
-            });
+                return token;
+            }
+
+        });
 
         VerificationToken token1 = new VerificationToken();
         token1.setId(VERIFICATION_TOKEN_ID1);
@@ -233,11 +228,8 @@ public class ProfileServiceImplTest {
         token2.setProfileId(PROFILE2_ID.toString());
         token2.setTimestamp(new Date());
 
-        when(verificationService.verifyToken(VERIFICATION_TOKEN_ID1))
-            .thenReturn(token1);
-
-        when(verificationService.verifyToken(VERIFICATION_TOKEN_ID2))
-            .thenReturn(token2);
+        when(verificationService.getToken(VERIFICATION_TOKEN_ID1)).thenReturn(token1);
+        when(verificationService.getToken(VERIFICATION_TOKEN_ID2)).thenReturn(token2);
 
         profileService = new ProfileServiceImpl();
         profileService.setTenantPermissionEvaluator(tenantPermissionEvaluator);
@@ -261,7 +253,7 @@ public class ProfileServiceImplTest {
         expected.setAttribute(ATTRIB_NAME_GENDER, GENDER);
 
         Profile actual = profileService.createProfile(TENANT1_NAME, USERNAME2, PASSWORD2, EMAIL2, true, ROLES2,
-                getAttributesWithoutPrivateAttribute(), VERIFICATION_URL);
+                                                      getAttributesWithoutPrivateAttribute(), VERIFICATION_URL);
 
         assertEqualProfiles(expected, actual);
         assertTrue(CipherUtils.matchPassword(actual.getPassword(), PASSWORD2));
@@ -274,16 +266,16 @@ public class ProfileServiceImplTest {
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(tenantService).getTenant(TENANT1_NAME);
         verify(profileRepository).insert(actual);
-        verify(verificationService).createToken(actual.getId().toString());
+        verify(verificationService).createToken(actual);
         verify(verificationService).sendEmail(token, actual, VERIFICATION_URL, VERIFICATION_FROM_ADDRESS,
-            VERIFICATION_SUBJECT, VERIFICATION_TEMPLATE_NAME);
+                                              VERIFICATION_SUBJECT, VERIFICATION_TEMPLATE_NAME);
     }
 
     @Test
     public void testCreateProfileWithUnwritableAttribute() throws Exception {
         try {
             profileService.createProfile(TENANT1_NAME, USERNAME2, PASSWORD2, EMAIL2, true, ROLES2, getAttributes(),
-                    VERIFICATION_URL);
+                                         VERIFICATION_URL);
             fail("Exception " + ActionDeniedException.class.getName() + " expected");
         } catch (ActionDeniedException e) {
         }
@@ -293,7 +285,7 @@ public class ProfileServiceImplTest {
     public void testCreateProfileInvalidEmail() throws Exception {
         try {
             profileService.createProfile(TENANT1_NAME, USERNAME2, PASSWORD2, "a.com", true, ROLES2, null,
-                    VERIFICATION_URL);
+                                         VERIFICATION_URL);
             fail("Exception " + InvalidEmailAddressException.class.getName() + " expected");
         } catch (InvalidEmailAddressException e) {
         }
@@ -307,7 +299,7 @@ public class ProfileServiceImplTest {
         expected.setAttribute(ATTRIB_NAME_GENDER, GENDER);
 
         Profile actual = profileService.createProfile(TENANT2_NAME, USERNAME2, PASSWORD2, EMAIL2, true, ROLES2,
-                getAttributesWithoutPrivateAttribute(), VERIFICATION_URL);
+                                                      getAttributesWithoutPrivateAttribute(), VERIFICATION_URL);
 
         assertEqualProfiles(expected, actual);
         assertTrue(CipherUtils.matchPassword(actual.getPassword(), PASSWORD2));
@@ -317,9 +309,9 @@ public class ProfileServiceImplTest {
         verify(tenantPermissionEvaluator).isAllowed(TENANT2_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(tenantService).getTenant(TENANT2_NAME);
         verify(profileRepository).insert(actual);
-        verify(verificationService, never()).createToken(anyString());
-        verify(verificationService, never()).sendEmail(any(VerificationToken.class), any(Profile.class), anyString(), 
-            anyString(), anyString(), anyString());
+        verify(verificationService, never()).createToken(any(Profile.class));
+        verify(verificationService, never()).sendEmail(any(VerificationToken.class), any(Profile.class), anyString(),
+                                                       anyString(), anyString(), anyString());
     }
 
     @Test
@@ -336,8 +328,8 @@ public class ProfileServiceImplTest {
         expected.setAttributes(getAttributesWithoutPrivateAttribute());
         expected.getAttributes().put(ATTRIB_NAME_GENDER, GENDER);
 
-        Profile actual = profileService.updateProfile(PROFILE1_ID.toString(), USERNAME2, PASSWORD2,
-                EMAIL2, false, ROLES2, Collections.<String, Object>singletonMap(ATTRIB_NAME_GENDER, GENDER));
+        Profile actual = profileService.updateProfile(PROFILE1_ID.toString(), USERNAME2, PASSWORD2, EMAIL2, false,
+                                                      ROLES2, Collections.<String, Object>singletonMap(ATTRIB_NAME_GENDER, GENDER));
 
         assertEqualProfiles(expected, actual);
 
@@ -350,7 +342,7 @@ public class ProfileServiceImplTest {
     public void testUpdateProfileWithUnwritableAttribute() throws Exception {
         try {
             profileService.updateProfile(PROFILE1_ID.toString(), USERNAME2, PASSWORD2, EMAIL2, false, ROLES2,
-                    Collections.<String, Object>singletonMap(ATTRIB_NAME_PRIVATE, 0));
+                                         Collections.<String, Object>singletonMap(ATTRIB_NAME_PRIVATE, 0));
             fail("Exception " + ActionDeniedException.class.getName() + " expected");
         } catch (ActionDeniedException e) {
         }
@@ -359,8 +351,7 @@ public class ProfileServiceImplTest {
     @Test
     public void testUpdateProfileInvalidEmail() throws Exception {
         try {
-            profileService.updateProfile(PROFILE1_ID.toString(), USERNAME2, PASSWORD2, "a.com", false,
-                    ROLES2, null);
+            profileService.updateProfile(PROFILE1_ID.toString(), USERNAME2, PASSWORD2, "a.com", false, ROLES2, null);
             fail("Exception " + InvalidEmailAddressException.class.getName() + " expected");
         } catch (InvalidEmailAddressException e) {
         }
@@ -380,7 +371,7 @@ public class ProfileServiceImplTest {
         verify(tenantPermissionEvaluator).isAllowed(TENANT2_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE2_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
-        verify(verificationService).verifyToken(VERIFICATION_TOKEN_ID2);
+        verify(verificationService).getToken(VERIFICATION_TOKEN_ID2);
         verify(verificationService).deleteToken(VERIFICATION_TOKEN_ID2);
     }
 
@@ -544,8 +535,8 @@ public class ProfileServiceImplTest {
         assertEqualProfiles(expected, actual);
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
-        verify(profileRepository).findOneByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT,
-                TENANT1_NAME, QUERY), new String[0]);
+        verify(profileRepository).findOneByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT, TENANT1_NAME,
+                                                               QUERY), new String[0]);
     }
 
     @Test
@@ -582,14 +573,15 @@ public class ProfileServiceImplTest {
             profile.setAttributes(getAttributesWithoutPrivateAttribute());
         }
 
-        List<Profile> actual = profileService.getProfilesByQuery(TENANT1_NAME, QUERY, SORT_BY, SortOrder.ASC,
-                START, COUNT);
+        List<Profile> actual = profileService.getProfilesByQuery(TENANT1_NAME, QUERY, SORT_BY, SortOrder.ASC, START,
+                                                                 COUNT);
 
         assertEqualProfileLists(expected, actual);
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
-        verify(profileRepository).findByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT,
-                TENANT1_NAME, QUERY), SORT_BY, SortOrder.ASC, START, COUNT, new String[0]);
+        verify(profileRepository).findByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT, TENANT1_NAME,
+                                                            QUERY), SORT_BY, SortOrder.ASC, START, COUNT,
+                                              new String[0]);
     }
 
     @Test
@@ -693,13 +685,13 @@ public class ProfileServiceImplTest {
         }
 
         List<Profile> actual = profileService.getProfilesByAttributeValue(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME,
-                FIRST_NAME, SORT_BY, SortOrder.ASC);
+                                                                          FIRST_NAME, SORT_BY, SortOrder.ASC);
 
         assertEqualProfileLists(expected, actual);
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findByTenantAndAttributeValue(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME, FIRST_NAME,
-                SORT_BY, SortOrder.ASC);
+                                                                SORT_BY, SortOrder.ASC);
     }
 
     @Test
@@ -716,9 +708,9 @@ public class ProfileServiceImplTest {
 
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
-        verify(verificationService).createToken(PROFILE1_ID.toString());
+        verify(verificationService).createToken(actual);
         verify(verificationService).sendEmail(token, actual, RESET_PASSWORD_URL, RESET_PASSWORD_FROM_ADDRESS,
-            RESET_PASSWORD_SUBJECT, RESET_PASSWORD_TEMPLATE_NAME);
+                                              RESET_PASSWORD_SUBJECT, RESET_PASSWORD_TEMPLATE_NAME);
     }
 
     @Test
@@ -734,7 +726,7 @@ public class ProfileServiceImplTest {
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
         verify(profileRepository).save(actual);
-        verify(verificationService).verifyToken(VERIFICATION_TOKEN_ID1);
+        verify(verificationService).getToken(VERIFICATION_TOKEN_ID1);
         verify(verificationService).deleteToken(VERIFICATION_TOKEN_ID1);
     }
 
@@ -744,10 +736,11 @@ public class ProfileServiceImplTest {
 
         assertNotNull(token);
         assertEquals(VERIFICATION_TOKEN_ID1, token.getId());
+        assertEquals(TENANT1_NAME, token.getTenant());
         assertEquals(PROFILE1_ID.toString(), token.getProfileId());
         assertNotNull(token.getTimestamp());
 
-        verify(verificationService).createToken(PROFILE1_ID.toString());
+        verify(verificationService).createToken(getTenant1Profile());
     }
 
     @Test

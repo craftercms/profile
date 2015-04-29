@@ -19,6 +19,7 @@ package org.craftercms.profile.permissions;
 import org.craftercms.commons.security.exception.PermissionException;
 import org.craftercms.commons.security.permissions.Permission;
 import org.craftercms.commons.security.permissions.PermissionResolver;
+import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.AttributePermission;
 
@@ -27,19 +28,20 @@ import org.craftercms.profile.api.AttributePermission;
  *
  * @author avasquez
  */
-public class AttributePermissionResolver implements PermissionResolver<Application, AttributeDefinition> {
+public class AttributePermissionResolver implements PermissionResolver<AccessToken, AttributeDefinition> {
 
     @Override
-    public Permission getGlobalPermission(Application subject) throws PermissionException {
+    public Permission getGlobalPermission(AccessToken token) throws PermissionException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Permission getPermission(Application app, AttributeDefinition definition) throws PermissionException {
+    public Permission getPermission(AccessToken token, AttributeDefinition definition) throws PermissionException {
         for (AttributePermission permission : definition.getPermissions()) {
+            String app = token.getApplication();
             String permittedApp = permission.getApplication();
 
-            if (permittedApp.equals(AttributePermission.ANY_APPLICATION) || permittedApp.equals(app.getName())) {
+            if (permittedApp.equals(AttributePermission.ANY_APPLICATION) || permittedApp.equals(app)) {
                 return permission;
             }
         }

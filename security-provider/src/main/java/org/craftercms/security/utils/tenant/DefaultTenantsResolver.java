@@ -1,6 +1,5 @@
 package org.craftercms.security.utils.tenant;
 
-import org.craftercms.profile.social.utils.TenantsResolver;
 import org.springframework.beans.factory.annotation.Required;
 
 /**

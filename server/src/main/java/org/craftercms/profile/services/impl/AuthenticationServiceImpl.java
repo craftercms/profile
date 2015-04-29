@@ -25,6 +25,7 @@ import org.craftercms.commons.logging.Logged;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
+import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.PersistentLogin;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.ProfileConstants;
@@ -38,7 +39,6 @@ import org.craftercms.profile.exceptions.BadCredentialsException;
 import org.craftercms.profile.exceptions.DisabledProfileException;
 import org.craftercms.profile.exceptions.NoSuchPersistentLoginException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
-import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.PersistentLoginRepository;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.springframework.beans.factory.annotation.Required;
@@ -71,13 +71,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public static final String ERROR_KEY_UPDATE_PERSISTENT_LOGIN_ERROR = "profile.auth.updatePersistentLoginError";
     public static final String ERROR_KEY_DELETE_PERSISTENT_LOGIN_ERROR = "profile.auth.deletePersistentLoginError";
 
-    protected PermissionEvaluator<Application, String> permissionEvaluator;
+    protected PermissionEvaluator<AccessToken, String> permissionEvaluator;
     protected TicketRepository ticketRepository;
     protected PersistentLoginRepository persistentLoginRepository;
     protected ProfileService profileService;
 
     @Required
-    public void setPermissionEvaluator(PermissionEvaluator<Application, String> permissionEvaluator) {
+    public void setPermissionEvaluator(PermissionEvaluator<AccessToken, String> permissionEvaluator) {
         this.permissionEvaluator = permissionEvaluator;
     }
 

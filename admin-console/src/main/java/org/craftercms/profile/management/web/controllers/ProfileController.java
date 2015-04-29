@@ -51,18 +51,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(ProfileController.BASE_URL_PROFILE)
 public class ProfileController {
 
-    public static final String PATH_VAR_ID = "id";
-
     public static final String BASE_URL_PROFILE = "/profile";
+
+    public static final String PATH_VAR_ID = "id";
 
     public static final String URL_VIEW_PROFILE_LIST = "/list/view";
     public static final String URL_VIEW_NEW_PROFILE = "/new/view";
-    public static final String URL_VIEW_UPDATE_PROFILE = "/update/view";
+    public static final String URL_VIEW_PROFILE = "/view";
 
     public static final String URL_GET_PROFILE_COUNT = "/count";
     public static final String URL_GET_PROFILE_LIST = "/list";
     public static final String URL_GET_PROFILE = "/{" + PATH_VAR_ID + "}";
-    public static final String URL_CREATE_PROFILE = "/new";
+    public static final String URL_CREATE_PROFILE = "/create";
     public static final String URL_UPDATE_PROFILE = "/update";
     public static final String URL_DELETE_PROFILE = "/{" + PATH_VAR_ID + "}/delete";
 
@@ -75,7 +75,7 @@ public class ProfileController {
 
     public static final String VIEW_PROFILE_LIST = "profile-list";
     public static final String VIEW_NEW_PROFILE = "new-profile";
-    public static final String VIEW_UPDATE_PROFILE = "update-profile";
+    public static final String VIEW_PROFILE = "profile";
 
     public static final String MODEL_MESSAGE = "message";
 
@@ -120,9 +120,9 @@ public class ProfileController {
         return VIEW_NEW_PROFILE;
     }
 
-    @RequestMapping(value = URL_VIEW_UPDATE_PROFILE, method = RequestMethod.GET)
-    public String viewUpdateProfile() {
-        return VIEW_UPDATE_PROFILE;
+    @RequestMapping(value = URL_VIEW_PROFILE, method = RequestMethod.GET)
+    public String viewProfile() {
+        return VIEW_PROFILE;
     }
 
     @RequestMapping(value = URL_GET_PROFILE_COUNT, method = RequestMethod.GET)

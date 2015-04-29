@@ -82,6 +82,11 @@
         <property name="tenantPermissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
     </bean>
 
+    <bean id="crafter.accessTokenController"
+          class="org.craftercms.profile.management.web.controllers.AccessTokenController">
+        <property name="accessTokenService" ref="crafter.accessTokenServiceRestClient"/>
+    </bean>
+
     <bean id="crafter.fallbackController" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
 
     <!-- Freemarker Config -->

@@ -362,6 +362,15 @@ public interface ProfileService {
     VerificationToken createVerificationToken(String profileId) throws ProfileException;
 
     /**
+     * Returns the verification token that corresponds to the given ID.
+     *
+     * @param tokenId the token  ID
+     *
+     * @return the verification token, or null if not found
+     */
+    VerificationToken getVerificationToken(String tokenId) throws ProfileException;
+
+    /**
      * Deletes a verification token when it's not needed anymore (not necessary to call if
      * {@link #verifyProfile(String, String...)} or {@link #changePassword(String, String, String...)}, since they
      * already delete the token.

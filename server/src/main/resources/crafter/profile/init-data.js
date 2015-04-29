@@ -3,6 +3,7 @@ if (db.accesstoken.count() == 0) {
         {
             "_id" : "e8f5170c-877b-416f-b70f-4b09772f8e2d",
             "application" : "adminconsole",
+            "master": true,
             "tenantPermissions" : [
                 {
                     "allowedActions" : [ "*" ],
@@ -14,6 +15,7 @@ if (db.accesstoken.count() == 0) {
         {
             "_id" : "b4d44030-d0af-11e3-9c1a-0800200c9a66",
             "application" : "crafterengine",
+            "master": false,
             "tenantPermissions" : [
                 {
                     "allowedActions" : [ "READ_TENANT", "MANAGE_PROFILES", "MANAGE_TICKETS" ],
@@ -25,6 +27,7 @@ if (db.accesstoken.count() == 0) {
         {
             "_id" : "2ba3ac10-c43e-11e3-9c1a-0800200c9a66",
             "application" : "craftersocial",
+            "master": false,
             "tenantPermissions" : [
                 {
                     "allowedActions" : [ "READ_TENANT", "MANAGE_PROFILES", "MANAGE_TICKETS" ],

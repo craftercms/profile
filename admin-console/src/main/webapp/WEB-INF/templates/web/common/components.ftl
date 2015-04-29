@@ -43,9 +43,9 @@
                         <#if loggedInUser.roles?seq_contains("PROFILE_ADMIN")>
                             ${loggedInUser.tenant}
                         <#else>
-                            <a href="#/tenant/update/${loggedInUser.tenant}">${loggedInUser.tenant}</a>
+                            <a href="#/tenant/${loggedInUser.tenant}">${loggedInUser.tenant}</a>
                         </#if>
-                        as: <a href="#/profile/update/${loggedInUser.id}">${loggedInUser.username}</a>
+                        as: <a href="#/profile/${loggedInUser.id}">${loggedInUser.username}</a>
                     </span>
                 </li>
             </ul>
@@ -57,17 +57,23 @@
 <#macro navSidebar>
 <div class="col-sm-3 col-md-2 sidebar">
     <ul class="nav nav-sidebar">
-        <li><a href="#/profile/list">List Profiles</a></li>
-        <li><a href="#/profile/new">New Profile</a></li>
+        <li><a href="#/profiles">List Profiles</a></li>
+        <li><a href="#/new_profile">New Profile</a></li>
     </ul>
     <ul class="nav nav-sidebar">
         <#if loggedInUser.roles?seq_contains("PROFILE_SUPERADMIN")>
-            <li><a href="#/tenant/list">List Tenants</a></li>
-            <li><a href="#/tenant/new">New Tenant</a></li>
+        <li><a href="#/tenants">List Tenants</a></li>
+        <li><a href="#/new_tenant">New Tenant</a></li>
         <#elseif loggedInUser.roles?seq_contains("PROFILE_TENANT_ADMIN")>
-            <li><a href="#/tenant/update/${loggedInUser.tenant}">Edit Tenant</a></li>
+        <li><a href="#/tenant/${loggedInUser.tenant}">Edit Tenant</a></li>
         </#if>
     </ul>
+    <#if loggedInUser.roles?seq_contains("PROFILE_SUPERADMIN")>
+    <ul class="nav nav-sidebar">
+        <li><a href="#/access_tokens">List Access Tokens</a></li>
+        <li><a href="#/new_access_token">New Access Token</a></li>
+    </ul>
+    </#if>
 </div>
 </#macro>
 
@@ -79,6 +85,7 @@
 <script src="<@spring.url '/resources/js/ui-bootstrap-tpls-0.11.0.min.js'/>"></script>
 <script src="<@spring.url '/resources/js/bootstrap-growl.min.js'/>"></script>
 <script src="<@spring.url '/resources/js/jquery.cookie.js'/>"></script>
+<script src="<@spring.url '/resources/js/moment.min.js'/>"></script>
 <script src="<@spring.url '/resources/js/app.js'/>"></script>
 <script type="text/javascript">
     var contextPath = '${requestContext.contextPath}';

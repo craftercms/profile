@@ -21,6 +21,15 @@ var attributeActions = [
     { name: 'REMOVE_ATTRIBUTE', label: 'Remove' }
 ];
 
+var tenantActions = [
+    { name: 'CREATE_TENANT', label: 'Create Tenant' },
+    { name: 'READ_TENANT', label: 'Read Tenant' },
+    { name: 'UPDATE_TENANT', label: 'Update Tenant' },
+    { name: 'DELETE_TENANT', label: 'Delete Tenant' },
+    { name: 'MANAGE_PROFILES', label: 'Manage Profiles' },
+    { name: 'MANAGE_TICKETS', label: 'Manage Tickets' }
+];
+
 var paginationConfig = {
     size: 5,
     itemsPerPage: 10
@@ -98,6 +107,41 @@ function postObject(url, obj, $http) {
 
 function hasAllActionsWildcard(actions) {
     return actions.indexOf('*') > -1;
+}
+
+function hasAction(permission, action) {
+    if (!permission.allowedActions) {
+        return false;
+    }
+    if (hasAllActionsWildcard(permission.allowedActions)) {
+        return true;
+    }
+    if (permission.allowedActions.indexOf(action) > -1) {
+        return true;
+    }
+}
+
+function toggleAction(permission, action, availableActions) {
+    if (permission.allowedActions === undefined || permission.allowedActions === null) {
+        permission.allowedActions = [];
+    }
+
+    if (hasAllActionsWildcard(permission.allowedActions)) {
+        permission.allowedActions = [];
+
+        for (var availableAction in availableActions) {
+            if (availableAction != action) {
+                permission.allowedActions.push(availableActions);
+            }
+        }
+    } else {
+        var index = permission.allowedActions.indexOf(action);
+        if (index > -1) {
+            permission.allowedActions.splice(index, 1);
+        } else {
+            permission.allowedActions.push(action);
+        }
+    }
 }
 
 function getAllActions() {
@@ -198,6 +242,23 @@ app.config(['$httpProvider', function($httpProvider) {
 /**
  * Services
  */
+app.factory('accessTokenService', function($http) {
+    return {
+        getAllAccessTokens: function() {
+            return getObject('/access_token/all', $http);
+        },
+        getAccessToken: function(id) {
+            return getObject('/access_token/' + id, $http);
+        },
+        createAccessToken: function(token) {
+            return postObject('/access_token/create', token, $http);
+        },
+        deleteAccessToken: function(id) {
+            return postObject('/access_token/' + id + '/delete', null, $http);
+        }
+    }
+});
+
 app.factory('tenantService', function($http) {
     return {
         getTenantNames: function() {
@@ -207,7 +268,7 @@ app.factory('tenantService', function($http) {
             return getObject('/tenant/' + tenantName, $http);
         },
         createTenant: function(tenant) {
-            return postObject('/tenant/new', tenant, $http);
+            return postObject('/tenant/create', tenant, $http);
         },
         updateTenant: function(tenant) {
             return postObject('/tenant/update', tenant, $http);
@@ -216,7 +277,6 @@ app.factory('tenantService', function($http) {
             return postObject('/tenant/' + tenantName + '/delete', null, $http);
         }
     }
-
 });
 
 app.factory('profileService', function($http) {
@@ -247,7 +307,7 @@ app.factory('profileService', function($http) {
             return getObject('/profile/' + id, $http);
         },
         createProfile: function(profile) {
-            return postObject('/profile/new', profile, $http);
+            return postObject('/profile/create', profile, $http);
         },
         updateProfile: function(profile) {
             return postObject('/profile/update', profile, $http);
@@ -272,7 +332,7 @@ app.config(function($routeProvider) {
         }
     });
 
-    $routeProvider.when('/profile/list', {
+    $routeProvider.when('/profiles', {
         controller: 'ProfileListController',
         templateUrl: contextPath + '/profile/list/view',
         resolve: {
@@ -282,7 +342,7 @@ app.config(function($routeProvider) {
         }
     });
 
-    $routeProvider.when('/profile/new', {
+    $routeProvider.when('/new_profile', {
         controller: 'NewProfileController',
         templateUrl: contextPath + '/profile/new/view',
         resolve: {
@@ -307,9 +367,9 @@ app.config(function($routeProvider) {
         }
     });
 
-    $routeProvider.when('/profile/update/:id', {
-        controller: 'UpdateProfileController',
-        templateUrl: contextPath + '/profile/update/view',
+    $routeProvider.when('/profile/:id', {
+        controller: 'ProfileController',
+        templateUrl: contextPath + '/profile/view',
         resolve: {
             profile: function($route, profileService) {
                 return profileService.getProfile($route.current.params.id);
@@ -317,7 +377,7 @@ app.config(function($routeProvider) {
         }
     });
 
-    $routeProvider.when('/tenant/list', {
+    $routeProvider.when('/tenants', {
         controller: 'TenantListController',
         templateUrl: contextPath + '/tenant/list/view',
         resolve: {
@@ -327,7 +387,7 @@ app.config(function($routeProvider) {
         }
     });
 
-    $routeProvider.when('/tenant/new', {
+    $routeProvider.when('/new_tenant', {
         controller: 'TenantController',
         templateUrl: contextPath + '/tenant/new/view',
         resolve: {
@@ -345,15 +405,50 @@ app.config(function($routeProvider) {
         }
     });
 
-    $routeProvider.when('/tenant/update/:name', {
+    $routeProvider.when('/tenant/:name', {
         controller: 'TenantController',
-        templateUrl: contextPath + '/tenant/update/view',
+        templateUrl: contextPath + '/tenant/view',
         resolve: {
             tenant: function($route, tenantService) {
                 return tenantService.getTenant($route.current.params.name);
             },
             newTenant: function() {
                 return false;
+            }
+        }
+    });
+
+    $routeProvider.when('/access_tokens', {
+        controller: 'AccessTokenListController',
+        templateUrl: contextPath + '/access_token/list/view',
+        resolve: {
+            accessTokens: function(accessTokenService) {
+                return accessTokenService.getAllAccessTokens();
+            }
+        }
+    });
+
+    $routeProvider.when('/new_access_token', {
+        controller: 'NewAccessTokenController',
+        templateUrl: contextPath + '/access_token/new/view',
+        resolve: {
+            accessToken: function() {
+                return {
+                    application: null,
+                    master: false,
+                    tenantPermissions: [],
+                    expiresOn: null
+                };
+            }
+        }
+    });
+
+    $routeProvider.when('/access_token/:id', {
+        controller: 'AccessTokenController',
+        templateUrl: contextPath + '/access_token/view',
+        resolve: {
+            accessToken: function($route, accessTokenService) {
+                return accessTokenService.getAccessToken($route.current.params.id);
             }
         }
     });
@@ -461,8 +556,8 @@ app.controller('NewProfileController', function($scope, $location, tenantNames, 
         });
     };
 
-    $scope.createProfile = function(profile) {
-        profileService.createProfile(profile).then(function() {
+    $scope.createProfile = function() {
+        profileService.createProfile($scope.profile).then(function() {
             $location.path('/');
         });
     };
@@ -474,7 +569,7 @@ app.controller('NewProfileController', function($scope, $location, tenantNames, 
     $scope.getTenant($scope.profile.tenant);
 });
 
-app.controller('UpdateProfileController', function($scope, $location, profile, tenantService, profileService) {
+app.controller('ProfileController', function($scope, $location, profile, tenantService, profileService) {
     // Abort if profile is null or empty. It means there was a server error
     if (!profile) {
         return;
@@ -491,8 +586,8 @@ app.controller('UpdateProfileController', function($scope, $location, profile, t
         });
     };
 
-    $scope.updateProfile = function(profile) {
-        profileService.updateProfile(profile).then(function() {
+    $scope.updateProfile = function() {
+        profileService.updateProfile($scope.profile).then(function() {
             $location.path('/');
         });
     };
@@ -631,80 +726,49 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
         $scope.currentDefinitionIndex = index;
         $scope.newDefinition = index < 0;
         $scope.application = null;
+
         $scope.definitionForm.$setPristine();
 
         $('#attributeDefinitionModal').modal('show');
     };
 
-    $scope.saveAttributeDefinition = function(definition, index) {
-        if (index > -1) {
-            $scope.tenant.attributeDefinitions[index] = definition;
+    $scope.saveAttributeDefinition = function() {
+        if ($scope.currentDefinitionIndex > -1) {
+            $scope.tenant.attributeDefinitions[$scope.currentDefinitionIndex] = $scope.currentDefinition;
         } else {
-            $scope.tenant.attributeDefinitions.push(definition);
+            $scope.tenant.attributeDefinitions.push($scope.currentDefinition);
         }
 
         $('#attributeDefinitionModal').modal('hide');
     };
 
-    $scope.addPermission = function(definition, application) {
+    $scope.addPermission = function() {
         var permission = {
-            'application': application,
+            'application': $scope.application,
             'allowedActions': []
         };
 
-        if (!definition.permissions) {
-            definition.permissions = [];
+        if (!$scope.currentDefinition.permissions) {
+            $scope.currentDefinition.permissions = [];
         }
 
-        definition.permissions.push(permission);
+        $scope.currentDefinition.permissions.push(permission);
     };
 
-    $scope.deletePermissionAt = function(definition, index) {
-        definition.permissions.splice(index, 1);
+    $scope.deletePermissionAt = function(index) {
+        $scope.currentDefinition.permissions.splice(index, 1);
     };
 
-    $scope.hasAction = function(permission, action) {
-        if (!permission.allowedActions) {
-            return false;
-        }
-        if (hasAllActionsWildcard(permission.allowedActions)) {
-            return true;
-        }
-        if (permission.allowedActions.indexOf(action) > -1) {
-            return true;
-        }
-    };
+    $scope.hasAction = hasAction;
+    $scope.toggleAction = toggleAction;
 
-    $scope.toggleAction = function(permission, action) {
-        if (permission.allowedActions === undefined || permission.allowedActions === null) {
-            permission.allowedActions = [];
-        }
-
-        if (hasAllActionsWildcard(permission.allowedActions)) {
-            permission.allowedActions = [];
-
-            for (var attributeAction in $scope.attributeActions) {
-                if (attributeAction != action) {
-                    permission.allowedActions.push(attributeAction);
-                }
-            }
-        } else {
-            var index = permission.allowedActions.indexOf(action);
-            if (index > -1) {
-                permission.allowedActions.splice(index, 1);
-            } else {
-                permission.allowedActions.push(action);
-            }
-        }
-    };
-
-    $scope.saveTenant = function(tenant) {
+    $scope.saveTenant = function() {
         var promise;
 
         if (newTenant) {
-            promise = tenantService.createTenant(tenant);
+            promise = tenantService.createTenant($scope.tenant);
         } else {
-            promise = tenantService.updateTenant(tenant);
+            promise = tenantService.updateTenant($scope.tenant);
         }
 
         promise.then(function() {
@@ -716,6 +780,103 @@ app.controller('TenantController', function($scope, $location, tenant, newTenant
         $location.path('/');
     };
 });
+
+app.controller('AccessTokenListController', function($scope, accessTokens, accessTokenService) {
+    // Abort if accessTokens is null or empty. It means there was a server error
+    if (!accessTokens) {
+        return;
+    }
+
+    $scope.accessTokens = accessTokens;
+
+    $scope.$on('httpError', function() {
+        hideModalIfShown($('#deleteConfirmationDialog'));
+    });
+
+    $scope.showDeleteConfirmationDialog = function(token, index) {
+        $scope.tokenToDelete = {};
+        $scope.tokenToDelete.id = token.id;
+        $scope.tokenToDelete.index = index;
+        $scope.deleteConfirmationDialogMsg = 'Are you sure you wan to delete access token "' + token.id + '". You ' +
+        'can\'t undo this action later.';
+
+        $('#deleteConfirmationDialog').modal('show');
+    };
+
+    $scope.deleteToken = function() {
+        accessTokenService.deleteAccessToken($scope.tokenToDelete.id).then(function() {
+            $scope.accessTokens.splice($scope.tokenToDelete.index, 1);
+
+            $('#deleteConfirmationDialog').modal('hide');
+        });
+    };
+});
+
+app.controller('NewAccessTokenController', function($scope, $location, accessToken, accessTokenService) {
+    $scope.dateOptions = {
+        startingDay: 1
+    };
+    $scope.dateFormat = 'dd-MMMM-yyyy';
+    $scope.serializedDateFormat = 'MM/DD/YYYY HH:mm:ss';
+    $scope.minDate = new Date();
+    $scope.accessToken = accessToken;
+    $scope.accessToken.expiresOn = $scope.minDate;
+    $scope.datePickerOpen = false;
+    $scope.tenantActions = tenantActions;
+    $scope.hasAction = hasAction;
+    $scope.toggleAction = toggleAction;
+
+    $scope.openDatePicker = function($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+
+        $scope.datePickerOpen = true;
+    };
+
+    $scope.addPermission = function() {
+        var permission = {};
+            permission.tenant = $scope.tenant;
+            permission.allowedActions = ['READ_TENANT', 'MANAGE_PROFILES', 'MANAGE_TICKETS'];
+
+        $scope.accessToken.tenantPermissions.push(permission);
+    };
+
+    $scope.deletePermissionAt = function(index) {
+        $scope.accessToken.tenantPermissions.splice(index, 1);
+    };
+
+    $scope.createAccessToken = function() {
+        var expiresOn = moment($scope.accessToken.expiresOn);
+            expiresOn.startOf('day');
+
+        var token = angular.copy($scope.accessToken);
+            token.expiresOn = moment(expiresOn).format($scope.serializedDateFormat);
+
+        accessTokenService.createAccessToken(token).then(function() {
+            $location.path('/');
+        });
+    };
+
+    $scope.cancel = function() {
+        $location.path('/');
+    };
+});
+
+app.controller('AccessTokenController', function($scope, $location, accessToken) {
+    // Abort if accessToken is null or empty. It means there was a server error
+    if (!accessToken) {
+        return;
+    }
+
+    $scope.accessToken = accessToken;
+    $scope.tenantActions = tenantActions;
+    $scope.hasAction = hasAction;
+
+    $scope.cancel = function() {
+        $location.path('/');
+    };
+});
+
 
 /**
  * Directives

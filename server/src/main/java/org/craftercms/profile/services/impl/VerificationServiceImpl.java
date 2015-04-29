@@ -26,12 +26,15 @@ import org.craftercms.commons.logging.Logged;
 import org.craftercms.commons.mail.EmailException;
 import org.craftercms.commons.mail.EmailFactory;
 import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.commons.security.exception.ActionDeniedException;
+import org.craftercms.commons.security.permissions.PermissionEvaluator;
+import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.ProfileConstants;
+import org.craftercms.profile.api.TenantAction;
 import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
-import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
 import org.craftercms.profile.repositories.VerificationTokenRepository;
 import org.craftercms.profile.services.VerificationService;
 import org.springframework.beans.factory.annotation.Required;
@@ -45,6 +48,9 @@ import org.springframework.scheduling.annotation.Async;
 @Logged
 public class VerificationServiceImpl implements VerificationService {
 
+    private static final I10nLogger logger = new I10nLogger(VerificationServiceImpl.class, "crafter.profile.messages" +
+                                                                                           ".logging");
+
     public static final String VERIFICATION_LINK_TEMPLATE_ARG = "verificationLink";
 
     public static final String LOG_KEY_TOKEN_CREATED = "profile.verification.tokenCreated";
@@ -55,12 +61,15 @@ public class VerificationServiceImpl implements VerificationService {
     public static final String ERROR_KEY_DELETE_TOKEN_ERROR = "profile.verification.deleteTokenError";
     public static final String ERROR_KEY_EMAIL_ERROR = "profile.verification.emailError";
 
-    private static final I10nLogger logger = new I10nLogger(VerificationServiceImpl.class, "crafter.profile.messages" +
-                                                                                           ".logging");
-
+    protected PermissionEvaluator<AccessToken, String> permissionEvaluator;
     protected VerificationTokenRepository tokenRepository;
     protected EmailFactory emailFactory;
     protected int tokenMaxAge;
+
+    @Required
+    public void setPermissionEvaluator(PermissionEvaluator<AccessToken, String> permissionEvaluator) {
+        this.permissionEvaluator = permissionEvaluator;
+    }
 
     @Required
     public void setTokenRepository(VerificationTokenRepository tokenRepository) {
@@ -78,9 +87,13 @@ public class VerificationServiceImpl implements VerificationService {
     }
 
     @Override
-    public VerificationToken createToken(String profileId) throws ProfileException {
+    public VerificationToken createToken(Profile profile) throws ProfileException {
+        String tenant = profile.getTenant();
+        String profileId = profile.getId().toString();
+
         VerificationToken token = new VerificationToken();
         token.setId(UUID.randomUUID().toString());
+        token.setTenant(tenant);
         token.setProfileId(profileId);
         token.setTimestamp(new Date());
 
@@ -114,30 +127,31 @@ public class VerificationServiceImpl implements VerificationService {
     }
 
     @Override
-    public VerificationToken verifyToken(String tokenId) throws ProfileException {
-        VerificationToken token;
+    public VerificationToken getToken(String tokenId) throws ProfileException {
         try {
-            token = tokenRepository.findByStringId(tokenId);
+            VerificationToken token = tokenRepository.findByStringId(tokenId);
+            if (token != null) {
+                checkIfManageProfilesIsAllowed(token.getTenant());
+            }
+
+            return token;
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_GET_TOKEN_ERROR, tokenId);
         }
-
-        if (token == null) {
-            throw new NoSuchVerificationTokenException(tokenId);
-        }
-
-        return token;
     }
 
     @Override
     public void deleteToken(String tokenId) throws ProfileException {
-        try {
-            tokenRepository.removeByStringId(tokenId);
-        } catch (MongoDataException e) {
-            throw new I10nProfileException(ERROR_KEY_DELETE_TOKEN_ERROR, tokenId);
-        }
+        VerificationToken token = getToken(tokenId);
+        if (token != null) {
+            try {
+                tokenRepository.removeByStringId(tokenId);
+            } catch (MongoDataException e) {
+                throw new I10nProfileException(ERROR_KEY_DELETE_TOKEN_ERROR, tokenId);
+            }
 
-        logger.debug(LOG_KEY_TOKEN_DELETED, tokenId);
+            logger.debug(LOG_KEY_TOKEN_DELETED, tokenId);
+        }
     }
 
     protected String createVerificationUrl(String verificationBaseUrl, String tokenId) {
@@ -152,6 +166,12 @@ public class VerificationServiceImpl implements VerificationService {
         verificationUrl.append(ProfileConstants.PARAM_TOKEN_ID).append("=").append(tokenId);
 
         return verificationUrl.toString();
+    }
+
+    protected void checkIfManageProfilesIsAllowed(String tenantName) {
+        if (!permissionEvaluator.isAllowed(tenantName, TenantAction.MANAGE_PROFILES.toString())) {
+            throw new ActionDeniedException(TenantAction.MANAGE_PROFILES.toString(), "tenant \"" + tenantName + "\"");
+        }
     }
 
 }

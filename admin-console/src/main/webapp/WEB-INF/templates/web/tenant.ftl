@@ -176,13 +176,12 @@
                             </div>
                             <div class="panel-body">
                                 <div class="input-group">
-                                    <input type="text"
-                                           class="form-control"
+                                    <input type="text" class="form-control"
                                            placeholder="Enter application name (* for any)"
                                            ng-model="application"/>
                                     <span class="input-group-btn">
                                         <button class="btn btn-default" type="button"
-                                                ng-click="addPermission(currentDefinition, application)">Add</button>
+                                                ng-click="addPermission()">Add</button>
                                     </span>
                                 </div>
                                 <table class="table form-panel-table">
@@ -204,10 +203,10 @@
                                                 <input type="checkbox"
                                                        value="{{action.name}}"
                                                        ng-checked="hasAction(permission, action.name)"
-                                                       ng-click="toggleAction(permission, action.name)"/>
+                                                       ng-click="toggleAction(permission, action.name, attributeActions)"/>
                                             </td>
                                             <td class="col-centered">
-                                                <a ng-click="deletePermissionAt(currentDefinition, $index)">Delete</a>
+                                                <a ng-click="deletePermissionAt($index)">Delete</a>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -220,7 +219,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" ng-disabled="definitionForm.$invalid"
-                        ng-click="saveAttributeDefinition(currentDefinition, currentDefinitionIndex)">Save changes</button>
+                        ng-click="saveAttributeDefinition()">Save changes</button>
             </div>
         </div>
     </div>

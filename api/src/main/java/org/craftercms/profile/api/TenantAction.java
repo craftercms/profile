@@ -28,6 +28,6 @@ public enum TenantAction {
     UPDATE_TENANT,
     DELETE_TENANT,
     MANAGE_PROFILES,
-    MANAGE_TICKETS;
+    MANAGE_TICKETS
 
 }

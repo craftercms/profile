@@ -61,7 +61,6 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
                                                                            ".byTenantAndAttributeValue";
     public static final String KEY_FIND_BY_TENANT_AND_NON_EXISTING_ATTRIB_QUERY = "profile.profile" +
                                                                                   ".byTenantAndNonExistingAttribute";
-    public static final String KEY_UPDATE_ATTRIB = "profile.profile.updateAttribute";
 
     public static final String ATTRIBUTE_FIELD_PREFIX = "attributes.";
 

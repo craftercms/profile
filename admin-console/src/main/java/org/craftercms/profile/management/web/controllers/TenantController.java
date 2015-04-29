@@ -49,17 +49,17 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping(TenantController.BASE_URL_TENANT)
 public class TenantController {
 
-    public static final String PATH_VAR_NAME = "name";
-
     public static final String BASE_URL_TENANT = "/tenant";
 
+    public static final String PATH_VAR_NAME = "name";
+
     public static final String URL_VIEW_TENANT_LIST = "/list/view";
-    public static final String URL_VIEW_CREATE_TENANT = "/new/view";
-    public static final String URL_VIEW_UPDATE_TENANT = "/update/view";
+    public static final String URL_VIEW_NEW_TENANT = "/new/view";
+    public static final String URL_VIEW_TENANT = "/view";
 
     public static final String URL_GET_TENANT_NAMES = "/names";
     public static final String URL_GET_TENANT = "/{" + PATH_VAR_NAME + "}";
-    public static final String URL_CREATE_TENANT = "/new";
+    public static final String URL_CREATE_TENANT = "/create";
     public static final String URL_UPDATE_TENANT = "/update";
     public static final String URL_DELETE_TENANT = "/{" + PATH_VAR_NAME + "}/delete";
 
@@ -69,7 +69,7 @@ public class TenantController {
     public static final String MODEL_PAGE_HEADER = "pageHeader";
     public static final String MODEL_MESSAGE = "message";
 
-    public static final String PAGE_HEADER_CREATE = "New Tenant";
+    public static final String PAGE_HEADER_NEW = "New Tenant";
     public static final String PAGE_HEADER_UPDATE = "Update Tenant";
 
     public static final String MSG_TENANT_CREATED_FORMAT = "Tenant '%s' created";
@@ -94,13 +94,13 @@ public class TenantController {
         return VIEW_TENANT_LIST;
     }
 
-    @RequestMapping(value = URL_VIEW_CREATE_TENANT, method = RequestMethod.GET)
-    public ModelAndView viewCreateTenant() throws ProfileException {
-        return new ModelAndView(VIEW_TENANT, MODEL_PAGE_HEADER, PAGE_HEADER_CREATE);
+    @RequestMapping(value = URL_VIEW_NEW_TENANT, method = RequestMethod.GET)
+    public ModelAndView viewNewTenant() throws ProfileException {
+        return new ModelAndView(VIEW_TENANT, MODEL_PAGE_HEADER, PAGE_HEADER_NEW);
     }
 
-    @RequestMapping(value = URL_VIEW_UPDATE_TENANT, method = RequestMethod.GET)
-    public ModelAndView viewUpdateTenant() throws ProfileException {
+    @RequestMapping(value = URL_VIEW_TENANT, method = RequestMethod.GET)
+    public ModelAndView viewTenant() throws ProfileException {
         return new ModelAndView(VIEW_TENANT, MODEL_PAGE_HEADER, PAGE_HEADER_UPDATE);
     }
 
@@ -117,10 +117,10 @@ public class TenantController {
     @RequestMapping(value = URL_GET_TENANT, method = RequestMethod.GET)
     @ResponseBody
     public Tenant getTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
+        checkIfAllowed(name, Action.GET_TENANT);
+
         Tenant tenant = tenantService.getTenant(name);
         if (tenant != null) {
-            checkIfAllowed(tenant.getName(), Action.GET_TENANT);
-
             return tenant;
         } else {
             throw new ResourceNotFoundException("No tenant found with name '" + name + "'");
@@ -130,7 +130,7 @@ public class TenantController {
     @RequestMapping(value = URL_CREATE_TENANT, method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> createTenant(@RequestBody Tenant tenant) throws ProfileException {
-        checkIfAllowed(tenant.getName(), Action.CREATE_TENANT);
+        checkIfAllowed(null, Action.CREATE_TENANT);
 
         if (tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
             throw new ActionDeniedException(Action.CREATE_TENANT.toString(), tenant.getName());

@@ -12,6 +12,7 @@ public class AccessToken {
 
     private String _id;
     private String application;
+    private boolean master;
     private List<TenantPermission> tenantPermissions;
     private Date expiresOn;
 
@@ -48,6 +49,22 @@ public class AccessToken {
     }
 
     /**
+     * Returns true if this is a master token. A master token can be used to create and delete other tokens.
+     */
+    public boolean isMaster() {
+        return master;
+    }
+
+    /**
+     * Sets if this is a master token. A master token can be used to create and delete other tokens.
+     *
+     * @param master trues if this should be a master token, false otherwise
+     */
+    public void setMaster(boolean master) {
+        this.master = master;
+    }
+
+    /**
      * Returns the tenant permissions the application has.
      */
     public List<TenantPermission> getTenantPermissions() {
@@ -77,6 +94,26 @@ public class AccessToken {
      */
     public void setExpiresOn(Date expiresOn) {
         this.expiresOn = expiresOn;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        AccessToken token = (AccessToken)o;
+
+        return _id.equals(token._id);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return _id.hashCode();
     }
 
     @Override

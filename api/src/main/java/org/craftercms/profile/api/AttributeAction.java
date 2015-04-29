@@ -9,6 +9,6 @@ public enum AttributeAction {
 
     READ_ATTRIBUTE,
     WRITE_ATTRIBUTE,
-    REMOVE_ATTRIBUTE;
+    REMOVE_ATTRIBUTE
 
 }

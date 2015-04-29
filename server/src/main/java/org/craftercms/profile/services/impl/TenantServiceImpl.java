@@ -30,6 +30,7 @@ import org.craftercms.commons.mongo.DuplicateKeyException;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
+import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.TenantAction;
@@ -41,7 +42,6 @@ import org.craftercms.profile.exceptions.AttributeAlreadyDefinedException;
 import org.craftercms.profile.exceptions.AttributeNotDefinedException;
 import org.craftercms.profile.exceptions.NoSuchTenantException;
 import org.craftercms.profile.exceptions.TenantExistsException;
-import org.craftercms.profile.permissions.Application;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TenantRepository;
 import org.springframework.beans.factory.annotation.Required;
@@ -79,20 +79,20 @@ public class TenantServiceImpl implements TenantService {
                                                                                     ".removeAttributeFromAllError";
     public static final String ERROR_KEY_ADD_DEFAULT_VALUE_ERROR = "profile.attribute.addDefaultValueError";
 
-    protected PermissionEvaluator<Application, String> tenantPermissionEvaluator;
-    protected PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator;
+    protected PermissionEvaluator<AccessToken, String> tenantPermissionEvaluator;
+    protected PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator;
     protected TenantRepository tenantRepository;
     protected ProfileRepository profileRepository;
     protected ProfileService profileService;
 
     @Required
-    public void setTenantPermissionEvaluator(PermissionEvaluator<Application, String> tenantPermissionEvaluator) {
+    public void setTenantPermissionEvaluator(PermissionEvaluator<AccessToken, String> tenantPermissionEvaluator) {
         this.tenantPermissionEvaluator = tenantPermissionEvaluator;
     }
 
     @Required
     public void setAttributePermissionEvaluator(
-        PermissionEvaluator<Application, AttributeDefinition> attributePermissionEvaluator) {
+        PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator) {
         this.attributePermissionEvaluator = attributePermissionEvaluator;
     }
 

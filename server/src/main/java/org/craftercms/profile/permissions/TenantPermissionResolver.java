@@ -19,6 +19,7 @@ package org.craftercms.profile.permissions;
 import org.craftercms.commons.security.exception.PermissionException;
 import org.craftercms.commons.security.permissions.Permission;
 import org.craftercms.commons.security.permissions.PermissionResolver;
+import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.TenantPermission;
 
 /**
@@ -26,16 +27,16 @@ import org.craftercms.profile.api.TenantPermission;
  *
  * @author avasquez
  */
-public class TenantPermissionResolver implements PermissionResolver<Application, String> {
+public class TenantPermissionResolver implements PermissionResolver<AccessToken, String> {
 
     @Override
-    public Permission getGlobalPermission(Application app) throws IllegalArgumentException, PermissionException {
-        return getPermission(app, TenantPermission.ANY_TENANT);
+    public Permission getGlobalPermission(AccessToken token) throws IllegalArgumentException, PermissionException {
+        return getPermission(token, TenantPermission.ANY_TENANT);
     }
 
     @Override
-    public Permission getPermission(Application app, String tenantName) throws PermissionException {
-        for (TenantPermission permission : app.getTenantPermissions()) {
+    public Permission getPermission(AccessToken token, String tenantName) throws PermissionException {
+        for (TenantPermission permission : token.getTenantPermissions()) {
             String permittedTenant = permission.getTenant();
 
             if (permittedTenant.equals(TenantPermission.ANY_TENANT) || permittedTenant.equals(tenantName)) {

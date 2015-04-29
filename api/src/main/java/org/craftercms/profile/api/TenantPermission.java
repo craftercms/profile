@@ -41,7 +41,6 @@ public class TenantPermission extends PermissionBase {
         return tenant;
     }
 
-
     @Override
     public String toString() {
         return "TenantPermission{" +

@@ -71,7 +71,7 @@
 
     <attributes definitions="tenant.attributeDefinitions" attributes="profile.attributes"></attributes>
 
-    <button class="btn btn-default" type="button" ng-disabled="form.$invalid" ng-click="createProfile(profile)">
+    <button class="btn btn-default" type="button" ng-disabled="form.$invalid" ng-click="createProfile()">
         Accept
     </button>
     <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>

@@ -32,9 +32,9 @@ public interface VerificationService {
      * Creates a new verification token. The token can be later transmitted to the client through email, for
      * example.
      *
-     * @param profileId the ID of the profile associated to the token
+     * @param profile the profile to create the token for
      */
-    VerificationToken createToken(String profileId) throws ProfileException;
+    VerificationToken createToken(Profile profile) throws ProfileException;
 
     /**
      * Creates a verification token and sends the user an email with the token for verification.
@@ -52,13 +52,13 @@ public interface VerificationService {
                    String templateName) throws ProfileException;
 
     /**
-     * Verify that the token ID received from the user corresponds to an existing token.
+     * Returns the token that corresponds to the specified ID
      *
      * @param tokenId   the token ID, sent in the verification email
      *
      * @return the verification token object associated to the ID
      */
-    VerificationToken verifyToken(String tokenId) throws ProfileException;
+    VerificationToken getToken(String tokenId) throws ProfileException;
 
     /**
      * Deletes the token corresponding the specified ID.

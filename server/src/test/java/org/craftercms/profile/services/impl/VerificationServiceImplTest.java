@@ -24,10 +24,11 @@ import java.util.UUID;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.mail.Email;
 import org.craftercms.commons.mail.EmailFactory;
-import org.craftercms.profile.api.VerificationToken;
+import org.craftercms.commons.security.permissions.PermissionEvaluator;
+import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.ProfileConstants;
-import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
+import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.repositories.VerificationTokenRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +39,7 @@ import org.mockito.stubbing.Answer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
@@ -55,6 +57,7 @@ public class VerificationServiceImplTest {
     private static final String TEMPLATE_NAME = "verification-email.ftl";
     private static final int TOKEN_MAX_AGE = 86400;
 
+    private static final String TENANT_NAME = "default";
     private static final ObjectId PROFILE_ID = new ObjectId();
     private static final String PROFILE_EMAIL = "johndoe@gmail.com";
 
@@ -69,6 +72,8 @@ public class VerificationServiceImplTest {
 
     private VerificationServiceImpl verificationService;
     @Mock
+    private PermissionEvaluator<AccessToken, String> permissionEvaluator;
+    @Mock
     private VerificationTokenRepository tokenRepository;
     @Mock
     private EmailFactory emailFactory;
@@ -78,6 +83,8 @@ public class VerificationServiceImplTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+
+        when(permissionEvaluator.isAllowed(anyString(), anyString())).thenReturn(true);
 
         doAnswer(new Answer() {
 
@@ -93,9 +100,10 @@ public class VerificationServiceImplTest {
         when(tokenRepository.findByStringId(TOKEN_ID)).thenReturn(getToken());
 
         when(emailFactory.getEmail(FROM, TO, null, null, SUBJECT, TEMPLATE_NAME, VERIFICATION_TEMPLATE_ARGS, true))
-                .thenReturn(email);
+            .thenReturn(email);
 
         verificationService = new VerificationServiceImpl();
+        verificationService.setPermissionEvaluator(permissionEvaluator);
         verificationService.setTokenRepository(tokenRepository);
         verificationService.setEmailFactory(emailFactory);
         verificationService.setTokenMaxAge(TOKEN_MAX_AGE);
@@ -103,9 +111,14 @@ public class VerificationServiceImplTest {
 
     @Test
     public void testCreateToken() throws Exception {
-        VerificationToken token = verificationService.createToken(PROFILE_ID.toString());
+        Profile profile = new Profile();
+        profile.setId(PROFILE_ID);
+        profile.setTenant(TENANT_NAME);
+
+        VerificationToken token = verificationService.createToken(profile);
 
         assertEquals(TOKEN_ID, token.getId());
+        assertEquals(TENANT_NAME, token.getTenant());
         assertEquals(PROFILE_ID.toString(), token.getProfileId());
         assertNotNull(token.getTimestamp());
 
@@ -128,15 +141,15 @@ public class VerificationServiceImplTest {
     }
 
     @Test
-    public void testVerifyToken() throws Exception {
-        verificationService.verifyToken(TOKEN_ID);
+    public void testGetToken() throws Exception {
+        VerificationToken token = verificationService.getToken(TOKEN_ID);
+
+        assertNotNull(token);
+        assertEquals(TOKEN_ID, token.getId());
+        assertEquals(PROFILE_ID.toString(), token.getProfileId());
+        assertNotNull(token.getTimestamp());
 
         verify(tokenRepository).findByStringId(TOKEN_ID);
-    }
-
-    @Test(expected = NoSuchVerificationTokenException.class)
-    public void testVerifyInvalidToken() throws Exception {
-        verificationService.verifyToken("1");
     }
 
     @Test

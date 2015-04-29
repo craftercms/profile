@@ -3,6 +3,7 @@ if (db.accesstoken.count() == 0) {
         {
             "_id" : "e8f5170c-877b-416f-b70f-4b09772f8e2d",
             "application" : "adminconsole",
+            "master": true,
             "tenantPermissions" : [
                 {
                     "allowedActions" : [ "*" ],
@@ -12,30 +13,9 @@ if (db.accesstoken.count() == 0) {
             "expiresOn" : new Date("Jan 1, 2024")
 	    },
         {
-            "_id" : "9161fb80-c329-11e3-9c1a-0800200c9a66",
-            "application" : "adminconsole",
-            "tenantPermissions" : [
-                {
-                    "allowedActions" : [ "*" ],
-                    "tenant" : "*"
-                }
-            ],
-            "expiresOn" : new Date("Jan 1, 2013")
-        },
-        {
-            "_id" : "f9929b40-c358-11e3-9c1a-0800200c9a66",
-            "application" : "adminconsole",
-            "tenantPermissions" : [
-                {
-                    "allowedActions" : [ ],
-                    "tenant" : "*"
-                }
-            ],
-            "expiresOn" : new Date("Jan 1, 2024")
-        },
-        {
             "_id" : "2ba3ac10-c43e-11e3-9c1a-0800200c9a66",
             "application" : "craftersocial",
+            "master": false,
             "tenantPermissions" : [
                 {
                     "allowedActions" : [ "READ_TENANT", "MANAGE_PROFILES", "MANAGE_TICKETS" ],
@@ -47,6 +27,7 @@ if (db.accesstoken.count() == 0) {
         {
             "_id" : "f91cdaf0-e5c6-11e3-ac10-0800200c9a66",
             "application" : "randomapp",
+            "master": false,
             "tenantPermissions" : [
                 {
                     "allowedActions" : [ "READ_TENANT", "MANAGE_PROFILES", "MANAGE_TICKETS" ],
