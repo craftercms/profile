@@ -22,6 +22,7 @@ import org.craftercms.commons.security.exception.PermissionException;
 import org.craftercms.profile.api.exceptions.ErrorCode;
 import org.craftercms.profile.api.exceptions.ErrorDetails;
 import org.craftercms.profile.api.exceptions.ProfileException;
+import org.craftercms.profile.exceptions.AccessTokenExistsException;
 import org.craftercms.profile.exceptions.AttributeAlreadyDefinedException;
 import org.craftercms.profile.exceptions.AttributeNotDefinedException;
 import org.craftercms.profile.exceptions.ParamDeserializationException;
@@ -61,6 +62,11 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
             "crafter.profile.messages.logging");
 
     private static final String LOG_KEY_REST_ERROR = "profile.rest.error";
+
+    @ExceptionHandler(AccessTokenExistsException.class)
+    public ResponseEntity<Object> handleAccessTokenExistsException(AccessTokenExistsException e, WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.ACCESS_TOKEN_EXISTS, request);
+    }
 
     @ExceptionHandler(MissingAccessTokenIdParamException.class)
     public ResponseEntity<Object> handleMissingAccessTokenIdParamException(MissingAccessTokenIdParamException e,

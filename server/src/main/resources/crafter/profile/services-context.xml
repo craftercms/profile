@@ -163,6 +163,7 @@
 
     <bean id="crafter.accessTokenService" class="org.craftercms.profile.services.impl.AccessTokenServiceImpl">
         <property name="accessTokenRepository" ref="crafter.accessTokenRepository"/>
+        <property name="hashSalt" value="${crafter.profile.accessToken.digest.salt}"/>
     </bean>
 
     <bean id="crafter.verificationService" class="org.craftercms.profile.services.impl.VerificationServiceImpl">

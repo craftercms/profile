@@ -119,11 +119,12 @@ public class AccessToken {
     @Override
     public String toString() {
         return "AccessToken{" +
-                "id='" + _id + '\'' +
-                ", application='" + application + '\'' +
-                ", tenantPermissions=" + tenantPermissions +
-                ", expiresOn=" + expiresOn +
-                '}';
+               "_id='" + _id + '\'' +
+               ", application='" + application + '\'' +
+               ", master=" + master +
+               ", tenantPermissions=" + tenantPermissions +
+               ", expiresOn=" + expiresOn +
+               '}';
     }
 
 }
