@@ -74,7 +74,7 @@ public class AccessTokenServiceImplTest {
         assertEquals(expected.getTenantPermissions(), actual.getTenantPermissions());
         assertEquals(expected.getExpiresOn(), actual.getExpiresOn());
 
-        verify(accessTokenRepository).save(actual);
+        verify(accessTokenRepository).insert(actual);
     }
 
     @Test
