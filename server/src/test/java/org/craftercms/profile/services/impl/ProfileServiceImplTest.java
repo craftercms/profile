@@ -193,8 +193,8 @@ public class ProfileServiceImplTest {
             getAllTenant1Profiles());
 
         when(profileRepository.findByTenantAndAttributeValue(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME, FIRST_NAME,
-                                                             SORT_BY, SortOrder.ASC)).thenReturn(
-            getAllTenant1Profiles());
+                                                             SORT_BY, SortOrder.ASC)).thenReturn
+            (getAllTenant1Profiles());
 
         when(profileRepository.countByTenant(TENANT1_NAME)).thenReturn(10L);
 
@@ -220,11 +220,13 @@ public class ProfileServiceImplTest {
 
         VerificationToken token1 = new VerificationToken();
         token1.setId(VERIFICATION_TOKEN_ID1);
+        token1.setTenant(TENANT1_NAME);
         token1.setProfileId(PROFILE1_ID.toString());
         token1.setTimestamp(new Date());
 
         VerificationToken token2 = new VerificationToken();
         token2.setId(VERIFICATION_TOKEN_ID2);
+        token2.setTenant(TENANT2_NAME);
         token2.setProfileId(PROFILE2_ID.toString());
         token2.setTimestamp(new Date());
 
@@ -741,6 +743,19 @@ public class ProfileServiceImplTest {
         assertNotNull(token.getTimestamp());
 
         verify(verificationService).createToken(getTenant1Profile());
+    }
+
+    @Test
+    public void testGetVerificationToken() throws Exception {
+        VerificationToken token = profileService.getVerificationToken(VERIFICATION_TOKEN_ID1);
+
+        assertNotNull(token);
+        assertEquals(VERIFICATION_TOKEN_ID1, token.getId());
+        assertEquals(TENANT1_NAME, token.getTenant());
+        assertEquals(PROFILE1_ID.toString(), token.getProfileId());
+        assertNotNull(token.getTimestamp());
+
+        verify(verificationService).getToken(VERIFICATION_TOKEN_ID1);
     }
 
     @Test

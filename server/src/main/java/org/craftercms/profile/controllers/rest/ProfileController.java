@@ -467,9 +467,9 @@ public class ProfileController {
         return profileService.changePassword(resetTokenId, newPassword, attributesToReturn);
     }
 
-    @ApiOperation(value = "Creates a token that can be sent to the user in an email as a link", notes = "After the " +
-        "user clicks the link, the token then can be passed to verifyProfile or changePassword to verify that the " +
-        "user agrees")
+    @ApiOperation(value = "Creates a token that can be sent to the user in an email as a link",
+                  notes = "After the user clicks the link, the token then can be passed to verifyProfile or " +
+                          "changePassword to verify that the user agrees")
     @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
                       value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_CREATE_VERIFICATION_TOKEN, method = RequestMethod.POST)
@@ -480,14 +480,25 @@ public class ProfileController {
         return profileService.createVerificationToken(profileId);
     }
 
-    @ApiOperation(value = "Deletes a verification token when it's not needed anymore", notes = "Not necessary to " +
-        "call if verifyProfile or changePassword, since they already delete the token")
+    @ApiOperation(value = "Returns the verification token that corresponds to the given ID")
+    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
+                      value = "The ID of the application access token")
+    @RequestMapping(value = URL_PROFILE_GET_VERIFICATION_TOKEN, method = RequestMethod.GET)
+    @ResponseBody
+    public VerificationToken getVerificationToken(
+        @ApiParam("The token ID") @PathVariable(PATH_VAR_ID) String tokenId) throws ProfileException {
+        return profileService.getVerificationToken(tokenId);
+    }
+
+    @ApiOperation(value = "Deletes a verification token when it's not needed anymore",
+                  notes = "Not necessary to call if verifyProfile or changePassword, since they already delete the " +
+                          "token")
     @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
                       value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_DELETE_VERIFICATION_TOKEN, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void deleteVerificationToken(@ApiParam("The ID of the token to delete") @RequestParam(PARAM_TOKEN_ID)
-                                        String tokenId) throws ProfileException {
+    public void deleteVerificationToken(
+        @ApiParam("The ID of the token to delete") @PathVariable(PATH_VAR_ID) String tokenId) throws ProfileException {
         profileService.deleteVerificationToken(tokenId);
     }
 

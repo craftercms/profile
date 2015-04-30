@@ -3,7 +3,6 @@ package org.craftercms.profile.services.impl;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.craftercms.commons.http.RequestContext;
@@ -31,8 +30,10 @@ import static org.mockito.Mockito.when;
  */
 public class AccessTokenServiceImplTest {
 
-    private static final String CURRENT_TOKEN_ID = UUID.randomUUID().toString();
-    private static final String TOKEN_ID = UUID.randomUUID().toString();
+    private static final String SALT = "^bj&!~aB([f{b=S?";
+
+    private static final String CURRENT_TOKEN_ID = "YVWySbXVNDL1mMdnx5ihE4a6Yf5pxpjtkKnSUjuiEkI=";
+    private static final String TOKEN_ID = "bmQntQPyIDIgQEAFk8l7Unt4EkpWaJR0IHtT1o9FgjA=";
 
     private static final String APPLICATION = "crafterstudio";
     private static final Date EXPIRES_ON = new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365));
@@ -50,6 +51,7 @@ public class AccessTokenServiceImplTest {
 
         accessTokenService = new AccessTokenServiceImpl();
         accessTokenService.setAccessTokenRepository(accessTokenRepository);
+        accessTokenService.setHashSalt(SALT);
 
         setCurrentRequestContext();
         setCurrentAccessToken();

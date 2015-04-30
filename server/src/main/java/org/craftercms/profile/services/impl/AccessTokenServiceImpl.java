@@ -1,16 +1,19 @@
 package org.craftercms.profile.services.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.UUID;
 
 import org.craftercms.commons.collections.IterableUtils;
+import org.craftercms.commons.crypto.SimpleDigest;
 import org.craftercms.commons.i10n.I10nLogger;
+import org.craftercms.commons.mongo.DuplicateKeyException;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AccessTokenService;
+import org.craftercms.profile.exceptions.AccessTokenExistsException;
 import org.craftercms.profile.repositories.AccessTokenRepository;
 import org.craftercms.profile.utils.AccessTokenUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -34,21 +37,38 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     public static final String ERROR_KEY_DELETE_ACCESS_TOKEN_ERROR = "profile.accessToken.deleteAccessTokenError";
 
     protected AccessTokenRepository accessTokenRepository;
+    protected byte[] hashSalt;
 
     @Required
     public void setAccessTokenRepository(AccessTokenRepository accessTokenRepository) {
         this.accessTokenRepository = accessTokenRepository;
     }
 
+    @Required
+    public void setHashSalt(String hashSalt) {
+        if (hashSalt.length() != SimpleDigest.DEFAULT_SALT_SIZE) {
+            throw new IllegalArgumentException("Hash salt length should be 16");
+        }
+
+        try {
+            this.hashSalt = hashSalt.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // Shouldn't happend
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public AccessToken createToken(AccessToken token) throws ProfileException {
         checkIfTokenActionIsAllowed(null, Action.CREATE_TOKEN);
 
-        // Auto-generate ID
-        token.setId(UUID.randomUUID().toString());
+        // Generate ID
+        token.setId(AccessTokenUtils.generateAccessTokenId(token, hashSalt));
 
         try {
-            accessTokenRepository.save(token);
+            accessTokenRepository.insert(token);
+        } catch (DuplicateKeyException e) {
+            throw new AccessTokenExistsException(token.getId());
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_CREATE_ACCESS_TOKEN_ERROR, e, token);
         }

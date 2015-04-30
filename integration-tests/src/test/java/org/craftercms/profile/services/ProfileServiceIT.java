@@ -327,8 +327,8 @@ public class ProfileServiceIT {
             assertNotNull(profile);
             assertEquals(AVASQUEZ_ROLES1, profile.getRoles());
 
-            Profile updatedProfile = profileService.removeRoles(profile.getId().toString(),
-                                                                Arrays.asList("SOCIAL_MODERATOR"));
+            Profile updatedProfile = profileService.removeRoles(profile.getId().toString(), Arrays.asList
+                ("SOCIAL_MODERATOR"));
 
             Set<String> expectedRoles = new HashSet<>(AVASQUEZ_ROLES1);
             expectedRoles.remove("SOCIAL_MODERATOR");
@@ -788,21 +788,56 @@ public class ProfileServiceIT {
 
     @Test
     public void testCreateVerificationToken() throws Exception {
-        VerificationToken token = null;
+        Profile profile = profileService.getProfileByUsername(DEFAULT_TENANT, ADMIN_USERNAME);
+        String profileId = profile.getId().toString();
+        VerificationToken token = profileService.createVerificationToken(profileId);
+
+        assertNotNull(token);
 
         try {
-            ObjectId profileId = profileService.getProfileByUsername(DEFAULT_TENANT, ADMIN_USERNAME).getId();
-            token = profileService.createVerificationToken(profileId.toString());
-
-            assertNotNull(token);
             assertNotNull(token.getId());
-            assertEquals(profileId.toString(), token.getProfileId());
+            assertEquals(profile.getTenant(), token.getTenant());
+            assertEquals(profileId, token.getProfileId());
             assertNotNull(token.getTimestamp());
         } finally {
-            if (token != null) {
-                profileService.deleteVerificationToken(token.getId().toString());
-            }
+            profileService.deleteVerificationToken(token.getId());
         }
+    }
+
+    @Test
+    public void testGetVerificationToken() throws Exception {
+        Profile profile = profileService.getProfileByUsername(DEFAULT_TENANT, ADMIN_USERNAME);
+        String profileId = profile.getId().toString();
+        VerificationToken originalToken = profileService.createVerificationToken(profileId);
+
+        assertNotNull(originalToken);
+
+        try {
+            VerificationToken token = profileService.getVerificationToken(originalToken.getId());
+
+            assertNotNull(token);
+            assertEquals(originalToken.getId(), token.getId());
+            assertEquals(originalToken.getTenant(), token.getTenant());
+            assertEquals(originalToken.getProfileId(), token.getProfileId());
+            assertEquals(originalToken.getTimestamp(), token.getTimestamp());
+        } finally {
+            profileService.deleteVerificationToken(originalToken.getId());
+        }
+    }
+
+    @Test
+    public void testDeleteVerificationToken() throws Exception {
+        Profile profile = profileService.getProfileByUsername(DEFAULT_TENANT, ADMIN_USERNAME);
+        String profileId = profile.getId().toString();
+        VerificationToken token = profileService.createVerificationToken(profileId);
+
+        assertNotNull(token);
+
+        profileService.deleteVerificationToken(token.getId());
+
+        token = profileService.getVerificationToken(token.getId());
+
+        assertNull(token);
     }
 
     private void assertAdminProfile(Profile profile) {

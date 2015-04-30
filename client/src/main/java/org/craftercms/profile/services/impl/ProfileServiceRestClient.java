@@ -436,12 +436,9 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
 
     @Override
     public void deleteVerificationToken(String tokenId) throws ProfileException {
-        MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_TOKEN_ID, tokenId, params);
-
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_DELETE_VERIFICATION_TOKEN);
 
-        doPostForLocation(url, params);
+        doPostForLocation(url, createBaseParams(), tokenId);
     }
 
     protected String serializeAttributes(Map<String, Object> attributes) throws ProfileException {
