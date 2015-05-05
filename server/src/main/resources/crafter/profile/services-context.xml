@@ -106,7 +106,12 @@
         <property name="username" value="${crafter.profile.mongodb.connection.dbUsername}"/>
         <property name="password" value="${crafter.profile.mongodb.connection.dbPassword}"/>
         <property name="runOnInit" value="${crafter.profile.mongodb.scripts.runOnInit}"/>
-        <property name="scriptPaths" value="${crafter.profile.mongodb.scripts.paths}"/>
+        <property name="scriptPaths">
+            <bean class="org.apache.commons.lang3.StringUtils" factory-method="split">
+                <constructor-arg value="${crafter.profile.mongodb.scripts.paths}"/>
+                <constructor-arg value=","/>
+            </bean>
+        </property>
     </bean>
 
     <!-- Mail -->
