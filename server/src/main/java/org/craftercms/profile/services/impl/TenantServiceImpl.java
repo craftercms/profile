@@ -163,6 +163,7 @@ public class TenantServiceImpl implements TenantService {
                 }
 
                 originalTenant.setVerifyNewProfiles(tenant.isVerifyNewProfiles());
+                originalTenant.setSsoEnabled(tenant.isSsoEnabled());
                 originalTenant.setAvailableRoles(tenant.getAvailableRoles());
                 originalTenant.setAttributeDefinitions(tenant.getAttributeDefinitions());
             }
