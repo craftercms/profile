@@ -3,6 +3,11 @@
 <form role="form" name="form" novalidate>
     <div class="alert alert-info">Fields with * are required</div>
 
+    <div class="form-group">
+        <label for="id">ID (don't specify to auto-generate)</label>
+        <input name="id" type="text" class="form-control" ng-model="accessToken.id"/>
+    </div>
+
     <div class="form-group" ng-class="{'has-error': form.application.$dirty && form.application.$invalid}">
         <label for="application">Application *</label>
         <input name="application" type="text" class="form-control" ng-model="accessToken.application"
