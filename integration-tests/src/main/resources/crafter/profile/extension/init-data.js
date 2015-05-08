@@ -1,7 +1,7 @@
 if (db.accesstoken.count() == 0) {
 	db.accesstoken.insert([
         {
-            "_id" : "2dvkf1Ss1thCHa1e0gD3MH8tdsDct+GpVrSt1ZNwC14=",
+            "_id" : "e8f5170c-877b-416f-b70f-4b09772f8e2d",
             "application" : "adminconsole",
             "master": true,
             "tenantPermissions" : [
@@ -13,7 +13,7 @@ if (db.accesstoken.count() == 0) {
             "expiresOn" : new Date("Jan 1, 2024")
 	    },
         {
-            "_id" : "eB1jPJpw1UM2474xeTEePWCwpR7VlPRgAlh4HasMCio=",
+            "_id" : "2ba3ac10-c43e-11e3-9c1a-0800200c9a66",
             "application" : "craftersocial",
             "master": false,
             "tenantPermissions" : [
@@ -25,7 +25,7 @@ if (db.accesstoken.count() == 0) {
             "expiresOn" : new Date("Jan 1, 2024")
         },
         {
-            "_id" : "J7IrHlAJ2BJa2ncPntgIdBQ1w7mEMPiw9MbrV72WNKA=",
+            "_id" : "f91cdaf0-e5c6-11e3-ac10-0800200c9a66",
             "application" : "randomapp",
             "master": false,
             "tenantPermissions" : [

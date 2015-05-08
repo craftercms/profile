@@ -16,6 +16,7 @@ public class Tenant {
     private String name;
     private boolean verifyNewProfiles;
     private Set<String> availableRoles;
+    private boolean ssoEnabled;
     private Set<AttributeDefinition> attributeDefinitions;
 
     /**
@@ -87,6 +88,20 @@ public class Tenant {
     }
 
     /**
+     * Returns true is single-sign on (SSO) is enabled for this tenant .
+     */
+    public boolean isSsoEnabled() {
+        return ssoEnabled;
+    }
+
+    /**
+     * Sets if single sign-on (SSO) should be enabled for this tenant.
+     */
+    public void setSsoEnabled(boolean ssoEnabled) {
+        this.ssoEnabled = ssoEnabled;
+    }
+
+    /**
      * Returns the definitions of attributes that users of this tenant can have.
      */
     public Set<AttributeDefinition> getAttributeDefinitions() {
@@ -132,12 +147,13 @@ public class Tenant {
     @Override
     public String toString() {
         return "Tenant{" +
-                "id=" + _id +
-                ", name='" + name + '\'' +
-                ", verifyNewProfiles=" + verifyNewProfiles +
-                ", roles=" + availableRoles +
-                ", attributeDefinitions=" + attributeDefinitions +
-                '}';
+               "_id=" + _id +
+               ", name='" + name + '\'' +
+               ", verifyNewProfiles=" + verifyNewProfiles +
+               ", availableRoles=" + availableRoles +
+               ", ssoEnabled=" + ssoEnabled +
+               ", attributeDefinitions=" + attributeDefinitions +
+               '}';
     }
 
 }

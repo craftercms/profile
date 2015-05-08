@@ -1,10 +1,9 @@
 package org.craftercms.profile.services.impl;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.UUID;
 
 import org.craftercms.commons.collections.IterableUtils;
-import org.craftercms.commons.crypto.SimpleDigest;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.mongo.DuplicateKeyException;
 import org.craftercms.commons.mongo.MongoDataException;
@@ -44,26 +43,13 @@ public class AccessTokenServiceImpl implements AccessTokenService {
         this.accessTokenRepository = accessTokenRepository;
     }
 
-    @Required
-    public void setHashSalt(String hashSalt) {
-        if (hashSalt.length() != SimpleDigest.DEFAULT_SALT_SIZE) {
-            throw new IllegalArgumentException("Hash salt length should be 16");
-        }
-
-        try {
-            this.hashSalt = hashSalt.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // Shouldn't happend
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public AccessToken createToken(AccessToken token) throws ProfileException {
         checkIfTokenActionIsAllowed(null, Action.CREATE_TOKEN);
 
-        // Generate ID
-        token.setId(AccessTokenUtils.generateAccessTokenId(token, hashSalt));
+        if (token.getId() == null) {
+            token.setId(UUID.randomUUID().toString());
+        }
 
         try {
             accessTokenRepository.insert(token);

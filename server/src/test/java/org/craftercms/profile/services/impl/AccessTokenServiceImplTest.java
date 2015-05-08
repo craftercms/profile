@@ -30,10 +30,8 @@ import static org.mockito.Mockito.when;
  */
 public class AccessTokenServiceImplTest {
 
-    private static final String SALT = "^bj&!~aB([f{b=S?";
-
-    private static final String CURRENT_TOKEN_ID = "YVWySbXVNDL1mMdnx5ihE4a6Yf5pxpjtkKnSUjuiEkI=";
-    private static final String TOKEN_ID = "bmQntQPyIDIgQEAFk8l7Unt4EkpWaJR0IHtT1o9FgjA=";
+    private static final String CURRENT_TOKEN_ID = "131dc36b-1f32-42d0-b83d-ce9620760977";
+    private static final String TOKEN_ID = "45725a96-e599-43e5-a2f5-48bf17270cf7";
 
     private static final String APPLICATION = "crafterstudio";
     private static final Date EXPIRES_ON = new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365));
@@ -51,7 +49,6 @@ public class AccessTokenServiceImplTest {
 
         accessTokenService = new AccessTokenServiceImpl();
         accessTokenService.setAccessTokenRepository(accessTokenRepository);
-        accessTokenService.setHashSalt(SALT);
 
         setCurrentRequestContext();
         setCurrentAccessToken();

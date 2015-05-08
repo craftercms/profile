@@ -134,11 +134,6 @@
             <artifactId>crafter-profile-client</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.craftercms</groupId>
-            <artifactId>crafter-profile-social-services-integration</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <!-- EhCache -->
         <dependency>

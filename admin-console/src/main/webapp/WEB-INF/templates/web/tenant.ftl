@@ -18,6 +18,12 @@
         </label>
     </div>
 
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" ng-model="tenant.ssoEnabled" /> Single sign-on enabled
+        </label>
+    </div>
+
     <div class="form-group">
         <editable-list name="Available Roles" items="tenant.availableRoles"
                        validation-callback="availableRolesValidationCallback(scope, item)"

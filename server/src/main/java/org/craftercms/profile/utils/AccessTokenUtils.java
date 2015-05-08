@@ -2,7 +2,6 @@ package org.craftercms.profile.utils;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.craftercms.commons.crypto.SimpleDigest;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.profile.api.AccessToken;
 
@@ -29,18 +28,6 @@ public class AccessTokenUtils {
 
     public static void setAccessToken(HttpServletRequest request, AccessToken accessToken) {
         request.setAttribute(ACCESS_TOKE_ATTRIBUTE_NAME, accessToken);
-    }
-
-    public static String generateAccessTokenId(AccessToken token, byte[] salt) {
-        SimpleDigest digest = new SimpleDigest();
-        digest.setSalt(salt);
-
-        String textToDigest = "application='" + token.getApplication() + '\'' +
-                              ", master=" + token.isMaster() +
-                              ", tenantPermissions=" + token.getTenantPermissions() +
-                              ", expiresOn=" + token.getExpiresOn().getTime();
-
-        return digest.digestBase64(textToDigest);
     }
 
     private AccessTokenUtils() {
