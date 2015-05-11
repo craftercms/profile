@@ -16,5 +16,6 @@ if (defaultTenant) {
 	}
 }
 
-
-
+if (db.accesstoken.findOne({_id : "e8f5170c-877b-416f-b70f-4b09772f8e2d"})) {
+	db.accesstoken.update({_id: "e8f5170c-877b-416f-b70f-4b09772f8e2d"}, {$set: {master: true}});
+}
