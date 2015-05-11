@@ -27,6 +27,8 @@ public class ConnectionUtils {
     public static final String CONNECTIONS_ATTRIBUTE_NAME = "connections";
     public static final String FIRST_NAME_ATTRIBUTE_NAME = "firstName";
     public static final String LAST_NAME_ATTRIBUTE_NAME = "lastName";
+    public static final String DISPLAY_NAME_ATTRIBUTE_NAME = "displayName";
+    public static final String AVATAR_LINK_ATTRIBUTE_NAME = "avatarLink";
 
     /**
      * Creates a new map from the specified {@link ConnectionData}. Used when
@@ -224,8 +226,37 @@ public class ConnectionUtils {
      */
     public static Profile createProfile(Connection<?> connection) {
         Profile profile = new Profile();
+        UserProfile providerProfile = connection.fetchUserProfile();
 
-        addProviderProfileInfo(profile, connection.fetchUserProfile());
+        String email = providerProfile.getEmail();
+        if (StringUtils.isEmpty(email)) {
+            throw new IllegalStateException("No email included in provider profile");
+        }
+
+        String username = providerProfile.getUsername();
+        if (StringUtils.isEmpty(username)) {
+            username = email;
+        }
+
+        String firstName = providerProfile.getFirstName();
+        String lastName = providerProfile.getLastName();
+        String displayName;
+
+        if (StringUtils.isNotEmpty(connection.getDisplayName())) {
+            displayName = connection.getDisplayName();
+        } else {
+            displayName = firstName + " " + lastName;
+        }
+
+        profile.setUsername(username);
+        profile.setEmail(email);
+        profile.setAttribute(FIRST_NAME_ATTRIBUTE_NAME, firstName);
+        profile.setAttribute(LAST_NAME_ATTRIBUTE_NAME, lastName);
+        profile.setAttribute(DISPLAY_NAME_ATTRIBUTE_NAME, displayName);
+
+        if (StringUtils.isNotEmpty(connection.getImageUrl())) {
+            profile.setAttribute(AVATAR_LINK_ATTRIBUTE_NAME, connection.getImageUrl());
+        }
 
         return profile;
     }
