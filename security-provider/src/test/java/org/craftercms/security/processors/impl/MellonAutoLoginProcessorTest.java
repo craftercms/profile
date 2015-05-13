@@ -132,10 +132,10 @@ public class MellonAutoLoginProcessorTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        request.addHeader(MellonAutoLoginProcessor.HEADER_MELLON_USERNAME, USERNAME);
-        request.addHeader(MellonAutoLoginProcessor.HEADER_MELLON_EMAIL, EMAIL);
-        request.addHeader(MellonAutoLoginProcessor.HEADER_MELLON_PREFIX + FIRST_NAME_ATTRIB_NAME, FIRST_NAME);
-        request.addHeader(MellonAutoLoginProcessor.HEADER_MELLON_PREFIX + LAST_NAME_ATTRIB_NAME, LAST_NAME);
+        request.addHeader(MellonAutoLoginProcessor.DEFAULT_USERNAME_HEADER_NAME, USERNAME);
+        request.addHeader(MellonAutoLoginProcessor.DEFAULT_EMAIL_HEADER_NAME, EMAIL);
+        request.addHeader(MellonAutoLoginProcessor.DEFAULT_MELLON_HEADER_PREFIX + FIRST_NAME_ATTRIB_NAME, FIRST_NAME);
+        request.addHeader(MellonAutoLoginProcessor.DEFAULT_MELLON_HEADER_PREFIX + LAST_NAME_ATTRIB_NAME, LAST_NAME);
 
         return new RequestContext(request, response);
     }

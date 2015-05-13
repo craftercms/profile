@@ -33,14 +33,23 @@ public class MellonAutoLoginProcessor implements RequestSecurityProcessor {
 
     public static final Logger logger = LoggerFactory.getLogger(MellonAutoLoginProcessor.class);
 
-    public static final String HEADER_MELLON_PREFIX = "MELLON_";
-    public static final String HEADER_MELLON_USERNAME = HEADER_MELLON_PREFIX + "username";
-    public static final String HEADER_MELLON_EMAIL = HEADER_MELLON_PREFIX + "email";
+    public static final String DEFAULT_MELLON_HEADER_PREFIX = "MELLON_";
+    public static final String DEFAULT_USERNAME_HEADER_NAME = DEFAULT_MELLON_HEADER_PREFIX + "username";
+    public static final String DEFAULT_EMAIL_HEADER_NAME = DEFAULT_MELLON_HEADER_PREFIX + "email";
 
     protected TenantService tenantService;
     protected ProfileService profileService;
     protected TenantsResolver tenantsResolver;
     protected AuthenticationManager authenticationManager;
+    protected String mellonHeaderPrefix;
+    protected String usernameHeaderName;
+    protected String emailHeaderName;
+
+    public MellonAutoLoginProcessor() {
+        mellonHeaderPrefix = DEFAULT_MELLON_HEADER_PREFIX;
+        usernameHeaderName = DEFAULT_USERNAME_HEADER_NAME;
+        emailHeaderName = DEFAULT_EMAIL_HEADER_NAME;
+    }
 
     @Required
     public void setTenantService(TenantService tenantService) {
@@ -62,42 +71,41 @@ public class MellonAutoLoginProcessor implements RequestSecurityProcessor {
         this.authenticationManager = authenticationManager;
     }
 
+    public void setMellonHeaderPrefix(String mellonHeaderPrefix) {
+        this.mellonHeaderPrefix = mellonHeaderPrefix;
+    }
+
+    public void setUsernameHeaderName(String usernameHeaderName) {
+        this.usernameHeaderName = usernameHeaderName;
+    }
+
+    public void setEmailHeaderName(String emailHeaderName) {
+        this.emailHeaderName = emailHeaderName;
+    }
+
     @Override
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         HttpServletRequest request = context.getRequest();
-        String username = getUsername(request);
-        String email = getEmail(request);
+        String username = request.getHeader(usernameHeaderName);
+        Authentication auth = SecurityUtils.getAuthentication(request);
 
-        if (StringUtils.isNotEmpty(username) || StringUtils.isNotEmpty(email)) {
+        if (StringUtils.isNotEmpty(username) && (auth == null || !auth.getProfile().getUsername().equals(username))) {
             String[] tenantNames = tenantsResolver.getTenants();
             Tenant tenant = getSsoEnabledTenant(tenantNames);
 
             if (tenant != null) {
-                if (StringUtils.isEmpty(username)) {
-                    username = email;
-                }
-
                 Profile profile = profileService.getProfileByUsername(tenant.getName(), username);
                 if (profile == null) {
-                    profile = createProfileWithSsoInfo(username, email, tenant, request);
+                    profile = createProfileWithSsoInfo(username, tenant, request);
                 }
 
-                Authentication auth = authenticationManager.authenticateUser(profile);
-                SecurityUtils.setAuthentication(request, auth);
+                SecurityUtils.setAuthentication(request, authenticationManager.authenticateUser(profile));
             } else {
                 logger.warn("An SSO login was attempted, but none of the tenants {} is enabled for SSO", tenantNames);
             }
         }
 
         processorChain.processRequest(context);
-    }
-
-    protected String getUsername(HttpServletRequest request) {
-        return request.getHeader(HEADER_MELLON_USERNAME);
-    }
-
-    protected String getEmail(HttpServletRequest request) {
-        return request.getHeader(HEADER_MELLON_EMAIL);
     }
 
     protected Tenant getSsoEnabledTenant(String[] tenantNames) throws ProfileException {
@@ -111,14 +119,16 @@ public class MellonAutoLoginProcessor implements RequestSecurityProcessor {
         return null;
     }
 
-    protected Profile createProfileWithSsoInfo(String username, String email, Tenant tenant,
+    protected Profile createProfileWithSsoInfo(String username, Tenant tenant,
                                                HttpServletRequest request) throws ProfileException {
         Map<String, Object> attributes = null;
         Set<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
 
+        String email = request.getHeader(emailHeaderName);
+
         for (AttributeDefinition attributeDefinition : attributeDefinitions) {
             String attributeName = attributeDefinition.getName();
-            String attributeValue = request.getHeader(HEADER_MELLON_PREFIX + attributeName);
+            String attributeValue = request.getHeader(mellonHeaderPrefix + attributeName);
 
             if (StringUtils.isNotEmpty(attributeValue)) {
                 if (attributes == null) {
@@ -129,8 +139,8 @@ public class MellonAutoLoginProcessor implements RequestSecurityProcessor {
             }
         }
 
-        logger.info("Creating new profile from SSO info: username={}, email={}, attributes={}", username, email,
-                    attributes);
+        logger.info("Creating new profile from SSO info: username={}, email={}, tenant={}, attributes={}", username,
+                    email, tenant.getName(), attributes);
 
         return profileService.createProfile(tenant.getName(), username, null, email, true, null, attributes, null);
     }
