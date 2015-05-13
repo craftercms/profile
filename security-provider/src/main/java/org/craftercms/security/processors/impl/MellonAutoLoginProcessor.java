@@ -139,7 +139,7 @@ public class MellonAutoLoginProcessor implements RequestSecurityProcessor {
             }
         }
 
-        logger.info("Creating new profile from SSO info: username={}, email={}, tenant={}, attributes={}", username,
+        logger.info("Creating new profile with SSO info: username={}, email={}, tenant={}, attributes={}", username,
                     email, tenant.getName(), attributes);
 
         return profileService.createProfile(tenant.getName(), username, null, email, true, null, attributes, null);
