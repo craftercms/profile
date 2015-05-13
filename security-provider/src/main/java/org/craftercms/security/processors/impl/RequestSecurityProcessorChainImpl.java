@@ -21,6 +21,8 @@ import java.util.Iterator;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.processors.RequestSecurityProcessor;
 import org.craftercms.security.processors.RequestSecurityProcessorChain;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation of a handler chain, using an iterator.
@@ -28,6 +30,8 @@ import org.craftercms.security.processors.RequestSecurityProcessorChain;
  * @author Alfonso Vásquez
  */
 public class RequestSecurityProcessorChainImpl implements RequestSecurityProcessorChain {
+
+    private static final Logger logger = LoggerFactory.getLogger(RequestSecurityProcessorChainImpl.class);
 
     private Iterator<RequestSecurityProcessor> processorIterator;
 
@@ -47,8 +51,12 @@ public class RequestSecurityProcessorChainImpl implements RequestSecurityProcess
      * @throws Exception
      */
     public void processRequest(RequestContext context) throws Exception {
-        if (processorIterator.hasNext()) {
-            processorIterator.next().processRequest(context, this);
+        if (processorIterator.hasNext()){
+            RequestSecurityProcessor processor = processorIterator.next();
+
+            logger.debug("Executing processor {}", processor);
+
+            processor.processRequest(context, this);
         }
     }
 
