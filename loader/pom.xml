@@ -12,7 +12,7 @@
     <parent>
         <artifactId>crafter-profile-parent</artifactId>
         <groupId>org.craftercms</groupId>
-        <version>v2.4.2</version>
+        <version>2.4.3-SNAPSHOT</version>
     </parent>
     <organization>
         <name>CrafterCMS</name>
@@ -84,13 +84,13 @@
         <dependency>
             <groupId>org.craftercms</groupId>
             <artifactId>crafter-profile-client</artifactId>
-            <version>v2.4.2</version>
+            <version>2.4.3-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.craftercms</groupId>
             <artifactId>crafter-profile</artifactId>
-            <version>v2.4.2</version>
+            <version>2.4.3-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
 
