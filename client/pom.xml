@@ -4,11 +4,11 @@
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-profile-parent</artifactId>
-        <version>2.4.2-SNAPSHOT</version>
+        <version>v2.4.2</version>
     </parent>
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-profile-client</artifactId>
-    <version>2.4.2-SNAPSHOT</version>
+    <version>v2.4.2</version>
     <name>Crafter Profile Client</name>
     <description>Crafter Profile Client</description>
     <url>https://github.com/craftercms/profile/tree/master/client</url>
