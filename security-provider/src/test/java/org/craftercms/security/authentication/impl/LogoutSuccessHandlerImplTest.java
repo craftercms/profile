@@ -19,7 +19,6 @@ package org.craftercms.security.authentication.impl;
 import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.commons.http.RequestContext;
-import org.craftercms.security.authentication.Authentication;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -27,7 +26,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {@link org.craftercms.security.authentication.impl.LogoutSuccessHandlerImpl}.
@@ -52,7 +50,7 @@ public class LogoutSuccessHandlerImplTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
         RequestContext context = new RequestContext(request, response);
 
-        handler.handle(context, mock(Authentication.class));
+        handler.handle(context);
 
         assertEquals(TARGET_URl, response.getRedirectedUrl());
         assertEquals(HttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());

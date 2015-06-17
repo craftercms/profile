@@ -64,7 +64,7 @@ public class LogoutProcessorTest {
     @Test
     public void testLogout() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest(LogoutProcessor.DEFAULT_LOGOUT_METHOD,
-                LogoutProcessor.DEFAULT_LOGOUT_URL);
+                                                                    LogoutProcessor.DEFAULT_LOGOUT_URL);
         MockHttpServletResponse response = new MockHttpServletResponse();
         RequestContext context = new RequestContext(request, response);
         RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
@@ -82,7 +82,7 @@ public class LogoutProcessorTest {
 
         assertNull(SecurityUtils.getAuthentication(request));
 
-        verify(logoutSuccessHandler).handle(context, auth);
+        verify(logoutSuccessHandler).handle(context);
     }
 
 }

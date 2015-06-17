@@ -3,7 +3,7 @@ package org.craftercms.security.utils.tenant;
 import org.craftercms.commons.http.RequestContext;
 
 /**
- * {@link org.craftercms.profile.social.utils.TenantsResolver} that resolves the tenants through a param.
+ * {@link TenantsResolver} that resolves the tenants through a param.
  *
  * @author avasquez
  */
@@ -23,7 +23,12 @@ public class ParamTenantsResolver implements TenantsResolver {
 
     @Override
     public String[] getTenants() {
-        return RequestContext.getCurrent().getRequest().getParameterValues(tenantNameParam);
+        RequestContext context = RequestContext.getCurrent();
+        if (context != null) {
+            return context.getRequest().getParameterValues(tenantNameParam);
+        } else {
+            return null;
+        }
     }
 
 }

@@ -94,12 +94,11 @@ public class LogoutProcessor implements RequestSecurityProcessor {
             logger.debug("Processing logout request");
 
             Authentication auth = SecurityUtils.getAuthentication(context.getRequest());
-
             if (auth != null) {
                 authenticationManager.invalidateAuthentication(auth);
-
-                onLogoutSuccess(auth, context);
             }
+
+            onLogoutSuccess(context, auth);
         } else {
             processorChain.processRequest(context);
         }
@@ -110,16 +109,20 @@ public class LogoutProcessor implements RequestSecurityProcessor {
                 logoutMethod);
     }
 
-    protected void onLogoutSuccess(Authentication authentication, RequestContext context) throws IOException {
-        logger.debug("Logout for user '" + authentication.getProfile().getUsername() + "' successful");
+    protected void onLogoutSuccess(RequestContext context, Authentication authentication) throws IOException {
+        if (authentication != null) {
+            logger.debug("Logout for user '" + authentication.getProfile().getUsername() + "' successful");
 
-        if (authentication.isRemembered()) {
-            rememberMeManager.disableRememberMe(context);
+            if (authentication.isRemembered()) {
+                rememberMeManager.disableRememberMe(context);
+            }
+
+            SecurityUtils.removeAuthentication(context.getRequest());
+        } else {
+            logger.debug("No logout done: user wasn't authenticated");
         }
 
-        SecurityUtils.removeAuthentication(context.getRequest());
-
-        logoutSuccessHandler.handle(context, authentication);
+        logoutSuccessHandler.handle(context);
     }
 
 }
