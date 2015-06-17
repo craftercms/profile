@@ -201,12 +201,12 @@ public class LoginProcessor implements RequestSecurityProcessor {
     protected void onLoginFailure(RequestContext context, AuthenticationException e) throws Exception {
         logger.debug("Login failed", e);
 
-        saveException(e, context.getRequest());
+        saveException(context.getRequest(), e);
 
         loginFailureHandler.handle(context, e);
     }
 
-    protected void saveException(AuthenticationException e, HttpServletRequest request) {
+    protected void saveException(HttpServletRequest request, AuthenticationException e) {
         logger.debug("Saving authentication exception in session for later use");
 
         HttpSession session = request.getSession(true);

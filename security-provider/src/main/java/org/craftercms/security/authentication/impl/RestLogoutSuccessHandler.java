@@ -20,7 +20,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.craftercms.commons.http.RequestContext;
-import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.LogoutSuccessHandler;
 import org.craftercms.security.exception.SecurityProviderException;
 import org.craftercms.security.utils.handlers.AbstractRestHandlerBase;
@@ -46,8 +45,7 @@ public class RestLogoutSuccessHandler extends AbstractRestHandlerBase implements
     }
 
     @Override
-    public void handle(RequestContext context, Authentication authentication) throws SecurityProviderException,
-            IOException {
+    public void handle(RequestContext context) throws SecurityProviderException, IOException {
         sendMessage(HttpServletResponse.SC_OK, logoutSuccessMessage, context);
     }
 

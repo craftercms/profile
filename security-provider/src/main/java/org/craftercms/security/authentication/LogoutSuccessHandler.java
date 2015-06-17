@@ -29,11 +29,10 @@ import org.craftercms.security.exception.SecurityProviderException;
 public interface LogoutSuccessHandler {
 
     /**
-     * Handles the request after a successful authentication.
+     * Handles the request after a successful logout.
      *
      * @param context           the request context
-     * @param authentication    the authentication object, just invalidated
      */
-    void handle(RequestContext context, Authentication authentication) throws SecurityProviderException, IOException;
+    void handle(RequestContext context) throws SecurityProviderException, IOException;
 
 }

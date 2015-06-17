@@ -19,7 +19,6 @@ package org.craftercms.security.authentication.impl;
 import java.io.IOException;
 
 import org.craftercms.commons.http.RequestContext;
-import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.LogoutSuccessHandler;
 import org.craftercms.security.exception.SecurityProviderException;
 import org.craftercms.security.utils.RedirectUtils;
@@ -48,11 +47,9 @@ public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler {
      * Redirects to the target URL.
      *
      * @param context           the request context
-     * @param authentication    the authentication object, just invalidated
      */
     @Override
-    public void handle(RequestContext context, Authentication authentication) throws SecurityProviderException,
-            IOException {
+    public void handle(RequestContext context) throws SecurityProviderException, IOException {
         RedirectUtils.redirect(context.getRequest(), context.getResponse(), getTargetUrl());
     }
 
