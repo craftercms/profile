@@ -32,10 +32,12 @@ import org.craftercms.profile.exceptions.BadCredentialsException;
 import org.craftercms.profile.exceptions.DisabledProfileException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.repositories.PersistentLoginRepository;
+import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
@@ -74,6 +76,8 @@ public class AuthenticationServiceImplTest {
     private PersistentLoginRepository persistentLoginRepository;
     @Mock
     private ProfileService profileService;
+    @Mock
+    private ProfileRepository profileRepository;
 
     @Before
     public void setUp() throws Exception {
@@ -93,12 +97,17 @@ public class AuthenticationServiceImplTest {
             .thenReturn(getProfile1());
         when(profileService.getProfile(PROFILE2_ID.toString(), ProfileConstants.NO_ATTRIBUTE))
             .thenReturn(getProfile2());
+        Mockito.doNothing().when(profileRepository).update(Mockito.anyString(), Mockito.any(Profile.class));
 
         authenticationService = new AuthenticationServiceImpl();
         authenticationService.setPermissionEvaluator(permissionEvaluator);
         authenticationService.setTicketRepository(ticketRepository);
         authenticationService.setPersistentLoginRepository(persistentLoginRepository);
         authenticationService.setProfileService(profileService);
+        authenticationService.setProfileRepository(profileRepository);
+        authenticationService.setFailedAttemptsBeforeDelay(2);
+        authenticationService.setLockTime(5);
+        authenticationService.setFailedAttemptsBeforeLock(8);
     }
 
     @Test
