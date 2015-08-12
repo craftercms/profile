@@ -102,7 +102,7 @@ public class LoginProcessorTest {
                 LoginProcessor.DEFAULT_LOGIN_URL);
         MockHttpServletResponse response = new MockHttpServletResponse();
         HttpSession session = request.getSession(true);
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
         RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
         request.setParameter(LoginProcessor.DEFAULT_USERNAME_PARAM, USERNAME);
@@ -147,7 +147,7 @@ public class LoginProcessorTest {
                                                                     LoginProcessor.DEFAULT_LOGIN_URL);
         MockHttpServletResponse response = new MockHttpServletResponse();
         HttpSession session = request.getSession(true);
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
         RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
         request.setParameter(LoginProcessor.DEFAULT_USERNAME_PARAM, USERNAME);

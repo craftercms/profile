@@ -66,7 +66,7 @@ public class LogoutProcessorTest {
         MockHttpServletRequest request = new MockHttpServletRequest(LogoutProcessor.DEFAULT_LOGOUT_METHOD,
                                                                     LogoutProcessor.DEFAULT_LOGOUT_URL);
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
         RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
         Profile profile = new Profile();

@@ -59,7 +59,7 @@ public class AuthenticationRequiredHandlerImplTest {
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
 
         handler.handle(context, new AuthenticationRequiredException(""));
 
@@ -74,7 +74,7 @@ public class AuthenticationRequiredHandlerImplTest {
     public void testSendError() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
 
         handler.handle(context, new AuthenticationRequiredException(""));
 

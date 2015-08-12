@@ -56,7 +56,7 @@ public class UrlAccessRestrictionCheckingProcessorTest {
     public void testAllowedAccess() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", URL);
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
         RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
         Profile profile = new Profile();
@@ -73,7 +73,7 @@ public class UrlAccessRestrictionCheckingProcessorTest {
     public void testUnAllowedAccess() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", URL);
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
         RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
         SecurityUtils.setAuthentication(request, new DefaultAuthentication(new ObjectId().toString(), new Profile()));

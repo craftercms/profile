@@ -137,7 +137,7 @@ public class MellonAutoLoginProcessorTest {
         request.addHeader(MellonAutoLoginProcessor.DEFAULT_MELLON_HEADER_PREFIX + FIRST_NAME_ATTRIB_NAME, FIRST_NAME);
         request.addHeader(MellonAutoLoginProcessor.DEFAULT_MELLON_HEADER_PREFIX + LAST_NAME_ATTRIB_NAME, LAST_NAME);
 
-        return new RequestContext(request, response);
+        return new RequestContext(request, response, null);
     }
 
 }

@@ -50,7 +50,7 @@ public class RestAccessDeniedHandlerTest extends AbstractRestHandlerTestBase {
     public void testHandle() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/admin.json");
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
 
         handler.handle(context, new AccessDeniedException(ERROR_MESSAGE));
 

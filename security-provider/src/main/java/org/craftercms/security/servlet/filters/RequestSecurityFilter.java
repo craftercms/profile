@@ -179,7 +179,7 @@ public class RequestSecurityFilter extends GenericFilterBean implements Security
      * HttpServletResponse}.
      */
     protected RequestContext createRequestContext(HttpServletRequest request, HttpServletResponse response) {
-        return new RequestContext(request, response);
+        return new RequestContext(request, response, getServletContext());
     }
 
     /**
