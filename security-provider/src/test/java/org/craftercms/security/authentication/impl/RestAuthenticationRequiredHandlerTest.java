@@ -50,7 +50,7 @@ public class RestAuthenticationRequiredHandlerTest extends AbstractRestHandlerTe
     public void testHandle() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/profile.json");
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
 
         handler.handle(context, new AuthenticationRequiredException(ERROR_MESSAGE));
 

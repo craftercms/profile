@@ -61,7 +61,7 @@ public class LoginSuccessHandleImplTest {
     public void testRedirectToSavedRequest() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
         SavedRequest savedRequest = mock(SavedRequest.class);
 
         when(savedRequest.getRedirectUrl()).thenReturn(SAVED_REQUEST_URL);
@@ -78,7 +78,7 @@ public class LoginSuccessHandleImplTest {
     public void testRedirectToDefaultTargetUrl() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
 
         handler.handle(context, mock(Authentication.class));
 

@@ -65,7 +65,7 @@ public class SecurityExceptionProcessorTest {
     public void testAuthenticationRequired() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
         RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
         doThrow(AuthenticationRequiredException.class).when(chain).processRequest(context);
@@ -80,7 +80,7 @@ public class SecurityExceptionProcessorTest {
     public void testAccessDeniedNoAuthentication() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
         RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
         doThrow(AccessDeniedException.class).when(chain).processRequest(context);
@@ -95,7 +95,7 @@ public class SecurityExceptionProcessorTest {
     public void testAccessDeniedWithAuthentication() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
         RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
         doThrow(AccessDeniedException.class).when(chain).processRequest(context);
@@ -112,7 +112,7 @@ public class SecurityExceptionProcessorTest {
     public void testNonSecurityException() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
         RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
         doThrow(Exception.class).when(chain).processRequest(context);

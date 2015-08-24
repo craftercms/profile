@@ -69,7 +69,7 @@ public class RememberMeManagerImplTest {
     public void testEnableRememberMe() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
 
         rememberMeManager.enableRememberMe(getAuthentication(), context);
 
@@ -82,7 +82,7 @@ public class RememberMeManagerImplTest {
     public void testDisableRememberMe() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
 
         request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLogin()));
 
@@ -97,7 +97,7 @@ public class RememberMeManagerImplTest {
     public void testAutoLogin() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
 
         request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLogin()));
 
@@ -115,7 +115,7 @@ public class RememberMeManagerImplTest {
     public void testAutoLoginWithInvalidId() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
 
         request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLoginWithInvalidId()));
 
@@ -130,7 +130,7 @@ public class RememberMeManagerImplTest {
     public void testAutoLoginWithInvalidProfile() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
 
         request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLoginWithInvalidProfile()));
 
@@ -141,7 +141,7 @@ public class RememberMeManagerImplTest {
     public void testAutoLoginWithInvalidToken() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
 
         request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLoginWithInvalidToken()));
 

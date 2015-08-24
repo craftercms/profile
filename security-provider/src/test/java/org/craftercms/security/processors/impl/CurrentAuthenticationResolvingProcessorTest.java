@@ -65,12 +65,12 @@ public class CurrentAuthenticationResolvingProcessorTest {
     public void testGetAuthentication() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
         RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
         Date profileLastModified = new Date();
         Cookie ticketCookie = new Cookie(SecurityUtils.TICKET_COOKIE_NAME, TICKET);
         Cookie profileLastModifiedCookie = new Cookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME,
-                String.valueOf(profileLastModified.getTime()));
+                                                      String.valueOf(profileLastModified.getTime()));
 
         request.setCookies(ticketCookie, profileLastModifiedCookie);
 
@@ -96,7 +96,7 @@ public class CurrentAuthenticationResolvingProcessorTest {
     public void testGetAuthenticationProfileLastModifiedChanged() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
         RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
         Date profileLastModified = new Date();
         Cookie ticketCookie = new Cookie(SecurityUtils.TICKET_COOKIE_NAME, TICKET);
