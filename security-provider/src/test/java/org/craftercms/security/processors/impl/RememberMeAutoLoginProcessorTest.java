@@ -44,7 +44,7 @@ public class RememberMeAutoLoginProcessorTest {
     public void testProcessRequest() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
 
         processor.processRequest(context, chain);
 
@@ -59,7 +59,7 @@ public class RememberMeAutoLoginProcessorTest {
     public void testProcessRequestWithPreviousAuthentication() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response);
+        RequestContext context = new RequestContext(request, response, null);
 
         SecurityUtils.setAuthentication(request, authentication);
 
