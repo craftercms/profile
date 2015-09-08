@@ -32,6 +32,7 @@ import org.craftercms.profile.exceptions.BadCredentialsException;
 import org.craftercms.profile.exceptions.DisabledProfileException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.repositories.PersistentLoginRepository;
+import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,6 +75,8 @@ public class AuthenticationServiceImplTest {
     private PersistentLoginRepository persistentLoginRepository;
     @Mock
     private ProfileService profileService;
+    @Mock
+    private ProfileRepository profileRepository;
 
     @Before
     public void setUp() throws Exception {
@@ -94,11 +97,15 @@ public class AuthenticationServiceImplTest {
         when(profileService.getProfile(PROFILE2_ID.toString(), ProfileConstants.NO_ATTRIBUTE))
             .thenReturn(getProfile2());
 
+
         authenticationService = new AuthenticationServiceImpl();
         authenticationService.setPermissionEvaluator(permissionEvaluator);
         authenticationService.setTicketRepository(ticketRepository);
         authenticationService.setPersistentLoginRepository(persistentLoginRepository);
         authenticationService.setProfileService(profileService);
+        authenticationService.setFailedAttemptsBeforeDelay(2);
+        authenticationService.setLockTime(5);
+        authenticationService.setFailedAttemptsBeforeLock(8);
     }
 
     @Test

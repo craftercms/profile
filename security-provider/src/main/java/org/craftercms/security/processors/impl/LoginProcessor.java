@@ -191,7 +191,7 @@ public class LoginProcessor implements RequestSecurityProcessor {
 
         HttpServletRequest request = context.getRequest();
 
-        clearExceptions(request);
+        clearSession(request);
 
         SecurityUtils.setAuthentication(request, authentication);
 
@@ -217,14 +217,13 @@ public class LoginProcessor implements RequestSecurityProcessor {
         }
     }
 
-    protected void clearExceptions(HttpServletRequest request) {
+    protected void clearSession(HttpServletRequest request) {
         logger.debug("Removing any authentication exceptions from session, not needed anymore");
-
-        HttpSession session = request.getSession();
-        if (session != null) {
-            session.removeAttribute(SecurityUtils.AUTHENTICATION_EXCEPTION_SESSION_ATTRIBUTE);
-            session.removeAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE);
+        try {
+            request.getSession().invalidate();// Kill old session.
+        } catch (IllegalStateException ex) {
+            logger.debug("Session was already invalidated");
         }
+        request.getSession(true);//Now that you'r here's the new session
     }
-
 }

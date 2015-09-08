@@ -1,6 +1,8 @@
 package org.craftercms.profile.api.services;
 
+import java.io.InputStream;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,6 +76,12 @@ public interface ProfileService {
      * @return the updated profile
      */
     Profile enableProfile(String profileId, String... attributesToReturn) throws ProfileException;
+
+    Profile setLastFailedLogging(String profileId, Date lastFailedLogging, String... attributesToReturn) throws
+        ProfileException;
+
+    Profile setFailedAttempts(String profileId, int failedAttempts, String... attributesToReturn) throws
+        ProfileException;
 
     /**
      * Disables a profile.
@@ -378,5 +386,47 @@ public interface ProfileService {
      * @param tokenId the ID of the token to delete
      */
     void deleteVerificationToken(String tokenId) throws ProfileException;
+
+    /**
+     * Saves a Profile Attachment
+     *
+     * @param profileId      Id of the profile owner of the attachment.
+     * @param attachmentName File name of the Attachment;
+     * @param file           Actual File to be Attach.
+     * @return A Profile Attachment Contains all the information of the Actual Attachment (including the id);
+     * @throws ProfileException If attachment can not be saved;
+     */
+    ProfileAttachment addProfileAttachment(String profileId, String attachmentName, InputStream file) throws
+        ProfileException;
+
+    /**
+     * Gets Profile attachment Information.
+     *
+     * @param profileId    Profile owner of the Attachment.
+     * @param attachmentId Attachment Id.
+     * @return Null if Attachment Id does not exist or does not belong to the user.
+     * @throws ProfileException If Attachment cannot be found.
+     */
+    ProfileAttachment getProfileAttachmentInformation(String profileId, String attachmentId) throws ProfileException;
+
+    /**
+     * Given the Attachment Id and the Profile Id, gets the Actual Attachment.
+     *
+     * @param attachmentId Attachment Id to get.
+     * @param profileId    Profile Owner of the Attachment.
+     * @return Null If Attachment Id does no exist or does not belong to the given profile. InputStream of the actual
+     * File.
+     * @throws ProfileService If unable to get the Attachment.
+     */
+    InputStream getProfileAttachment(String attachmentId, String profileId) throws ProfileException;
+
+    /**
+     * List all Attachments for the given profile.
+     *
+     * @param profileId Profile to get all Attachments
+     * @return The List of attachments that the profile has ,never null.
+     * @throws ProfileException If unable to get Profile attachments.
+     */
+    List<ProfileAttachment> getProfileAttachments(String profileId) throws ProfileException;
 
 }

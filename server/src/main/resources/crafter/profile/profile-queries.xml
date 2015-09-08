@@ -37,7 +37,9 @@
         createdOn: 1,
         lastModified: 1,
         tenant: 1,
-        roles: 1
+        roles: 1,
+        failedAttempts:1,
+        lastFailedLogging:1
         }
     </entry>
 

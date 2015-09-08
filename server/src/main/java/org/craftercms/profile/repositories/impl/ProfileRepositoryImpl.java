@@ -16,9 +16,6 @@
  */
 package org.craftercms.profile.repositories.impl;
 
-import com.mongodb.MongoException;
-import com.mongodb.WriteResult;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +33,8 @@ import org.jongo.FindOne;
 import org.jongo.Update;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.mongodb.MongoException;
+import com.mongodb.WriteResult;
 
 /**
  * Default implementation of {@link org.craftercms.profile.repositories.ProfileRepository}.
@@ -310,6 +309,7 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
         }
     }
 
+
     protected Find addSort(Find find, String sortBy, SortOrder sortOrder) {
         if (StringUtils.isNotEmpty(sortBy)) {
             find = find.sort("{" + sortBy + ": " + (sortOrder == SortOrder.ASC? "1": "-1") + "}");
@@ -329,6 +329,8 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
 
         return find;
     }
+
+
 
     protected FindOne addProjection(FindOne findOne, String... attributesToReturn) {
         if (ArrayUtils.isNotEmpty(attributesToReturn)) {

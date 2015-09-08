@@ -18,6 +18,7 @@ package org.craftercms.security.processors.impl;
 
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;
@@ -118,6 +119,17 @@ public class LogoutProcessor implements RequestSecurityProcessor {
             }
 
             SecurityUtils.removeAuthentication(context.getRequest());
+            final HttpSession session = context.getRequest().getSession();
+            if (session != null) {
+                try {
+                    session.invalidate();
+                    context.getRequest().getSession(true);//New Session after old stuff is killed
+                } catch (IllegalStateException ex) {
+                    // DO noting
+                    logger.debug("Http Session was already invalidated");
+                }
+            }
+
         } else {
             logger.debug("No logout done: user wasn't authenticated");
         }
