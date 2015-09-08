@@ -37,7 +37,6 @@ import org.craftercms.profile.repositories.TicketRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
@@ -97,14 +96,13 @@ public class AuthenticationServiceImplTest {
             .thenReturn(getProfile1());
         when(profileService.getProfile(PROFILE2_ID.toString(), ProfileConstants.NO_ATTRIBUTE))
             .thenReturn(getProfile2());
-        Mockito.doNothing().when(profileRepository).update(Mockito.anyString(), Mockito.any(Profile.class));
+
 
         authenticationService = new AuthenticationServiceImpl();
         authenticationService.setPermissionEvaluator(permissionEvaluator);
         authenticationService.setTicketRepository(ticketRepository);
         authenticationService.setPersistentLoginRepository(persistentLoginRepository);
         authenticationService.setProfileService(profileService);
-        authenticationService.setProfileRepository(profileRepository);
         authenticationService.setFailedAttemptsBeforeDelay(2);
         authenticationService.setLockTime(5);
         authenticationService.setFailedAttemptsBeforeLock(8);

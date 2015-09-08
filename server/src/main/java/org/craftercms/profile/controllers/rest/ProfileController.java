@@ -16,25 +16,23 @@
  */
 package org.craftercms.profile.controllers.rest;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiImplicitParam;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.ProfileException;
+import org.craftercms.profile.api.services.ProfileAttachment;
 import org.craftercms.profile.api.services.ProfileService;
+import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.exceptions.ParamDeserializationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpStatus;
@@ -46,6 +44,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartFile;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiImplicitParam;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 import static org.craftercms.profile.api.ProfileConstants.*;
 
@@ -501,6 +506,84 @@ public class ProfileController {
         @ApiParam("The ID of the token to delete") @PathVariable(PATH_VAR_ID) String tokenId) throws ProfileException {
         profileService.deleteVerificationToken(tokenId);
     }
+
+
+    @ResponseBody
+    @RequestMapping(value = URL_PROFILE_UPLOAD_ATTACHMENT,method = RequestMethod.POST)
+    @ApiOperation(value = "Upload a attachment to the current profile.",
+        notes = "If the mime type of the attachment is not on the valid list will fail")
+    @ApiImplicitParam(name = "attachment", required = true, dataType = "file", paramType = "file",
+        value = "File to be uploaded")
+    public ProfileAttachment uploadProfileAttachment(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String
+        profileId,MultipartFile attachment) throws ProfileException {
+        final Profile profile = profileService.getProfile(profileId);
+        if(profile!=null) {
+            try {
+                return profileService.addProfileAttachment(profile.getId().toString(),attachment.getOriginalFilename(),
+                    attachment.getInputStream());
+            } catch (IOException e) {
+                throw new ProfileException("Unable to upload Attachment",e);
+            }
+        }
+        throw new NoSuchProfileException(profileId);
+    }
+
+
+    @RequestMapping(value = URL_PROFILE_GET_ATTACHMENTS,method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Gets all attachments for the given Profile",
+        notes = "If profile does not exist")
+    public List<ProfileAttachment> getAttachments(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String
+                                  profileId) throws ProfileException,IOException {
+        final Profile profile = profileService.getProfile(profileId);
+        if(profile!=null) {
+            return profileService.getProfileAttachments(profile.getId().toString());
+        }
+        throw new NoSuchProfileException(profileId);
+    }
+
+
+    @RequestMapping(value = URL_PROFILE_GET_ATTACHMENTS_DETAILS,method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "Gets all attachments for the given Profile",
+        notes = "If profile does not exist")
+    public ProfileAttachment getAttachmentDetails(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String
+                                                      profileId,@ApiParam("Attachment Id to get") @PathVariable(PATH_VAR_ATTACHMENT)
+    String attachmentId) throws ProfileException,IOException {
+        final Profile profile = profileService.getProfile(profileId);
+        if(profile!=null) {
+            return profileService.getProfileAttachmentInformation(profile.getId().toString(),attachmentId);
+        }
+        throw new NoSuchProfileException(profileId);
+    }
+
+    @RequestMapping(value = URL_PROFILE_GET_ATTACHMENT,method = RequestMethod.GET)
+    @ApiOperation(value = "Gets the requested attachment of the given profile",
+        notes = "If Attachment or profile does not exist will throw error, content-type,content-legnth headers are set")
+     public void getAttachment(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String
+                                      profileId, @ApiParam("Attachment Id to get") @PathVariable(PATH_VAR_ATTACHMENT)
+    String attachmentId, HttpServletResponse response) throws ProfileException,IOException {
+        final Profile profile = profileService.getProfile(profileId);
+        if(profile!=null) {
+            InputStream input=null;
+            try {
+                input = profileService.getProfileAttachment(attachmentId, profile.getId().toString());
+                if(input!=null) {
+                    final ProfileAttachment attachment = profileService.getProfileAttachmentInformation(profile.getId().toString(), attachmentId);
+                    response.setContentType(attachment.getContentType());
+                    response.setContentLength((int)attachment.getFileSizeBytes());
+                    IOUtils.copy(input, response.getOutputStream());
+                }
+            }finally {
+                if(input!=null){
+                    input.close();
+                }
+            }
+        }
+        throw new NoSuchProfileException(profileId);
+    }
+
+
 
     protected Map<String, Object> deserializeAttributes(String serializedAttributes)
         throws ParamDeserializationException {

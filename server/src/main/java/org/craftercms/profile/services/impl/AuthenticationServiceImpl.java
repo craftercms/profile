@@ -42,7 +42,6 @@ import org.craftercms.profile.exceptions.NoSuchPersistentLoginException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.exceptions.ProfileLockedException;
 import org.craftercms.profile.repositories.PersistentLoginRepository;
-import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -79,7 +78,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     protected TicketRepository ticketRepository;
     protected PersistentLoginRepository persistentLoginRepository;
     protected ProfileService profileService;
-    protected ProfileRepository profileRepository;
 
     protected int lockTime;
     protected int failedAttemptsBeforeLock;
@@ -148,19 +146,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    private void clearAllAttempts(final Profile profile) throws MongoDataException {
+    private void clearAllAttempts(final Profile profile) throws ProfileException {
         profile.setLastFailedLogging(new Date(0));
         profile.setFailedAttempts(0);
-        profileRepository.update(profile.getId().toString(), profile);
+        profileService.setFailedAttempts(profile.getId().toString(), 0, ProfileConstants.NO_ATTRIBUTE);
     }
 
-    protected void countAsFail(final Profile profile) throws MongoDataException {
+    protected void countAsFail(final Profile profile) throws ProfileException {
         profile.increseFaildAttempts();
         // This one counts !!!
         if ((failedAttemptsBeforeDelay + failedAttemptsBeforeLock) <= profile.getFailedAttempts()) {
-            profile.setLastFailedLogging(new Date());
+            profileService.setLastFailedLogging(profile.getId().toString(), new Date(), ProfileConstants.NO_ATTRIBUTE);
         }
-        profileRepository.update(profile.getId().toString(), profile);
+        profileService.setFailedAttempts(profile.getId().toString(), profile.getFailedAttempts(), ProfileConstants
+            .NO_ATTRIBUTE);
         if (profile.getFailedAttempts() > failedAttemptsBeforeDelay) {
             try {
                 Thread.sleep(1000);
@@ -345,9 +344,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    public void setProfileRepository(final ProfileRepository profileRepository) {
-        this.profileRepository = profileRepository;
-    }
 
     public void setLockTime(final int lockTime) {
         this.lockTime = lockTime;

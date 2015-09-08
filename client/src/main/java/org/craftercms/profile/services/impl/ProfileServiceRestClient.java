@@ -16,26 +16,38 @@
  */
 package org.craftercms.profile.services.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.craftercms.commons.rest.RestClientUtils;
 import org.craftercms.profile.api.Profile;
+import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
+import org.craftercms.profile.api.services.ProfileAttachment;
 import org.craftercms.profile.api.services.ProfileService;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.PathResource;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.craftercms.profile.api.ProfileConstants.*;
 
@@ -48,6 +60,14 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
 
     public static final ParameterizedTypeReference<List<Profile>> profileListTypeRef =
             new ParameterizedTypeReference<List<Profile>>() {};
+
+    public static final ParameterizedTypeReference<byte[]> byteArrayTypeRef = new ParameterizedTypeReference<byte[]>() {
+    };
+
+
+    public static final ParameterizedTypeReference<List<ProfileAttachment>> profileAttachmentListTypeRef = new
+        ParameterizedTypeReference<List<ProfileAttachment>>() {
+    };
 
     public static final String ERROR_KEY_ATTRIBUTES_SERIALIZATION_ERROR =
             "profile.client.attributes.serializationError";
@@ -441,6 +461,64 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         doPostForLocation(url, createBaseParams(), tokenId);
     }
 
+    @Override
+    public ProfileAttachment addProfileAttachment(final String profileId, final String attachmentName, final
+    InputStream file) throws ProfileException {
+        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_UPLOAD_ATTACHMENT);
+        params.add(ProfileConstants.PARAM_ACCESS_TOKEN_ID, accessTokenIdResolver.getAccessTokenId());
+        Path dirTmp = null;
+        File tmp = null;
+        ProfileAttachment toReturn;
+        try {
+            dirTmp = Files.createTempDirectory(FileUtils.getTempDirectory().toPath(), profileId);
+            tmp = new File(dirTmp.toFile(), attachmentName);
+            FileUtils.copyInputStreamToFile(file, new File(dirTmp.toFile(), attachmentName));
+            params.add("attachment", new PathResource(tmp.toPath()));
+            toReturn = doPostForUpload(url, params, ProfileAttachment.class, profileId);
+        } catch (IOException e) {
+            throw new ProfileException("Unable to upload file", e);
+        } finally {
+            try {
+                file.close();
+                if (tmp != null) {
+                    tmp.delete();
+                }
+                if (dirTmp != null) {
+                    tmp.delete();
+                }
+            } catch (Throwable e) {
+                //Possible unable to delete due folder not empty (should Happen)
+            }
+        }
+        return toReturn;
+    }
+
+    @Override
+    public ProfileAttachment getProfileAttachmentInformation(final String profileId, final String attachmentId)
+        throws ProfileException {
+        MultiValueMap<String, String> params = createBaseParams();
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_ATTACHMENTS_DETAILS);
+        url = RestClientUtils.addQueryParams(url, params, false);
+        return doGetForObject(url, ProfileAttachment.class, profileId, attachmentId);
+    }
+
+    @Override
+    public InputStream getProfileAttachment(final String attachmentId, final String profileId) throws ProfileException {
+        MultiValueMap<String, String> params = createBaseParams();
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_ATTACHMENT);
+        url = RestClientUtils.addQueryParams(url, params, false);
+        return new ByteArrayInputStream(doGetForObject(url, byteArrayTypeRef, profileId, attachmentId));
+    }
+
+    @Override
+    public List<ProfileAttachment> getProfileAttachments(final String profileId) throws ProfileException {
+        MultiValueMap<String, String> params = createBaseParams();
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_ATTACHMENTS);
+        url = RestClientUtils.addQueryParams(url, params, false);
+        return doGetForObject(url, profileAttachmentListTypeRef, profileId);
+    }
+
     protected String serializeAttributes(Map<String, Object> attributes) throws ProfileException {
         try {
             return objectMapper.writeValueAsString(attributes);
@@ -449,4 +527,15 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         }
     }
 
+    @Override
+    public Profile setLastFailedLogging(final String profileId, final Date lastFailedLogging, final String...
+        attributesToReturn) throws ProfileException {
+        throw new NotImplementedException("This call is not intended to be call by external clients");
+    }
+
+    @Override
+    public Profile setFailedAttempts(final String profileId, final int failedAttempts, final String...
+        attributesToReturn) throws ProfileException {
+        throw new NotImplementedException("This call is not intended to be call by external clients");
+    }
 }

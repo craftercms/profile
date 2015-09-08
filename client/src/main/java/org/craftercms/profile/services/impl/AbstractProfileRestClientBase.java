@@ -28,8 +28,11 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.ProfileRestServiceException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -75,6 +78,24 @@ public abstract class AbstractProfileRestClientBase extends AbstractRestClientBa
             throws ProfileException {
         try {
             return restTemplate.postForObject(url, request, responseType, uriVariables);
+        } catch (RestServiceException e) {
+            handleRestServiceException(e);
+        } catch (Exception e) {
+            handleException(e);
+        }
+
+        return null;
+    }
+
+    protected <T> T doPostForUpload(String url, MultiValueMap<String,Object> request, Class<T> responseType,
+                                    Object... uriVariables)
+        throws ProfileException {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(
+                request, headers);
+            return restTemplate.exchange(url,HttpMethod.POST,requestEntity,responseType,uriVariables).getBody();
         } catch (RestServiceException e) {
             handleRestServiceException(e);
         } catch (Exception e) {
