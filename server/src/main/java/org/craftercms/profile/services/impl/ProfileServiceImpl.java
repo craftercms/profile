@@ -16,25 +16,35 @@
  */
 package org.craftercms.profile.services.impl;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import javax.activation.MimetypesFileTypeMap;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.Predicate;
+import org.apache.commons.io.FileExistsException;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.logging.Logged;
 import org.craftercms.commons.mail.EmailUtils;
 import org.craftercms.commons.mongo.DuplicateKeyException;
+import org.craftercms.commons.mongo.FileInfo;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.exception.PermissionException;
@@ -51,6 +61,7 @@ import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AuthenticationService;
+import org.craftercms.profile.api.services.ProfileAttachment;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.exceptions.AttributeNotDefinedException;
@@ -73,8 +84,8 @@ import org.springframework.beans.factory.annotation.Required;
 @Logged
 public class ProfileServiceImpl implements ProfileService {
 
-    private static final I10nLogger logger = new I10nLogger(ProfileServiceImpl.class, "crafter.profile.messages" +
-                                                                                      ".logging");
+    private static final I10nLogger logger = new I10nLogger(ProfileServiceImpl.class,
+                                                            "crafter.profile.messages.logging");
 
     public static final String LOG_KEY_PROFILE_CREATED = "profile.profile.profileCreated";
     public static final String LOG_KEY_PROFILE_UPDATED = "profile.profile.profileUpdated";
@@ -120,6 +131,7 @@ public class ProfileServiceImpl implements ProfileService {
     protected TenantService tenantService;
     protected AuthenticationService authenticationService;
     protected VerificationService verificationService;
+    protected List<String> validAttachmentMimeTypes;
     protected String newProfileEmailFromAddress;
     protected String newProfileEmailSubject;
     protected String newProfileEmailTemplateName;
@@ -327,6 +339,41 @@ public class ProfileServiceImpl implements ProfileService {
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
                 profile.setEnabled(true);
+            }
+
+        }, attributesToReturn);
+
+        logger.debug(LOG_KEY_PROFILE_ENABLED, profileId);
+
+        return profile;
+    }
+
+    @Override
+    public Profile setLastFailedLogin(String profileId, final Date lastFailedLogin, String... attributesToReturn)
+        throws
+        ProfileException {
+        Profile profile = updateProfile(profileId, new UpdateCallback() {
+
+            @Override
+            public void doWithProfile(Profile profile) throws ProfileException {
+               profile.setLastFailedLogin(lastFailedLogin);
+            }
+
+        }, attributesToReturn);
+
+        logger.debug(LOG_KEY_PROFILE_ENABLED, profileId);
+
+        return profile;
+    }
+
+    @Override
+    public Profile setFailedLoginAttempts(String profileId, final int failedAttempts, String... attributesToReturn) throws
+        ProfileException {
+        Profile profile = updateProfile(profileId, new UpdateCallback() {
+
+            @Override
+            public void doWithProfile(Profile profile) throws ProfileException {
+                 profile.setFailedLoginAttempts(failedAttempts);
             }
 
         }, attributesToReturn);
@@ -696,6 +743,96 @@ public class ProfileServiceImpl implements ProfileService {
         verificationService.deleteToken(tokenId);
     }
 
+
+
+    @Override
+    public ProfileAttachment addProfileAttachment(final String profileId, final String attachmentName, final InputStream file) throws ProfileException {
+        final String storeName = "/"+profileId+"/"+ FilenameUtils.removeExtension(attachmentName);
+        try {
+            ObjectId currentId=checkIfAttchmentExist(storeName);
+            final String mimeType = getAttachmentContentType(attachmentName); //Just
+            final FileInfo fileInfo;
+                if(currentId!=null) { // Update !!!
+                 fileInfo   = profileRepository.updateFile(currentId,file,storeName,mimeType,true);
+                }else {
+                    fileInfo = profileRepository.saveFile(file, storeName, getAttachmentContentType(attachmentName));
+                }
+            return fileInfoToProfileAttachment(fileInfo);
+        }catch(MongoDataException | FileExistsException |FileNotFoundException /*This should not happen*/
+            |SecurityException e ){
+            if(e instanceof SecurityException){
+                throw new ProfileException("The given ContentType is not allowed",e);
+            }else {
+                throw new ProfileException("Unable to Attach file to Profile",e);
+            }
+        }
+    }
+
+    private ObjectId checkIfAttchmentExist(final String storeName) {
+        ObjectId toReturn = null;
+        try {
+            final FileInfo fileInfo = profileRepository.getFileInfo(storeName);
+            toReturn=fileInfo.getFileId();
+        }catch (FileNotFoundException ex){
+            // Nothing since files should be New !!!!
+        }
+        return toReturn;
+    }
+
+
+    private ProfileAttachment fileInfoToProfileAttachment(final FileInfo fileInfo) {
+        if(fileInfo==null){
+            return new ProfileAttachment();
+        }
+        final ProfileAttachment toReturn = new ProfileAttachment();
+        toReturn.setContentType(fileInfo.getContentType());;
+        toReturn.setMd5(fileInfo.getMd5());
+        toReturn.setFileName(fileInfo.getStoreName().substring(fileInfo.getStoreName().lastIndexOf("/")+1));
+        toReturn.setFileSize(fileInfo.getFileSize());
+        toReturn.setFileSizeBytes(fileInfo.getFileSizeBytes());
+        toReturn.setId(fileInfo.getFileId().toString());
+        return toReturn;
+    }
+
+    private String getAttachmentContentType(final String attachmentName) {
+        String mimeType= new MimetypesFileTypeMap().getContentType(attachmentName);
+        if(validAttachmentMimeTypes.contains(mimeType)){
+            return mimeType;
+        }
+        throw new SecurityException("File "+attachmentName+" if of content Type "+mimeType+" which is not allowed");
+    }
+
+    @Override
+    public ProfileAttachment getProfileAttachmentInformation(final String profileId, final String attachmentId) throws ProfileException {
+        final FileInfo fileInfo;
+        try {
+            fileInfo = profileRepository.getFileInfo("/" + profileId + "/" + attachmentId);
+        } catch (FileNotFoundException e) {
+            throw new ProfileException("Unable to found attachmet with given profile and id ");
+        }
+        return fileInfoToProfileAttachment(fileInfo);
+    }
+
+    @Override
+    public InputStream getProfileAttachment(final String attachmentId, final String profileId) throws ProfileException {
+        try {
+            final FileInfo fileInfo = profileRepository.readFile("/" + profileId + "/" + attachmentId);
+            return fileInfo.getInputStream();
+        } catch (FileNotFoundException e) {
+            throw new ProfileException("Unable to found attachmet with given profile and id ");
+        }
+    }
+
+    @Override
+    public List<ProfileAttachment> getProfileAttachments(final String profileId) throws ProfileException {
+        final List<FileInfo> files = profileRepository.listFilesByName(profileId);
+        List<ProfileAttachment>toReturn= new ArrayList<>();
+        for (FileInfo file : files) {
+            toReturn.add(fileInfoToProfileAttachment(file));
+        }
+        return toReturn;
+    }
+
     protected void checkIfManageProfilesIsAllowed(String tenantName) {
         if (!tenantPermissionEvaluator.isAllowed(tenantName, TenantAction.MANAGE_PROFILES.toString())) {
             throw new ActionDeniedException(TenantAction.MANAGE_PROFILES.toString(), "tenant \"" + tenantName + "\"");
@@ -836,7 +973,6 @@ public class ProfileServiceImpl implements ProfileService {
 
     protected String getFinalQuery(Tenant tenant, String query) throws ProfileException {
         validateQuery(tenant, query);
-
         return String.format(QUERY_FINAL_FORMAT, tenant.getName(), query);
     }
 
@@ -858,6 +994,14 @@ public class ProfileServiceImpl implements ProfileService {
                     throw new InvalidQueryException(ERROR_KEY_ATTRIBUTE_NOT_ALLOWED, attributeName);
                 }
             }
+        }
+    }
+
+    public void setValidAttachmentMimeTypes(final String validAttachmentMimeTypes) {
+        if(StringUtils.isNotBlank(validAttachmentMimeTypes)){
+            this.validAttachmentMimeTypes=Arrays.asList(validAttachmentMimeTypes.split(","));
+        }else{
+            this.validAttachmentMimeTypes = Collections.EMPTY_LIST;
         }
     }
 

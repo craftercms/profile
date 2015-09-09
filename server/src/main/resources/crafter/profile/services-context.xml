@@ -198,6 +198,7 @@
         <property name="resetPwdEmailFromAddress" value="${crafter.profile.verification.resetPassword.mail.from}"/>
         <property name="resetPwdEmailSubject" value="${crafter.profile.verification.resetPassword.mail.subject}"/>
         <property name="resetPwdEmailTemplateName" value="${crafter.profile.verification.resetPassword.mail.templateName}"/>
+        <property name="validAttachmentMimeTypes" value="${crafter.profile.attachments.validMimeTypes}"/>
     </bean>
 
     <bean id="crafter.authenticationService" class="org.craftercms.profile.services.impl.AuthenticationServiceImpl">
@@ -205,6 +206,9 @@
         <property name="profileService" ref="crafter.profileService"/>
         <property name="permissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
         <property name="persistentLoginRepository" ref="crafter.persistentLoginRepository"/>
+        <property name="lockTime" value="${crafter.profile.auth.lockTime}"/>
+        <property name="failedLoginAttemptsBeforeLock" value="${crafter.profile.auth.failedLoginAttemptsBeforeLock}"/>
+        <property name="failedLoginAttemptsBeforeDelay" value="${crafter.profile.auth.failedLoginAttemptsBeforeDelay}"/>
     </bean>
 
     <!-- Quartz -->
@@ -273,6 +277,12 @@
                 <ref bean="crafter.persistentLoginCleanerTrigger"/>
             </list>
         </property>
+    </bean>
+
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="${crafter.profile.attachments.maxSizeUpload}"/>
+        <property name="maxInMemorySize" value="${crafter.profile.attachments.maxSizeMem}"/>
     </bean>
 
     <import resource="classpath*:crafter/profile/extension/services-context.xml"/>

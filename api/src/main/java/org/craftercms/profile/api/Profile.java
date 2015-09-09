@@ -29,6 +29,10 @@ public class Profile {
     private String tenant;
     private Set<String> roles;
     private Map<String, Object> attributes;
+    @Exclude
+    private int failedLoginAttempts;
+    @Exclude
+    private Date lastFailedLogin;
 
     public ObjectId getId() {
         return _id;
@@ -104,6 +108,23 @@ public class Profile {
 
     public boolean hasRole(String role) {
         return getRoles().contains(role);
+    }
+
+
+    public int getFailedLoginAttempts() {
+        return failedLoginAttempts;
+    }
+
+    public void setFailedLoginAttempts(int failedLoginAttempts) {
+        this.failedLoginAttempts = failedLoginAttempts;
+    }
+
+    public Date getLastFailedLogin() {
+        return lastFailedLogin;
+    }
+
+    public void setLastFailedLogin(Date lastFailedLogin) {
+        this.lastFailedLogin = lastFailedLogin;
     }
 
     public boolean hasAnyRole(String... roles) {
@@ -196,4 +217,7 @@ public class Profile {
                 '}';
     }
 
+    public void increaseFaildAttempts() {
+        failedLoginAttempts++;
+    }
 }

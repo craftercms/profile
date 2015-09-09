@@ -16,6 +16,7 @@
  */
 package org.craftercms.profile.services.impl;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -39,6 +40,7 @@ import org.craftercms.profile.exceptions.BadCredentialsException;
 import org.craftercms.profile.exceptions.DisabledProfileException;
 import org.craftercms.profile.exceptions.NoSuchPersistentLoginException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
+import org.craftercms.profile.exceptions.ProfileLockedException;
 import org.craftercms.profile.repositories.PersistentLoginRepository;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.springframework.beans.factory.annotation.Required;
@@ -51,8 +53,8 @@ import org.springframework.beans.factory.annotation.Required;
 @Logged
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private static final I10nLogger logger = new I10nLogger(AuthenticationServiceImpl.class, "crafter.profile" +
-                                                                                             ".messages.logging");
+    private static final I10nLogger logger = new I10nLogger(AuthenticationServiceImpl.class,
+                                                            "crafter.profile.messages.logging");
 
     public static final String LOG_KEY_AUTHENTICATION_SUCCESSFUL = "profile.auth.authenticationSuccessful";
     public static final String LOG_KEY_TICKET_CREATED = "profile.auth.ticketCreated";
@@ -70,11 +72,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public static final String ERROR_KEY_GET_PERSISTENT_LOGIN_ERROR = "profile.auth.getPersistentLoginError";
     public static final String ERROR_KEY_UPDATE_PERSISTENT_LOGIN_ERROR = "profile.auth.updatePersistentLoginError";
     public static final String ERROR_KEY_DELETE_PERSISTENT_LOGIN_ERROR = "profile.auth.deletePersistentLoginError";
+    public static final String ERROR_KEY_WAIT_IS_ABORTED = "profile.auth.delayWasInterupt";
 
     protected PermissionEvaluator<AccessToken, String> permissionEvaluator;
     protected TicketRepository ticketRepository;
     protected PersistentLoginRepository persistentLoginRepository;
     protected ProfileService profileService;
+
+    protected int lockTime;
+    protected int failedLoginAttemptsBeforeLock;
+    protected int failedLoginAttemptsBeforeDelay;
 
     @Required
     public void setPermissionEvaluator(PermissionEvaluator<AccessToken, String> permissionEvaluator) {
@@ -102,6 +109,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         Profile profile = profileService.getProfileByUsername(tenantName, username, ProfileConstants.NO_ATTRIBUTE);
 
+
         if (profile == null) {
             // Invalid username
             throw new BadCredentialsException();
@@ -109,12 +117,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (!profile.isEnabled()) {
             throw new DisabledProfileException(profile.getId().toString(), tenantName);
         }
-        if (!CipherUtils.matchPassword(profile.getPassword(), password)) {
-            // Invalid password
-            throw new BadCredentialsException();
+
+        if (isProfileInTimeOut(profile)) {
+            throw new ProfileLockedException();
         }
 
         try {
+            if (!CipherUtils.matchPassword(profile.getPassword(), password)) {
+                // Invalid password
+                countAsFail(profile);
+                throw new BadCredentialsException();
+            }
+
+            clearAllLoginAttempts(profile);
             Ticket ticket = new Ticket();
             ticket.setId(UUID.randomUUID().toString());
             ticket.setTenant(tenantName);
@@ -129,6 +144,44 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_CREATE_TICKET_ERROR, profile.getId());
         }
+    }
+
+    private void clearAllLoginAttempts(final Profile profile) throws ProfileException {
+        profile.setLastFailedLogin(new Date(0));
+        profile.setFailedLoginAttempts(0);
+
+        profileService.setFailedLoginAttempts(profile.getId().toString(), 0, ProfileConstants.NO_ATTRIBUTE);
+    }
+
+    protected void countAsFail(final Profile profile) throws ProfileException {
+        profile.increaseFaildAttempts();
+
+        // This one counts !!!
+        if ((failedLoginAttemptsBeforeDelay + failedLoginAttemptsBeforeLock) <= profile.getFailedLoginAttempts()) {
+            profileService.setLastFailedLogin(profile.getId().toString(), new Date(), ProfileConstants.NO_ATTRIBUTE);
+        }
+
+        profileService.setFailedLoginAttempts(profile.getId().toString(), profile.getFailedLoginAttempts(),
+                                              ProfileConstants.NO_ATTRIBUTE);
+        if (profile.getFailedLoginAttempts() > failedLoginAttemptsBeforeDelay) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                logger.debug(ERROR_KEY_WAIT_IS_ABORTED);
+            }
+        }
+    }
+
+    protected boolean isProfileInTimeOut(final Profile profile) {
+        if (profile.getLastFailedLogin() == null || profile.getFailedLoginAttempts() <= 0) {
+            return false;
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(profile.getLastFailedLogin());
+        calendar.add(Calendar.MINUTE, lockTime);
+
+        return new Date().before(calendar.getTime());
     }
 
     @Override
@@ -294,6 +347,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (!permissionEvaluator.isAllowed(tenantName, TenantAction.MANAGE_TICKETS.toString())) {
             throw new ActionDeniedException(TenantAction.MANAGE_TICKETS.toString(), "tenant \"" + tenantName + "\"");
         }
+    }
+
+
+    public void setLockTime(final int lockTime) {
+        this.lockTime = lockTime;
+    }
+
+    public void setFailedLoginAttemptsBeforeLock(int failedLoginAttemptsBeforeLock) {
+        this.failedLoginAttemptsBeforeLock = failedLoginAttemptsBeforeLock;
+    }
+
+    public void setFailedLoginAttemptsBeforeDelay(int failedLoginAttemptsBeforeDelay) {
+        this.failedLoginAttemptsBeforeDelay = failedLoginAttemptsBeforeDelay;
     }
 
 }

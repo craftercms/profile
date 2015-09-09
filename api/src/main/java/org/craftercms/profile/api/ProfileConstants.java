@@ -39,6 +39,7 @@ public class ProfileConstants {
 
     public static final String PATH_VAR_NAME = "name";
     public static final String PATH_VAR_ID = "id";
+    public static final String PATH_VAR_ATTACHMENT = "attachmentId";
 
     public static final String URL_ACCESS_TOKEN_CREATE = "/create";
     public static final String URL_ACCESS_TOKEN_GET = "/{id}";
@@ -86,6 +87,10 @@ public class ProfileConstants {
     public static final String URL_PROFILE_CREATE_VERIFICATION_TOKEN = "/{id}/verification_token/create";
     public static final String URL_PROFILE_GET_VERIFICATION_TOKEN = "/verification_token/{id}";
     public static final String URL_PROFILE_DELETE_VERIFICATION_TOKEN = "/verification_token/{id}/delete";
+    public static final String URL_PROFILE_UPLOAD_ATTACHMENT = "/{id}/uploadAttachment";
+    public static final String URL_PROFILE_GET_ATTACHMENT = "/{id}/attachment/{attachmentId}";
+    public static final String URL_PROFILE_GET_ATTACHMENTS = "/{id}/attachments/";
+    public static final String URL_PROFILE_GET_ATTACHMENTS_DETAILS = "/{id}/attachment/{attachmentId}/details";
 
     public static final String URL_AUTH_AUTHENTICATE = "/authenticate";
     public static final String URL_AUTH_CREATE_TICKET = "/ticket/create";
