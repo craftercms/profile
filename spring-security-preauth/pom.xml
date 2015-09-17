@@ -4,11 +4,11 @@
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-profile-parent</artifactId>
-        <version>2.4.5-SNAPSHOT</version>
+        <version>2.4.4</version>
     </parent>
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-profile-spring-security-preauth</artifactId>
-    <version>2.4.5-SNAPSHOT</version>
+    <version>2.4.4</version>
     <name>Crafter Profile Spring Security Preauth</name>
     <description>Crafter Profile Spring Security Preauth</description>
     <url>https://github.com/craftercms/profile/tree/master/spring-security-preauth</url>
@@ -75,7 +75,7 @@
         <dependency>
             <groupId>org.craftercms</groupId>
             <artifactId>crafter-profile-client</artifactId>
-            <version>2.4.5-SNAPSHOT</version>
+            <version>2.4.4</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
