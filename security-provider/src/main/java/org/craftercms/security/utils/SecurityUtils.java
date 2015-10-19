@@ -84,7 +84,12 @@ public class SecurityUtils {
      * @return the authentication object
      */
     public static Authentication getCurrentAuthentication() {
-        return getAuthentication(RequestContext.getCurrent().getRequest());
+        RequestContext context = RequestContext.getCurrent();
+        if (context != null) {
+            return getAuthentication(context.getRequest());
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -93,14 +98,20 @@ public class SecurityUtils {
      * @param authentication    the authentication object to set as request attribute
      */
     public static void setCurrentAuthentication(Authentication authentication) {
-        setAuthentication(RequestContext.getCurrent().getRequest(), authentication);
+        RequestContext context = RequestContext.getCurrent();
+        if (context != null) {
+            setAuthentication(context.getRequest(), authentication);
+        }
     }
 
     /**
      * Removes the authentication attribute from the current request.
      */
     public static void removeCurrentAuthentication() {
-        removeAuthentication(RequestContext.getCurrent().getRequest());
+        RequestContext context = RequestContext.getCurrent();
+        if (context != null) {
+            removeAuthentication(context.getRequest());
+        }
     }
 
     /**
@@ -139,7 +150,12 @@ public class SecurityUtils {
      * @return the profile object, or null if there's no authentication
      */
     public static Profile getCurrentProfile() {
-        return getProfile(RequestContext.getCurrent().getRequest());
+        RequestContext context = RequestContext.getCurrent();
+        if (context != null) {
+            return getProfile(context.getRequest());
+        } else {
+            return null;
+        }
     }
 
     /**
