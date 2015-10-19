@@ -39,22 +39,26 @@
 
     <!-- Mongo -->
 
-    <bean id="crafter.mongoClientOptionsFactory" class="org.craftercms.commons.mongo.MongoClientOptionsFactory">
-        <property name="autoConnectRetry" value="${crafter.profile.mongodb.connection.autoConnectRetry}"/>
-        <property name="connectionsPerHost" value="${crafter.profile.mongodb.connection.connectionsPerHost}"/>
-        <property name="maxAutoConnectRetryTime" value="${crafter.profile.mongodb.connection.maxWaitTime}"/>
-        <property name="socketKeepAlive" value="${crafter.profile.mongodb.connection.socketKeepAlive}"/>
-        <property name="threadsAllowedToBlockForConnectionMultiplier"
-                  value="${crafter.profile.mongodb.connection.threadsAllowedToBlockForConnectionMultiplier}"/>
-        <property name="connectTimeout" value="${crafter.profile.mongodb.connection.connectTimeout}"/>
-        <property name="writeConcern" value="${crafter.profile.mongodb.connection.writeConcern}"/>
-        <property name="readPreference" value="${crafter.profile.mongodb.connection.readPreference}"/>
-    </bean>
+    <!--<bean id="crafter.mongoClientOptionsFactory" class="org.craftercms.commons.mongo.MongoClientOptionsFactory">-->
+    <!--<property name="autoConnectRetry" value="${crafter.profile.mongodb.connection.autoConnectRetry}"/>-->
+    <!--<property name="connectionsPerHost" value="${crafter.profile.mongodb.connection.connectionsPerHost}"/>-->
+    <!--<property name="maxAutoConnectRetryTime" value="${crafter.profile.mongodb.connection.maxWaitTime}"/>-->
+    <!--<property name="socketKeepAlive" value="${crafter.profile.mongodb.connection.socketKeepAlive}"/>-->
+    <!--<property name="threadsAllowedToBlockForConnectionMultiplier"-->
+    <!--value="${crafter.profile.mongodb.connection.threadsAllowedToBlockForConnectionMultiplier}"/>-->
+    <!--<property name="connectTimeout" value="${crafter.profile.mongodb.connection.connectTimeout}"/>-->
+    <!--<property name="writeConcern" value="${crafter.profile.mongodb.connection.writeConcern}"/>-->
+    <!--<property name="readPreference" value="${crafter.profile.mongodb.connection.readPreference}"/>-->
+    <!--</bean>-->
 
 
-    <bean id="crafter.profile.mongoClient" class="org.craftercms.commons.mongo.MongoClientFactory">
-        <property name="connectionString" value="${crafter.profile.mongodb.connection.connectionStr}"/>
-        <property name="options" ref="crafter.mongoClientOptionsFactory"/>
+    <!--<bean id="crafter.profile.mongoClient" class="org.craftercms.commons.mongo.MongoClientFactory">-->
+    <!--<property name="connectionString" value="${crafter.profile.mongodb.connection.connectionStr}"/>-->
+    <!--<property name="options" ref="crafter.mongoClientOptionsFactory"/>-->
+    <!--</bean>-->
+
+    <bean id="crafter.profile.mongoClient" class="org.craftercms.commons.mongo.MongoClientFromUriFactoryBean">
+        <property name="uri" value="${crafter.profile.mongodb.connection.newConnectionStr}"/>
     </bean>
 
     <bean id="crafter.jongo" class="org.craftercms.commons.mongo.JongoFactoryBean">
@@ -106,6 +110,9 @@
         <property name="username" value="${crafter.profile.mongodb.connection.dbUsername}"/>
         <property name="password" value="${crafter.profile.mongodb.connection.dbPassword}"/>
         <property name="runOnInit" value="${crafter.profile.mongodb.scripts.runOnInit}"/>
+        <property name="mongoClientBin" value="${crafter.profile.mongodb.connection.scriptRunner.clientPath}"/>
+        <property name="connectionStr" value="${crafter.profile.mongodb.connection.newConnectionStr}"/>
+        <property name="useMongoClient" value="${crafter.profile.mongodb.connection.scriptRunner.withClient}"/>
         <property name="scriptPaths">
             <bean class="org.apache.commons.lang3.StringUtils" factory-method="split">
                 <constructor-arg value="${crafter.profile.mongodb.scripts.paths}"/>
@@ -113,7 +120,6 @@
             </bean>
         </property>
     </bean>
-
     <!-- Mail -->
 
     <bean id="crafter.mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
