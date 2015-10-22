@@ -103,9 +103,9 @@ public class AuthenticationServiceImplTest {
         authenticationService.setTicketRepository(ticketRepository);
         authenticationService.setPersistentLoginRepository(persistentLoginRepository);
         authenticationService.setProfileService(profileService);
-        authenticationService.setFailedAttemptsBeforeDelay(2);
+        authenticationService.setFailedLoginAttemptsBeforeDelay(2);
         authenticationService.setLockTime(5);
-        authenticationService.setFailedAttemptsBeforeLock(8);
+        authenticationService.setFailedLoginAttemptsBeforeLock(8);
     }
 
     @Test

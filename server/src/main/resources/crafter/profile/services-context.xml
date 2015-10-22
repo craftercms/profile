@@ -213,8 +213,8 @@
         <property name="permissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
         <property name="persistentLoginRepository" ref="crafter.persistentLoginRepository"/>
         <property name="lockTime" value="${crafter.profile.auth.lockTime}"/>
-        <property name="failedAttemptsBeforeLock" value="${crafter.profile.auth.failedAttemptsBeforeLock}"/>
-        <property name="failedAttemptsBeforeDelay" value="${crafter.profile.auth.failedAttemptsBeforeDelay}"/>
+        <property name="failedLoginAttemptsBeforeLock" value="${crafter.profile.auth.failedLoginAttemptsBeforeLock}"/>
+        <property name="failedLoginAttemptsBeforeDelay" value="${crafter.profile.auth.failedLoginAttemptsBeforeDelay}"/>
     </bean>
 
     <!-- Quartz -->

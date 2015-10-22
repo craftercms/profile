@@ -77,11 +77,31 @@ public interface ProfileService {
      */
     Profile enableProfile(String profileId, String... attributesToReturn) throws ProfileException;
 
-    Profile setLastFailedLogging(String profileId, Date lastFailedLogging, String... attributesToReturn) throws
-        ProfileException;
+    /**
+     * Sets the date of the last failed login for the profile.
+     *
+     * @param profileId             the profile's ID
+     * @param lastFailedLogin       the date of the last failed login
+     * @param attributesToReturn    the names of the attributes to return with the profile (null to return
+     *                              all attributes)
+     *
+     * @return the updated profile
+     */
+    Profile setLastFailedLogin(String profileId, Date lastFailedLogin,
+                               String... attributesToReturn) throws ProfileException;
 
-    Profile setFailedAttempts(String profileId, int failedAttempts, String... attributesToReturn) throws
-        ProfileException;
+    /**
+     * Sets the number of failed login attempts for the profile.
+     *
+     * @param profileId             the profile's ID
+     * @param failedAttempts        the number of failed login attempts
+     * @param attributesToReturn    the names of the attributes to return with the profile (null to return
+     *                              all attributes)
+     *
+     * @return the updated profile
+     */
+    Profile setFailedLoginAttempts(String profileId, int failedAttempts,
+                                   String... attributesToReturn) throws ProfileException;
 
     /**
      * Disables a profile.

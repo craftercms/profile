@@ -98,7 +98,7 @@ public class ProfileServiceImplTest {
     private static final String LAST_NAME = "Doe";
     private static final String GENDER = "male";
 
-    private static final String QUERY = "{attribute.firstName: 'John'}";
+    private static final String QUERY = "{attributes.firstName: 'John'}";
     private static final String INVALID_QUERY1 = "{tenant: 'tenant1'}";
     private static final String INVALID_QUERY2 = "{$where: \"this.tenant == 'tenant1'\"}";
     private static final String INVALID_QUERY3 = "{attributes.private.sub: 'test'}";

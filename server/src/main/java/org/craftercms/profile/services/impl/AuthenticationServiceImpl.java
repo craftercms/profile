@@ -53,8 +53,8 @@ import org.springframework.beans.factory.annotation.Required;
 @Logged
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private static final I10nLogger logger = new I10nLogger(AuthenticationServiceImpl.class, "crafter.profile" + "" +
-        ".messages.logging");
+    private static final I10nLogger logger = new I10nLogger(AuthenticationServiceImpl.class,
+                                                            "crafter.profile.messages.logging");
 
     public static final String LOG_KEY_AUTHENTICATION_SUCCESSFUL = "profile.auth.authenticationSuccessful";
     public static final String LOG_KEY_TICKET_CREATED = "profile.auth.ticketCreated";
@@ -80,8 +80,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     protected ProfileService profileService;
 
     protected int lockTime;
-    protected int failedAttemptsBeforeLock;
-    protected int failedAttemptsBeforeDelay;
+    protected int failedLoginAttemptsBeforeLock;
+    protected int failedLoginAttemptsBeforeDelay;
 
     @Required
     public void setPermissionEvaluator(PermissionEvaluator<AccessToken, String> permissionEvaluator) {
@@ -129,7 +129,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 throw new BadCredentialsException();
             }
 
-            clearAllAttempts(profile);
+            clearAllLoginAttempts(profile);
             Ticket ticket = new Ticket();
             ticket.setId(UUID.randomUUID().toString());
             ticket.setTenant(tenantName);
@@ -146,21 +146,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    private void clearAllAttempts(final Profile profile) throws ProfileException {
-        profile.setLastFailedLogging(new Date(0));
-        profile.setFailedAttempts(0);
-        profileService.setFailedAttempts(profile.getId().toString(), 0, ProfileConstants.NO_ATTRIBUTE);
+    private void clearAllLoginAttempts(final Profile profile) throws ProfileException {
+        profile.setLastFailedLogin(new Date(0));
+        profile.setFailedLoginAttempts(0);
+
+        profileService.setFailedLoginAttempts(profile.getId().toString(), 0, ProfileConstants.NO_ATTRIBUTE);
     }
 
     protected void countAsFail(final Profile profile) throws ProfileException {
-        profile.increseFaildAttempts();
+        profile.increaseFaildAttempts();
+
         // This one counts !!!
-        if ((failedAttemptsBeforeDelay + failedAttemptsBeforeLock) <= profile.getFailedAttempts()) {
-            profileService.setLastFailedLogging(profile.getId().toString(), new Date(), ProfileConstants.NO_ATTRIBUTE);
+        if ((failedLoginAttemptsBeforeDelay + failedLoginAttemptsBeforeLock) <= profile.getFailedLoginAttempts()) {
+            profileService.setLastFailedLogin(profile.getId().toString(), new Date(), ProfileConstants.NO_ATTRIBUTE);
         }
-        profileService.setFailedAttempts(profile.getId().toString(), profile.getFailedAttempts(), ProfileConstants
-            .NO_ATTRIBUTE);
-        if (profile.getFailedAttempts() > failedAttemptsBeforeDelay) {
+
+        profileService.setFailedLoginAttempts(profile.getId().toString(), profile.getFailedLoginAttempts(),
+                                              ProfileConstants.NO_ATTRIBUTE);
+        if (profile.getFailedLoginAttempts() > failedLoginAttemptsBeforeDelay) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -170,12 +173,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     protected boolean isProfileInTimeOut(final Profile profile) {
-        if (profile.getLastFailedLogging() == null || profile.getFailedAttempts() <= 0) {
+        if (profile.getLastFailedLogin() == null || profile.getFailedLoginAttempts() <= 0) {
             return false;
         }
+
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(profile.getLastFailedLogging());
+        calendar.setTime(profile.getLastFailedLogin());
         calendar.add(Calendar.MINUTE, lockTime);
+
         return new Date().before(calendar.getTime());
     }
 
@@ -349,11 +354,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.lockTime = lockTime;
     }
 
-    public void setFailedAttemptsBeforeLock(final int failedAttemptsBeforeLock) {
-        this.failedAttemptsBeforeLock = failedAttemptsBeforeLock;
+    public void setFailedLoginAttemptsBeforeLock(int failedLoginAttemptsBeforeLock) {
+        this.failedLoginAttemptsBeforeLock = failedLoginAttemptsBeforeLock;
     }
 
-    public void setFailedAttemptsBeforeDelay(final int failedAttemptsBeforeDelay) {
-        this.failedAttemptsBeforeDelay = failedAttemptsBeforeDelay;
+    public void setFailedLoginAttemptsBeforeDelay(int failedLoginAttemptsBeforeDelay) {
+        this.failedLoginAttemptsBeforeDelay = failedLoginAttemptsBeforeDelay;
     }
+
 }

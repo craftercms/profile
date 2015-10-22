@@ -48,8 +48,8 @@ import org.springframework.scheduling.annotation.Async;
 @Logged
 public class VerificationServiceImpl implements VerificationService {
 
-    private static final I10nLogger logger = new I10nLogger(VerificationServiceImpl.class, "crafter.profile.messages" +
-                                                                                           ".logging");
+    private static final I10nLogger logger = new I10nLogger(VerificationServiceImpl.class,
+                                                            "crafter.profile.messages.logging");
 
     public static final String VERIFICATION_LINK_TEMPLATE_ARG = "verificationLink";
 

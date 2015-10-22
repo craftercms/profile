@@ -54,8 +54,8 @@ import org.springframework.beans.factory.annotation.Required;
 @Logged
 public class TenantServiceImpl implements TenantService {
 
-    private static final I10nLogger logger = new I10nLogger(TenantServiceImpl.class, "crafter.profile.messages" +
-                                                                                     ".logging");
+    private static final I10nLogger logger = new I10nLogger(TenantServiceImpl.class,
+                                                            "crafter.profile.messages.logging");
 
     public static final String LOG_KEY_TENANT_CREATED = "profile.tenant.tenantCreated";
     public static final String LOG_KEY_TENANT_DELETED = "profile.tenant.tenantDeleted";

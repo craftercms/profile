@@ -16,6 +16,8 @@
  */
 package org.craftercms.profile.services.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +49,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.PathResource;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.craftercms.profile.api.ProfileConstants.*;
 
@@ -528,14 +529,15 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     }
 
     @Override
-    public Profile setLastFailedLogging(final String profileId, final Date lastFailedLogging, final String...
-        attributesToReturn) throws ProfileException {
+    public Profile setLastFailedLogin(final String profileId, final Date lastFailedLogin,
+                                      final String... attributesToReturn) throws ProfileException {
         throw new NotImplementedException("This call is not intended to be call by external clients");
     }
 
     @Override
-    public Profile setFailedAttempts(final String profileId, final int failedAttempts, final String...
-        attributesToReturn) throws ProfileException {
+    public Profile setFailedLoginAttempts(final String profileId, final int failedLoginAttempts,
+                                          final String... attributesToReturn) throws ProfileException {
         throw new NotImplementedException("This call is not intended to be call by external clients");
     }
+
 }

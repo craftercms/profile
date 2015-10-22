@@ -116,7 +116,7 @@ public class LoginProcessorTest {
 
         verify(chain, never()).processRequest(context);
 
-        /** Removed Session are invalidated after logging is ok.
+        /** Removed Session are invalidated after login is ok.
          assertNull(session.getAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE));
          assertNull(session.getAttribute(SecurityUtils.AUTHENTICATION_EXCEPTION_SESSION_ATTRIBUTE));
          **/

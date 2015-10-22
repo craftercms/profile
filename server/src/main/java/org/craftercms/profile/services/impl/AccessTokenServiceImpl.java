@@ -24,8 +24,8 @@ import org.springframework.beans.factory.annotation.Required;
  */
 public class AccessTokenServiceImpl implements AccessTokenService {
 
-    private static final I10nLogger logger = new I10nLogger(AccessTokenServiceImpl.class, "crafter.profile.messages" +
-                                                                                          ".logging");
+    private static final I10nLogger logger = new I10nLogger(AccessTokenServiceImpl.class,
+                                                            "crafter.profile.messages.logging");
 
     public static final String LOG_KEY_ACCESS_TOKEN_CREATED = "profile.accessToken.accessTokenCreated";
     public static final String LOG_KEY_ACCESS_TOKEN_DELETED = "profile.accessToken.accessTokenDeleted";

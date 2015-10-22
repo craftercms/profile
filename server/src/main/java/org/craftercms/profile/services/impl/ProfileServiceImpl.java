@@ -84,8 +84,8 @@ import org.springframework.beans.factory.annotation.Required;
 @Logged
 public class ProfileServiceImpl implements ProfileService {
 
-    private static final I10nLogger logger = new I10nLogger(ProfileServiceImpl.class, "crafter.profile.messages" +
-                                                                                      ".logging");
+    private static final I10nLogger logger = new I10nLogger(ProfileServiceImpl.class,
+                                                            "crafter.profile.messages.logging");
 
     public static final String LOG_KEY_PROFILE_CREATED = "profile.profile.profileCreated";
     public static final String LOG_KEY_PROFILE_UPDATED = "profile.profile.profileUpdated";
@@ -349,14 +349,14 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Profile setLastFailedLogging(String profileId, final Date lastFailedLogging,String... attributesToReturn)
+    public Profile setLastFailedLogin(String profileId, final Date lastFailedLogin, String... attributesToReturn)
         throws
         ProfileException {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
-               profile.setLastFailedLogging(lastFailedLogging);
+               profile.setLastFailedLogin(lastFailedLogin);
             }
 
         }, attributesToReturn);
@@ -367,13 +367,13 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Profile setFailedAttempts(String profileId,final int failedAttempts,String... attributesToReturn) throws
+    public Profile setFailedLoginAttempts(String profileId, final int failedAttempts, String... attributesToReturn) throws
         ProfileException {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
             public void doWithProfile(Profile profile) throws ProfileException {
-                 profile.setFailedAttempts(failedAttempts);
+                 profile.setFailedLoginAttempts(failedAttempts);
             }
 
         }, attributesToReturn);

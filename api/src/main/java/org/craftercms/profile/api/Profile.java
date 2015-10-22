@@ -30,9 +30,9 @@ public class Profile {
     private Set<String> roles;
     private Map<String, Object> attributes;
     @Exclude
-    private int failedAttempts;
+    private int failedLoginAttempts;
     @Exclude
-    private Date lastFailedLogging;
+    private Date lastFailedLogin;
 
     public ObjectId getId() {
         return _id;
@@ -111,20 +111,20 @@ public class Profile {
     }
 
 
-    public int getFailedAttempts() {
-        return failedAttempts;
+    public int getFailedLoginAttempts() {
+        return failedLoginAttempts;
     }
 
-    public void setFailedAttempts(final int failedAttempts) {
-        this.failedAttempts = failedAttempts;
+    public void setFailedLoginAttempts(int failedLoginAttempts) {
+        this.failedLoginAttempts = failedLoginAttempts;
     }
 
-    public Date getLastFailedLogging() {
-        return lastFailedLogging;
+    public Date getLastFailedLogin() {
+        return lastFailedLogin;
     }
 
-    public void setLastFailedLogging(final Date lastFailedLogging) {
-        this.lastFailedLogging = lastFailedLogging;
+    public void setLastFailedLogin(Date lastFailedLogin) {
+        this.lastFailedLogin = lastFailedLogin;
     }
 
     public boolean hasAnyRole(String... roles) {
@@ -217,7 +217,7 @@ public class Profile {
                 '}';
     }
 
-    public void increseFaildAttempts() {
-        failedAttempts++;
+    public void increaseFaildAttempts() {
+        failedLoginAttempts++;
     }
 }

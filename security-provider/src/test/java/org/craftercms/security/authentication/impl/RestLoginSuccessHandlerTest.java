@@ -69,9 +69,8 @@ public class RestLoginSuccessHandlerTest extends AbstractRestHandlerTestBase {
         assertEquals("{\"ticket\":\"" + ticket + "\",\"profile\":{\"username\":\"jdoe\"," +
                      "\"password\":\"1234\",\"email\":\"jdoe@craftercms.org\",\"verified\":false," +
                      "\"enabled\":false,\"createdOn\":null,\"lastModified\":null,\"tenant\":null,\"roles\":[]," +
-            "\"attributes\":{},\"failedAttempts\":0,\"lastFailedLogging\":null,\"id\":\"" + profileId.toString() +
-            "\"},\"remembered\":false}", response
-            .getContentAsString());
+                     "\"attributes\":{},\"failedLoginAttempts\":0,\"lastFailedLogin\":null,\"id\":\"" +
+                     profileId.toString() + "\"},\"remembered\":false}", response.getContentAsString());
     }
 
 }
