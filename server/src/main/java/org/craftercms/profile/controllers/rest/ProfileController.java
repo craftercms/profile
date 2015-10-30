@@ -574,7 +574,10 @@ public class ProfileController {
                     response.setContentLength((int)attachment.getFileSizeBytes());
                     IOUtils.copy(input, response.getOutputStream());
                 }
-            }finally {
+            } catch (ProfileException ex) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                response.setContentLength(0);
+            } finally {
                 if(input!=null){
                     input.close();
                 }
