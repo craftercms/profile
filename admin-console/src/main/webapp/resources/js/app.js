@@ -167,9 +167,11 @@ function showGrowlMessage(type, message) {
 }
 
 function isLoggedIn() {
-    var ticket = $.cookie('ticket');
-
-    return ticket !== undefined && ticket !== null && ticket !== '';
+    $.getJSON(contextPath + "/crafter-security-current-auth", function (data, status, jxhl) {
+        if (jxhl.status !== 200) {
+            window.location = 'login'
+        }
+    });
 }
 
 function hideModalIfShown(modal) {
@@ -202,17 +204,12 @@ app.filter('prettyStringify', function() {
 app.factory('httpErrorHandler', function ($q, $rootScope) {
     return {
         'response': function(response) {
-            if (!isLoggedIn()) {
-                window.location = 'login';
-            }
-
+            isLoggedIn();
             return response;
         },
         'responseError': function(rejection) {
-            if (!isLoggedIn()) {
-                window.location = 'login';
-            } else {
-                var message;
+
+            var message;
 
                 if (rejection.status == 0) {
                     message = 'Unable to communicate with the server. Please try again later or contact IT support';
@@ -228,8 +225,6 @@ app.factory('httpErrorHandler', function ($q, $rootScope) {
                 $rootScope.$broadcast('httpError');
 
                 showGrowlMessage('danger', message);
-            }
-
             return $q.reject(rejection);
         }
     };
