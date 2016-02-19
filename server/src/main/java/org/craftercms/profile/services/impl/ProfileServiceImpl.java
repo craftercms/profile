@@ -350,8 +350,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Profile setLastFailedLogin(String profileId, final Date lastFailedLogin, String... attributesToReturn)
-        throws
-        ProfileException {
+        throws ProfileException {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
@@ -367,8 +366,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public Profile setFailedLoginAttempts(String profileId, final int failedAttempts, String... attributesToReturn) throws
-        ProfileException {
+    public Profile setFailedLoginAttempts(String profileId, final int failedAttempts, String... attributesToReturn)
+        throws ProfileException {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
