@@ -21,8 +21,8 @@ import java.util.Collection;
 import org.craftercms.profile.api.Profile;
 
 /**
- * Instances of this class are used as the root object for Spring EL {@link org.springframework.expression
- * .Expression}s that are used to evaluate access restrictions.
+ * Instances of this class are used as the root object for Spring EL {@code Expression}s that are used to evaluate
+ * access restrictions.
  *
  * @author Alfonso Vásquez
  */
