@@ -101,7 +101,7 @@ public class MellonAutoLoginProcessor implements RequestSecurityProcessor {
 
                 SecurityUtils.setAuthentication(request, authenticationManager.authenticateUser(profile));
             } else {
-                logger.warn("An SSO login was attempted, but none of the tenants {} is enabled for SSO", tenantNames);
+                logger.warn("An SSO login was attempted, but none of the tenants [{}] is enabled for SSO", tenantNames);
             }
         }
 

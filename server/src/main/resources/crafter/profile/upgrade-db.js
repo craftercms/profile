@@ -1,4 +1,4 @@
-// Update roles
+// Update roles for the default tenant
 var defaultTenant = db.tenant.findOne({name: "default"});
 if (defaultTenant) {
 	var availableRoles = defaultTenant.availableRoles;
@@ -16,6 +16,7 @@ if (defaultTenant) {
 	}
 }
 
+// Set the admin console token as the master
 if (db.accesstoken.findOne({_id : "e8f5170c-877b-416f-b70f-4b09772f8e2d"})) {
 	db.accesstoken.update({_id: "e8f5170c-877b-416f-b70f-4b09772f8e2d"}, {$set: {master: true}});
 }

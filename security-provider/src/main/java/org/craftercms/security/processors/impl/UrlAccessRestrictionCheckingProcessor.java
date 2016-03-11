@@ -55,13 +55,12 @@ import org.springframework.util.PathMatcher;
  * <p/>
  * <p>Examples of user URL restrictions:</p>
  * <p/>
- * <![CDATA[
- * <entry key="/static-assets" value="permitAll()"/>
- * <entry key="/user" value="hasAnyRole({'user', 'admin'})"/>
- * <entry key="/admin" value="hasRole('admin')"/>
- * <entry key="/**" value="isAuthenticated()"/>
- * ]]>
- * <p/>
+ * <pre>
+ * &lt;entry key="/static-assets" value="permitAll()"/&gt;
+ * &lt;entry key="/user" value="hasAnyRole({'user', 'admin'})"/&gt;
+ * &lt;entry key="/admin" value="hasRole('admin')"/&gt;
+ * &lt;entry key="/**" value="isAuthenticated()"/&gt;
+ * </pre>
  * <strong>WARN: </strong> Remember to put the more general restrictions (like /**) at the end so they're matched last.
  *
  * @author Alfonso Vásquez
