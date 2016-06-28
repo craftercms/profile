@@ -27,12 +27,10 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bson.types.ObjectId;
-import org.craftercms.commons.collections.SetUtils;
 import org.craftercms.commons.crypto.CipherUtils;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.AccessToken;
-import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.AttributePermission;
 import org.craftercms.profile.api.Profile;
@@ -40,6 +38,7 @@ import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.TenantAction;
 import org.craftercms.profile.api.Ticket;
+import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.exceptions.InvalidEmailAddressException;
@@ -48,6 +47,7 @@ import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.services.VerificationService;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
@@ -58,6 +58,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doAnswer;
@@ -140,8 +141,10 @@ public class ProfileServiceImplTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        when(tenantPermissionEvaluator.isAllowed(anyString(), anyString())).thenReturn(true);
-        when(attributePermissionEvaluator.isAllowed(any(AttributeDefinition.class), anyString())).thenReturn(true);
+        when(tenantPermissionEvaluator.isAllowed(anyString(), anyString()))
+            .thenReturn(true);
+        when(attributePermissionEvaluator.isAllowed(any(AttributeDefinition.class), anyString()))
+            .thenReturn(true);
         when(attributePermissionEvaluator.isAllowed(eq(new AttributeDefinition(ATTRIB_NAME_PRIVATE)), anyString()))
             .thenReturn(false);
 
@@ -163,40 +166,43 @@ public class ProfileServiceImplTest {
         }).when(profileRepository).insert(any(Profile.class));
 
         when(profileRepository.findOneByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT, TENANT1_NAME,
-                                                            QUERY), new String[0])).thenReturn(getTenant1Profile());
+                                                            QUERY), new String[0]))
+            .thenReturn(getTenant1Profile());
 
-        when(profileRepository.findById(PROFILE1_ID.toString(), new String[0])).thenReturn(getTenant1Profile());
+        when(profileRepository.findById(PROFILE1_ID.toString(), new String[0]))
+            .thenReturn(getTenant1Profile());
 
-        when(profileRepository.findById(PROFILE1_ID.toString(), NO_ATTRIBUTE)).thenReturn(
-            getTenant1ProfileNoAttributes());
+        when(profileRepository.findById(PROFILE1_ID.toString(), NO_ATTRIBUTE))
+            .thenReturn(getTenant1ProfileNoAttributes());
 
-        when(profileRepository.findById(PROFILE1_ID.toString(), ATTRIB_NAME_FIRST_NAME)).thenReturn(
-            getTenant1ProfileNoLastName());
+        when(profileRepository.findById(PROFILE1_ID.toString(), ATTRIB_NAME_FIRST_NAME))
+            .thenReturn(getTenant1ProfileNoLastName());
 
-        when(profileRepository.findById(PROFILE2_ID.toString(), new String[0])).thenReturn(
-            getTenant2Profile());
+        when(profileRepository.findById(PROFILE2_ID.toString(), new String[0]))
+            .thenReturn(getTenant2Profile());
 
         when(profileRepository.findByQuery(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT, TENANT1_NAME, QUERY),
-                                           SORT_BY, SortOrder.ASC, START, COUNT, new String[0])).thenReturn(
-            getAllTenant1Profiles());
+                                           SORT_BY, SortOrder.ASC, START, COUNT, new String[0]))
+            .thenReturn(getAllTenant1Profiles());
 
-        when(profileRepository.findByTenantAndUsername(TENANT1_NAME, USERNAME1, new String[0])).thenReturn(
-            getTenant1Profile());
+        when(profileRepository.findByTenantAndUsername(TENANT1_NAME, USERNAME1, new String[0]))
+            .thenReturn(getTenant1Profile());
 
-        when(profileRepository.findByIds(TENANT1_PROFILE_IDS, SORT_BY, SortOrder.ASC)).thenReturn(
-            getAllTenant1Profiles());
+        when(profileRepository.findByIds(TENANT1_PROFILE_IDS, SORT_BY, SortOrder.ASC))
+            .thenReturn(getAllTenant1Profiles());
 
-        when(profileRepository.findRange(TENANT1_NAME, SORT_BY, SortOrder.ASC, START, COUNT)).thenReturn(
-            getAllTenant1Profiles());
+        when(profileRepository.findRange(TENANT1_NAME, SORT_BY, SortOrder.ASC, START, COUNT))
+            .thenReturn(getAllTenant1Profiles());
 
-        when(profileRepository.findByTenantAndRole(TENANT1_NAME, ROLE1, SORT_BY, SortOrder.ASC)).thenReturn(
-            getAllTenant1Profiles());
+        when(profileRepository.findByTenantAndRole(TENANT1_NAME, ROLE1, SORT_BY, SortOrder.ASC))
+            .thenReturn(getAllTenant1Profiles());
 
         when(profileRepository.findByTenantAndAttributeValue(TENANT1_NAME, ATTRIB_NAME_FIRST_NAME, FIRST_NAME,
-                                                             SORT_BY, SortOrder.ASC)).thenReturn
-            (getAllTenant1Profiles());
+                                                             SORT_BY, SortOrder.ASC))
+            .thenReturn(getAllTenant1Profiles());
 
-        when(profileRepository.countByTenant(TENANT1_NAME)).thenReturn(10L);
+        when(profileRepository.countByTenant(TENANT1_NAME))
+            .thenReturn(10L);
 
         when(profileRepository.count(String.format(ProfileServiceImpl.QUERY_FINAL_FORMAT, TENANT1_NAME, QUERY)))
             .thenReturn(1L);
@@ -318,7 +324,7 @@ public class ProfileServiceImplTest {
 
     @Test
     public void testUpdateProfile() throws Exception {
-        Profile expected = new Profile();
+        final Profile expected = new Profile();
         expected.setId(PROFILE1_ID);
         expected.setTenant(TENANT1_NAME);
         expected.setUsername(USERNAME2);
@@ -330,14 +336,35 @@ public class ProfileServiceImplTest {
         expected.setAttributes(getAttributesWithoutPrivateAttribute());
         expected.getAttributes().put(ATTRIB_NAME_GENDER, GENDER);
 
+        final Map<String, Object> newAttributes = Collections.<String, Object>singletonMap(ATTRIB_NAME_GENDER, GENDER);
+
         Profile actual = profileService.updateProfile(PROFILE1_ID.toString(), USERNAME2, PASSWORD2, EMAIL2, false,
-                                                      ROLES2, Collections.<String, Object>singletonMap(ATTRIB_NAME_GENDER, GENDER));
+                                                      ROLES2, newAttributes);
 
         assertEqualProfiles(expected, actual);
 
+        ArgumentMatcher<Object> setParamMatcher = new ArgumentMatcher<Object>() {
+
+            @Override
+            public boolean matches(Object argument) {
+                Map<String, Object> param = (Map<String, Object>)argument;
+
+                return param.size() == 7 &&
+                       param.get("username").equals(USERNAME2) &&
+                       param.containsKey("password") &&
+                       param.get("email").equals(EMAIL2) &&
+                       param.get("roles").equals(ROLES2) &&
+                       param.get("enabled").equals(false) &&
+                       param.containsKey("lastModified") &&
+                       param.get("attributes." + ATTRIB_NAME_GENDER).equals(GENDER);
+            }
+
+        };
+
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
-        verify(profileRepository).save(actual);
+        verify(profileRepository).update(eq(PROFILE1_ID.toString()), eq("{$set: #}"), eq(false), eq(false),
+                                         argThat(setParamMatcher));
     }
 
     @Test
@@ -370,9 +397,24 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
 
+        ArgumentMatcher<Object> setParamMatcher = new ArgumentMatcher<Object>() {
+
+            @Override
+            public boolean matches(Object argument) {
+                Map<String, Object> param = (Map<String, Object>)argument;
+
+                return param.size() == 3 &&
+                       param.get("verified").equals(true) &&
+                       param.get("enabled").equals(true) &&
+                       param.containsKey("lastModified");
+            }
+
+        };
+
         verify(tenantPermissionEvaluator).isAllowed(TENANT2_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE2_ID.toString(), new String[0]);
-        verify(profileRepository).save(actual);
+        verify(profileRepository).update(eq(PROFILE2_ID.toString()), eq("{$set: #}"), eq(false), eq(false),
+                                         argThat(setParamMatcher));
         verify(verificationService).getToken(VERIFICATION_TOKEN_ID2);
         verify(verificationService).deleteToken(VERIFICATION_TOKEN_ID2);
     }
@@ -387,9 +429,23 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
 
+        ArgumentMatcher<Object> setParamMatcher = new ArgumentMatcher<Object>() {
+
+            @Override
+            public boolean matches(Object argument) {
+                Map<String, Object> param = (Map<String, Object>)argument;
+
+                return param.size() == 2 &&
+                       param.get("enabled").equals(true) &&
+                       param.containsKey("lastModified");
+            }
+
+        };
+
         verify(tenantPermissionEvaluator).isAllowed(TENANT2_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE2_ID.toString(), new String[0]);
-        verify(profileRepository).save(actual);
+        verify(profileRepository).update(eq(PROFILE2_ID.toString()), eq("{$set: #}"), eq(false), eq(false),
+                                         argThat(setParamMatcher));
     }
 
     @Test
@@ -402,9 +458,23 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
 
+        ArgumentMatcher<Object> setParamMatcher = new ArgumentMatcher<Object>() {
+
+            @Override
+            public boolean matches(Object argument) {
+                Map<String, Object> param = (Map<String, Object>)argument;
+
+                return param.size() == 2 &&
+                       param.get("enabled").equals(false) &&
+                       param.containsKey("lastModified");
+            }
+
+        };
+
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
-        verify(profileRepository).save(actual);
+        verify(profileRepository).update(eq(PROFILE1_ID.toString()), eq("{$set: #}"), eq(false), eq(false),
+                                         argThat(setParamMatcher));
     }
 
     @Test
@@ -413,13 +483,38 @@ public class ProfileServiceImplTest {
         expected.getRoles().add(ROLE2);
         expected.setAttributes(getAttributesWithoutPrivateAttribute());
 
-        Profile actual = profileService.addRoles(PROFILE1_ID.toString(), Arrays.asList(ROLE2));
+        Profile actual = profileService.addRoles(PROFILE1_ID.toString(), Collections.singletonList(ROLE2));
 
         assertEqualProfiles(expected, actual);
 
+        ArgumentMatcher<Object> setParamMatcher = new ArgumentMatcher<Object>() {
+
+            @Override
+            public boolean matches(Object argument) {
+                Map<String, Object> param = (Map<String, Object>)argument;
+
+                return param.size() == 1 &&
+                       param.containsKey("lastModified");
+            }
+
+        };
+
+        ArgumentMatcher<Object> pushParamMatcher = new ArgumentMatcher<Object>() {
+
+            @Override
+            public boolean matches(Object argument) {
+                Map<String, Object> param = (Map<String, Object>)argument;
+
+                return param.size() == 1 &&
+                       param.get("roles").equals(Collections.singletonMap("$each", Collections.singletonList(ROLE2)));
+            }
+
+        };
+
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
-        verify(profileRepository).save(actual);
+        verify(profileRepository).update(eq(PROFILE1_ID.toString()), eq("{$set: #, $push: #}"), eq(false), eq(false),
+                                         argThat(setParamMatcher), argThat(pushParamMatcher));
     }
 
     @Test
@@ -428,13 +523,38 @@ public class ProfileServiceImplTest {
         expected.getRoles().remove(ROLE1);
         expected.setAttributes(getAttributesWithoutPrivateAttribute());
 
-        Profile actual = profileService.removeRoles(PROFILE1_ID.toString(), Arrays.asList(ROLE1));
+        Profile actual = profileService.removeRoles(PROFILE1_ID.toString(), Collections.singletonList(ROLE1));
 
         assertEqualProfiles(expected, actual);
 
+        ArgumentMatcher<Object> setParamMatcher = new ArgumentMatcher<Object>() {
+
+            @Override
+            public boolean matches(Object argument) {
+                Map<String, Object> param = (Map<String, Object>)argument;
+
+                return param.size() == 1 &&
+                       param.containsKey("lastModified");
+            }
+
+        };
+
+        ArgumentMatcher<Object> pullParamMatcher = new ArgumentMatcher<Object>() {
+
+            @Override
+            public boolean matches(Object argument) {
+                Map<String, Object> param = (Map<String, Object>)argument;
+
+                return param.size() == 1 &&
+                       param.get("roles").equals(Collections.singletonMap("$in", Collections.singletonList(ROLE1)));
+            }
+
+        };
+
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
-        verify(profileRepository).save(actual);
+        verify(profileRepository).update(eq(PROFILE1_ID.toString()), eq("{$set: #, $pull: #}"), eq(false), eq(false),
+                                         argThat(setParamMatcher), argThat(pullParamMatcher));
     }
 
 
@@ -480,9 +600,23 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
 
+        ArgumentMatcher<Object> setParamMatcher = new ArgumentMatcher<Object>() {
+
+            @Override
+            public boolean matches(Object argument) {
+                Map<String, Object> param = (Map<String, Object>)argument;
+
+                return param.size() == 2 &&
+                       param.containsKey("lastModified") &&
+                       param.get("attributes." + ATTRIB_NAME_GENDER).equals(GENDER);
+            }
+
+        };
+
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
-        verify(profileRepository).save(actual);
+        verify(profileRepository).update(eq(PROFILE1_ID.toString()), eq("{$set: #}"), eq(false), eq(false),
+                                         argThat(setParamMatcher));
     }
 
     @Test
@@ -505,9 +639,34 @@ public class ProfileServiceImplTest {
 
         assertEqualProfiles(expected, actual);
 
+        ArgumentMatcher<Object> setParamMatcher = new ArgumentMatcher<Object>() {
+
+            @Override
+            public boolean matches(Object argument) {
+                Map<String, Object> param = (Map<String, Object>)argument;
+
+                return param.size() == 1 &&
+                       param.containsKey("lastModified");
+            }
+
+        };
+
+        ArgumentMatcher<Object> unsetParamMatcher = new ArgumentMatcher<Object>() {
+
+            @Override
+            public boolean matches(Object argument) {
+                Map<String, Object> param = (Map<String, Object>)argument;
+
+                return param.size() == 1 &&
+                       param.get("attributes." + ATTRIB_NAME_LAST_NAME).equals("");
+            }
+
+        };
+
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
-        verify(profileRepository).save(actual);
+        verify(profileRepository).update(eq(PROFILE1_ID.toString()), eq("{$set: #, $unset: #}"), eq(false), eq(false),
+                                         argThat(setParamMatcher), argThat(unsetParamMatcher));
     }
 
     @Test
@@ -725,9 +884,23 @@ public class ProfileServiceImplTest {
         assertEqualProfiles(expected, actual);
         assertTrue(CipherUtils.matchPassword(actual.getPassword(), PASSWORD2));
 
+        ArgumentMatcher<Object> setParamMatcher = new ArgumentMatcher<Object>() {
+
+            @Override
+            public boolean matches(Object argument) {
+                Map<String, Object> param = (Map<String, Object>)argument;
+
+                return param.size() == 2 &&
+                       param.containsKey("password") &&
+                       param.containsKey("lastModified");
+            }
+
+        };
+
         verify(tenantPermissionEvaluator).isAllowed(TENANT1_NAME, TenantAction.MANAGE_PROFILES.toString());
         verify(profileRepository).findById(PROFILE1_ID.toString(), new String[0]);
-        verify(profileRepository).save(actual);
+        verify(profileRepository).update(eq(PROFILE1_ID.toString()), eq("{$set: #}"), eq(false), eq(false),
+                                         argThat(setParamMatcher));
         verify(verificationService).getToken(VERIFICATION_TOKEN_ID1);
         verify(verificationService).deleteToken(VERIFICATION_TOKEN_ID1);
     }
@@ -783,7 +956,7 @@ public class ProfileServiceImplTest {
         return tenant;
     }
 
-    private Set<AttributeDefinition> getAttributeDefinitions() {
+    private List<AttributeDefinition> getAttributeDefinitions() {
         AttributePermission anyAppCanDoAnything = new AttributePermission(AttributePermission.ANY_APPLICATION);
         anyAppCanDoAnything.allow(AttributePermission.ANY_ACTION);
 
@@ -803,7 +976,7 @@ public class ProfileServiceImplTest {
         AttributeDefinition privateDefinition = new AttributeDefinition();
         privateDefinition.setName(ATTRIB_NAME_PRIVATE);
 
-        return SetUtils.asSet(firstNameDefinition, lastNameDefinition, genderDefinition, privateDefinition);
+        return Arrays.asList(firstNameDefinition, lastNameDefinition, genderDefinition, privateDefinition);
     }
 
     private Profile getTenant1Profile() {
@@ -813,7 +986,7 @@ public class ProfileServiceImplTest {
         profile.setUsername(USERNAME1);
         profile.setPassword(CipherUtils.hashPassword(PASSWORD1));
         profile.setEmail(EMAIL1);
-        profile.setRoles(ROLES1);
+        profile.setRoles(new HashSet<>(ROLES1));
         profile.setVerified(true);
         profile.setEnabled(true);
         profile.setAttributes(getAttributes());
@@ -846,7 +1019,7 @@ public class ProfileServiceImplTest {
         profile.setUsername(USERNAME2);
         profile.setPassword(CipherUtils.hashPassword(PASSWORD2));
         profile.setEmail(EMAIL2);
-        profile.setRoles(ROLES2);
+        profile.setRoles(new HashSet<>(ROLES2));
         profile.setVerified(false);
         profile.setEnabled(false);
         profile.setAttributes(getAttributes());

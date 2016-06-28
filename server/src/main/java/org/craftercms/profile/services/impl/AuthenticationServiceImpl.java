@@ -154,7 +154,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     protected void countAsFail(final Profile profile) throws ProfileException {
-        profile.increaseFaildAttempts();
+        profile.increaseFailedLoginAttempts();
 
         // This one counts !!!
         if ((failedLoginAttemptsBeforeDelay + failedLoginAttemptsBeforeLock) <= profile.getFailedLoginAttempts()) {

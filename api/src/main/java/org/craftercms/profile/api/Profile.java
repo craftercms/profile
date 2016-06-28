@@ -217,7 +217,8 @@ public class Profile {
                 '}';
     }
 
-    public void increaseFaildAttempts() {
+    public void increaseFailedLoginAttempts() {
         failedLoginAttempts++;
     }
+
 }
