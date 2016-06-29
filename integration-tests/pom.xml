@@ -21,6 +21,7 @@
 
         <!-- Mongo -->
         <mongo.port>37017</mongo.port>
+        <mongo.version>2.4.0</mongo.version>
 
         <!-- Cargo -->
         <cargo.container>jetty9x</cargo.container>
@@ -98,7 +99,7 @@
             <plugin>
                 <groupId>com.github.joelittlejohn.embedmongo</groupId>
                 <artifactId>embedmongo-maven-plugin</artifactId>
-                <version>0.1.10</version>
+                <version>0.3.4</version>
                 <executions>
                     <execution>
                         <id>start</id>
@@ -108,6 +109,7 @@
                         </goals>
                         <configuration>
                             <port>${mongo.port}</port>
+                            <version>${mongo.version}</version>
                         </configuration>
                     </execution>
                     <execution>
