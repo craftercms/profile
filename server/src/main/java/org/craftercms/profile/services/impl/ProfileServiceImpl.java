@@ -46,6 +46,7 @@ import org.craftercms.commons.mail.EmailUtils;
 import org.craftercms.commons.mongo.DuplicateKeyException;
 import org.craftercms.commons.mongo.FileInfo;
 import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.commons.mongo.UpdateHelper;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.exception.PermissionException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
@@ -74,6 +75,7 @@ import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
 import org.craftercms.profile.exceptions.ProfileExistsException;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.services.VerificationService;
+import org.craftercms.profile.utils.db.ProfileUpdater;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
@@ -273,29 +275,29 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
-            public void doWithProfile(Profile profile) throws ProfileException {
+            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
                 if (StringUtils.isNotEmpty(username)) {
-                    profile.setUsername(username);
+                    profileUpdater.setUsername(username);
                 }
                 if (StringUtils.isNotEmpty(password)) {
-                    profile.setPassword(CipherUtils.hashPassword(password));
+                    profileUpdater.setPassword(CipherUtils.hashPassword(password));
                 }
                 if (StringUtils.isNotEmpty(email)) {
-                    profile.setEmail(email);
+                    profileUpdater.setEmail(email);
                 }
                 if (enabled != null) {
-                    profile.setEnabled(enabled);
+                    profileUpdater.setEnabled(enabled);
                 }
                 if (roles != null) {
-                    profile.setRoles(roles);
+                    profileUpdater.setRoles(roles);
                 }
                 if (MapUtils.isNotEmpty(attributes)) {
-                    String tenantName = profile.getTenant();
+                    String tenantName = profileUpdater.getProfile().getTenant();
 
                     rejectAttributesIfActionNotAllowed(tenantName, attributes.keySet(),
                                                        AttributeAction.WRITE_ATTRIBUTE);
 
-                    profile.getAttributes().putAll(attributes);
+                    profileUpdater.addAttributes(attributes);
                 }
             }
 
@@ -318,9 +320,9 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = updateProfile(token.getProfileId(), new UpdateCallback() {
 
             @Override
-            public void doWithProfile(final Profile profile) throws ProfileException {
-                profile.setEnabled(true);
-                profile.setVerified(true);
+            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
+                profileUpdater.setEnabled(true);
+                profileUpdater.setVerified(true);
             }
 
         }, attributesToReturn);
@@ -337,8 +339,8 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
-            public void doWithProfile(Profile profile) throws ProfileException {
-                profile.setEnabled(true);
+            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
+                profileUpdater.setEnabled(true);
             }
 
         }, attributesToReturn);
@@ -354,8 +356,8 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
-            public void doWithProfile(Profile profile) throws ProfileException {
-               profile.setLastFailedLogin(lastFailedLogin);
+            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
+               profileUpdater.setLastFailedLogin(lastFailedLogin);
             }
 
         }, attributesToReturn);
@@ -371,8 +373,8 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
-            public void doWithProfile(Profile profile) throws ProfileException {
-                 profile.setFailedLoginAttempts(failedAttempts);
+            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
+                 profileUpdater.setFailedLoginAttempts(failedAttempts);
             }
 
         }, attributesToReturn);
@@ -387,8 +389,8 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
-            public void doWithProfile(Profile profile) throws ProfileException {
-                profile.setEnabled(false);
+            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
+                profileUpdater.setEnabled(false);
             }
 
         }, attributesToReturn);
@@ -404,8 +406,8 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
-            public void doWithProfile(Profile profile) throws ProfileException {
-                profile.getRoles().addAll(roles);
+            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
+                profileUpdater.addRoles(roles);
             }
 
         }, attributesToReturn);
@@ -421,8 +423,8 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
-            public void doWithProfile(Profile profile) throws ProfileException {
-                profile.getRoles().removeAll(roles);
+            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
+                profileUpdater.removeRoles(roles);
             }
 
         }, attributesToReturn);
@@ -443,12 +445,12 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
-            public void doWithProfile(Profile profile) throws ProfileException {
-                String tenantName = profile.getTenant();
+            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
+                String tenantName = profileUpdater.getProfile().getTenant();
 
                 rejectAttributesIfActionNotAllowed(tenantName, attributes.keySet(), AttributeAction.WRITE_ATTRIBUTE);
 
-                profile.getAttributes().putAll(attributes);
+                profileUpdater.addAttributes(attributes);
             }
 
         }, attributesToReturn);
@@ -466,16 +468,12 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = updateProfile(profileId, new UpdateCallback() {
 
             @Override
-            public void doWithProfile(Profile profile) throws ProfileException {
-                String tenantName = profile.getTenant();
+            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
+                String tenantName = profileUpdater.getProfile().getTenant();
 
                 rejectAttributesIfActionNotAllowed(tenantName, attributeNames, AttributeAction.REMOVE_ATTRIBUTE);
 
-                Map<String, Object> attributes = profile.getAttributes();
-
-                for (String attributeName : attributeNames) {
-                    attributes.remove(attributeName);
-                }
+                profileUpdater.removeAttributes(attributeNames);
             }
 
         }, attributesToReturn);
@@ -714,8 +712,8 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = updateProfile(token.getProfileId(), new UpdateCallback() {
 
             @Override
-            public void doWithProfile(final Profile profile) throws ProfileException {
-                profile.setPassword(CipherUtils.hashPassword(newPassword));
+            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
+                profileUpdater.setPassword(CipherUtils.hashPassword(newPassword));
             }
 
         }, attributesToReturn);
@@ -861,13 +859,15 @@ public class ProfileServiceImpl implements ProfileService {
         // We need to filter the attributes after save, if not, the attributes to return will replace all the
         // attributes
         Profile profile = getNonNullProfile(profileId);
+        UpdateHelper updateHelper = new UpdateHelper();
+        ProfileUpdater profileUpdater = new ProfileUpdater(profile, updateHelper, profileRepository);
 
-        callback.doWithProfile(profile);
+        callback.doWithProfile(profileUpdater);
 
-        profile.setLastModified(new Date());
+        profileUpdater.setLastModified(new Date());
 
         try {
-            profileRepository.save(profile);
+            profileUpdater.update();
         } catch (MongoDataException e) {
             throw new I10nProfileException(ERROR_KEY_UPDATE_PROFILE_ERROR, e, profileId);
         }
@@ -902,7 +902,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     protected void filterNonReadableAttributes(Tenant tenant, Profile profile) throws ProfileException {
         if (profile != null) {
-            Set<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
+            List<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
             Iterator<String> attributeNamesIter = profile.getAttributes().keySet().iterator();
 
             while (attributeNamesIter.hasNext()) {
@@ -934,7 +934,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     protected void rejectAttributesIfActionNotAllowed(Tenant tenant, Collection<String> attributeNames,
                                                       AttributeAction action) throws ProfileException {
-        Set<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
+        List<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
 
         for (String attributeName : attributeNames) {
             rejectAttributeIfActionNotAllowed(tenant, attributeName, action, attributeDefinitions);
@@ -942,7 +942,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     protected void filterAttributeIfReadNotAllowed(Tenant tenant, Iterator<String> attributeNamesIter,
-                                                   Set<AttributeDefinition> attributeDefinitions) throws
+                                                   List<AttributeDefinition> attributeDefinitions) throws
         PermissionException, AttributeNotDefinedException {
         String tenantName = tenant.getName();
         String attributeName = attributeNamesIter.next();
@@ -958,7 +958,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     protected void rejectAttributeIfActionNotAllowed(Tenant tenant, String attributeName, AttributeAction action,
-                                                     Set<AttributeDefinition> attributeDefinitions) throws
+                                                     List<AttributeDefinition> attributeDefinitions) throws
         PermissionException, AttributeNotDefinedException {
         AttributeDefinition definition = findAttributeDefinition(attributeDefinitions, attributeName);
         if (definition != null) {
@@ -1004,7 +1004,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
-    protected AttributeDefinition findAttributeDefinition(final Set<AttributeDefinition> attributeDefinitions,
+    protected AttributeDefinition findAttributeDefinition(final List<AttributeDefinition> attributeDefinitions,
                                                           final String name) {
         return CollectionUtils.find(attributeDefinitions, new Predicate<AttributeDefinition>() {
 
@@ -1018,7 +1018,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     protected interface UpdateCallback {
 
-        void doWithProfile(Profile profile) throws ProfileException;
+        void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException;
 
     }
 

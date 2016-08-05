@@ -17,17 +17,15 @@
 package org.craftercms.profile.services.impl;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.logging.Logged;
 import org.craftercms.commons.mongo.DuplicateKeyException;
 import org.craftercms.commons.mongo.MongoDataException;
+import org.craftercms.commons.mongo.UpdateHelper;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.AccessToken;
@@ -38,12 +36,11 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.api.services.TenantService;
-import org.craftercms.profile.exceptions.AttributeAlreadyDefinedException;
-import org.craftercms.profile.exceptions.AttributeNotDefinedException;
 import org.craftercms.profile.exceptions.NoSuchTenantException;
 import org.craftercms.profile.exceptions.TenantExistsException;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TenantRepository;
+import org.craftercms.profile.utils.db.TenantUpdater;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
@@ -149,11 +146,15 @@ public class TenantServiceImpl implements TenantService {
         Tenant updatedTenant = updateTenant(tenant.getName(), new UpdateCallback() {
 
             @Override
-            public void doWithTenant(Tenant originalTenant) throws ProfileException {
-                Collection<String> removedRoles = CollectionUtils.subtract(originalTenant.getAvailableRoles(),
-                                                                           tenant.getAvailableRoles());
-                Collection<AttributeDefinition> removedDefinitions = CollectionUtils.subtract(
-                    originalTenant.getAttributeDefinitions(), tenant.getAttributeDefinitions());
+            public void doWithTenant(TenantUpdater tenantUpdater) throws ProfileException {
+                Tenant originalTenant = tenantUpdater.getTenant();
+                Collection<String> originalRoles = originalTenant.getAvailableRoles();
+                Collection<String> newRoles = tenant.getAvailableRoles();
+                Collection<AttributeDefinition> originalDefinitions = originalTenant.getAttributeDefinitions();
+                Collection<AttributeDefinition> newDefinitions = tenant.getAttributeDefinitions();
+                Collection<String> removedRoles = CollectionUtils.subtract(originalRoles, newRoles);
+                Collection<AttributeDefinition> removedDefinitions = CollectionUtils.subtract(originalDefinitions,
+                                                                                              newDefinitions);
 
                 for (String removedRole : removedRoles) {
                     removeRoleFromProfiles(tenantName, removedRole);
@@ -162,10 +163,10 @@ public class TenantServiceImpl implements TenantService {
                     removeAttributeFromProfiles(tenantName, removedDefinition.getName());
                 }
 
-                originalTenant.setVerifyNewProfiles(tenant.isVerifyNewProfiles());
-                originalTenant.setSsoEnabled(tenant.isSsoEnabled());
-                originalTenant.setAvailableRoles(tenant.getAvailableRoles());
-                originalTenant.setAttributeDefinitions(tenant.getAttributeDefinitions());
+                tenantUpdater.setVerifyNewProfiles(tenant.isVerifyNewProfiles());
+                tenantUpdater.setSsoEnabled(tenant.isSsoEnabled());
+                tenantUpdater.setAvailableRoles(tenant.getAvailableRoles());
+                tenantUpdater.setAttributeDefinitions(tenant.getAttributeDefinitions());
             }
 
         });
@@ -223,8 +224,8 @@ public class TenantServiceImpl implements TenantService {
         Tenant tenant = updateTenant(tenantName, new UpdateCallback() {
 
             @Override
-            public void doWithTenant(Tenant tenant) throws ProfileException {
-                tenant.setVerifyNewProfiles(verify);
+            public void doWithTenant(TenantUpdater tenantUpdater) throws ProfileException {
+                tenantUpdater.setVerifyNewProfiles(verify);
             }
 
         });
@@ -239,8 +240,8 @@ public class TenantServiceImpl implements TenantService {
         Tenant tenant = updateTenant(tenantName, new UpdateCallback() {
 
             @Override
-            public void doWithTenant(Tenant tenant) throws ProfileException {
-                tenant.getAvailableRoles().addAll(roles);
+            public void doWithTenant(TenantUpdater tenantUpdater) throws ProfileException {
+                tenantUpdater.addAvailableRoles(roles);
             }
 
         });
@@ -255,12 +256,12 @@ public class TenantServiceImpl implements TenantService {
         Tenant tenant = updateTenant(tenantName, new UpdateCallback() {
 
             @Override
-            public void doWithTenant(Tenant tenant) throws ProfileException {
+            public void doWithTenant(TenantUpdater tenantUpdater) throws ProfileException {
                 for (String role : roles) {
                     removeRoleFromProfiles(tenantName, role);
                 }
 
-                tenant.getAvailableRoles().removeAll(roles);
+                tenantUpdater.removeAvailableRoles(roles);
             }
 
         });
@@ -277,14 +278,8 @@ public class TenantServiceImpl implements TenantService {
         Tenant tenant = updateTenant(tenantName, new UpdateCallback() {
 
             @Override
-            public void doWithTenant(Tenant tenant) throws ProfileException {
-                Set<AttributeDefinition> allDefinitions = tenant.getAttributeDefinitions();
-
-                for (AttributeDefinition definition : attributeDefinitions) {
-                    if (!allDefinitions.add(definition)) {
-                        throw new AttributeAlreadyDefinedException(definition.getName(), tenantName);
-                    }
-                }
+            public void doWithTenant(TenantUpdater tenantUpdater) throws ProfileException {
+                tenantUpdater.addAttributeDefinitions(attributeDefinitions);
             }
 
         });
@@ -305,19 +300,8 @@ public class TenantServiceImpl implements TenantService {
         Tenant tenant = updateTenant(tenantName, new UpdateCallback() {
 
             @Override
-            public void doWithTenant(Tenant tenant) throws ProfileException {
-                Set<AttributeDefinition> allDefinitions = tenant.getAttributeDefinitions();
-
-                for (AttributeDefinition updatedDefinition : attributeDefinitions) {
-                    String attributeName = updatedDefinition.getName();
-                    AttributeDefinition originalDefinition = findAttributeDefinition(allDefinitions, attributeName);
-                    if (originalDefinition != null) {
-                        originalDefinition.setPermissions(updatedDefinition.getPermissions());
-                        originalDefinition.setMetadata(updatedDefinition.getMetadata());
-                    } else {
-                        throw new AttributeNotDefinedException(attributeName, tenantName);
-                    }
-                }
+            public void doWithTenant(TenantUpdater tenantUpdater) throws ProfileException {
+                tenantUpdater.updateAttributeDefinitions(attributeDefinitions);
             }
 
         });
@@ -330,23 +314,15 @@ public class TenantServiceImpl implements TenantService {
     @Override
     public Tenant removeAttributeDefinitions(final String tenantName,
                                              final Collection<String> attributeNames) throws ProfileException {
+        for (String attributeName : attributeNames) {
+            removeAttributeFromProfiles(tenantName, attributeName);
+        }
+
         Tenant tenant = updateTenant(tenantName, new UpdateCallback() {
 
             @Override
-            public void doWithTenant(Tenant tenant) throws ProfileException {
-                Set<AttributeDefinition> allDefinitions = tenant.getAttributeDefinitions();
-
-                for (String attributeName : attributeNames) {
-                    for (Iterator<AttributeDefinition> iter = allDefinitions.iterator(); iter.hasNext(); ) {
-                        AttributeDefinition definition = iter.next();
-                        if (definition.getName().equals(attributeName)) {
-                            removeAttributeFromProfiles(tenantName, definition.getName());
-
-                            iter.remove();
-                            break;
-                        }
-                    }
-                }
+            public void doWithTenant(TenantUpdater tenantUpdater) throws ProfileException {
+                tenantUpdater.removeAttributeDefinitions(attributeNames);
             }
 
         });
@@ -371,10 +347,13 @@ public class TenantServiceImpl implements TenantService {
         if (tenant != null) {
             checkIfTenantActionIsAllowed(tenantName, TenantAction.UPDATE_TENANT);
 
-            callback.doWithTenant(tenant);
+            UpdateHelper updateHelper = new UpdateHelper();
+            TenantUpdater tenantUpdater = new TenantUpdater(tenant, updateHelper, tenantRepository);
+
+            callback.doWithTenant(tenantUpdater);
 
             try {
-                tenantRepository.save(tenant);
+                tenantUpdater.update();
             } catch (MongoDataException e) {
                 throw new I10nProfileException(ERROR_KEY_UPDATE_TENANT_ERROR, e, tenant.getName());
             }
@@ -387,20 +366,8 @@ public class TenantServiceImpl implements TenantService {
 
     protected interface UpdateCallback {
 
-        void doWithTenant(Tenant tenant) throws ProfileException;
+        void doWithTenant(TenantUpdater tenantUpdater) throws ProfileException;
 
-    }
-
-    protected AttributeDefinition findAttributeDefinition(Iterable<AttributeDefinition> definitions,
-                                                          final String attributeName) {
-        return CollectionUtils.find(definitions, new Predicate<AttributeDefinition>() {
-
-            @Override
-            public boolean evaluate(AttributeDefinition definition) {
-                return definition.getName().equals(attributeName);
-            }
-
-        });
     }
 
     protected void removeRoleFromProfiles(String tenantName, String role) throws ProfileException {

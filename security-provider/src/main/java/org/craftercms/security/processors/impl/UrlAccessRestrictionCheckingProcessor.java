@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.MapUtils;
+import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.exception.AccessDeniedException;
@@ -118,10 +119,10 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
         Map<String, Expression> urlRestrictions = getUrlRestrictions();
 
         if (MapUtils.isNotEmpty(urlRestrictions)) {
-            logger.debug("Checking URL access restrictions");
-
             HttpServletRequest request = context.getRequest();
             String requestUrl = getRequestUrl(context.getRequest());
+
+            logger.debug("Checking access restrictions for URL {}", requestUrl);
 
             for (Map.Entry<String, Expression> entry : urlRestrictions.entrySet()) {
                 String urlPattern = entry.getKey();
@@ -151,14 +152,14 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
      * Returns the request URL without the context path.
      */
     protected String getRequestUrl(HttpServletRequest request) {
-        return request.getRequestURI().substring(request.getContextPath().length());
+        return HttpUtils.getRequestUriWithoutContextPath(request);
     }
 
     protected boolean isAccessAllowed(HttpServletRequest request, Expression expression) {
         Object value = expression.getValue(createExpressionRoot(request));
         if (!(value instanceof Boolean)) {
             throw new IllegalStateException("Expression " + expression.getExpressionString() + " should return a " +
-                "boolean value");
+                                            "boolean value");
         }
 
         return (Boolean)value;

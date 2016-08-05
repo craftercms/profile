@@ -16,6 +16,7 @@
  */
 package org.craftercms.profile.services;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -101,7 +102,7 @@ public class TenantServiceIT {
         assertEquals(DEFAULT_TENANT_NAME, tenant.getName());
         assertEquals(false, tenant.isVerifyNewProfiles());
         assertEquals(DEFAULT_ROLES, tenant.getAvailableRoles());
-        assertEqualAttributeDefinitionSets(getAttributeDefinitions(), tenant.getAttributeDefinitions());
+        assertEqualAttributeDefinitions(getAttributeDefinitions(), tenant.getAttributeDefinitions());
     }
 
     @Test
@@ -119,7 +120,7 @@ public class TenantServiceIT {
             assertNotNull(result);
             assertEquals(tenant.isVerifyNewProfiles(), result.isVerifyNewProfiles());
             assertEquals(tenant.getAvailableRoles(), result.getAvailableRoles());
-            assertEqualAttributeDefinitionSets(tenant.getAttributeDefinitions(), result.getAttributeDefinitions());
+            assertEqualAttributeDefinitions(tenant.getAttributeDefinitions(), result.getAttributeDefinitions());
         } finally {
             tenantService.deleteTenant(CORPORATE_TENANT_NAME);
         }
@@ -154,7 +155,7 @@ public class TenantServiceIT {
         assertEquals(DEFAULT_TENANT_NAME, tenants.get(0).getName());
         assertEquals(false, tenants.get(0).isVerifyNewProfiles());
         assertEquals(DEFAULT_ROLES, tenants.get(0).getAvailableRoles());
-        assertEqualAttributeDefinitionSets(getAttributeDefinitions(), tenants.get(0).getAttributeDefinitions());
+        assertEqualAttributeDefinitions(getAttributeDefinitions(), tenants.get(0).getAttributeDefinitions());
     }
 
     @Test
@@ -209,21 +210,13 @@ public class TenantServiceIT {
             List<AttributeDefinition> definitions = Arrays.asList(getGenderAttributeDefinition());
             Tenant tenant = tenantService.addAttributeDefinitions(CORPORATE_TENANT_NAME, definitions);
 
-            Set<AttributeDefinition> expected = getAttributeDefinitions();
+            List<AttributeDefinition> expected = getAttributeDefinitions();
             expected.addAll(definitions);
 
             assertNotNull(tenant);
             assertNotNull(tenant.getAttributeDefinitions());
             assertEquals(4, tenant.getAttributeDefinitions().size());
             assertEquals(expected, tenant.getAttributeDefinitions());
-
-            try {
-                tenantService.addAttributeDefinitions(CORPORATE_TENANT_NAME, definitions);
-                fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-            } catch (ProfileRestServiceException e) {
-                assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-                assertEquals(ErrorCode.ATTRIBUTE_ALREADY_DEFINED, e.getErrorCode());
-            }
         } finally {
             tenantService.deleteTenant(CORPORATE_TENANT_NAME);
         }
@@ -255,9 +248,9 @@ public class TenantServiceIT {
         return tenant;
     }
 
-    private Set<AttributeDefinition> getAttributeDefinitions() {
-        return new HashSet<>(Arrays.asList(getFirstNameAttributeDefinition(), getLastNameAttributeDefinition(),
-                getSubscriptionsAttributeDefinition()));
+    private List<AttributeDefinition> getAttributeDefinitions() {
+        return new ArrayList<>(Arrays.asList(getFirstNameAttributeDefinition(), getLastNameAttributeDefinition(),
+                                             getSubscriptionsAttributeDefinition()));
     }
 
     private AttributeDefinition getFirstNameAttributeDefinition() {
@@ -308,8 +301,8 @@ public class TenantServiceIT {
         return definition;
     }
 
-    private void assertEqualAttributeDefinitionSets(Set<AttributeDefinition> expected,
-                                                    Set<AttributeDefinition> actual) {
+    private void assertEqualAttributeDefinitions(List<AttributeDefinition> expected,
+                                                 List<AttributeDefinition> actual) {
         assertNotNull(expected);
         assertEquals(expected.size(), actual.size());
 

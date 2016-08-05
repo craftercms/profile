@@ -1,6 +1,8 @@
 package org.craftercms.profile.api;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
@@ -17,7 +19,7 @@ public class Tenant {
     private boolean verifyNewProfiles;
     private Set<String> availableRoles;
     private boolean ssoEnabled;
-    private Set<AttributeDefinition> attributeDefinitions;
+    private List<AttributeDefinition> attributeDefinitions;
 
     /**
      * Returns the tenant's DB ID.
@@ -104,9 +106,9 @@ public class Tenant {
     /**
      * Returns the definitions of attributes that users of this tenant can have.
      */
-    public Set<AttributeDefinition> getAttributeDefinitions() {
+    public List<AttributeDefinition> getAttributeDefinitions() {
         if (attributeDefinitions == null) {
-            attributeDefinitions = new HashSet<>();
+            attributeDefinitions = new ArrayList<>();
         }
 
         return attributeDefinitions;
@@ -117,7 +119,7 @@ public class Tenant {
      *
      * @param attributeDefinitions  the available attribute definitions for users of the tenant
      */
-    public void setAttributeDefinitions(Set<AttributeDefinition> attributeDefinitions) {
+    public void setAttributeDefinitions(List<AttributeDefinition> attributeDefinitions) {
         this.attributeDefinitions = attributeDefinitions;
     }
 

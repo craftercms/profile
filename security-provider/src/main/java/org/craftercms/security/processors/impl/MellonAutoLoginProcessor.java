@@ -1,8 +1,8 @@
 package org.craftercms.security.processors.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -122,7 +122,7 @@ public class MellonAutoLoginProcessor implements RequestSecurityProcessor {
     protected Profile createProfileWithSsoInfo(String username, Tenant tenant,
                                                HttpServletRequest request) throws ProfileException {
         Map<String, Object> attributes = null;
-        Set<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
+        List<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
 
         String email = request.getHeader(emailHeaderName);
 
