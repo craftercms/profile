@@ -16,6 +16,7 @@
  */
 package org.craftercms.profile.services.impl;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -806,10 +807,10 @@ public class ProfileServiceImpl implements ProfileService {
         final FileInfo fileInfo;
         try {
             fileInfo = profileRepository.getFileInfo("/" + profileId + "/" + attachmentId);
+            return fileInfoToProfileAttachment(fileInfo);
         } catch (FileNotFoundException e) {
-            throw new ProfileException("Unable to found attachmet with given profile and id ");
+                return new ProfileAttachment();
         }
-        return fileInfoToProfileAttachment(fileInfo);
     }
 
     @Override
@@ -818,7 +819,7 @@ public class ProfileServiceImpl implements ProfileService {
             final FileInfo fileInfo = profileRepository.readFile("/" + profileId + "/" + attachmentId);
             return fileInfo.getInputStream();
         } catch (FileNotFoundException e) {
-            throw new ProfileException("Unable to found attachmet with given profile and id ");
+            return new ByteArrayInputStream(new byte[0]);
         }
     }
 
