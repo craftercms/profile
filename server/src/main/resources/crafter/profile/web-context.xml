@@ -51,19 +51,27 @@
     <bean id="crafter.jacksonFilterProvider" class="org.craftercms.commons.jackson.mvc.SelectorFilterFactory">
         <property name="filters">
             <list>
-                <bean class="org.craftercms.commons.jackson.mvc.GDataPropertyFilter">
-                    <property name="selectorParameterName" value="selector"/>
-                </bean>
+               <ref bean="gdata"/>
             </list>
         </property>
     </bean>
 
+    <bean id="gdata" class="org.craftercms.commons.jackson.mvc.GDataPropertyFilter">
+        <property name="selectorParameterName" value="selector"/>
+    </bean>
+    
     <bean id="crafter.jacksonAnnotationIntrospector"
           class="org.craftercms.commons.jackson.mvc.CrafterJacksonAnnotationIntrospector">
         <property name="defaultFilter" value="gdata"/>
     </bean>
 
     <bean id="crafter.objectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper">
+        <property name="filterProvider">
+            <bean class="com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider">
+                <property name="defaultFilter" ref="gdata"/>
+            </bean>
+        </property>
+
         <property name="serializers">
             <list>
                 <bean class="org.craftercms.commons.jackson.ObjectIdSerializer"/>

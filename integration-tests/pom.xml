@@ -21,7 +21,7 @@
 
         <!-- Mongo -->
         <mongo.port>37017</mongo.port>
-        <mongo.version>2.4.0</mongo.version>
+        <mongo.version>3.4.3</mongo.version>
 
         <!-- Cargo -->
         <cargo.container>jetty9x</cargo.container>
@@ -102,6 +102,13 @@
                 <groupId>com.github.joelittlejohn.embedmongo</groupId>
                 <artifactId>embedmongo-maven-plugin</artifactId>
                 <version>0.3.4</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>de.flapdoodle.embed</groupId>
+                        <artifactId>de.flapdoodle.embed.mongo</artifactId>
+                        <version>2.0.0</version>
+                    </dependency>
+                </dependencies>
                 <executions>
                     <execution>
                         <id>start</id>
