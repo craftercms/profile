@@ -19,7 +19,7 @@ package org.craftercms.profile.services.impl;
 import java.util.Collection;
 import java.util.List;
 
-import org.craftercms.commons.rest.RestClientUtils;
+import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ProfileException;
@@ -99,7 +99,7 @@ public class TenantServiceRestClient extends AbstractProfileRestClientBase imple
     @Override
     public Tenant verifyNewProfiles(String tenantName, boolean verify) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_VERIFY, verify, params);
+        HttpUtils.addValue(PARAM_VERIFY, verify, params);
 
         String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_VERIFY_NEW_PROFILES);
 
@@ -109,7 +109,7 @@ public class TenantServiceRestClient extends AbstractProfileRestClientBase imple
     @Override
     public Tenant addRoles(String tenantName, Collection<String> roles) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValues(PARAM_ROLE, roles, params);
+        HttpUtils.addValues(PARAM_ROLE, roles, params);
 
         String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_ADD_ROLES);
 
@@ -119,7 +119,7 @@ public class TenantServiceRestClient extends AbstractProfileRestClientBase imple
     @Override
     public Tenant removeRoles(String tenantName, Collection<String> roles) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValues(PARAM_ROLE, roles, params);
+        HttpUtils.addValues(PARAM_ROLE, roles, params);
 
         String url = getAbsoluteUrl(BASE_URL_TENANT + URL_PROFILE_REMOVE_ROLES);
 
@@ -146,7 +146,7 @@ public class TenantServiceRestClient extends AbstractProfileRestClientBase imple
     public Tenant removeAttributeDefinitions(String tenantName, Collection<String> attributeNames)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_NAME, attributeNames, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_NAME, attributeNames, params);
 
         String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_REMOVE_ATTRIBUTE_DEFINITIONS);
 
