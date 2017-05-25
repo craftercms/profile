@@ -35,7 +35,7 @@ import java.util.Set;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.NotImplementedException;
-import org.craftercms.commons.rest.RestClientUtils;
+import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.profile.api.Profile;
 import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.SortOrder;
@@ -70,8 +70,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         ParameterizedTypeReference<List<ProfileAttachment>>() {
     };
 
-    public static final String ERROR_KEY_ATTRIBUTES_SERIALIZATION_ERROR =
-            "profile.client.attributes.serializationError";
+    public static final String ERROR_KEY_ATTRIBUTES_SERIALIZATION_ERROR = "profile.client.attributes.serializationError";
     public static final String ERROR_KEY_INVALID_URI_ERROR = "profile.client.invalidUri";
 
     private ObjectMapper objectMapper;
@@ -86,16 +85,16 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
                                  Set<String> roles, Map<String, Object> attributes, String verificationUrl)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
-        RestClientUtils.addValue(PARAM_USERNAME, username, params);
-        RestClientUtils.addValue(PARAM_PASSWORD, password, params);
-        RestClientUtils.addValue(PARAM_EMAIL, email, params);
-        RestClientUtils.addValue(PARAM_ENABLED, enabled, params);
-        RestClientUtils.addValues(PARAM_ROLE, roles, params);
+        HttpUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
+        HttpUtils.addValue(PARAM_USERNAME, username, params);
+        HttpUtils.addValue(PARAM_PASSWORD, password, params);
+        HttpUtils.addValue(PARAM_EMAIL, email, params);
+        HttpUtils.addValue(PARAM_ENABLED, enabled, params);
+        HttpUtils.addValues(PARAM_ROLE, roles, params);
         if (MapUtils.isNotEmpty(attributes)) {
-            RestClientUtils.addValue(PARAM_ATTRIBUTES, serializeAttributes(attributes), params);
+            HttpUtils.addValue(PARAM_ATTRIBUTES, serializeAttributes(attributes), params);
         }
-        RestClientUtils.addValue(PARAM_VERIFICATION_URL, verificationUrl, params);
+        HttpUtils.addValue(PARAM_VERIFICATION_URL, verificationUrl, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_CREATE);
 
@@ -107,23 +106,23 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
                                  Set<String> roles, Map<String, Object> attributes, String... attributesToReturn)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_USERNAME, username, params);
-        RestClientUtils.addValue(PARAM_PASSWORD, password, params);
-        RestClientUtils.addValue(PARAM_EMAIL, email, params);
-        RestClientUtils.addValue(PARAM_ENABLED, enabled, params);
+        HttpUtils.addValue(PARAM_USERNAME, username, params);
+        HttpUtils.addValue(PARAM_PASSWORD, password, params);
+        HttpUtils.addValue(PARAM_EMAIL, email, params);
+        HttpUtils.addValue(PARAM_ENABLED, enabled, params);
 
         // Send empty role to indicate that all roles should be deleted
         if (roles != null && roles.isEmpty()) {
-            RestClientUtils.addValue(PARAM_ROLE, "", params);
+            HttpUtils.addValue(PARAM_ROLE, "", params);
         } else {
-            RestClientUtils.addValues(PARAM_ROLE, roles, params);
+            HttpUtils.addValues(PARAM_ROLE, roles, params);
         }
 
         if (MapUtils.isNotEmpty(attributes)) {
-            RestClientUtils.addValue(PARAM_ATTRIBUTES, serializeAttributes(attributes), params);
+            HttpUtils.addValue(PARAM_ATTRIBUTES, serializeAttributes(attributes), params);
         }
 
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_UPDATE);
 
@@ -133,8 +132,8 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     @Override
     public Profile verifyProfile(String verificationTokenId, String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_VERIFICATION_TOKEN_ID, verificationTokenId, params);
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValue(PARAM_VERIFICATION_TOKEN_ID, verificationTokenId, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_VERIFY);
 
@@ -144,7 +143,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     @Override
     public Profile enableProfile(String profileId, String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_ENABLE);
 
@@ -154,7 +153,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     @Override
     public Profile disableProfile(String profileId, String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_DISABLE);
 
@@ -165,8 +164,8 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public Profile addRoles(String profileId, Collection<String> roles, String... attributesToReturn)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValues(PARAM_ROLE, roles, params);
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValues(PARAM_ROLE, roles, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_ADD_ROLES);
 
@@ -177,8 +176,8 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public Profile removeRoles(String profileId, Collection<String> roles, String... attributesToReturn)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValues(PARAM_ROLE, roles, params);
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValues(PARAM_ROLE, roles, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_REMOVE_ROLES);
 
@@ -188,10 +187,10 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     @Override
     public Map<String, Object> getAttributes(String profileId, String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_ATTRIBUTES);
-        url = RestClientUtils.addQueryParams(url, params, false);
+        url = addQueryParams(url, params, false);
 
         return doGetForObject(url, Map.class, profileId);
     }
@@ -200,10 +199,10 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public Profile updateAttributes(String profileId, Map<String, Object> attributes, String... attributesToReturn)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_UPDATE_ATTRIBUTES);
-        url = RestClientUtils.addQueryParams(url, params, false);
+        url = addQueryParams(url, params, false);
 
         return doPostForObject(url, attributes, Profile.class, profileId);
     }
@@ -212,8 +211,8 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public Profile removeAttributes(String profileId, Collection<String> attributeNames, String... attributesToReturn)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_NAME, attributeNames, params);
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_NAME, attributeNames, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_REMOVE_ATTRIBUTES);
 
@@ -231,12 +230,12 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public Profile getProfileByQuery(String tenantName, String query, String... attributesToReturn)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
-        RestClientUtils.addValue(PARAM_QUERY, query, params);
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
+        HttpUtils.addValue(PARAM_QUERY, query, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_ONE_BY_QUERY);
-        url = RestClientUtils.addQueryParams(url, params, true);
+        url = addQueryParams(url, params, true);
 
         try {
             return doGetForObject(new URI(url), Profile.class);
@@ -248,10 +247,10 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     @Override
     public Profile getProfile(String profileId, String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET);
-        url = RestClientUtils.addQueryParams(url, params, false);
+        url = addQueryParams(url, params, false);
 
         return doGetForObject(url, Profile.class, profileId);
     }
@@ -260,12 +259,12 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public Profile getProfileByUsername(String tenantName, String username, String... attributesToReturn)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
-        RestClientUtils.addValue(PARAM_USERNAME, username, params);
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
+        HttpUtils.addValue(PARAM_USERNAME, username, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_USERNAME);
-        url = RestClientUtils.addQueryParams(url, params, false);
+        url = addQueryParams(url, params, false);
 
         return doGetForObject(url, Profile.class);
     }
@@ -273,11 +272,11 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     @Override
     public Profile getProfileByTicket(String ticketId, String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_TICKET_ID, ticketId, params);
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValue(PARAM_TICKET_ID, ticketId, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_TICKET);
-        url = RestClientUtils.addQueryParams(url, params, false);
+        url = addQueryParams(url, params, false);
 
         return doGetForObject(url, Profile.class);
     }
@@ -285,10 +284,10 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     @Override
     public long getProfileCount(String tenantName) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
+        HttpUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_COUNT);
-        url = RestClientUtils.addQueryParams(url, params, false);
+        url = addQueryParams(url, params, false);
 
         return doGetForObject(url, Long.class);
     }
@@ -296,11 +295,11 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     @Override
     public long getProfileCountByQuery(String tenantName, String query) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
-        RestClientUtils.addValue(PARAM_QUERY, query, params);
+        HttpUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
+        HttpUtils.addValue(PARAM_QUERY, query, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_TENANT_COUNT_BY_QUERY);
-        url = RestClientUtils.addQueryParams(url, params, true);
+        url = addQueryParams(url, params, true);
 
         try {
             return doGetForObject(new URI(url), Long.class);
@@ -314,16 +313,16 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
                                             Integer start, Integer count, String... attributesToReturn)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
-        RestClientUtils.addValue(PARAM_QUERY, query, params);
-        RestClientUtils.addValue(PARAM_SORT_BY, sortBy, params);
-        RestClientUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
-        RestClientUtils.addValue(PARAM_START, start, params);
-        RestClientUtils.addValue(PARAM_COUNT, count, params);
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
+        HttpUtils.addValue(PARAM_QUERY, query, params);
+        HttpUtils.addValue(PARAM_SORT_BY, sortBy, params);
+        HttpUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
+        HttpUtils.addValue(PARAM_START, start, params);
+        HttpUtils.addValue(PARAM_COUNT, count, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_QUERY);
-        url = RestClientUtils.addQueryParams(url, params, true);
+        url = addQueryParams(url, params, true);
 
         try {
             return doGetForObject(new URI(url), profileListTypeRef);
@@ -336,13 +335,13 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public List<Profile> getProfilesByIds(List<String> profileIds, String sortBy, SortOrder sortOrder,
                                           String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValues(PARAM_ID, profileIds, params);
-        RestClientUtils.addValue(PARAM_SORT_BY, sortBy, params);
-        RestClientUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValues(PARAM_ID, profileIds, params);
+        HttpUtils.addValue(PARAM_SORT_BY, sortBy, params);
+        HttpUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_IDS);
-        url = RestClientUtils.addQueryParams(url, params, false);
+        url = addQueryParams(url, params, false);
 
         return doGetForObject(url, profileListTypeRef);
     }
@@ -351,15 +350,15 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public List<Profile> getProfileRange(String tenantName, String sortBy, SortOrder sortOrder, Integer start,
                                          Integer count, String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
-        RestClientUtils.addValue(PARAM_SORT_BY, sortBy, params);
-        RestClientUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
-        RestClientUtils.addValue(PARAM_START, start, params);
-        RestClientUtils.addValue(PARAM_COUNT, count, params);
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
+        HttpUtils.addValue(PARAM_SORT_BY, sortBy, params);
+        HttpUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
+        HttpUtils.addValue(PARAM_START, start, params);
+        HttpUtils.addValue(PARAM_COUNT, count, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_RANGE);
-        url = RestClientUtils.addQueryParams(url, params, false);
+        url = addQueryParams(url, params, false);
 
         return doGetForObject(url, profileListTypeRef);
     }
@@ -368,14 +367,14 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public List<Profile> getProfilesByRole(String tenantName, String role, String sortBy, SortOrder sortOrder,
                                            String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
-        RestClientUtils.addValue(PARAM_ROLE, role, params);
-        RestClientUtils.addValue(PARAM_SORT_BY, sortBy, params);
-        RestClientUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
+        HttpUtils.addValue(PARAM_ROLE, role, params);
+        HttpUtils.addValue(PARAM_SORT_BY, sortBy, params);
+        HttpUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_ROLE);
-        url = RestClientUtils.addQueryParams(url, params, false);
+        url = addQueryParams(url, params, false);
 
         return doGetForObject(url, profileListTypeRef);
     }
@@ -385,14 +384,14 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
                                                         SortOrder sortOrder, String... attributesToReturn)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
-        RestClientUtils.addValue(PARAM_ATTRIBUTE_NAME, attributeName, params);
-        RestClientUtils.addValue(PARAM_SORT_BY, sortBy, params);
-        RestClientUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
+        HttpUtils.addValue(PARAM_ATTRIBUTE_NAME, attributeName, params);
+        HttpUtils.addValue(PARAM_SORT_BY, sortBy, params);
+        HttpUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_EXISTING_ATTRIB);
-        url = RestClientUtils.addQueryParams(url, params, false);
+        url = addQueryParams(url, params, false);
 
         return doGetForObject(url, profileListTypeRef);
     }
@@ -402,15 +401,15 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
                                                      String attributeValue, String sortBy, SortOrder sortOrder,
                                                      String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
-        RestClientUtils.addValue(PARAM_ATTRIBUTE_NAME, attributeName, params);
-        RestClientUtils.addValue(PARAM_ATTRIBUTE_VALUE, attributeValue, params);
-        RestClientUtils.addValue(PARAM_SORT_BY, sortBy, params);
-        RestClientUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
+        HttpUtils.addValue(PARAM_ATTRIBUTE_NAME, attributeName, params);
+        HttpUtils.addValue(PARAM_ATTRIBUTE_VALUE, attributeValue, params);
+        HttpUtils.addValue(PARAM_SORT_BY, sortBy, params);
+        HttpUtils.addValue(PARAM_SORT_ORDER, sortOrder, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_ATTRIB_VALUE);
-        url = RestClientUtils.addQueryParams(url, params, false);
+        url = addQueryParams(url, params, false);
 
         return doGetForObject(url, profileListTypeRef);
     }
@@ -419,8 +418,8 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public Profile resetPassword(String profileId, String resetPasswordUrl, String... attributesToReturn)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_RESET_PASSWORD_URL, resetPasswordUrl, params);
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValue(PARAM_RESET_PASSWORD_URL, resetPasswordUrl, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_RESET_PASSWORD);
 
@@ -431,9 +430,9 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public Profile changePassword(String resetTokenId, String newPassword, String... attributesToReturn)
             throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_RESET_TOKEN_ID, resetTokenId, params);
-        RestClientUtils.addValue(PARAM_NEW_PASSWORD, newPassword, params);
-        RestClientUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
+        HttpUtils.addValue(PARAM_RESET_TOKEN_ID, resetTokenId, params);
+        HttpUtils.addValue(PARAM_NEW_PASSWORD, newPassword, params);
+        HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_CHANGE_PASSWORD);
 
@@ -450,7 +449,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     @Override
     public VerificationToken getVerificationToken(String tokenId) throws ProfileException {
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_VERIFICATION_TOKEN);
-        url = RestClientUtils.addQueryParams(url, createBaseParams(), false);
+        url = addQueryParams(url, createBaseParams(), false);
 
         return doGetForObject(url, VerificationToken.class, tokenId);
     }
@@ -500,7 +499,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_ATTACHMENTS_DETAILS);
-        url = RestClientUtils.addQueryParams(url, params, false);
+        url = addQueryParams(url, params, false);
         return doGetForObject(url, ProfileAttachment.class, profileId, attachmentId);
     }
 
@@ -508,7 +507,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public InputStream getProfileAttachment(final String attachmentId, final String profileId) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_ATTACHMENT);
-        url = RestClientUtils.addQueryParams(url, params, false);
+        url = addQueryParams(url, params, false);
         return new ByteArrayInputStream(doGetForObject(url, byteArrayTypeRef, profileId, attachmentId));
     }
 
@@ -516,7 +515,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public List<ProfileAttachment> getProfileAttachments(final String profileId) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_ATTACHMENTS);
-        url = RestClientUtils.addQueryParams(url, params, false);
+        url = addQueryParams(url, params, false);
         return doGetForObject(url, profileAttachmentListTypeRef, profileId);
     }
 
@@ -538,6 +537,10 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public Profile setFailedLoginAttempts(final String profileId, final int failedLoginAttempts,
                                           final String... attributesToReturn) throws ProfileException {
         throw new NotImplementedException("This call is not intended to be call by external clients");
+    }
+
+    protected String addQueryParams(String url, MultiValueMap<String, String> params, boolean encodeValues) {
+        return url + HttpUtils.getQueryStringFromParams(params, encodeValues);
     }
 
 }

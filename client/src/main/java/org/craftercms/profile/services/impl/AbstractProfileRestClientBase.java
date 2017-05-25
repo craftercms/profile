@@ -18,8 +18,8 @@ package org.craftercms.profile.services.impl;
 
 import java.net.URI;
 
+import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.rest.AbstractRestClientBase;
-import org.craftercms.commons.rest.RestClientUtils;
 import org.craftercms.commons.rest.RestServiceException;
 import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.exceptions.ErrorCode;
@@ -67,8 +67,8 @@ public abstract class AbstractProfileRestClientBase extends AbstractRestClientBa
 
     protected MultiValueMap<String, String> createBaseParams() {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        RestClientUtils.addValue(ProfileConstants.PARAM_ACCESS_TOKEN_ID, accessTokenIdResolver.getAccessTokenId(),
-                                 params);
+        HttpUtils.addValue(ProfileConstants.PARAM_ACCESS_TOKEN_ID, accessTokenIdResolver.getAccessTokenId(),
+                           params);
 
         return params;
     }

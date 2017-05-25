@@ -1,6 +1,6 @@
 package org.craftercms.profile.services.impl;
 
-import org.craftercms.commons.rest.RestClientUtils;
+import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.profile.api.PersistentLogin;
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.exceptions.ProfileException;
@@ -19,9 +19,9 @@ public class AuthenticationServiceRestClient extends AbstractProfileRestClientBa
     @Override
     public Ticket authenticate(String tenantName, String username, String password) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
-        RestClientUtils.addValue(PARAM_USERNAME, username, params);
-        RestClientUtils.addValue(PARAM_PASSWORD, password, params);
+        HttpUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
+        HttpUtils.addValue(PARAM_USERNAME, username, params);
+        HttpUtils.addValue(PARAM_PASSWORD, password, params);
 
         String url = getAbsoluteUrl(BASE_URL_AUTHENTICATION + URL_AUTH_AUTHENTICATE);
 
@@ -31,7 +31,7 @@ public class AuthenticationServiceRestClient extends AbstractProfileRestClientBa
     @Override
     public Ticket createTicket(String profileId) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_PROFILE_ID, profileId, params);
+        HttpUtils.addValue(PARAM_PROFILE_ID, profileId, params);
 
         String url = getAbsoluteUrl(BASE_URL_AUTHENTICATION + URL_AUTH_CREATE_TICKET);
 
@@ -55,7 +55,7 @@ public class AuthenticationServiceRestClient extends AbstractProfileRestClientBa
     @Override
     public PersistentLogin createPersistentLogin(String profileId) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
-        RestClientUtils.addValue(PARAM_PROFILE_ID, profileId, params);
+        HttpUtils.addValue(PARAM_PROFILE_ID, profileId, params);
 
         String url = getAbsoluteUrl(BASE_URL_AUTHENTICATION + URL_AUTH_CREATE_PERSISTENT_LOGIN);
 
