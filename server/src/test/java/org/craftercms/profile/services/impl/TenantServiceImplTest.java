@@ -289,11 +289,11 @@ public class TenantServiceImplTest {
         Tenant expected = getTenant1();
         expected.getAttributeDefinitions().clear();
 
-        Map<String, String> defNameValuePair = Collections.singletonMap("name", ATTRIB1_NAME);
+        Map<String, Object> attrNameCondition = Collections.singletonMap("$in", Collections.singletonList(ATTRIB1_NAME));
 
         Map<String, Object> expectedPullParams = new HashMap<>();
         expectedPullParams.put("attributeDefinitions",
-                               Collections.singletonMap("$in", Collections.singletonList(defNameValuePair)));
+                               Collections.singletonMap("name", attrNameCondition));
 
         Tenant actual = tenantService.removeAttributeDefinitions(TENANT1_NAME, Collections.singletonList(ATTRIB1_NAME));
 

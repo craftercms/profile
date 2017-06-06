@@ -110,7 +110,7 @@ public class TenantUpdater {
 
     public void removeAttributeDefinitions(Collection<String> attributeNames) {
         List<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
-        List<Map<String, String>> pullValues = new ArrayList<>();
+        List<String> pullValues = new ArrayList<>();
 
         for (String attributeName : attributeNames) {
             for (Iterator<AttributeDefinition> iter = attributeDefinitions.iterator(); iter.hasNext();) {
@@ -118,14 +118,14 @@ public class TenantUpdater {
                 if (definition.getName().equals(attributeName)) {
                     iter.remove();
 
-                    pullValues.add(Collections.singletonMap("name", attributeName));
+                    pullValues.add(attributeName);
 
                     break;
                 }
             }
         }
 
-        updateHelper.pullAll("attributeDefinitions", pullValues);
+        updateHelper.pullAllDocuments("attributeDefinitions", "name", pullValues);
     }
 
     public void update() throws MongoDataException {
