@@ -13,6 +13,7 @@
         <property name="locations">
             <list>
                 <value>classpath:crafter/profile/client-config.properties</value>
+                <value>classpath*:crafter/profile/extension/client-config.properties</value>
             </list>
         </property>
     </bean>
