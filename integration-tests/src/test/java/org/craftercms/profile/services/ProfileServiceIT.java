@@ -79,11 +79,11 @@ public class ProfileServiceIT {
 
     private static final String ADMIN_USERNAME = "admin";
     private static final String ADMIN_PASSWORD = "admin";
-    private static final String ADMIN_EMAIL = "admin@craftersoftware.com";
+    private static final String ADMIN_EMAIL = "admin@example.com";
     private static final Set<String> ADMIN_ROLES = new HashSet<>(Arrays.asList("PROFILE_SUPERADMIN", "SOCIAL_ADMIN"));
 
     private static final String JDOE_USERNAME = "jdoe";
-    private static final String JDOE_EMAIL = "john.doe@craftersoftware.com";
+    private static final String JDOE_EMAIL = "john.doe@example.com";
     private static final Set<String> JDOE_ROLES = new HashSet<>(Arrays.asList("SOCIAL_ADMIN"));
     private static final String JDOE_FIRST_NAME = "John";
     private static final String JDOE_LAST_NAME = "Doe";
@@ -94,8 +94,8 @@ public class ProfileServiceIT {
     private static final String AVASQUEZ_USERNAME = "avasquez";
     private static final String AVASQUEZ_PASSWORD1 = "1234";
     private static final String AVASQUEZ_PASSWORD2 = "4321";
-    private static final String AVASQUEZ_EMAIL1 = "alfonso.vasquez@craftersoftware.com";
-    private static final String AVASQUEZ_EMAIL2 = "avasquez@rivetlogic.com";
+    private static final String AVASQUEZ_EMAIL1 = "alfonso.vasquez@example.com";
+    private static final String AVASQUEZ_EMAIL2 = "avasquez@example.com";
     private static final Set<String> AVASQUEZ_ROLES1 = SetUtils.asSet("PROFILE_SUPERADMIN", "SOCIAL_MODERATOR");
     private static final Set<String> AVASQUEZ_ROLES2 = SetUtils.asSet("SOCIAL_AUTHOR");
     private static final String AVASQUEZ_FIRST_NAME = "Alfonso";
@@ -106,11 +106,11 @@ public class ProfileServiceIT {
     private static final String RESET_PASSWORD_URL = "http://localhost:8983/crafter-profile" + BASE_URL_PROFILE +
                                                      URL_PROFILE_CHANGE_PASSWORD;
 
-    private static final String QUERY1 = "{email: 'admin@craftersoftware.com'}";
+    private static final String QUERY1 = "{email: 'admin@example.com'}";
     private static final String QUERY2 = "{attributes.subscriptions.targets: 'news'}";
     private static final String QUERY3 = "{roles: 'SOCIAL_ADMIN'}";
     private static final String INVALID_QUERY1 = "{tenant: 'default'}";
-    private static final String INVALID_QUERY2 = "{$where: \"this.email == 'admin@craftersoftware.com'\"}";
+    private static final String INVALID_QUERY2 = "{$where: \"this.email == 'admin@example.com'\"}";
 
     @Autowired
     private ProfileService profileService;

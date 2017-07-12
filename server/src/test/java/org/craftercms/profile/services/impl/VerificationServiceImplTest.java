@@ -52,14 +52,14 @@ import static org.mockito.Mockito.when;
  */
 public class VerificationServiceImplTest {
 
-    private static final String FROM = "noreply@craftersoftware.com";
+    private static final String FROM = "noreply@example.com";
     private static final String SUBJECT = "Verification Email";
     private static final String TEMPLATE_NAME = "verification-email.ftl";
     private static final int TOKEN_MAX_AGE = 86400;
 
     private static final String TENANT_NAME = "default";
     private static final ObjectId PROFILE_ID = new ObjectId();
-    private static final String PROFILE_EMAIL = "johndoe@gmail.com";
+    private static final String PROFILE_EMAIL = "john.doe@example.com";
 
     private static final String[] TO = {PROFILE_EMAIL};
 

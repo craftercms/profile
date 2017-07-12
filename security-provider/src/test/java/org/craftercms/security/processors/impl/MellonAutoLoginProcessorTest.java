@@ -42,7 +42,7 @@ public class MellonAutoLoginProcessorTest {
 
     private static final ObjectId PROFILE_ID = ObjectId.get();
     private static final String USERNAME = "jdoe";
-    private static final String EMAIL = "john.doe@craftersoftware.com";
+    private static final String EMAIL = "john.doe@example.com";
     private static final String FIRST_NAME = "John";
     private static final String LAST_NAME = "Doe";
     private static final String TICKET = UUID.randomUUID().toString();

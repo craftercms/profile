@@ -89,8 +89,8 @@ public class ProfileServiceImplTest {
     private static final String USERNAME2 = "user2";
     private static final String PASSWORD1 = "12345";
     private static final String PASSWORD2 = "54321";
-    private static final String EMAIL1 = "user1@craftersoftware.com";
-    private static final String EMAIL2 = "user2@craftersoftware.com";
+    private static final String EMAIL1 = "user1@example.com";
+    private static final String EMAIL2 = "user2@example.com";
     private static final String ROLE1 = "role1";
     private static final String ROLE2 = "role2";
     private static final Set<String> ROLES1 = new HashSet<>(Arrays.asList(ROLE1));
@@ -105,7 +105,7 @@ public class ProfileServiceImplTest {
     private static final String INVALID_QUERY3 = "{attributes.private.sub: 'test'}";
 
     private static final String VERIFICATION_URL = "http://localhost:8080/verifyProfile";
-    private static final String VERIFICATION_FROM_ADDRESS = "noreply@craftersoftware.com";
+    private static final String VERIFICATION_FROM_ADDRESS = "noreply@example.com";
     private static final String VERIFICATION_SUBJECT = "Verify Account";
     private static final String VERIFICATION_TEMPLATE_NAME = "verify-new-profile-email.ftl";
 
@@ -116,7 +116,7 @@ public class ProfileServiceImplTest {
     private static final int COUNT = 10;
 
     private static final String RESET_PASSWORD_URL = "http://localhost:8080/resetPassword";
-    private static final String RESET_PASSWORD_FROM_ADDRESS = "noreply@craftersoftware.com";
+    private static final String RESET_PASSWORD_FROM_ADDRESS = "noreply@example.com";
     private static final String RESET_PASSWORD_SUBJECT = "Reset Password";
     private static final String RESET_PASSWORD_TEMPLATE_NAME = "reset-password-email.ftl";
 

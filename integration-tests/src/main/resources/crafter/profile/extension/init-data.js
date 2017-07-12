@@ -83,7 +83,7 @@ if (db.profile.count() == 0) {
         {
             "username" : "admin",
             "password" : "4rQ8a67wAk1GRwIqHix5kYw1MORa49o83Y7zXQhBqT0=|j4vsWtPbYjO3LfSiQcnGlw==",
-            "email" : "admin@craftersoftware.com",
+            "email" : "admin@example.com",
             "verified" : false,
             "enabled" : true,
             "createdOn" : new Date(),
@@ -95,7 +95,7 @@ if (db.profile.count() == 0) {
         {
             "username" : "jdoe",
             "password" : "s1TISAqZA3jctSTy7Pz9sT/828eo3/PVfu5oyIBiyMM=|LyIyByTrB7RHJ0uePTL05w==",
-            "email" : "john.doe@craftersoftware.com",
+            "email" : "john.doe@example.com",
             "verified" : false,
             "enabled" : false,
             "createdOn" : new Date(),
