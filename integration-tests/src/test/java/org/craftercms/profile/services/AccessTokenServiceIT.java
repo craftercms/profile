@@ -31,8 +31,8 @@ public class AccessTokenServiceIT  {
     private static final String CRAFTER_SOCIAL_TOKEN_ID = "2ba3ac10-c43e-11e3-9c1a-0800200c9a66";
     private static final String RANDOM_APP_TOKEN_ID = "f91cdaf0-e5c6-11e3-ac10-0800200c9a66";
 
-    private static final String ADMIN_CONSOLE_APPLICATION = "adminconsole";
-    private static final String CRAFTER_STUDIO_APPLICATION = "crafterstudio";
+    private static final String ADMIN_CONSOLE_APPLICATION = "profile-admin";
+    private static final String CRAFTER_STUDIO_APPLICATION = "studio";
 
     private static final Date EXPIRES_ON = new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365));
 

@@ -50,7 +50,7 @@ public class AccessTokenCheckingInterceptorTest {
     private static final String NORMAL_TOKEN_ID = UUID.randomUUID().toString();
     private static final String EXPIRED_TOKEN_ID =   UUID.randomUUID().toString();
 
-    private static final String APPLICATION = "adminconsole";
+    private static final String APPLICATION = "profile-admin";
 
     private AccessTokenCheckingInterceptor interceptor;
     @Mock

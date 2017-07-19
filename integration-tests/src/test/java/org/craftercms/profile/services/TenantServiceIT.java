@@ -53,6 +53,9 @@ import static org.junit.Assert.fail;
 @ContextConfiguration("classpath:crafter/profile/extension/client-context.xml")
 public class TenantServiceIT {
 
+    private static final String ADMIN_CONSOLE_APPLICATION = "profile-admin";
+    private static final String CRAFTER_SOCIAL_APPLICATION = "social";
+
     private static final String DEFAULT_TENANT_NAME = "default";
     private static final String CORPORATE_TENANT_NAME = "corporate";
 
@@ -276,10 +279,10 @@ public class TenantServiceIT {
     }
 
     private AttributeDefinition getSubscriptionsAttributeDefinition() {
-        AttributePermission permission1 = new AttributePermission("adminconsole");
+        AttributePermission permission1 = new AttributePermission(ADMIN_CONSOLE_APPLICATION);
         permission1.allow(AttributePermission.ANY_ACTION);
 
-        AttributePermission permission2 = new AttributePermission("craftersocial");
+        AttributePermission permission2 = new AttributePermission(CRAFTER_SOCIAL_APPLICATION);
         permission2.allow(AttributePermission.ANY_ACTION);
 
         AttributeDefinition definition = new AttributeDefinition();
