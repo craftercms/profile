@@ -288,6 +288,7 @@
     </dependencies>
 
     <build>
+       <finalName>profile</finalName>
         <outputDirectory>target/classes</outputDirectory>
         <plugins>
             <plugin>
@@ -296,7 +297,6 @@
                 <version>2.4</version>
                 <configuration>
                     <attachClasses>true</attachClasses>
-                    <warName>${project.artifactId}</warName>
                     <archive>
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
