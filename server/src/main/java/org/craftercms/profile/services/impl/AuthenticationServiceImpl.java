@@ -20,7 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
-import org.craftercms.commons.crypto.CipherUtils;
+import org.craftercms.commons.crypto.CryptoUtils;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.logging.Logged;
 import org.craftercms.commons.mongo.MongoDataException;
@@ -123,7 +123,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         try {
-            if (!CipherUtils.matchPassword(profile.getPassword(), password)) {
+            if (!CryptoUtils.matchPassword(profile.getPassword(), password)) {
                 // Invalid password
                 countAsFail(profile);
                 throw new BadCredentialsException();
@@ -212,7 +212,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 throw new I10nProfileException(ERROR_KEY_CREATE_TICKET_ERROR, profile.getId());
             }
         } else {
-            throw new NoSuchProfileException(profileId);
+            throw new NoSuchProfileException.ById(profileId);
         }
     }
 
@@ -289,7 +289,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 throw new I10nProfileException(ERROR_KEY_CREATE_PERSISTENT_LOGIN_ERROR, profile.getId());
             }
         } else {
-            throw new NoSuchProfileException(profileId);
+            throw new NoSuchProfileException.ById(profileId);
         }
     }
 

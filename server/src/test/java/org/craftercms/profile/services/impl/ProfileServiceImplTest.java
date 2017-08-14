@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bson.types.ObjectId;
-import org.craftercms.commons.crypto.CipherUtils;
+import org.craftercms.commons.crypto.CryptoUtils;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.AccessToken;
@@ -264,7 +264,7 @@ public class ProfileServiceImplTest {
                                                       getAttributesWithoutPrivateAttribute(), VERIFICATION_URL);
 
         assertEqualProfiles(expected, actual);
-        assertTrue(CipherUtils.matchPassword(actual.getPassword(), PASSWORD2));
+        assertTrue(CryptoUtils.matchPassword(actual.getPassword(), PASSWORD2));
         assertNotNull(actual.getCreatedOn());
         assertNotNull(actual.getLastModified());
 
@@ -310,7 +310,7 @@ public class ProfileServiceImplTest {
                                                       getAttributesWithoutPrivateAttribute(), VERIFICATION_URL);
 
         assertEqualProfiles(expected, actual);
-        assertTrue(CipherUtils.matchPassword(actual.getPassword(), PASSWORD2));
+        assertTrue(CryptoUtils.matchPassword(actual.getPassword(), PASSWORD2));
         assertNotNull(actual.getCreatedOn());
         assertNotNull(actual.getLastModified());
 
@@ -328,7 +328,7 @@ public class ProfileServiceImplTest {
         expected.setId(PROFILE1_ID);
         expected.setTenant(TENANT1_NAME);
         expected.setUsername(USERNAME2);
-        expected.setPassword(CipherUtils.hashPassword(PASSWORD2));
+        expected.setPassword(CryptoUtils.hashPassword(PASSWORD2));
         expected.setEmail(EMAIL2);
         expected.setRoles(ROLES2);
         expected.setVerified(true);
@@ -882,7 +882,7 @@ public class ProfileServiceImplTest {
         Profile actual = profileService.changePassword(VERIFICATION_TOKEN_ID1, PASSWORD2);
 
         assertEqualProfiles(expected, actual);
-        assertTrue(CipherUtils.matchPassword(actual.getPassword(), PASSWORD2));
+        assertTrue(CryptoUtils.matchPassword(actual.getPassword(), PASSWORD2));
 
         ArgumentMatcher<Object> setParamMatcher = new ArgumentMatcher<Object>() {
 
@@ -984,7 +984,7 @@ public class ProfileServiceImplTest {
         profile.setId(PROFILE1_ID);
         profile.setTenant(TENANT1_NAME);
         profile.setUsername(USERNAME1);
-        profile.setPassword(CipherUtils.hashPassword(PASSWORD1));
+        profile.setPassword(CryptoUtils.hashPassword(PASSWORD1));
         profile.setEmail(EMAIL1);
         profile.setRoles(new HashSet<>(ROLES1));
         profile.setVerified(true);
@@ -1017,7 +1017,7 @@ public class ProfileServiceImplTest {
         profile.setId(PROFILE2_ID);
         profile.setTenant(TENANT2_NAME);
         profile.setUsername(USERNAME2);
-        profile.setPassword(CipherUtils.hashPassword(PASSWORD2));
+        profile.setPassword(CryptoUtils.hashPassword(PASSWORD2));
         profile.setEmail(EMAIL2);
         profile.setRoles(new HashSet<>(ROLES2));
         profile.setVerified(false);

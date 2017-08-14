@@ -190,7 +190,7 @@ public class AuthenticationServiceIT {
             authenticationService.createPersistentLogin(INVALID_PROFILE_ID);
             fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
         } catch (ProfileRestServiceException e) {
-            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
             assertEquals(ErrorCode.NO_SUCH_PROFILE, e.getErrorCode());
         }
     }
@@ -266,7 +266,7 @@ public class AuthenticationServiceIT {
             authenticationService.refreshPersistentLoginToken(INVALID_PERSISTENT_LOGIN_ID);
             fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
         } catch (ProfileRestServiceException e) {
-            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
             assertEquals(ErrorCode.NO_SUCH_PERSISTENT_LOGIN, e.getErrorCode());
         }
     }

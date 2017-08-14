@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.bson.types.ObjectId;
-import org.craftercms.commons.crypto.CipherUtils;
+import org.craftercms.commons.crypto.CryptoUtils;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.PersistentLogin;
@@ -219,7 +219,7 @@ public class AuthenticationServiceImplTest {
         Profile profile = new Profile();
         profile.setId(PROFILE1_ID);
         profile.setUsername(USERNAME1);
-        profile.setPassword(CipherUtils.hashPassword(PASSWORD));
+        profile.setPassword(CryptoUtils.hashPassword(PASSWORD));
         profile.setEnabled(true);
         profile.setTenant(TENANT_NAME);
 
@@ -230,7 +230,7 @@ public class AuthenticationServiceImplTest {
         Profile profile = new Profile();
         profile.setId(PROFILE2_ID);
         profile.setUsername(USERNAME2);
-        profile.setPassword(CipherUtils.hashPassword(PASSWORD));
+        profile.setPassword(CryptoUtils.hashPassword(PASSWORD));
         profile.setEnabled(false);
         profile.setTenant(TENANT_NAME);
 

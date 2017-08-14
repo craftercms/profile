@@ -40,7 +40,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.IterableUtils;
-import org.craftercms.commons.crypto.CipherUtils;
+import org.craftercms.commons.crypto.CryptoUtils;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.logging.Logged;
 import org.craftercms.commons.mail.EmailUtils;
@@ -220,7 +220,7 @@ public class ProfileServiceImpl implements ProfileService {
             Profile profile = new Profile();
             profile.setTenant(tenantName);
             profile.setUsername(username);
-            profile.setPassword(CipherUtils.hashPassword(password));
+            profile.setPassword(CryptoUtils.hashPassword(password));
             profile.setEmail(email);
             profile.setCreatedOn(now);
             profile.setLastModified(now);
@@ -273,35 +273,30 @@ public class ProfileServiceImpl implements ProfileService {
             throw new InvalidEmailAddressException(email);
         }
 
-        Profile profile = updateProfile(profileId, new UpdateCallback() {
-
-            @Override
-            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
-                if (StringUtils.isNotEmpty(username)) {
-                    profileUpdater.setUsername(username);
-                }
-                if (StringUtils.isNotEmpty(password)) {
-                    profileUpdater.setPassword(CipherUtils.hashPassword(password));
-                }
-                if (StringUtils.isNotEmpty(email)) {
-                    profileUpdater.setEmail(email);
-                }
-                if (enabled != null) {
-                    profileUpdater.setEnabled(enabled);
-                }
-                if (roles != null) {
-                    profileUpdater.setRoles(roles);
-                }
-                if (MapUtils.isNotEmpty(attributes)) {
-                    String tenantName = profileUpdater.getProfile().getTenant();
-
-                    rejectAttributesIfActionNotAllowed(tenantName, attributes.keySet(),
-                                                       AttributeAction.WRITE_ATTRIBUTE);
-
-                    profileUpdater.addAttributes(attributes);
-                }
+        Profile profile = updateProfile(profileId, profileUpdater -> {
+            if (StringUtils.isNotEmpty(username)) {
+                profileUpdater.setUsername(username);
             }
+            if (StringUtils.isNotEmpty(password)) {
+                profileUpdater.setPassword(CryptoUtils.hashPassword(password));
+            }
+            if (StringUtils.isNotEmpty(email)) {
+                profileUpdater.setEmail(email);
+            }
+            if (enabled != null) {
+                profileUpdater.setEnabled(enabled);
+            }
+            if (roles != null) {
+                profileUpdater.setRoles(roles);
+            }
+            if (MapUtils.isNotEmpty(attributes)) {
+                String tenantName = profileUpdater.getProfile().getTenant();
 
+                rejectAttributesIfActionNotAllowed(tenantName, attributes.keySet(),
+                                                   AttributeAction.WRITE_ATTRIBUTE);
+
+                profileUpdater.addAttributes(attributes);
+            }
         }, attributesToReturn);
 
         logger.debug(LOG_KEY_PROFILE_UPDATED, profile);
@@ -318,14 +313,9 @@ public class ProfileServiceImpl implements ProfileService {
             throw new NoSuchVerificationTokenException(verificationTokenId);
         }
 
-        Profile profile = updateProfile(token.getProfileId(), new UpdateCallback() {
-
-            @Override
-            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
-                profileUpdater.setEnabled(true);
-                profileUpdater.setVerified(true);
-            }
-
+        Profile profile = updateProfile(token.getProfileId(), profileUpdater -> {
+            profileUpdater.setEnabled(true);
+            profileUpdater.setVerified(true);
         }, attributesToReturn);
 
         verificationService.deleteToken(verificationTokenId);
@@ -337,14 +327,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Profile enableProfile(String profileId, String... attributesToReturn) throws ProfileException {
-        Profile profile = updateProfile(profileId, new UpdateCallback() {
-
-            @Override
-            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
-                profileUpdater.setEnabled(true);
-            }
-
-        }, attributesToReturn);
+        Profile profile = updateProfile(profileId, profileUpdater -> profileUpdater.setEnabled(true), attributesToReturn);
 
         logger.debug(LOG_KEY_PROFILE_ENABLED, profileId);
 
@@ -354,14 +337,8 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile setLastFailedLogin(String profileId, final Date lastFailedLogin, String... attributesToReturn)
         throws ProfileException {
-        Profile profile = updateProfile(profileId, new UpdateCallback() {
-
-            @Override
-            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
-               profileUpdater.setLastFailedLogin(lastFailedLogin);
-            }
-
-        }, attributesToReturn);
+        Profile profile = updateProfile(profileId, profileUpdater -> profileUpdater.setLastFailedLogin(lastFailedLogin),
+                                        attributesToReturn);
 
         logger.debug(LOG_KEY_PROFILE_ENABLED, profileId);
 
@@ -371,14 +348,8 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile setFailedLoginAttempts(String profileId, final int failedAttempts, String... attributesToReturn)
         throws ProfileException {
-        Profile profile = updateProfile(profileId, new UpdateCallback() {
-
-            @Override
-            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
-                 profileUpdater.setFailedLoginAttempts(failedAttempts);
-            }
-
-        }, attributesToReturn);
+        Profile profile = updateProfile(profileId, profileUpdater -> profileUpdater.setFailedLoginAttempts(failedAttempts),
+                                        attributesToReturn);
 
         logger.debug(LOG_KEY_PROFILE_ENABLED, profileId);
 
@@ -387,14 +358,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Profile disableProfile(String profileId, String... attributesToReturn) throws ProfileException {
-        Profile profile = updateProfile(profileId, new UpdateCallback() {
-
-            @Override
-            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
-                profileUpdater.setEnabled(false);
-            }
-
-        }, attributesToReturn);
+        Profile profile = updateProfile(profileId, profileUpdater -> profileUpdater.setEnabled(false), attributesToReturn);
 
         logger.debug(LOG_KEY_PROFILE_DISABLED, profileId);
 
@@ -404,14 +368,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile addRoles(String profileId, final Collection<String> roles,
                             String... attributesToReturn) throws ProfileException {
-        Profile profile = updateProfile(profileId, new UpdateCallback() {
-
-            @Override
-            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
-                profileUpdater.addRoles(roles);
-            }
-
-        }, attributesToReturn);
+        Profile profile = updateProfile(profileId, profileUpdater -> profileUpdater.addRoles(roles), attributesToReturn);
 
         logger.debug(LOG_KEY_PROFILE_ROLES_ADDED, roles, profileId);
 
@@ -421,14 +378,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile removeRoles(String profileId, final Collection<String> roles,
                                String... attributesToReturn) throws ProfileException {
-        Profile profile = updateProfile(profileId, new UpdateCallback() {
-
-            @Override
-            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
-                profileUpdater.removeRoles(roles);
-            }
-
-        }, attributesToReturn);
+        Profile profile = updateProfile(profileId, profileUpdater -> profileUpdater.removeRoles(roles), attributesToReturn);
 
         logger.debug(LOG_KEY_PROFILE_ROLES_REMOVED, roles, profileId);
 
@@ -443,17 +393,12 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile updateAttributes(String profileId, final Map<String, Object> attributes,
                                     String... attributesToReturn) throws ProfileException {
-        Profile profile = updateProfile(profileId, new UpdateCallback() {
+        Profile profile = updateProfile(profileId, profileUpdater -> {
+            String tenantName = profileUpdater.getProfile().getTenant();
 
-            @Override
-            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
-                String tenantName = profileUpdater.getProfile().getTenant();
+            rejectAttributesIfActionNotAllowed(tenantName, attributes.keySet(), AttributeAction.WRITE_ATTRIBUTE);
 
-                rejectAttributesIfActionNotAllowed(tenantName, attributes.keySet(), AttributeAction.WRITE_ATTRIBUTE);
-
-                profileUpdater.addAttributes(attributes);
-            }
-
+            profileUpdater.addAttributes(attributes);
         }, attributesToReturn);
 
         if (logger.isDebugEnabled()) {
@@ -466,17 +411,12 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile removeAttributes(String profileId, final Collection<String> attributeNames,
                                     String... attributesToReturn) throws ProfileException {
-        Profile profile = updateProfile(profileId, new UpdateCallback() {
+        Profile profile = updateProfile(profileId, profileUpdater -> {
+            String tenantName = profileUpdater.getProfile().getTenant();
 
-            @Override
-            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
-                String tenantName = profileUpdater.getProfile().getTenant();
+            rejectAttributesIfActionNotAllowed(tenantName, attributeNames, AttributeAction.REMOVE_ATTRIBUTE);
 
-                rejectAttributesIfActionNotAllowed(tenantName, attributeNames, AttributeAction.REMOVE_ATTRIBUTE);
-
-                profileUpdater.removeAttributes(attributeNames);
-            }
-
+            profileUpdater.removeAttributes(attributeNames);
         }, attributesToReturn);
 
         logger.debug(LOG_KEY_PROFILE_ATTRIBS_REMOVED, attributeNames, profileId);
@@ -710,14 +650,9 @@ public class ProfileServiceImpl implements ProfileService {
             throw new NoSuchVerificationTokenException(resetTokenId);
         }
 
-        Profile profile = updateProfile(token.getProfileId(), new UpdateCallback() {
-
-            @Override
-            public void doWithProfile(ProfileUpdater profileUpdater) throws ProfileException {
-                profileUpdater.setPassword(CipherUtils.hashPassword(newPassword));
-            }
-
-        }, attributesToReturn);
+        Profile profile = updateProfile(token.getProfileId(),
+                                        profileUpdater -> profileUpdater.setPassword(CryptoUtils.hashPassword(newPassword)),
+                                        attributesToReturn);
 
         verificationService.deleteToken(resetTokenId);
 
@@ -741,73 +676,76 @@ public class ProfileServiceImpl implements ProfileService {
         verificationService.deleteToken(tokenId);
     }
 
-
-
     @Override
-    public ProfileAttachment addProfileAttachment(final String profileId, final String attachmentName, final InputStream file) throws ProfileException {
-        final String storeName = "/"+profileId+"/"+ FilenameUtils.removeExtension(attachmentName);
+    public ProfileAttachment addProfileAttachment(final String profileId, final String attachmentName,
+                                                  final InputStream file) throws ProfileException {
+        String storeName = "/" + profileId + "/" + FilenameUtils.removeExtension(attachmentName);
+
         try {
-            ObjectId currentId=checkIfAttchmentExist(storeName);
-            final String mimeType = getAttachmentContentType(attachmentName); //Just
-            final FileInfo fileInfo;
-                if(currentId!=null) { // Update !!!
-                 fileInfo   = profileRepository.updateFile(currentId,file,storeName,mimeType,true);
-                }else {
-                    fileInfo = profileRepository.saveFile(file, storeName, getAttachmentContentType(attachmentName));
-                }
-            return fileInfoToProfileAttachment(fileInfo);
-        }catch(MongoDataException | FileExistsException |FileNotFoundException /*This should not happen*/
-            |SecurityException e ){
-            if(e instanceof SecurityException){
-                throw new ProfileException("The given ContentType is not allowed",e);
-            }else {
-                throw new ProfileException("Unable to Attach file to Profile",e);
+            ObjectId currentId = checkIfAttachmentExist(storeName);
+            String mimeType = getAttachmentContentType(attachmentName);
+            FileInfo fileInfo;
+
+            if (currentId != null) { // Update !!!
+                fileInfo = profileRepository.updateFile(currentId, file, storeName, mimeType, true);
+            } else {
+                fileInfo = profileRepository.saveFile(file, storeName, mimeType);
             }
+
+            return fileInfoToProfileAttachment(fileInfo);
+        } catch (MongoDataException | FileExistsException | FileNotFoundException e) {
+            throw new ProfileException("Unable to attach file to profile '" + profileId + "'", e);
         }
     }
 
-    private ObjectId checkIfAttchmentExist(final String storeName) {
-        ObjectId toReturn = null;
+    private ObjectId checkIfAttachmentExist(final String storeName) {
+        ObjectId attachmentId = null;
+
         try {
-            final FileInfo fileInfo = profileRepository.getFileInfo(storeName);
-            toReturn=fileInfo.getFileId();
-        }catch (FileNotFoundException ex){
+            attachmentId = profileRepository.getFileInfo(storeName).getFileId();
+        } catch (FileNotFoundException ex){
             // Nothing since files should be New !!!!
         }
-        return toReturn;
+
+        return attachmentId;
     }
 
 
     private ProfileAttachment fileInfoToProfileAttachment(final FileInfo fileInfo) {
-        if(fileInfo==null){
+        if(fileInfo == null){
             return new ProfileAttachment();
         }
-        final ProfileAttachment toReturn = new ProfileAttachment();
-        toReturn.setContentType(fileInfo.getContentType());;
-        toReturn.setMd5(fileInfo.getMd5());
-        toReturn.setFileName(fileInfo.getStoreName().substring(fileInfo.getStoreName().lastIndexOf("/")+1));
-        toReturn.setFileSize(fileInfo.getFileSize());
-        toReturn.setFileSizeBytes(fileInfo.getFileSizeBytes());
-        toReturn.setId(fileInfo.getFileId().toString());
-        return toReturn;
+
+        ProfileAttachment attachment = new ProfileAttachment();
+        attachment.setContentType(fileInfo.getContentType());;
+        attachment.setMd5(fileInfo.getMd5());
+        attachment.setFileName(fileInfo.getStoreName().substring(fileInfo.getStoreName().lastIndexOf("/")+1));
+        attachment.setFileSize(fileInfo.getFileSize());
+        attachment.setFileSizeBytes(fileInfo.getFileSizeBytes());
+        attachment.setId(fileInfo.getFileId().toString());
+
+        return attachment;
     }
 
-    private String getAttachmentContentType(final String attachmentName) {
-        String mimeType= new MimetypesFileTypeMap().getContentType(attachmentName);
-        if(validAttachmentMimeTypes.contains(mimeType)){
+    private String getAttachmentContentType(final String attachmentName) throws ProfileException {
+        String mimeType = new MimetypesFileTypeMap().getContentType(attachmentName);
+
+        if (validAttachmentMimeTypes.contains(mimeType)) {
             return mimeType;
         }
-        throw new SecurityException("File "+attachmentName+" if of content Type "+mimeType+" which is not allowed");
+
+        throw new ProfileException("File " + attachmentName + " if of content Type " + mimeType + " which is not allowed");
     }
 
     @Override
     public ProfileAttachment getProfileAttachmentInformation(final String profileId, final String attachmentId) throws ProfileException {
-        final FileInfo fileInfo;
+        FileInfo fileInfo;
         try {
             fileInfo = profileRepository.getFileInfo("/" + profileId + "/" + attachmentId);
+
             return fileInfoToProfileAttachment(fileInfo);
         } catch (FileNotFoundException e) {
-                return new ProfileAttachment();
+            return new ProfileAttachment();
         }
     }
 
@@ -815,6 +753,7 @@ public class ProfileServiceImpl implements ProfileService {
     public InputStream getProfileAttachment(final String attachmentId, final String profileId) throws ProfileException {
         try {
             final FileInfo fileInfo = profileRepository.readFile("/" + profileId + "/" + attachmentId);
+
             return fileInfo.getInputStream();
         } catch (FileNotFoundException e) {
             return new ByteArrayInputStream(new byte[0]);
@@ -823,12 +762,14 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public List<ProfileAttachment> getProfileAttachments(final String profileId) throws ProfileException {
-        final List<FileInfo> files = profileRepository.listFilesByName(profileId);
-        List<ProfileAttachment>toReturn= new ArrayList<>();
+        List<FileInfo> files = profileRepository.listFilesByName(profileId);
+        List<ProfileAttachment> attachments = new ArrayList<>();
+
         for (FileInfo file : files) {
-            toReturn.add(fileInfoToProfileAttachment(file));
+            attachments.add(fileInfoToProfileAttachment(file));
         }
-        return toReturn;
+
+        return attachments;
     }
 
     protected void checkIfManageProfilesIsAllowed(String tenantName) {
@@ -842,7 +783,7 @@ public class ProfileServiceImpl implements ProfileService {
         if (profile != null) {
             return profile;
         } else {
-            throw new NoSuchProfileException(id);
+            throw new NoSuchProfileException.ById(id);
         }
     }
 

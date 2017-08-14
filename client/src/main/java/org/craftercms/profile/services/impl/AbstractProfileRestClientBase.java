@@ -33,6 +33,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -87,15 +88,15 @@ public abstract class AbstractProfileRestClientBase extends AbstractRestClientBa
         return null;
     }
 
-    protected <T> T doPostForUpload(String url, MultiValueMap<String,Object> request, Class<T> responseType,
-                                    Object... uriVariables)
-        throws ProfileException {
+    protected <T> T doPostForUpload(String url, MultiValueMap<String, Object> request, Class<T> responseType,
+                                    Object... uriVariables) throws ProfileException {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(
-                request, headers);
-            return restTemplate.exchange(url,HttpMethod.POST,requestEntity,responseType,uriVariables).getBody();
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(request, headers);
+
+            return restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType, uriVariables).getBody();
         } catch (RestServiceException e) {
             handleRestServiceException(e);
         } catch (Exception e) {

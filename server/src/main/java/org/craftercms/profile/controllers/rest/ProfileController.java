@@ -19,6 +19,7 @@ package org.craftercms.profile.controllers.rest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,8 +65,7 @@ import static org.craftercms.profile.api.ProfileConstants.*;
 @Api(value = "profile", basePath = BASE_URL_PROFILE, description = "Profile operations")
 public class ProfileController {
 
-    private static final TypeReference<Map<String, Object>> ATTRIBUTES_TYPE_REFERENCE =
-        new TypeReference<Map<String, Object>>() {};
+    private static final TypeReference<Map<String, Object>> ATTRIBUTES_TYPE_REFERENCE = new TypeReference<Map<String, Object>>() {};
 
     protected ProfileService profileService;
     protected ObjectMapper objectMapper;
@@ -94,14 +94,13 @@ public class ProfileController {
         @ApiParam("The profile's roles") @RequestParam(value = PARAM_ROLE, required = false) Set<String> roles,
         @ApiParam("The additional attributes to add to the profile (specify a JSON string)")
         @RequestParam(value = PARAM_ATTRIBUTES, required = false) String serializedAttributes,
-        @ApiParam("The URL (sans token) the user needs to go in case it needs to verify the created profile " + ""
-            + "(verification depends on tenant)")
+        @ApiParam("The URL (sans token) the user needs to go in case it needs to verify the created profile " +
+                  "(verification depends on tenant)")
         @RequestParam(value = PARAM_VERIFICATION_URL, required = false)
         String verificationUrl) throws ProfileException {
         Map<String, Object> attributes = deserializeAttributes(serializedAttributes);
 
-        return profileService.createProfile(tenantName, username, password, email, enabled, roles, attributes,
-                                            verificationUrl);
+        return profileService.createProfile(tenantName, username, password, email, enabled, roles, attributes, verificationUrl);
     }
 
     @ApiOperation("Updates the profile's info")
@@ -127,8 +126,7 @@ public class ProfileController {
                                  String[] attributesToReturn) throws ProfileException {
         Map<String, Object> attributes = deserializeAttributes(serializedAttributes);
 
-        return profileService.updateProfile(profileId, username, password, email, enabled, roles, attributes,
-                                            attributesToReturn);
+        return profileService.updateProfile(profileId, username, password, email, enabled, roles, attributes, attributesToReturn);
     }
 
     @ApiOperation("Enables a profile")
@@ -201,8 +199,7 @@ public class ProfileController {
     @RequestMapping(value = URL_PROFILE_GET_ATTRIBUTES, method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> getAttributes(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId,
-                                             @ApiParam("The name of the attributes to return (don't specify to " +
-                                                 "return all)")
+                                             @ApiParam("The name of the attributes to return (don't specify to return all)")
                                              @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                              String[] attributesToReturn) throws ProfileException {
         return profileService.getAttributes(profileId, attributesToReturn);
@@ -241,8 +238,7 @@ public class ProfileController {
                       value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_DELETE_PROFILE, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void deleteProfile(
-        @ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId) throws ProfileException {
+    public void deleteProfile(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId) throws ProfileException {
         profileService.deleteProfile(profileId);
     }
 
@@ -259,7 +255,12 @@ public class ProfileController {
                                      @ApiParam("The name of the attributes to return (don't specify to return all)")
                                      @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                                      String[] attributesToReturn) throws ProfileException {
-        return profileService.getProfileByQuery(tenantName, query, attributesToReturn);
+        Profile profile = profileService.getProfileByQuery(tenantName, query, attributesToReturn);
+        if (profile != null) {
+            return profile;
+        } else {
+            throw new NoSuchProfileException.ByQuery(tenantName, query);
+        }
     }
 
     @ApiOperation("Returns the profile for the specified ID")
@@ -271,7 +272,12 @@ public class ProfileController {
                               @ApiParam("The name of the attributes to return (don't specify to return all)")
                               @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
                               String[] attributesToReturn) throws ProfileException {
-        return profileService.getProfile(profileId, attributesToReturn);
+        Profile profile = profileService.getProfile(profileId, attributesToReturn);
+        if (profile != null) {
+            return profile;
+        } else {
+            throw new NoSuchProfileException.ById(profileId);
+        }
     }
 
     @ApiOperation("Returns the user for the specified tenant and username")
@@ -283,9 +289,13 @@ public class ProfileController {
         @ApiParam("The tenant's name") @RequestParam(PARAM_TENANT_NAME) String tenantName,
         @ApiParam("The profile's username") @RequestParam(PARAM_USERNAME) String username,
         @ApiParam("The name of the attributes to return (don't specify to return all)")
-        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
-        String[] attributesToReturn) throws ProfileException {
-        return profileService.getProfileByUsername(tenantName, username, attributesToReturn);
+        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false) String[] attributesToReturn) throws ProfileException {
+        Profile profile = profileService.getProfileByUsername(tenantName, username, attributesToReturn);
+        if (profile != null) {
+            return profile;
+        } else {
+            throw new NoSuchProfileException.ByUsername(tenantName, username);
+        }
     }
 
     @ApiOperation("Returns the profile for the specified ticket")
@@ -296,9 +306,13 @@ public class ProfileController {
     public Profile getProfileByTicket(
         @ApiParam("The ID ticket of the authenticated profile") @RequestParam(PARAM_TICKET_ID) String ticketId,
         @ApiParam("The name of the attributes to return (don't specify to return all)")
-        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
-        String[] attributesToReturn) throws ProfileException {
-        return profileService.getProfileByTicket(ticketId, attributesToReturn);
+        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false) String[] attributesToReturn) throws ProfileException {
+        Profile profile = profileService.getProfileByTicket(ticketId, attributesToReturn);
+        if (profile != null) {
+            return profile;
+        } else {
+            throw new NoSuchProfileException.ByTicket(ticketId);
+        }
     }
 
     @ApiOperation("Returns the number of profiles of the specified tenant")
@@ -306,8 +320,7 @@ public class ProfileController {
                       value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_COUNT, method = RequestMethod.GET)
     @ResponseBody
-    public long getProfileCount(
-        @ApiParam("The tenant's name") @RequestParam(PARAM_TENANT_NAME) String tenantName) throws ProfileException {
+    public long getProfileCount(@ApiParam("The tenant's name") @RequestParam(PARAM_TENANT_NAME) String tenantName) throws ProfileException {
         return profileService.getProfileCount(tenantName);
     }
 
@@ -317,10 +330,9 @@ public class ProfileController {
     @RequestMapping(value = URL_TENANT_COUNT_BY_QUERY, method = RequestMethod.GET)
     @ResponseBody
     public long getProfileCount(@ApiParam("The tenant's name") @RequestParam(PARAM_TENANT_NAME) String tenantName,
-                                @ApiParam("The Mongo query used to search for the profiles. Must not contain " +
-                                    "the $where operator, the tenant's name (already specified) or any " +
-                                    "non-readable attribute by the application") @RequestParam(PARAM_QUERY)
-                                String query) throws ProfileException {
+                                @ApiParam("The Mongo query used to search for the profiles. Must not contain the $where operator, " +
+                                          "the tenant's name (already specified) or any non-readable attribute by the application")
+                                @RequestParam(PARAM_QUERY) String query) throws ProfileException {
         return profileService.getProfileCountByQuery(tenantName, query);
     }
 
@@ -331,22 +343,21 @@ public class ProfileController {
     @ResponseBody
     public List<Profile> getProfilesByQuery(
         @ApiParam("The tenant's name") @RequestParam(PARAM_TENANT_NAME) String tenantName,
-        @ApiParam("The Mongo query used to search for the profiles. Must not " +
-            "contain the $where operator, the tenant's name (already specified) " +
-            "or any non-readable attribute by the application") @RequestParam(PARAM_QUERY) String query,
-        @ApiParam("Profile attribute to sort the list by") @RequestParam(value = PARAM_SORT_BY, required = false)
-        String sortBy,
-        @ApiParam("The sort order (either ASC or DESC)") @RequestParam(value = PARAM_SORT_ORDER, required = false)
-        SortOrder sortOrder,
-        @ApiParam("From the entire list of results, the position where the " + "actual results should start (useful "
-            + "for pagination)")
+        @ApiParam("The Mongo query used to search for the profiles. Must not contain the $where operator, the tenant's name " +
+                  "(already specified) or any non-readable attribute by the application") @RequestParam(PARAM_QUERY) String query,
+        @ApiParam("Profile attribute to sort the list by") @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
+        @ApiParam("The sort order (either ASC or DESC)") @RequestParam(value = PARAM_SORT_ORDER, required = false) SortOrder sortOrder,
+        @ApiParam("From the entire list of results, the position where the " + "actual results should start (useful for pagination)")
         @RequestParam(value = PARAM_START, required = false) Integer start,
-        @ApiParam("The number of profiles to return") @RequestParam(value = PARAM_COUNT, required = false)
-        Integer count, @ApiParam("The name of the attributes to return (don't specify to " + "return all)")
-        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
-        String[] attributesToReturn) throws ProfileException {
-        return profileService.getProfilesByQuery(tenantName, query, sortBy, sortOrder, start, count,
-                                                 attributesToReturn);
+        @ApiParam("The number of profiles to return") @RequestParam(value = PARAM_COUNT, required = false) Integer count,
+        @ApiParam("The name of the attributes to return (don't specify to " + "return all)")
+        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false) String[] attributesToReturn) throws ProfileException {
+        List<Profile> profiles = profileService.getProfilesByQuery(tenantName, query, sortBy, sortOrder, start, count, attributesToReturn);
+        if (profiles != null) {
+            return profiles;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @ApiOperation("Returns a list of profiles for the specified list of IDs")
@@ -354,15 +365,18 @@ public class ProfileController {
                       value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_BY_IDS, method = RequestMethod.GET)
     @ResponseBody
-    public Iterable<Profile> getProfileByIds(
+    public List<Profile> getProfileByIds(
         @ApiParam("The IDs of the profiles to look for") @RequestParam(PATH_VAR_ID) List<String> profileIds,
-        @ApiParam("Profile attribute to sort the list by") @RequestParam(value = PARAM_SORT_BY, required = false)
-        String sortBy,
-        @ApiParam("The sort order (either ASC or DESC)") @RequestParam(value = PARAM_SORT_ORDER, required = false)
-        SortOrder sortOrder, @ApiParam("The name of the attributes to return (don't specify to " + "return all)")
-        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
-        String[] attributesToReturn) throws ProfileException {
-        return profileService.getProfilesByIds(profileIds, sortBy, sortOrder, attributesToReturn);
+        @ApiParam("Profile attribute to sort the list by") @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
+        @ApiParam("The sort order (either ASC or DESC)") @RequestParam(value = PARAM_SORT_ORDER, required = false) SortOrder sortOrder,
+        @ApiParam("The name of the attributes to return (don't specify to " + "return all)")
+        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false) String[] attributesToReturn) throws ProfileException {
+        List<Profile> profiles = profileService.getProfilesByIds(profileIds, sortBy, sortOrder, attributesToReturn);
+        if (profiles != null) {
+            return profiles;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @ApiOperation("Returns a range of profiles for the specified tenant")
@@ -370,20 +384,21 @@ public class ProfileController {
                       value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_RANGE, method = RequestMethod.GET)
     @ResponseBody
-    public Iterable<Profile> getProfileRange(
+    public List<Profile> getProfileRange(
         @ApiParam("The tenant's name") @RequestParam(PARAM_TENANT_NAME) String tenantName,
-        @ApiParam("Profile attribute to sort the list by") @RequestParam(value = PARAM_SORT_BY, required = false)
-        String sortBy,
-        @ApiParam("The sort order (either ASC or DESC)") @RequestParam(value = PARAM_SORT_ORDER, required = false)
-        SortOrder sortOrder,
-        @ApiParam("From the entire list of results, the position where the actual results should start (useful " +
-            "for pagination)")
+        @ApiParam("Profile attribute to sort the list by") @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
+        @ApiParam("The sort order (either ASC or DESC)") @RequestParam(value = PARAM_SORT_ORDER, required = false) SortOrder sortOrder,
+        @ApiParam("From the entire list of results, the position where the actual results should start (useful for pagination)")
         @RequestParam(value = PARAM_START, required = false) Integer start,
-        @ApiParam("The number of profiles to return") @RequestParam(value = PARAM_COUNT, required = false)
-        Integer count, @ApiParam("The name of the attributes to return (don't specify to " + "return all)")
-        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
-        String[] attributesToReturn) throws ProfileException {
-        return profileService.getProfileRange(tenantName, sortBy, sortOrder, start, count, attributesToReturn);
+        @ApiParam("The number of profiles to return") @RequestParam(value = PARAM_COUNT, required = false) Integer count,
+        @ApiParam("The name of the attributes to return (don't specify to " + "return all)")
+        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false) String[] attributesToReturn) throws ProfileException {
+        List<Profile> profiles = profileService.getProfileRange(tenantName, sortBy, sortOrder, start, count, attributesToReturn);
+        if (profiles != null) {
+            return profiles;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @ApiOperation("Returns a list of profiles for a specific role and tenant")
@@ -391,16 +406,19 @@ public class ProfileController {
                       value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_BY_ROLE, method = RequestMethod.GET)
     @ResponseBody
-    public Iterable<Profile> getProfilesByRole(
+    public List<Profile> getProfilesByRole(
         @ApiParam("The tenant's name") @RequestParam(PARAM_TENANT_NAME) String tenantName,
         @ApiParam("The role's name") @RequestParam(PARAM_ROLE) String role,
-        @ApiParam("Profile attribute to sort the list by") @RequestParam(value = PARAM_SORT_BY, required = false)
-        String sortBy,
-        @ApiParam("The sort order (either ASC or DESC)") @RequestParam(value = PARAM_SORT_ORDER, required = false)
-        SortOrder sortOrder, @ApiParam("The name of the attributes to return (don't specify to " + "return all)")
-        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
-        String[] attributesToReturn) throws ProfileException {
-        return profileService.getProfilesByRole(tenantName, role, sortBy, sortOrder, attributesToReturn);
+        @ApiParam("Profile attribute to sort the list by") @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
+        @ApiParam("The sort order (either ASC or DESC)") @RequestParam(value = PARAM_SORT_ORDER, required = false) SortOrder sortOrder,
+        @ApiParam("The name of the attributes to return (don't specify to " + "return all)")
+        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false) String[] attributesToReturn) throws ProfileException {
+        List<Profile> profiles = profileService.getProfilesByRole(tenantName, role, sortBy, sortOrder, attributesToReturn);
+        if (profiles != null) {
+            return profiles;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @ApiOperation("Returns the list of profiles that have the given attribute, with any value")
@@ -408,18 +426,20 @@ public class ProfileController {
                       value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_BY_EXISTING_ATTRIB, method = RequestMethod.GET)
     @ResponseBody
-    public Iterable<Profile> getProfilesByExistingAttribute(
+    public List<Profile> getProfilesByExistingAttribute(
         @ApiParam("The tenant's name") @RequestParam(PARAM_TENANT_NAME) String tenantName,
-        @ApiParam("The name of the attribute profiles must have") @RequestParam(PARAM_ATTRIBUTE_NAME)
-        String attributeName,
-        @ApiParam("Profile attribute to sort the list by") @RequestParam(value = PARAM_SORT_BY, required = false)
-        String sortBy,
-        @ApiParam("The sort order (either ASC or DESC)") @RequestParam(value = PARAM_SORT_ORDER, required = false)
-        SortOrder sortOrder, @ApiParam("The name of the attributes to return (don't " + "specify to return all)")
-        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN,
-            required = false) String[] attributesToReturn) throws ProfileException {
-        return profileService.getProfilesByExistingAttribute(tenantName, attributeName, sortBy, sortOrder,
-                                                             attributesToReturn);
+        @ApiParam("The name of the attribute profiles must have") @RequestParam(PARAM_ATTRIBUTE_NAME) String attributeName,
+        @ApiParam("Profile attribute to sort the list by") @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
+        @ApiParam("The sort order (either ASC or DESC)") @RequestParam(value = PARAM_SORT_ORDER, required = false) SortOrder sortOrder,
+        @ApiParam("The name of the attributes to return (don't " + "specify to return all)")
+        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false) String[] attributesToReturn) throws ProfileException {
+        List<Profile> profiles = profileService.getProfilesByExistingAttribute(tenantName, attributeName, sortBy, sortOrder,
+                                                                               attributesToReturn);
+        if (profiles != null) {
+            return profiles;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @ApiOperation("Returns the list of profiles that have the given attribute with the given value")
@@ -427,20 +447,21 @@ public class ProfileController {
                       value = "The ID of the application access token")
     @RequestMapping(value = URL_PROFILE_GET_BY_ATTRIB_VALUE, method = RequestMethod.GET)
     @ResponseBody
-    public Iterable<Profile> getProfilesByAttributeValue(
+    public List<Profile> getProfilesByAttributeValue(
         @ApiParam("The tenant's name") @RequestParam(PARAM_TENANT_NAME) String tenantName,
-        @ApiParam("The name of the attribute profiles must have") @RequestParam(PARAM_ATTRIBUTE_NAME)
-        String attributeName,
-        @ApiParam("The value of the attribute profiles must have") @RequestParam(PARAM_ATTRIBUTE_VALUE)
-        String attributeValue, @ApiParam("Profile attribute to sort the list by") @RequestParam(value = PARAM_SORT_BY,
-        required = false) String sortBy,
-        @ApiParam("The sort order (either ASC or DESC)") @RequestParam(value = PARAM_SORT_ORDER,
-            required = false) SortOrder sortOrder,
+        @ApiParam("The name of the attribute profiles must have") @RequestParam(PARAM_ATTRIBUTE_NAME) String attributeName,
+        @ApiParam("The value of the attribute profiles must have") @RequestParam(PARAM_ATTRIBUTE_VALUE) String attributeValue,
+        @ApiParam("Profile attribute to sort the list by") @RequestParam(value = PARAM_SORT_BY, required = false) String sortBy,
+        @ApiParam("The sort order (either ASC or DESC)") @RequestParam(value = PARAM_SORT_ORDER, required = false) SortOrder sortOrder,
         @ApiParam("The name of the attributes to return (don't " + "specify to return all)")
-        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN,
-            required = false) String[] attributesToReturn) throws ProfileException {
-        return profileService.getProfilesByAttributeValue(tenantName, attributeName, attributeValue, sortBy,
-                                                          sortOrder, attributesToReturn);
+        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false) String[] attributesToReturn) throws ProfileException {
+        List<Profile> profiles = profileService.getProfilesByAttributeValue(tenantName, attributeName, attributeValue, sortBy,
+                                                                            sortOrder, attributesToReturn);
+        if (profiles != null) {
+            return profiles;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @ApiOperation("Sends an email to the profile's user to indicate that the password needs to be reset")
@@ -449,8 +470,7 @@ public class ProfileController {
     @RequestMapping(value = URL_PROFILE_RESET_PASSWORD, method = RequestMethod.POST)
     @ResponseBody
     public Profile resetPassword(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId,
-                                 @ApiParam("The base URL to use to build the final URL the profile will use to " +
-                                     "reset their password.")
+                                 @ApiParam("The base URL to use to build the final URL the profile will use to reset their password.")
                                  @RequestParam(PARAM_RESET_PASSWORD_URL) String resetPasswordUrl,
                                  @ApiParam("The name of the attributes to return (don't specify to return all)")
                                  @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
@@ -467,8 +487,7 @@ public class ProfileController {
         @ApiParam("The reset token ID") @RequestParam(PARAM_RESET_TOKEN_ID) String resetTokenId,
         @ApiParam("The new password") @RequestParam(PARAM_NEW_PASSWORD) String newPassword,
         @ApiParam("The name of the attributes to return (don't specify to return all)")
-        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false)
-        String[] attributesToReturn) throws ProfileException {
+        @RequestParam(value = PARAM_ATTRIBUTE_TO_RETURN, required = false) String[] attributesToReturn) throws ProfileException {
         return profileService.changePassword(resetTokenId, newPassword, attributesToReturn);
     }
 
@@ -507,86 +526,88 @@ public class ProfileController {
         profileService.deleteVerificationToken(tokenId);
     }
 
-
     @ResponseBody
-    @RequestMapping(value = URL_PROFILE_UPLOAD_ATTACHMENT,method = RequestMethod.POST)
-    @ApiOperation(value = "Upload a attachment to the current profile.",
-        notes = "If the mime type of the attachment is not on the valid list will fail")
-    @ApiImplicitParam(name = "attachment", required = true, dataType = "file", paramType = "file",
-        value = "File to be uploaded")
-    public ProfileAttachment uploadProfileAttachment(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String
-        profileId,MultipartFile attachment) throws ProfileException {
-        final Profile profile = profileService.getProfile(profileId);
-        if(profile!=null) {
+    @RequestMapping(value = URL_PROFILE_UPLOAD_ATTACHMENT, method = RequestMethod.POST)
+    @ApiOperation(value = "Upload a attachment to the current profile.", notes = "If the mime type of the attachment is not on the valid " +
+                                                                                 "list will fail")
+    @ApiImplicitParam(name = "attachment", required = true, dataType = "file", paramType = "file", value = "File to be uploaded")
+    public ProfileAttachment uploadProfileAttachment(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId,
+                                                     MultipartFile attachment) throws ProfileException {
+        Profile profile = profileService.getProfile(profileId);
+        if (profile != null) {
             try {
-                return profileService.addProfileAttachment(profile.getId().toString(),attachment.getOriginalFilename(),
-                    attachment.getInputStream());
+                return profileService.addProfileAttachment(profile.getId().toString(), attachment.getOriginalFilename(),
+                                                           attachment.getInputStream());
             } catch (IOException e) {
-                throw new ProfileException("Unable to upload Attachment",e);
+                throw new ProfileException("Unable to upload Attachment", e);
             }
+        } else {
+            throw new NoSuchProfileException.ById(profileId);
         }
-        throw new NoSuchProfileException(profileId);
     }
 
 
-    @RequestMapping(value = URL_PROFILE_GET_ATTACHMENTS,method = RequestMethod.GET)
+    @RequestMapping(value = URL_PROFILE_GET_ATTACHMENTS, method = RequestMethod.GET)
     @ResponseBody
-    @ApiOperation(value = "Gets all attachments for the given Profile",
-        notes = "If profile does not exist")
-    public List<ProfileAttachment> getAttachments(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String
-                                  profileId) throws ProfileException,IOException {
-        final Profile profile = profileService.getProfile(profileId);
-        if(profile!=null) {
+    @ApiOperation(value = "Gets all attachments for the given Profile", notes = "If profile does not exist")
+    public List<ProfileAttachment> getAttachments(
+        @ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId) throws ProfileException, IOException {
+        Profile profile = profileService.getProfile(profileId);
+        if (profile != null) {
             return profileService.getProfileAttachments(profile.getId().toString());
+        } else {
+            throw new NoSuchProfileException.ById(profileId);
         }
-        throw new NoSuchProfileException(profileId);
     }
 
 
-    @RequestMapping(value = URL_PROFILE_GET_ATTACHMENTS_DETAILS,method = RequestMethod.GET)
+    @RequestMapping(value = URL_PROFILE_GET_ATTACHMENTS_DETAILS, method = RequestMethod.GET)
     @ResponseBody
-    @ApiOperation(value = "Gets all attachments for the given Profile",
-        notes = "If profile does not exist")
-    public ProfileAttachment getAttachmentDetails(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String
-                                                      profileId,@ApiParam("Attachment Id to get") @PathVariable(PATH_VAR_ATTACHMENT)
-    String attachmentId) throws ProfileException,IOException {
-        final Profile profile = profileService.getProfile(profileId);
-        if(profile!=null) {
-            return profileService.getProfileAttachmentInformation(profile.getId().toString(),attachmentId);
+    @ApiOperation(value = "Gets all attachments for the given Profile", notes = "If profile does not exist")
+    public ProfileAttachment getAttachmentDetails(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId,
+                                                  @ApiParam("Attachment Id to get") @PathVariable(PATH_VAR_ATTACHMENT)
+                                                      String attachmentId) throws ProfileException, IOException {
+        Profile profile = profileService.getProfile(profileId);
+        if (profile != null) {
+            return profileService.getProfileAttachmentInformation(profile.getId().toString(), attachmentId);
+        } else {
+            throw new NoSuchProfileException.ById(profileId);
         }
-        throw new NoSuchProfileException(profileId);
     }
 
-    @RequestMapping(value = URL_PROFILE_GET_ATTACHMENT,method = RequestMethod.GET)
-    @ApiOperation(value = "Gets the requested attachment of the given profile",
-        notes = "If Attachment or profile does not exist will throw error, content-type,content-legnth headers are set")
-     public void getAttachment(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String
-                                      profileId, @ApiParam("Attachment Id to get") @PathVariable(PATH_VAR_ATTACHMENT)
-    String attachmentId, HttpServletResponse response) throws ProfileException,IOException {
-        final Profile profile = profileService.getProfile(profileId);
-        if(profile!=null) {
-            InputStream input=null;
+    @RequestMapping(value = URL_PROFILE_GET_ATTACHMENT, method = RequestMethod.GET)
+    @ApiOperation(value = "Gets the requested attachment of the given profile", notes = "If Attachment or profile does not exist will " +
+                                                                                        "throw error, content-type,content-legnth headers" +
+                                                                                        " are set")
+    public void getAttachment(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId,
+                              @ApiParam("Attachment Id to get") @PathVariable(PATH_VAR_ATTACHMENT) String attachmentId,
+                              HttpServletResponse response) throws ProfileException, IOException {
+        Profile profile = profileService.getProfile(profileId);
+        if (profile != null) {
+            InputStream input = null;
             try {
                 input = profileService.getProfileAttachment(attachmentId, profile.getId().toString());
-                if(input!=null) {
-                    final ProfileAttachment attachment = profileService.getProfileAttachmentInformation(profile.getId().toString(), attachmentId);
+                if (input != null) {
+                    ProfileAttachment attachment = profileService.getProfileAttachmentInformation(profile.getId().toString(),
+                                                                                                  attachmentId);
+
                     response.setContentType(attachment.getContentType());
                     response.setContentLength((int)attachment.getFileSizeBytes());
+
                     IOUtils.copy(input, response.getOutputStream());
                 }
             } catch (ProfileException ex) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 response.setContentLength(0);
             } finally {
-                if(input!=null){
+                if (input != null) {
                     input.close();
                 }
             }
+        } else {
+            throw new NoSuchProfileException.ById(profileId);
         }
-        throw new NoSuchProfileException(profileId);
     }
-
-
 
     protected Map<String, Object> deserializeAttributes(String serializedAttributes)
         throws ParamDeserializationException {
