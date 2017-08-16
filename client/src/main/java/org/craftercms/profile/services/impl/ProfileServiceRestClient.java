@@ -480,7 +480,15 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_VERIFICATION_TOKEN);
         url = addQueryParams(url, createBaseParams(), false);
 
-        return doGetForObject(url, VerificationToken.class, tokenId);
+        try {
+            return doGetForObject(url, VerificationToken.class, tokenId);
+        } catch (ProfileRestServiceException e) {
+            if (e.getStatus() == HttpStatus.NOT_FOUND) {
+                return null;
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Override

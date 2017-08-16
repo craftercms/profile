@@ -25,6 +25,8 @@ import org.craftercms.profile.api.PersistentLogin;
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AuthenticationService;
+import org.craftercms.profile.exceptions.NoSuchPersistentLoginException;
+import org.craftercms.profile.exceptions.NoSuchTicketException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -98,7 +100,12 @@ public class AuthenticationController {
     @ResponseBody
     public Ticket getTicket(
         @ApiParam("The ID of the ticket") @PathVariable(PATH_VAR_ID) String ticketId) throws ProfileException {
-        return authenticationService.getTicket(ticketId);
+        Ticket ticket = authenticationService.getTicket(ticketId);
+        if (ticket != null) {
+            return ticket;
+        } else {
+            throw new NoSuchTicketException(ticketId);
+        }
     }
 
     @ApiOperation("Invalidates the given ticket")
@@ -128,7 +135,12 @@ public class AuthenticationController {
     @ResponseBody
     public PersistentLogin getPersistentLogin(
         @ApiParam("The ID of the persistent login") @PathVariable(PATH_VAR_ID) String loginId) throws ProfileException {
-        return authenticationService.getPersistentLogin(loginId);
+        PersistentLogin login = authenticationService.getPersistentLogin(loginId);
+        if (login != null) {
+            return login;
+        } else {
+            throw new NoSuchPersistentLoginException(loginId);
+        }
     }
 
     @ApiOperation("Refreshes the token of the specified persistent login")

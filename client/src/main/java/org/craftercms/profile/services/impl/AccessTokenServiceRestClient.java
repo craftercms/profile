@@ -5,7 +5,9 @@ import java.util.List;
 import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AccessTokenService;
+import org.craftercms.profile.exceptions.ProfileRestServiceException;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 
 import static org.craftercms.profile.api.ProfileConstants.BASE_URL_ACCESS_TOKEN;
 import static org.craftercms.profile.api.ProfileConstants.URL_ACCESS_TOKEN_CREATE;
@@ -34,7 +36,15 @@ public class AccessTokenServiceRestClient extends AbstractProfileRestClientBase 
     public AccessToken getToken(String id) throws ProfileException {
         String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_ACCESS_TOKEN + URL_ACCESS_TOKEN_GET);
 
-        return doGetForObject(url, AccessToken.class, id);
+        try {
+            return doGetForObject(url, AccessToken.class, id);
+        } catch (ProfileRestServiceException e) {
+            if (e.getStatus() == HttpStatus.NOT_FOUND) {
+                return null;
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Override

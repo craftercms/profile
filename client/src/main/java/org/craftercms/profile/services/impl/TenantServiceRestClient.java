@@ -24,7 +24,9 @@ import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.TenantService;
+import org.craftercms.profile.exceptions.ProfileRestServiceException;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.MultiValueMap;
 
 import static org.craftercms.profile.api.ProfileConstants.BASE_URL_TENANT;
@@ -65,7 +67,15 @@ public class TenantServiceRestClient extends AbstractProfileRestClientBase imple
     public Tenant getTenant(String name) throws ProfileException {
         String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_GET);
 
-        return doGetForObject(url, Tenant.class, name);
+        try {
+            return doGetForObject(url, Tenant.class, name);
+        } catch (ProfileRestServiceException e) {
+            if (e.getStatus() == HttpStatus.NOT_FOUND) {
+                return null;
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Override
