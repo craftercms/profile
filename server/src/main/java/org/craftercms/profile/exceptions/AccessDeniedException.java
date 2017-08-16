@@ -15,7 +15,7 @@ public class AccessDeniedException extends I10nProfileException {
     private static final String KEY_EXPIRED_ACCESS_TOKEN = "profile.accessToken.expiredAccessToken";
     private static final String KEY_NO_SUCH_ACCESS_TOKEN = "profile.accessToken.noSuchAccessToken";
 
-    private AccessDeniedException(String key, Object... args) {
+    protected AccessDeniedException(String key, Object... args) {
         super(key, args);
     }
 
