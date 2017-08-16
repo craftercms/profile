@@ -88,7 +88,7 @@ public class TenantServiceIT {
                 tenantService.createTenant(getCorporateTenant());
                 fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
             } catch (ProfileRestServiceException e) {
-                assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+                assertEquals(HttpStatus.CONFLICT, e.getStatus());
                 assertEquals(ErrorCode.TENANT_EXISTS, e.getErrorCode());
             }
         } finally {

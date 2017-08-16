@@ -22,11 +22,14 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.craftercms.profile.api.AttributeDefinition;
 import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.TenantService;
+import org.craftercms.profile.exceptions.NoSuchTenantException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -91,7 +94,12 @@ public class TenantController {
     @ResponseBody
     public Tenant getTenant(@ApiParam("The tenant's name")
                             @PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
-        return tenantService.getTenant(name);
+        Tenant tenant = tenantService.getTenant(name);
+        if (tenant != null) {
+            return tenant;
+        } else {
+            throw new NoSuchTenantException(name);
+        }
     }
 
     @ApiOperation(value = "Updates the given tenant")
@@ -128,8 +136,13 @@ public class TenantController {
                       value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_GET_ALL, method = RequestMethod.GET)
     @ResponseBody
-    public Iterable<Tenant> getAllTenants() throws ProfileException {
-        return tenantService.getAllTenants();
+    public List<Tenant> getAllTenants() throws ProfileException {
+        List<Tenant> tenants = tenantService.getAllTenants();
+        if (tenants != null) {
+            return tenants;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @ApiOperation(value = "Sets if new profiles for the specified tenant should be verified or not")

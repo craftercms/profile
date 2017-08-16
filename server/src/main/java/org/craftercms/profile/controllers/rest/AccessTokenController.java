@@ -5,11 +5,13 @@ import com.wordnik.swagger.annotations.ApiImplicitParam;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AccessTokenService;
+import org.craftercms.profile.exceptions.NoSuchAccessTokenException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -56,7 +58,12 @@ public class AccessTokenController {
     @ResponseBody
     public AccessToken getToken(
         @ApiParam("The ID of the token") @PathVariable(PATH_VAR_ID) String id) throws ProfileException {
-        return accessTokenService.getToken(id);
+        AccessToken token = accessTokenService.getToken(id);
+        if (token != null) {
+            return token;
+        } else {
+            throw new NoSuchAccessTokenException(id);
+        }
     }
 
     @ApiOperation("Returns all the access tokens in the DB")
@@ -65,7 +72,12 @@ public class AccessTokenController {
     @RequestMapping(value = URL_ACCESS_TOKEN_GET_ALL, method = RequestMethod.GET)
     @ResponseBody
     public List<AccessToken> getAllTokens() throws ProfileException {
-        return accessTokenService.getAllTokens();
+        List<AccessToken> tokens = accessTokenService.getAllTokens();
+        if (tokens != null) {
+            return tokens;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @ApiOperation("Returns all the access tokens in the DB")

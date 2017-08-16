@@ -24,8 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.TenantPermission;
-import org.craftercms.profile.exceptions.ExpiredAccessTokenException;
-import org.craftercms.profile.exceptions.MissingAccessTokenIdParamException;
+import org.craftercms.profile.exceptions.AccessDeniedException;
 import org.craftercms.profile.repositories.AccessTokenRepository;
 import org.craftercms.profile.utils.AccessTokenUtils;
 import org.junit.Before;
@@ -88,14 +87,14 @@ public class AccessTokenCheckingInterceptorTest {
         verify(tokenRepository).findByStringId(NORMAL_TOKEN_ID);
     }
 
-    @Test(expected = MissingAccessTokenIdParamException.class)
+    @Test(expected = AccessDeniedException.MissingAccessToken.class)
     public void testPreHandleMissingAccessTokenIdParam() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
 
         interceptor.preHandle(request, null, null);
     }
 
-    @Test(expected = ExpiredAccessTokenException.class)
+    @Test(expected = AccessDeniedException.ExpiredAccessToken.class)
     public void testPreHandleExpiredAccessToken() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter(ProfileConstants.PARAM_ACCESS_TOKEN_ID, EXPIRED_TOKEN_ID);

@@ -22,22 +22,21 @@ import org.craftercms.commons.security.exception.PermissionException;
 import org.craftercms.profile.api.exceptions.ErrorCode;
 import org.craftercms.profile.api.exceptions.ErrorDetails;
 import org.craftercms.profile.api.exceptions.ProfileException;
+import org.craftercms.profile.exceptions.AccessDeniedException;
 import org.craftercms.profile.exceptions.AccessTokenExistsException;
 import org.craftercms.profile.exceptions.AttributeAlreadyDefinedException;
 import org.craftercms.profile.exceptions.AttributeNotDefinedException;
-import org.craftercms.profile.exceptions.ParamDeserializationException;
 import org.craftercms.profile.exceptions.BadCredentialsException;
 import org.craftercms.profile.exceptions.DisabledProfileException;
-import org.craftercms.profile.exceptions.ExpiredAccessTokenException;
 import org.craftercms.profile.exceptions.InvalidEmailAddressException;
 import org.craftercms.profile.exceptions.InvalidQueryException;
-import org.craftercms.profile.exceptions.MissingAccessTokenIdParamException;
-import org.craftercms.profile.exceptions.NoSuchAccessTokenIdException;
+import org.craftercms.profile.exceptions.NoSuchAccessTokenException;
 import org.craftercms.profile.exceptions.NoSuchPersistentLoginException;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.exceptions.NoSuchTenantException;
 import org.craftercms.profile.exceptions.NoSuchTicketException;
 import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
+import org.craftercms.profile.exceptions.ParamDeserializationException;
 import org.craftercms.profile.exceptions.ProfileExistsException;
 import org.craftercms.profile.exceptions.TenantExistsException;
 import org.springframework.http.HttpHeaders;
@@ -58,40 +57,18 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class ExceptionHandlers extends ResponseEntityExceptionHandler {
 
-    private static final I10nLogger logger = new I10nLogger(ExceptionHandlers.class,
-            "crafter.profile.messages.logging");
+    private static final I10nLogger logger = new I10nLogger(ExceptionHandlers.class, "crafter.profile.messages.logging");
 
     private static final String LOG_KEY_REST_ERROR = "profile.rest.error";
 
-    @ExceptionHandler(AccessTokenExistsException.class)
-    public ResponseEntity<Object> handleAccessTokenExistsException(AccessTokenExistsException e, WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.ACCESS_TOKEN_EXISTS, request);
-    }
-
-    @ExceptionHandler(MissingAccessTokenIdParamException.class)
-    public ResponseEntity<Object> handleMissingAccessTokenIdParamException(MissingAccessTokenIdParamException e,
-                                                                           WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.UNAUTHORIZED, ErrorCode.MISSING_ACCESS_TOKEN_ID_PARAM, request);
-    }
-
-    @ExceptionHandler(NoSuchAccessTokenIdException.class)
-    public ResponseEntity<Object> handleNoSuchAccessTokenException(NoSuchAccessTokenIdException e, WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.NO_SUCH_ACCESS_TOKEN_ID, request);
-    }
-
-    @ExceptionHandler(ExpiredAccessTokenException.class)
-    public ResponseEntity<Object> handleExpiredAccessTokenException(ExpiredAccessTokenException e, WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.EXPIRED_ACCESS_TOKEN, request);
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException e, WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.ACCESS_DENIED, request);
     }
 
     @ExceptionHandler(ActionDeniedException.class)
-    public ResponseEntity<Object> handleAccessDeniedException(ActionDeniedException e, WebRequest request) {
+    public ResponseEntity<Object> handleActionDeniedException(ActionDeniedException e, WebRequest request) {
         return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.ACTION_DENIED, request);
-    }
-
-    @ExceptionHandler(NoSuchTenantException.class)
-    public ResponseEntity<Object> handleNoSuchTenantException(NoSuchTenantException e, WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.NOT_FOUND, ErrorCode.NO_SUCH_TENANT, request);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
@@ -102,6 +79,16 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DisabledProfileException.class)
     public ResponseEntity<Object> handleDisabledProfileException(DisabledProfileException e, WebRequest request) {
         return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.DISABLED_PROFILE, request);
+    }
+
+    @ExceptionHandler(NoSuchAccessTokenException.class)
+    public ResponseEntity<Object> handleNoSuchAccessTokenException(NoSuchAccessTokenException e, WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.NOT_FOUND, ErrorCode.NO_SUCH_ACCESS_TOKEN_ID, request);
+    }
+
+    @ExceptionHandler(NoSuchTenantException.class)
+    public ResponseEntity<Object> handleNoSuchTenantException(NoSuchTenantException e, WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.NOT_FOUND, ErrorCode.NO_SUCH_TENANT, request);
     }
 
     @ExceptionHandler(NoSuchProfileException.class)
@@ -123,7 +110,7 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NoSuchVerificationTokenException.class)
     public ResponseEntity<Object> handleNoSuchVerificationTokenException(NoSuchVerificationTokenException e,
                                                                          WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.FORBIDDEN, ErrorCode.NO_SUCH_VERIFICATION_TOKEN, request);
+        return handleExceptionInternal(e, HttpStatus.NOT_FOUND, ErrorCode.NO_SUCH_VERIFICATION_TOKEN, request);
     }
 
     @ExceptionHandler(InvalidEmailAddressException.class)
@@ -155,14 +142,19 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.PARAM_DESERIALIZATION_ERROR, request);
     }
 
+    @ExceptionHandler(AccessTokenExistsException.class)
+    public ResponseEntity<Object> handleAccessTokenExistsException(AccessTokenExistsException e, WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.CONFLICT, ErrorCode.ACCESS_TOKEN_EXISTS, request);
+    }
+
     @ExceptionHandler(TenantExistsException.class)
     public ResponseEntity<Object> handleTenantExistsException(TenantExistsException e, WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.TENANT_EXISTS, request);
+        return handleExceptionInternal(e, HttpStatus.CONFLICT, ErrorCode.TENANT_EXISTS, request);
     }
 
     @ExceptionHandler(ProfileExistsException.class)
     public ResponseEntity<Object> handleProfileExistsException(ProfileExistsException e, WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.PROFILE_EXISTS, request);
+        return handleExceptionInternal(e, HttpStatus.CONFLICT, ErrorCode.PROFILE_EXISTS, request);
     }
 
     @ExceptionHandler(InvalidQueryException.class)

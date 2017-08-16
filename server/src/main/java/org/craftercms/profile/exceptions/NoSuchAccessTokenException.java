@@ -19,16 +19,16 @@ package org.craftercms.profile.exceptions;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 
 /**
- * Thrown when the access token ID param is missing from the request.
+ * Thrown when a specified access token ID doesn't correspond to any known access token.
  *
  * @author avasquez
  */
-public class MissingAccessTokenIdParamException extends I10nProfileException {
+public class NoSuchAccessTokenException extends I10nProfileException {
 
-    private static final String KEY = "profile.accessToken.missingAccessTokenId";
+    private static final String KEY = "profile.accessToken.noSuchAccessToken";
 
-    public MissingAccessTokenIdParamException() {
-        super(KEY);
+    public NoSuchAccessTokenException(String id) {
+        super(KEY, id);
     }
 
 }
