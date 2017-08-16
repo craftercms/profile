@@ -535,6 +535,12 @@ public class ProfileServiceIT {
         Profile profile = profileService.getProfile(profileId.toString());
 
         assertAdminProfile(profile);
+
+        // Try with unknown profile ID
+        profileId = ObjectId.get();
+        profile = profileService.getProfile(profileId.toString());
+
+        assertNull(profile);
     }
 
     @Test
@@ -542,25 +548,26 @@ public class ProfileServiceIT {
         Profile profile = profileService.getProfileByUsername(DEFAULT_TENANT, ADMIN_USERNAME);
 
         assertAdminProfile(profile);
+
+        // Try with unknown username
+        profile = profileService.getProfileByUsername(DEFAULT_TENANT, "unknown");
+
+        assertNull(profile);
     }
 
     @Test
     public void testGetProfileByTicket() throws Exception {
         Ticket ticket = authenticationService.authenticate(DEFAULT_TENANT, ADMIN_USERNAME, ADMIN_PASSWORD);
-        Profile profile = profileService.getProfileByTicket(ticket.getId().toString());
+        Profile profile = profileService.getProfileByTicket(ticket.getId());
 
         assertAdminProfile(profile);
 
-        authenticationService.invalidateTicket(ticket.getId().toString());
+        authenticationService.invalidateTicket(ticket.getId());
 
         // Try with invalid ticket
-        try {
-            profileService.getProfileByTicket("507c7f79bcf86cd7994f6c0e");
-            fail("Exception " + ProfileRestServiceException.class.getName() + " expected");
-        } catch (ProfileRestServiceException e) {
-            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-            assertEquals(ErrorCode.NO_SUCH_TICKET, e.getErrorCode());
-        }
+        profile = profileService.getProfileByTicket("507c7f79bcf86cd7994f6c0e");
+
+        assertNull(profile);
     }
 
     @Test

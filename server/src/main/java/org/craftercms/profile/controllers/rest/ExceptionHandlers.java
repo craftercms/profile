@@ -91,7 +91,7 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NoSuchTenantException.class)
     public ResponseEntity<Object> handleNoSuchTenantException(NoSuchTenantException e, WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.NO_SUCH_TENANT, request);
+        return handleExceptionInternal(e, HttpStatus.NOT_FOUND, ErrorCode.NO_SUCH_TENANT, request);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
@@ -106,18 +106,18 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NoSuchProfileException.class)
     public ResponseEntity<Object> handleNoSuchProfileException(NoSuchProfileException e, WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.NO_SUCH_PROFILE, request);
+        return handleExceptionInternal(e, HttpStatus.NOT_FOUND, ErrorCode.NO_SUCH_PROFILE, request);
     }
 
     @ExceptionHandler(NoSuchTicketException.class)
     public ResponseEntity<Object> handleNoSuchTicketException(NoSuchTicketException e, WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.NO_SUCH_TICKET, request);
+        return handleExceptionInternal(e, HttpStatus.NOT_FOUND, ErrorCode.NO_SUCH_TICKET, request);
     }
 
     @ExceptionHandler(NoSuchPersistentLoginException.class)
     public ResponseEntity<Object> handleNoSuchPersistentLoginException(NoSuchPersistentLoginException e,
                                                                        WebRequest request) {
-        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.NO_SUCH_PERSISTENT_LOGIN, request);
+        return handleExceptionInternal(e, HttpStatus.NOT_FOUND, ErrorCode.NO_SUCH_PERSISTENT_LOGIN, request);
     }
 
     @ExceptionHandler(NoSuchVerificationTokenException.class)
@@ -195,7 +195,7 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
             logger.debug(LOG_KEY_REST_ERROR, ex, ((ServletWebRequest) request).getRequest().getRequestURI(), status);
         }
 
-        return new ResponseEntity<Object>(new ErrorDetails(errorCode, ex.getLocalizedMessage()), headers, status);
+        return new ResponseEntity<>(new ErrorDetails(errorCode, ex.getLocalizedMessage()), headers, status);
     }
 
 }

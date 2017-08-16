@@ -416,8 +416,7 @@ public interface ProfileService {
      * @return A Profile Attachment Contains all the information of the Actual Attachment (including the id);
      * @throws ProfileException If attachment can not be saved;
      */
-    ProfileAttachment addProfileAttachment(String profileId, String attachmentName, InputStream file) throws
-        ProfileException;
+    ProfileAttachment addProfileAttachment(String profileId, String attachmentName, InputStream file) throws ProfileException;
 
     /**
      * Gets Profile attachment Information.

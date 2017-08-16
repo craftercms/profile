@@ -44,9 +44,12 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileAttachment;
 import org.craftercms.profile.api.services.ProfileService;
+import org.craftercms.profile.exceptions.ProfileRestServiceException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.PathResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -72,6 +75,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
 
     public static final String ERROR_KEY_ATTRIBUTES_SERIALIZATION_ERROR = "profile.client.attributes.serializationError";
     public static final String ERROR_KEY_INVALID_URI_ERROR = "profile.client.invalidUri";
+    public static final String ERROR_KEY_TMP_COPY_FAILED = "profile.client.attachment.tmpCopyFailed";
 
     private ObjectMapper objectMapper;
 
@@ -227,8 +231,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     }
 
     @Override
-    public Profile getProfileByQuery(String tenantName, String query, String... attributesToReturn)
-            throws ProfileException {
+    public Profile getProfileByQuery(String tenantName, String query, String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         HttpUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
         HttpUtils.addValue(PARAM_QUERY, query, params);
@@ -241,6 +244,12 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
             return doGetForObject(new URI(url), Profile.class);
         } catch (URISyntaxException e) {
             throw new I10nProfileException(ERROR_KEY_INVALID_URI_ERROR, url);
+        } catch (ProfileRestServiceException e) {
+            if (e.getStatus() == HttpStatus.NOT_FOUND) {
+                return null;
+            } else {
+                throw e;
+            }
         }
     }
 
@@ -252,12 +261,19 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET);
         url = addQueryParams(url, params, false);
 
-        return doGetForObject(url, Profile.class, profileId);
+        try {
+            return doGetForObject(url, Profile.class, profileId);
+        } catch (ProfileRestServiceException e) {
+            if (e.getStatus() == HttpStatus.NOT_FOUND) {
+                return null;
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Override
-    public Profile getProfileByUsername(String tenantName, String username, String... attributesToReturn)
-            throws ProfileException {
+    public Profile getProfileByUsername(String tenantName, String username, String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         HttpUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
         HttpUtils.addValue(PARAM_USERNAME, username, params);
@@ -266,7 +282,15 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_USERNAME);
         url = addQueryParams(url, params, false);
 
-        return doGetForObject(url, Profile.class);
+        try {
+            return doGetForObject(url, Profile.class);
+        } catch (ProfileRestServiceException e) {
+            if (e.getStatus() == HttpStatus.NOT_FOUND) {
+                return null;
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Override
@@ -278,7 +302,15 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_TICKET);
         url = addQueryParams(url, params, false);
 
-        return doGetForObject(url, Profile.class);
+        try {
+            return doGetForObject(url, Profile.class);
+        } catch (ProfileRestServiceException e) {
+            if (e.getStatus() == HttpStatus.NOT_FOUND) {
+                return null;
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Override
@@ -310,8 +342,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
 
     @Override
     public List<Profile> getProfilesByQuery(String tenantName, String query, String sortBy, SortOrder sortOrder,
-                                            Integer start, Integer count, String... attributesToReturn)
-            throws ProfileException {
+                                            Integer start, Integer count, String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         HttpUtils.addValue(PARAM_TENANT_NAME, tenantName, params);
         HttpUtils.addValue(PARAM_QUERY, query, params);
@@ -415,8 +446,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     }
 
     @Override
-    public Profile resetPassword(String profileId, String resetPasswordUrl, String... attributesToReturn)
-            throws ProfileException {
+    public Profile resetPassword(String profileId, String resetPasswordUrl, String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         HttpUtils.addValue(PARAM_RESET_PASSWORD_URL, resetPasswordUrl, params);
         HttpUtils.addValues(PARAM_ATTRIBUTE_TO_RETURN, attributesToReturn, params);
@@ -427,8 +457,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     }
 
     @Override
-    public Profile changePassword(String resetTokenId, String newPassword, String... attributesToReturn)
-            throws ProfileException {
+    public Profile changePassword(String resetTokenId, String newPassword, String... attributesToReturn) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
         HttpUtils.addValue(PARAM_RESET_TOKEN_ID, resetTokenId, params);
         HttpUtils.addValue(PARAM_NEW_PASSWORD, newPassword, params);
@@ -462,60 +491,59 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     }
 
     @Override
-    public ProfileAttachment addProfileAttachment(final String profileId, final String attachmentName, final
-    InputStream file) throws ProfileException {
+    public ProfileAttachment addProfileAttachment(String profileId, String attachmentName, InputStream file) throws ProfileException {
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_UPLOAD_ATTACHMENT);
         params.add(ProfileConstants.PARAM_ACCESS_TOKEN_ID, accessTokenIdResolver.getAccessTokenId());
-        Path dirTmp = null;
-        File tmp = null;
-        ProfileAttachment toReturn;
+
+        String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_UPLOAD_ATTACHMENT);
+
+        File tmpFile = null;
         try {
-            dirTmp = Files.createTempDirectory(FileUtils.getTempDirectory().toPath(), profileId);
-            tmp = new File(dirTmp.toFile(), attachmentName);
-            FileUtils.copyInputStreamToFile(file, new File(dirTmp.toFile(), attachmentName));
-            params.add("attachment", new PathResource(tmp.toPath()));
-            toReturn = doPostForUpload(url, params, ProfileAttachment.class, profileId);
+            tmpFile = File.createTempFile(profileId + "-" + attachmentName, "attachment");
+            FileUtils.copyInputStreamToFile(file, tmpFile);
+
+            params.add("attachment", new FileSystemResource(tmpFile));
+
+            return doPostForUpload(url, params, ProfileAttachment.class, profileId);
         } catch (IOException e) {
-            throw new ProfileException("Unable to upload file", e);
+            throw new I10nProfileException(ERROR_KEY_TMP_COPY_FAILED, e, attachmentName, profileId);
         } finally {
             try {
                 file.close();
-                if (tmp != null) {
-                    tmp.delete();
-                }
-                if (dirTmp != null) {
-                    tmp.delete();
-                }
+
+                FileUtils.forceDelete(tmpFile);
             } catch (Throwable e) {
-                //Possible unable to delete due folder not empty (should Happen)
             }
         }
-        return toReturn;
     }
 
     @Override
-    public ProfileAttachment getProfileAttachmentInformation(final String profileId, final String attachmentId)
-        throws ProfileException {
+    public ProfileAttachment getProfileAttachmentInformation(String profileId, String attachmentId) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
+
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_ATTACHMENTS_DETAILS);
         url = addQueryParams(url, params, false);
+
         return doGetForObject(url, ProfileAttachment.class, profileId, attachmentId);
     }
 
     @Override
     public InputStream getProfileAttachment(final String attachmentId, final String profileId) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
+
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_ATTACHMENT);
         url = addQueryParams(url, params, false);
+
         return new ByteArrayInputStream(doGetForObject(url, byteArrayTypeRef, profileId, attachmentId));
     }
 
     @Override
     public List<ProfileAttachment> getProfileAttachments(final String profileId) throws ProfileException {
         MultiValueMap<String, String> params = createBaseParams();
+
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_ATTACHMENTS);
         url = addQueryParams(url, params, false);
+
         return doGetForObject(url, profileAttachmentListTypeRef, profileId);
     }
 

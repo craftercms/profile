@@ -25,11 +25,45 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  */
 public class NoSuchProfileException extends I10nProfileException {
 
-    public static final String KEY = "profile.profile.noSuchProfile";
+    public static final String KEY_BY_ID = "profile.profile.noSuchProfileById";
+    public static final String KEY_BY_QUERY = "profile.profile.noSuchProfileByQuery";
+    public static final String KEY_BY_USERNAME = "profile.profile.noSuchProfileByUsername";
+    public static final String KEY_BY_TICKET = "profile.profile.noSuchProfileByTicket";
 
-    public NoSuchProfileException(String id) {
-        super(KEY, id);
+    protected NoSuchProfileException(String key, Object... args) {
+        super(key, args);
     }
 
+    public static class ById extends NoSuchProfileException {
+
+        public ById(String id) {
+            super(KEY_BY_ID, id);
+        }
+
+    }
+
+    public static class ByQuery extends NoSuchProfileException {
+
+        public ByQuery(String tenantName, String query) {
+            super(KEY_BY_QUERY, tenantName, query);
+        }
+
+    }
+
+    public static class ByUsername extends NoSuchProfileException {
+
+        public ByUsername(String tenantName, String query) {
+            super(KEY_BY_USERNAME, tenantName, query);
+        }
+
+    }
+
+    public static class ByTicket extends NoSuchProfileException {
+
+        public ByTicket(String id) {
+            super(KEY_BY_TICKET, id);
+        }
+
+    }
 
 }
