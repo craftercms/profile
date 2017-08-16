@@ -34,6 +34,7 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileAttachment;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
+import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
 import org.craftercms.profile.exceptions.ParamDeserializationException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpStatus;
@@ -511,7 +512,12 @@ public class ProfileController {
     @ResponseBody
     public VerificationToken getVerificationToken(
         @ApiParam("The token ID") @PathVariable(PATH_VAR_ID) String tokenId) throws ProfileException {
-        return profileService.getVerificationToken(tokenId);
+        VerificationToken token = profileService.getVerificationToken(tokenId);
+        if (token != null) {
+            return token;
+        } else {
+            throw new NoSuchVerificationTokenException(tokenId);
+        }
     }
 
     @ApiOperation(value = "Deletes a verification token when it's not needed anymore",

@@ -29,9 +29,7 @@ import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
-import org.craftercms.profile.exceptions.ExpiredAccessTokenException;
-import org.craftercms.profile.exceptions.MissingAccessTokenIdParamException;
-import org.craftercms.profile.exceptions.NoSuchAccessTokenIdException;
+import org.craftercms.profile.exceptions.AccessDeniedException;
 import org.craftercms.profile.repositories.AccessTokenRepository;
 import org.craftercms.profile.services.impl.AccessTokenServiceImpl;
 import org.craftercms.profile.utils.AccessTokenUtils;
@@ -39,9 +37,8 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
- * Filter that checks that in every call the access token ID is specified. If no access token ID is specified, a 401
- * is returned to the caller. If a token ID is found, and the token's expiration date hasn't been reached, the access
- * token is bound to the current request.
+ * Filter that checks that in every call the access token ID is specified, and that it's a recognized access token ID and
+ * is not expired.
  *
  * @author avasquez
  */
@@ -75,7 +72,7 @@ public class AccessTokenCheckingInterceptor extends HandlerInterceptorAdapter {
             if (token.getExpiresOn() == null || now.before(token.getExpiresOn())) {
                 AccessTokenUtils.setAccessToken(request, token);
             } else {
-                throw new ExpiredAccessTokenException(token.getId(), token.getApplication(), token.getExpiresOn());
+                throw new AccessDeniedException.ExpiredAccessToken(token.getId(), token.getApplication(), token.getExpiresOn());
             }
         }
 
@@ -110,10 +107,10 @@ public class AccessTokenCheckingInterceptor extends HandlerInterceptorAdapter {
 
                 return token;
             } else {
-                throw new NoSuchAccessTokenIdException(tokenId);
+                throw new AccessDeniedException.NoSuchAccessToken(tokenId);
             }
         } else {
-            throw new MissingAccessTokenIdParamException();
+            throw new AccessDeniedException.MissingAccessToken();
         }
     }
 

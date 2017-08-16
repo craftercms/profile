@@ -23,9 +23,8 @@ package org.craftercms.profile.api.exceptions;
  */
 public enum ErrorCode {
     ACCESS_TOKEN_EXISTS,
-    MISSING_ACCESS_TOKEN_ID_PARAM,
     NO_SUCH_ACCESS_TOKEN_ID,
-    EXPIRED_ACCESS_TOKEN,
+    ACCESS_DENIED,
     ACTION_DENIED,
     NO_SUCH_TENANT,
     BAD_CREDENTIALS,

@@ -5,6 +5,8 @@ import org.craftercms.profile.api.PersistentLogin;
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AuthenticationService;
+import org.craftercms.profile.exceptions.ProfileRestServiceException;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.MultiValueMap;
 
 import static org.craftercms.profile.api.ProfileConstants.*;
@@ -42,7 +44,15 @@ public class AuthenticationServiceRestClient extends AbstractProfileRestClientBa
     public Ticket getTicket(String ticketId) throws ProfileException {
         String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_AUTHENTICATION + URL_AUTH_GET_TICKET);
 
-        return doGetForObject(url, Ticket.class, ticketId);
+        try {
+            return doGetForObject(url, Ticket.class, ticketId);
+        } catch (ProfileRestServiceException e) {
+            if (e.getStatus() == HttpStatus.NOT_FOUND) {
+                return null;
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Override
@@ -66,7 +76,15 @@ public class AuthenticationServiceRestClient extends AbstractProfileRestClientBa
     public PersistentLogin getPersistentLogin(String loginId) throws ProfileException {
         String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_AUTHENTICATION + URL_AUTH_GET_PERSISTENT_LOGIN);
 
-        return doGetForObject(url, PersistentLogin.class, loginId);
+        try {
+            return doGetForObject(url, PersistentLogin.class, loginId);
+        } catch (ProfileRestServiceException e) {
+            if (e.getStatus() == HttpStatus.NOT_FOUND) {
+                return null;
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Override
