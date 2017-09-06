@@ -8,7 +8,7 @@
     <name>Crafter Profile Parent POM</name>
     <description>Crafter Profile Parent POM</description>
     <packaging>pom</packaging>
-
+    <url>http://craftercms.org</url>
     <organization>
         <name>CrafterCMS</name>
         <url>http://craftercms.org</url>
