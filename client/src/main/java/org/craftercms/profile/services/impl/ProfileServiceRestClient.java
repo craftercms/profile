@@ -502,6 +502,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     public ProfileAttachment addProfileAttachment(String profileId, String attachmentName, InputStream file) throws ProfileException {
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
         params.add(ProfileConstants.PARAM_ACCESS_TOKEN_ID, accessTokenIdResolver.getAccessTokenId());
+        params.add(ProfileConstants.PARAM_FILENAME, attachmentName);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_UPLOAD_ATTACHMENT);
 

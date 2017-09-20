@@ -538,11 +538,13 @@ public class ProfileController {
                                                                                  "list will fail")
     @ApiImplicitParam(name = "attachment", required = true, dataType = "file", paramType = "file", value = "File to be uploaded")
     public ProfileAttachment uploadProfileAttachment(@ApiParam("The profile's ID") @PathVariable(PATH_VAR_ID) String profileId,
+                                                     @RequestParam(name=PARAM_FILENAME, required = false) String filename,
                                                      MultipartFile attachment) throws ProfileException {
         Profile profile = profileService.getProfile(profileId);
         if (profile != null) {
+            String attachmentName = StringUtils.isNotBlank(filename) ? filename : attachment.getOriginalFilename();
             try {
-                return profileService.addProfileAttachment(profile.getId().toString(), attachment.getOriginalFilename(),
+                return profileService.addProfileAttachment(profile.getId().toString(), attachmentName,
                                                            attachment.getInputStream());
             } catch (IOException e) {
                 throw new ProfileException("Unable to upload Attachment", e);
