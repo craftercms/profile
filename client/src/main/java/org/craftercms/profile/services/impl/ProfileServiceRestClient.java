@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +35,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.profile.api.Profile;
-import org.craftercms.profile.api.ProfileConstants;
 import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.api.VerificationToken;
 import org.craftercms.profile.api.exceptions.I10nProfileException;
@@ -48,7 +45,6 @@ import org.craftercms.profile.exceptions.ProfileRestServiceException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.PathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -501,8 +497,8 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
     @Override
     public ProfileAttachment addProfileAttachment(String profileId, String attachmentName, InputStream file) throws ProfileException {
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-        params.add(ProfileConstants.PARAM_ACCESS_TOKEN_ID, accessTokenIdResolver.getAccessTokenId());
-        params.add(ProfileConstants.PARAM_FILENAME, attachmentName);
+        params.add(PARAM_ACCESS_TOKEN_ID, accessTokenIdResolver.getAccessTokenId());
+        params.add(PARAM_FILENAME, attachmentName);
 
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_UPLOAD_ATTACHMENT);
 
