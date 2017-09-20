@@ -127,6 +127,7 @@ public class ProfileConstants {
     public static final String PARAM_QUERY = "query";
     public static final String PARAM_TOKEN_ID = "tokenId";
     public static final String PARAM_PROFILE_ID = "profileId";
+    public static final String PARAM_FILENAME = "filename";
 
     private ProfileConstants() {
     }
