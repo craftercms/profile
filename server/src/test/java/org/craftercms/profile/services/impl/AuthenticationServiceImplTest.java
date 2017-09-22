@@ -113,7 +113,7 @@ public class AuthenticationServiceImplTest {
         Ticket ticket = authenticationService.authenticate(TENANT_NAME, USERNAME1, PASSWORD);
 
         assertNotNull(ticket);
-        assertEquals(PROFILE1_ID, ticket.getProfileId());
+        assertEquals(PROFILE1_ID.toString(), ticket.getProfileId());
         assertNotNull(ticket.getLastRequestTime());
 
         verify(profileService).getProfileByUsername(TENANT_NAME, USERNAME1, ProfileConstants.NO_ATTRIBUTE);
