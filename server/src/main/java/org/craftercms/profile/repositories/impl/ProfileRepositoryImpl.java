@@ -267,8 +267,7 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
             String query = getQueryFor(KEY_FIND_BY_TENANT_AND_ROLE_QUERY);
             Update update = getCollection().update(query, tenantName, role).multi();
 
-            WriteResult result = update.with(MODIFIER_REMOVE_ROLE, role);
-            checkCommandResult(result);
+            update.with(MODIFIER_REMOVE_ROLE, role);
         } catch (MongoException ex) {
             String msg = "Unable to remove role '" + role + "' from profiles of tenant '" + tenantName + "'";
             logger.error(msg, ex);
@@ -282,8 +281,7 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
             String query = getQueryFor(KEY_FIND_BY_TENANT_AND_EXISTING_ATTRIB_QUERY);
             Update update = getCollection().update(query, tenantName, attributeName).multi();
 
-            WriteResult result = update.with(MODIFIER_REMOVE_ATTRIBUTE, attributeName);
-            checkCommandResult(result);
+            update.with(MODIFIER_REMOVE_ATTRIBUTE, attributeName);
         } catch (MongoException ex) {
             String msg = "Unable to remove attribute with name '" + attributeName + "' from profiles of tenant '" +
                          tenantName + "'";
@@ -298,9 +296,7 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
         try {
             String query = getQueryFor(KEY_FIND_BY_TENANT_AND_NON_EXISTING_ATTRIB_QUERY);
             Update update = getCollection().update(query, tenantName, attributeName).multi();
-
-            WriteResult result = update.with(MODIFIER_UPDATE_ATTRIBUTE, attributeName, defaultValue);
-            checkCommandResult(result);
+            update.with(MODIFIER_UPDATE_ATTRIBUTE, attributeName, defaultValue);
         } catch (MongoException ex) {
             String msg = "Unable to add attribute with name '" + attributeName + "' to profiles of tenant '" +
                          tenantName + "'";
