@@ -43,7 +43,7 @@
     </scm>
 
     <properties>
-        <bson.version>2.12.4</bson.version>
+        <bson.version>3.5.0</bson.version>
     </properties>
 
     <dependencies>
