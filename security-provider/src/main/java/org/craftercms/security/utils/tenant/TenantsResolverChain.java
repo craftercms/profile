@@ -8,7 +8,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
- * {@link org.craftercms.profile.social.utils.TenantsResolver} that returns the first tenants resolved by any resolver.
+ * {@link TenantsResolver} that returns the first tenants resolved by any resolver.
  * If the flag {@code chainAllTenants} is set, instead all non empty tenants returned by the resolvers are returned.
  *
  * @author avasquez

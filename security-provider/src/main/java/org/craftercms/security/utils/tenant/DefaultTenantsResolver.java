@@ -3,7 +3,7 @@ package org.craftercms.security.utils.tenant;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
- * {@link org.craftercms.profile.social.utils.TenantsResolver} that uses default tenant values.
+ * {@link TenantsResolver} that uses default tenant values.
  *
  * @author avasquez
  */

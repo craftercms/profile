@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
- * {@link org.craftercms.profile.social.utils.TenantsResolver} that uses all the available tenants.
+ * {@link TenantsResolver} that uses all the available tenants.
  *
  * @author avasquez
  */
