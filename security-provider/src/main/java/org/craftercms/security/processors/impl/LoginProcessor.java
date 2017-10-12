@@ -170,8 +170,7 @@ public class LoginProcessor implements RequestSecurityProcessor {
     }
 
     protected boolean isLoginRequest(HttpServletRequest request) {
-        return HttpUtils.getRequestUriWithoutContextPath(request).equals(loginUrl) && request.getMethod().equals(
-                loginMethod);
+        return HttpUtils.getRequestUriWithoutContextPath(request).equals(loginUrl) && request.getMethod().equals(loginMethod);
     }
 
     protected String getUsername(HttpServletRequest request) {

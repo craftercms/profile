@@ -123,21 +123,21 @@
 
     <bean id="crafter.ticketCookieManager" class="org.craftercms.commons.http.CookieManager">
         <property name="maxAge" value="${crafter.security.cookie.ticket.maxAge}"/>
-        <property name="path" value="/"/>
+        <property name="path" value="${crafter.security.cookie.ticket.path}"/>
         <property name="secure" value="${crafter.security.cookie.ticket.secure}"/>
         <property name="httpOnly" value="${crafter.security.cookie.ticket.httpOnly}"/>
     </bean>
 
     <bean id="crafter.profileLastModifiedCookieManager" class="org.craftercms.commons.http.CookieManager">
         <property name="maxAge" value="${crafter.security.cookie.profileLastModified.maxAge}"/>
-        <property name="path" value="/"/>
+        <property name="path" value="${crafter.security.cookie.profileLastModified.path}"/>
         <property name="secure" value="${crafter.security.cookie.profileLastModified.secure}"/>
         <property name="httpOnly" value="${crafter.security.cookie.profileLastModified.httpOnly}"/>
     </bean>
 
     <bean id="crafter.rememberMeCookieManager" class="org.craftercms.commons.http.CookieManager">
         <property name="maxAge" value="${crafter.security.cookie.rememberMe.maxAge}"/>
-        <property name="path" value="/"/>
+        <property name="path" value="${crafter.security.cookie.rememberMe.path}"/>
         <property name="secure" value="${crafter.security.cookie.rememberMe.secure}"/>
         <property name="httpOnly" value="${crafter.security.cookie.rememberMe.httpOnly}"/>
     </bean>
