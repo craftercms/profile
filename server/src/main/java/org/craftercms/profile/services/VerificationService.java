@@ -46,7 +46,6 @@ public interface VerificationService {
      * @param subject           the subject of the email
      * @param templateName      the template name of the email
      *
-     * @return the verification token created
      */
     void sendEmail(VerificationToken token, Profile profile, String verificationUrl, String from, String subject,
                    String templateName) throws ProfileException;

@@ -222,7 +222,7 @@ public class ConnectionUtils {
      *
      * @param connection the connection where to retrieve the profile info from
      *
-     * @return
+     * @return the created profile
      */
     public static Profile createProfile(Connection<?> connection) {
         Profile profile = new Profile();
