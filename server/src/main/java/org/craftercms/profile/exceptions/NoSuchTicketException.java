@@ -31,4 +31,12 @@ public class NoSuchTicketException extends I10nProfileException {
         super(KEY, ticketId);
     }
 
+    public static class Expired extends NoSuchTicketException {
+
+        public Expired(String ticketId) {
+            super(ticketId);
+        }
+
+    }
+
 }
