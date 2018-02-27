@@ -298,15 +298,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_BY_TICKET);
         url = addQueryParams(url, params, false);
 
-        try {
-            return doGetForObject(url, Profile.class);
-        } catch (ProfileRestServiceException e) {
-            if (e.getStatus() == HttpStatus.NOT_FOUND) {
-                return null;
-            } else {
-                throw e;
-            }
-        }
+        return doGetForObject(url, Profile.class);
     }
 
     @Override
