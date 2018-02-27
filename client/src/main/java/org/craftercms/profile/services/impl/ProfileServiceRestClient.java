@@ -301,7 +301,7 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         try {
             return doGetForObject(url, Profile.class);
         } catch (ProfileRestServiceException e) {
-            if (e.getStatus() == HttpStatus.NOT_FOUND) {
+            if(e.getStatus() == HttpStatus.NOT_FOUND) {
                 return null;
             } else {
                 throw e;

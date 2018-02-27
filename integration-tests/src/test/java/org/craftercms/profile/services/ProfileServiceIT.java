@@ -555,19 +555,18 @@ public class ProfileServiceIT {
         assertNull(profile);
     }
 
-    @Test
+    @Test(expected = ProfileRestServiceException.class)
     public void testGetProfileByTicket() throws Exception {
         Ticket ticket = authenticationService.authenticate(DEFAULT_TENANT, ADMIN_USERNAME, ADMIN_PASSWORD);
-        Profile profile = profileService.getProfileByTicket(ticket.getId());
+        assertNotNull(ticket);
 
+        Profile profile = profileService.getProfileByTicket(ticket.getId());
         assertAdminProfile(profile);
 
         authenticationService.invalidateTicket(ticket.getId());
 
         // Try with invalid ticket
-        profile = profileService.getProfileByTicket("507c7f79bcf86cd7994f6c0e");
-
-        assertNull(profile);
+        profileService.getProfileByTicket("507c7f79bcf86cd7994f6c0e");
     }
 
     @Test
