@@ -27,6 +27,7 @@ import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.AuthenticationCache;
 import org.craftercms.security.authentication.AuthenticationManager;
 import org.craftercms.security.exception.AuthenticationException;
+import org.craftercms.security.exception.AuthenticationRequiredException;
 import org.craftercms.security.exception.AuthenticationSystemException;
 import org.craftercms.security.exception.BadCredentialsException;
 import org.craftercms.security.exception.DisabledUserException;
@@ -189,7 +190,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 
                 return profile;
             } else {
-                throw new AuthenticationSystemException("No profile found for ticket '" + ticketId + "'");
+                throw new AuthenticationRequiredException("No profile found for ticket '" + ticketId + "'");
             }
         } catch (ProfileRestServiceException e) {
             if (e.getErrorCode() == ErrorCode.NO_SUCH_TICKET) {

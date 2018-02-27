@@ -103,6 +103,7 @@
     </bean>
 
     <util:list id="crafter.securityProcessors">
+        <ref bean="crafter.securityExceptionProcessor"/>
         <ref bean="crafter.addSecurityCookiesProcessor"/>
         <ref bean="crafter.currentAuthenticationResolvingProcessor"/>
         <ref bean="crafter.returnCurrentAuthenticationProcessor"/>
@@ -111,7 +112,6 @@
         <ref bean="crafter.rememberMeAutoLoginProcessor"/>
         <ref bean="crafter.mellonAutoLoginProcessor"/>
         <ref bean="crafter.saveRequestAwareProcessor"/>
-        <ref bean="crafter.securityExceptionProcessor"/>
         <ref bean="crafter.urlAccessRestrictionCheckingProcessor"/>
     </util:list>
 
