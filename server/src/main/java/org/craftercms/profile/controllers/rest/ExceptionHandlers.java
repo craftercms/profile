@@ -96,6 +96,11 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, HttpStatus.NOT_FOUND, ErrorCode.NO_SUCH_PROFILE, request);
     }
 
+    @ExceptionHandler(NoSuchTicketException.Expired.class)
+    public ResponseEntity<Object> handleNoSuchTicketException(NoSuchTicketException.Expired e, WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST, ErrorCode.NO_SUCH_TICKET, request);
+    }
+
     @ExceptionHandler(NoSuchTicketException.class)
     public ResponseEntity<Object> handleNoSuchTicketException(NoSuchTicketException e, WebRequest request) {
         return handleExceptionInternal(e, HttpStatus.NOT_FOUND, ErrorCode.NO_SUCH_TICKET, request);

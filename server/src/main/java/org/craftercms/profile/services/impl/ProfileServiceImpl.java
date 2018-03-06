@@ -491,7 +491,7 @@ public class ProfileServiceImpl implements ProfileService {
         if (ticket != null) {
             return getProfile(ticket.getProfileId(), attributesToReturn);
         } else {
-            throw new NoSuchTicketException(ticketId);
+            throw new NoSuchTicketException.Expired(ticketId);
         }
     }
 
