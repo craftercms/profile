@@ -58,8 +58,6 @@
     <properties>
         <!-- Dependency versions -->
         <javax.mail.version>1.4.7</javax.mail.version>
-        <swagger.springmvc.version>0.9.5</swagger.springmvc.version>
-        <swagger.springmvc.version>0.4</swagger.springmvc.version>
     </properties>
 
     <dependencies>
@@ -267,18 +265,6 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
             <version>${logback.version}</version>
-        </dependency>
-
-        <!-- Swagger -->
-        <dependency>
-            <groupId>com.mangofactory</groupId>
-            <artifactId>swagger-springmvc</artifactId>
-            <version>0.9.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ajar</groupId>
-            <artifactId>swagger-spring-mvc-ui</artifactId>
-            <version>0.4</version>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>

@@ -16,11 +16,6 @@
  */
 package org.craftercms.profile.controllers.rest;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiImplicitParam;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -66,7 +61,6 @@ import static org.craftercms.profile.api.ProfileConstants.URL_TENANT_VERIFY_NEW_
  */
 @Controller
 @RequestMapping(BASE_URL_TENANT)
-@Api(value = "tenant", basePath = BASE_URL_TENANT, description = "Tenant operations")
 public class TenantController {
 
     private TenantService tenantService;
@@ -76,24 +70,15 @@ public class TenantController {
         this.tenantService = tenantService;
     }
 
-    @ApiOperation(value = "Creates the given tenant", notes = "The method will fail if there's already a tenant " +
-        "with the given name")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_CREATE, method = RequestMethod.POST)
     @ResponseBody
-    public Tenant createTenant(@ApiParam("The tenant to create")
-                               @RequestBody Tenant tenant) throws ProfileException {
+    public Tenant createTenant(@RequestBody Tenant tenant) throws ProfileException {
         return tenantService.createTenant(tenant);
     }
 
-    @ApiOperation(value = "Returns a tenant")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_GET, method = RequestMethod.GET)
     @ResponseBody
-    public Tenant getTenant(@ApiParam("The tenant's name")
-                            @PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
+    public Tenant getTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
         Tenant tenant = tenantService.getTenant(name);
         if (tenant != null) {
             return tenant;
@@ -102,38 +87,24 @@ public class TenantController {
         }
     }
 
-    @ApiOperation(value = "Updates the given tenant")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_UPDATE, method = RequestMethod.POST)
     @ResponseBody
-    public Tenant updateTenant(@ApiParam("The tenant to update")
-                               @RequestBody Tenant tenant) throws ProfileException {
+    public Tenant updateTenant(@RequestBody Tenant tenant) throws ProfileException {
         return tenantService.updateTenant(tenant);
     }
 
-    @ApiOperation(value = "Deletes a tenant")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_DELETE, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void deleteTenant(@ApiParam("The tenant's name")
-                             @PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
+    public void deleteTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
         tenantService.deleteTenant(name);
     }
 
-    @ApiOperation(value = "Returns the total number of tenants")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_COUNT, method = RequestMethod.GET)
     @ResponseBody
     public long getTenantCount() throws ProfileException {
         return tenantService.getTenantCount();
     }
 
-    @ApiOperation(value = "Returns a list with all the tenants")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_GET_ALL, method = RequestMethod.GET)
     @ResponseBody
     public List<Tenant> getAllTenants() throws ProfileException {
@@ -145,77 +116,46 @@ public class TenantController {
         }
     }
 
-    @ApiOperation(value = "Sets if new profiles for the specified tenant should be verified or not")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_VERIFY_NEW_PROFILES, method = RequestMethod.POST)
     @ResponseBody
-    public Tenant verifyNewProfiles(@ApiParam("The tenant's name")
-                                    @PathVariable(PATH_VAR_NAME) String tenantName,
-                                    @ApiParam("True to verify new profiles through email, false otherwise")
+    public Tenant verifyNewProfiles(@PathVariable(PATH_VAR_NAME) String tenantName,
                                     @RequestParam(PARAM_VERIFY) boolean verify) throws ProfileException {
         return tenantService.verifyNewProfiles(tenantName, verify);
     }
 
-    @ApiOperation(value = "Adds the given roles to the specified tenant")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_ADD_ROLES, method = RequestMethod.POST)
     @ResponseBody
-    public Tenant addRoles(@ApiParam("The tenant's name")
-                           @PathVariable(PATH_VAR_NAME) String tenantName,
-                           @ApiParam("The roles to add")
+    public Tenant addRoles(@PathVariable(PATH_VAR_NAME) String tenantName,
                            @RequestParam(PARAM_ROLE) Collection<String> roles) throws ProfileException {
         return tenantService.addRoles(tenantName, roles);
     }
 
-    @ApiOperation(value = "Removes the given roles from the specified tenant")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_REMOVE_ROLES, method = RequestMethod.POST)
     @ResponseBody
-    public Tenant removeRoles(@ApiParam("The tenant's name")
-                              @PathVariable(PATH_VAR_NAME) String tenantName,
-                              @ApiParam("The roles to remove")
+    public Tenant removeRoles(@PathVariable(PATH_VAR_NAME) String tenantName,
                               @RequestParam(PARAM_ROLE) Collection<String> roles) throws ProfileException {
         return tenantService.removeRoles(tenantName, roles);
     }
 
-    @ApiOperation(value = "Adds the given attribute definitions to the specified tenant")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_ADD_ATTRIBUTE_DEFINITIONS, method = RequestMethod.POST)
     @ResponseBody
-    public Tenant addAttributeDefinitions(@ApiParam("The tenant's name")
-                                          @PathVariable(PATH_VAR_NAME) String tenantName,
-                                          @ApiParam("The definitions to add")
+    public Tenant addAttributeDefinitions(@PathVariable(PATH_VAR_NAME) String tenantName,
                                           @RequestBody Collection<AttributeDefinition> attributeDefinitions)
             throws ProfileException {
         return tenantService.addAttributeDefinitions(tenantName, attributeDefinitions);
     }
 
-    @ApiOperation(value = "Updates the given attribute definitions of the specified tenant")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_UPDATE_ATTRIBUTE_DEFINITIONS, method = RequestMethod.POST)
     @ResponseBody
-    public Tenant updateAttributeDefinitions(@ApiParam("The tenant's name")
-                                             @PathVariable(PATH_VAR_NAME) String tenantName,
-                                             @ApiParam("The definitions to update (should have the same name as " +
-                                                 "definitions that the tenant already has)")
+    public Tenant updateAttributeDefinitions(@PathVariable(PATH_VAR_NAME) String tenantName,
                                              @RequestBody Collection<AttributeDefinition> attributeDefinitions)
             throws ProfileException {
         return tenantService.updateAttributeDefinitions(tenantName, attributeDefinitions);
     }
 
-    @ApiOperation(value = "Removes the given attribute definitions from the specified tenant")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_TENANT_REMOVE_ATTRIBUTE_DEFINITIONS, method = RequestMethod.POST)
     @ResponseBody
-    public Tenant removeAttributeDefinitions(@ApiParam("The tenant's name")
-                                             @PathVariable(PATH_VAR_NAME) String tenantName,
-                                             @ApiParam("The name of the attributes whose definitions should be removed")
+    public Tenant removeAttributeDefinitions(@PathVariable(PATH_VAR_NAME) String tenantName,
                                              @RequestParam(PARAM_ATTRIBUTE_NAME) Collection<String> attributeNames)
             throws ProfileException {
         return tenantService.removeAttributeDefinitions(tenantName, attributeNames);
