@@ -16,11 +16,6 @@
  */
 package org.craftercms.profile.controllers.rest;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiImplicitParam;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-
 import org.craftercms.profile.api.PersistentLogin;
 import org.craftercms.profile.api.Ticket;
 import org.craftercms.profile.api.exceptions.ProfileException;
@@ -59,7 +54,6 @@ import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_REFRESH_PERSI
  */
 @Controller
 @RequestMapping(BASE_URL_AUTHENTICATION)
-@Api(value = "authentication", basePath = BASE_URL_AUTHENTICATION, description = "Authentication operations")
 public class AuthenticationController {
 
     protected AuthenticationService authenticationService;
@@ -69,37 +63,24 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
-    @ApiOperation("Authenticates the user, and returns a ticket identifying the authentication")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_AUTH_AUTHENTICATE, method = RequestMethod.POST)
     @ResponseBody
-    public Ticket authenticate(@ApiParam("The tenant's name") @RequestParam(PARAM_TENANT_NAME) String tenantName,
-                               @ApiParam("The username") @RequestParam(PARAM_USERNAME) String username,
-                               @ApiParam("The password") @RequestParam(PARAM_PASSWORD)
+    public Ticket authenticate(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+                               @RequestParam(PARAM_USERNAME) String username,
+                               @RequestParam(PARAM_PASSWORD)
                                String password) throws ProfileException {
         return authenticationService.authenticate(tenantName, username, password);
     }
 
-    @ApiOperation(value = "Create a new ticket for the specified profile", notes = "This method should only be " +
-        "used when authentication is done through other means (like when authenticating through Facebook or " +
-        "Twitter) different than profile.")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_AUTH_CREATE_TICKET, method = RequestMethod.POST)
     @ResponseBody
-    public Ticket createTicket(
-        @ApiParam("The ID of the profile") @RequestParam(PARAM_PROFILE_ID) String profileId) throws ProfileException {
+    public Ticket createTicket(@RequestParam(PARAM_PROFILE_ID) String profileId) throws ProfileException {
         return authenticationService.createTicket(profileId);
     }
 
-    @ApiOperation("Returns the ticket object for the given ticket ID")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_AUTH_GET_TICKET, method = RequestMethod.GET)
     @ResponseBody
-    public Ticket getTicket(
-        @ApiParam("The ID of the ticket") @PathVariable(PATH_VAR_ID) String ticketId) throws ProfileException {
+    public Ticket getTicket(@PathVariable(PATH_VAR_ID) String ticketId) throws ProfileException {
         Ticket ticket = authenticationService.getTicket(ticketId);
         if (ticket != null) {
             return ticket;
@@ -108,33 +89,22 @@ public class AuthenticationController {
         }
     }
 
-    @ApiOperation("Invalidates the given ticket")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_AUTH_INVALIDATE_TICKET, method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
-    public void invalidateTicket(
-        @ApiParam("The ID of the ticket") @PathVariable(PATH_VAR_ID) String ticketId) throws ProfileException {
+    public void invalidateTicket(@PathVariable(PATH_VAR_ID) String ticketId) throws ProfileException {
         authenticationService.invalidateTicket(ticketId);
     }
 
-    @ApiOperation("Creates a persistent login, use for remember me functionality")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_AUTH_CREATE_PERSISTENT_LOGIN, method = RequestMethod.POST)
     @ResponseBody
-    public PersistentLogin createPersistentLogin(@ApiParam("The ID ID of the profile") @RequestParam(PARAM_PROFILE_ID)
+    public PersistentLogin createPersistentLogin(@RequestParam(PARAM_PROFILE_ID)
                                                  String profileId) throws ProfileException {
         return authenticationService.createPersistentLogin(profileId);
     }
 
-    @ApiOperation("Returns the persistent login object for the given ID")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_AUTH_GET_PERSISTENT_LOGIN, method = RequestMethod.GET)
     @ResponseBody
-    public PersistentLogin getPersistentLogin(
-        @ApiParam("The ID of the persistent login") @PathVariable(PATH_VAR_ID) String loginId) throws ProfileException {
+    public PersistentLogin getPersistentLogin(@PathVariable(PATH_VAR_ID) String loginId) throws ProfileException {
         PersistentLogin login = authenticationService.getPersistentLogin(loginId);
         if (login != null) {
             return login;
@@ -143,23 +113,15 @@ public class AuthenticationController {
         }
     }
 
-    @ApiOperation("Refreshes the token of the specified persistent login")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_AUTH_REFRESH_PERSISTENT_LOGIN_TOKEN, method = RequestMethod.POST)
     @ResponseBody
-    public PersistentLogin refreshPersistentLoginToken(
-        @ApiParam("The ID of the persistent login") @PathVariable(PATH_VAR_ID) String loginId) throws ProfileException {
+    public PersistentLogin refreshPersistentLoginToken(@PathVariable(PATH_VAR_ID) String loginId) throws ProfileException {
         return authenticationService.refreshPersistentLoginToken(loginId);
     }
 
-    @ApiOperation("Deletes the persistent login")
-    @ApiImplicitParam(name = "accessTokenId", required = true, dataType = "string", paramType = "query",
-                      value = "The ID of the application access token")
     @RequestMapping(value = URL_AUTH_DELETE_PERSISTENT_LOGIN, method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
-    public void deletePersistentLogin(
-        @ApiParam("The ID of the persistent login") @PathVariable(PATH_VAR_ID) String loginId) throws ProfileException {
+    public void deletePersistentLogin(@PathVariable(PATH_VAR_ID) String loginId) throws ProfileException {
         authenticationService.deletePersistentLogin(loginId);
     }
 

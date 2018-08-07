@@ -110,20 +110,6 @@
         <property name="authenticationService" ref="crafter.authenticationService"/>
     </bean>
 
-    <!-- Swagger -->
-
-    <bean id="crafter.swaggerConfig" class="org.craftercms.profile.utils.swagger.SwaggerConfig" />
-
-    <mvc:resources mapping="css/, images/, lib/, swagger-ui.js" location="classpath:META-INF/resources/"
-                   cache-period="0"/>
-
-    <bean id="crafter.swaggerViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="classpath:/resources/"/>
-        <property name="suffix" value=".jsp"/>
-    </bean>
-
-    <mvc:default-servlet-handler/>
-
     <!--bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
         <property name="templateLoaderPaths" value="classpath:/views/"/>
     </bean>
