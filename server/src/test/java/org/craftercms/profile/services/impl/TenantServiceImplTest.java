@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.SetUtils;
+import org.craftercms.commons.entitlements.validator.EntitlementValidator;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.AttributeDefinition;
@@ -80,6 +81,8 @@ public class TenantServiceImplTest {
     private ProfileRepository profileRepository;
     @Mock
     private ProfileService profileService;
+    @Mock
+    private EntitlementValidator entitlementValidator;
 
     @Before
     public void setUp() throws Exception {
@@ -108,6 +111,7 @@ public class TenantServiceImplTest {
         tenantService.setTenantRepository(tenantRepository);
         tenantService.setProfileService(profileService);
         tenantService.setProfileRepository(profileRepository);
+        tenantService.setEntitlementValidator(entitlementValidator);
     }
 
     @Test

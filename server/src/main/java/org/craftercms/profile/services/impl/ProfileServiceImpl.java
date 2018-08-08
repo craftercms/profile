@@ -41,6 +41,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.crypto.CryptoUtils;
+import org.craftercms.commons.entitlements.model.EntitlementType;
+import org.craftercms.commons.entitlements.model.Module;
+import org.craftercms.commons.entitlements.validator.EntitlementValidator;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.logging.Logged;
 import org.craftercms.commons.mail.EmailUtils;
@@ -123,6 +126,8 @@ public class ProfileServiceImpl implements ProfileService {
     public static final String ERROR_KEY_WHERE_NOT_ALLOWED = "profile.profile.query.whereNotAllowed";
     public static final String ERROR_KEY_ATTRIBUTE_NOT_ALLOWED = "profile.profile.query.attributeNotAllowed";
 
+    public static final String ERROR_KEY_ENTITLEMENT_ERROR = "profile.license.entitlementError";
+
     public static final Pattern QUERY_TENANT_PATTERN = Pattern.compile("['\"]?tenant['\"]?\\s*:");
     public static final Pattern QUERY_WHERE_PATTERN = Pattern.compile("['\"]?\\$where['\"]?\\s*:");
     public static final String QUERY_ATTRIBUTE_PATTERN_FORMAT = "['\"]?attributes\\.%s(\\.[^'\":]+)?['\"]?\\s*:";
@@ -141,6 +146,8 @@ public class ProfileServiceImpl implements ProfileService {
     protected String resetPwdEmailFromAddress;
     protected String resetPwdEmailSubject;
     protected String resetPwdEmailTemplateName;
+
+    protected EntitlementValidator entitlementValidator;
 
     @Required
     public void setTenantPermissionEvaluator(PermissionEvaluator<AccessToken, String> tenantPermissionEvaluator) {
@@ -203,11 +210,23 @@ public class ProfileServiceImpl implements ProfileService {
         this.resetPwdEmailTemplateName = resetPwdEmailTemplateName;
     }
 
+    @Required
+    public void setEntitlementValidator(final EntitlementValidator entitlementValidator) {
+        this.entitlementValidator = entitlementValidator;
+    }
+
     @Override
     public Profile createProfile(String tenantName, String username, String password, String email, boolean enabled,
                                  Set<String> roles, Map<String, Object> attributes,
                                  String verificationUrl) throws ProfileException {
         checkIfManageProfilesIsAllowed(tenantName);
+
+        try {
+            entitlementValidator.validateEntitlement(Module.PROFILE, EntitlementType.USER,
+                (int) profileRepository.count(), 1);
+        } catch (Exception e) {
+            throw new I10nProfileException(ERROR_KEY_ENTITLEMENT_ERROR, e);
+        }
 
         if (!EmailUtils.validateEmail(email)) {
             throw new InvalidEmailAddressException(email);

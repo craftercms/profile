@@ -32,6 +32,7 @@
         <quartz.version>2.2.1</quartz.version>
         <freemarker.version>2.3.23</freemarker.version>
         <aspectj.version>1.8.0</aspectj.version>
+        <bouncycastle.version>1.59</bouncycastle.version>
 
         <!-- Sonar -->
         <sonar.language>java</sonar.language>
