@@ -17,7 +17,11 @@
 
 package org.craftercms.profile.entitlement;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.craftercms.commons.entitlements.model.Entitlement;
+import org.craftercms.commons.entitlements.model.EntitlementType;
 import org.craftercms.commons.entitlements.model.Module;
 import org.craftercms.commons.entitlements.usage.EntitlementUsageProvider;
 import org.craftercms.profile.repositories.ProfileRepository;
@@ -33,7 +37,7 @@ import static org.craftercms.commons.entitlements.model.Module.PROFILE;
  *
  * @author joseross
  */
-public class ProfileLicenseUsageProvider implements EntitlementUsageProvider<Entitlement> {
+public class ProfileLicenseUsageProvider implements EntitlementUsageProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(ProfileLicenseUsageProvider.class);
 
@@ -69,15 +73,19 @@ public class ProfileLicenseUsageProvider implements EntitlementUsageProvider<Ent
      * {@inheritDoc}
      */
     @Override
-    public Entitlement getCurrentUsage() {
-        Entitlement usage = new Entitlement(PROFILE);
+    public List<Entitlement> getCurrentUsage() {
+        Entitlement sites = new Entitlement();
+        sites.setType(EntitlementType.SITE);
+        Entitlement users = new Entitlement();
+        users.setType(EntitlementType.USER);
+
         try {
-            usage.setNumberOfSites((int) tenantRepository.count());
-            usage.setNumberOfUsers((int) profileRepository.count());
+            sites.setValue((int) tenantRepository.count());
+            users.setValue((int) profileRepository.count());
         } catch (Exception e) {
             logger.error("Error fetching data", e);
         }
-        return usage;
+        return Arrays.asList(sites, users);
     }
 
 }
