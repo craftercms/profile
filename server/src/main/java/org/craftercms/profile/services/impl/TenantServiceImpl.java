@@ -124,11 +124,19 @@ public class TenantServiceImpl implements TenantService {
     public Tenant createTenant(Tenant tenant) throws ProfileException {
         checkIfTenantActionIsAllowed(null, TenantAction.CREATE_TENANT);
 
+        long start = 0;
+        if(logger.isDebugEnabled()) {
+            start = System.currentTimeMillis();
+            logger.debug("profile.entitlement.start");
+        }
         try {
             entitlementValidator.validateEntitlement(Module.PROFILE, EntitlementType.SITE,
                 (int)tenantRepository.count(), 1);
         } catch (Exception e) {
             throw new I10nProfileException(ERROR_KEY_ENTITLEMENT_ERROR, e);
+        }
+        if(logger.isDebugEnabled()) {
+            logger.debug("profile.entitlement.complete", System.currentTimeMillis() - start);
         }
 
         // Make sure ID is null, we want it auto-generated

@@ -221,11 +221,19 @@ public class ProfileServiceImpl implements ProfileService {
                                  String verificationUrl) throws ProfileException {
         checkIfManageProfilesIsAllowed(tenantName);
 
+        long start = 0;
+        if(logger.isDebugEnabled()) {
+            start = System.currentTimeMillis();
+            logger.debug("profile.entitlement.start");
+        }
         try {
             entitlementValidator.validateEntitlement(Module.PROFILE, EntitlementType.USER,
                 (int) profileRepository.count(), 1);
         } catch (Exception e) {
             throw new I10nProfileException(ERROR_KEY_ENTITLEMENT_ERROR, e);
+        }
+        if(logger.isDebugEnabled()) {
+            logger.debug("profile.entitlement.complete", System.currentTimeMillis() - start);
         }
 
         if (!EmailUtils.validateEmail(email)) {
