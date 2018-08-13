@@ -44,12 +44,12 @@ public class ProfileLicenseUsageProvider implements EntitlementUsageProvider {
     /**
      * Current instance of {@link TenantRepository}.
      */
-    TenantRepository tenantRepository;
+    protected TenantRepository tenantRepository;
 
     /**
      * Current instance of {@link ProfileRepository}.
      */
-    ProfileRepository profileRepository;
+    protected ProfileRepository profileRepository;
 
     @Required
     public void setTenantRepository(final TenantRepository tenantRepository) {
