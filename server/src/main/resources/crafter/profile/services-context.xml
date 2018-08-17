@@ -189,6 +189,7 @@
         <property name="tenantRepository" ref="crafter.tenantRepository"/>
         <property name="profileRepository" ref="crafter.profileRepository"/>
         <property name="profileService" ref="crafter.profileService"/>
+        <property name="entitlementValidator" ref="crafter.entitlementValidator"/>
     </bean>
 
     <bean id="crafter.profileService" class="org.craftercms.profile.services.impl.ProfileServiceImpl">
@@ -205,6 +206,7 @@
         <property name="resetPwdEmailSubject" value="${crafter.profile.verification.resetPassword.mail.subject}"/>
         <property name="resetPwdEmailTemplateName" value="${crafter.profile.verification.resetPassword.mail.templateName}"/>
         <property name="validAttachmentMimeTypes" value="${crafter.profile.attachments.validMimeTypes}"/>
+        <property name="entitlementValidator" ref="crafter.entitlementValidator"/>
     </bean>
 
     <bean id="crafter.authenticationService" class="org.craftercms.profile.services.impl.AuthenticationServiceImpl">
@@ -291,6 +293,13 @@
         <property name="maxInMemorySize" value="${crafter.profile.attachments.maxSizeMem}"/>
     </bean>
 
+    <!-- Entitlements -->
+    <bean id="crafter.entitlementsProvider" class="org.craftercms.profile.entitlement.ProfileLicenseUsageProvider">
+        <property name="tenantRepository" ref="crafter.tenantRepository"/>
+        <property name="profileRepository" ref="crafter.profileRepository"/>
+    </bean>
+
+    <import resource="classpath:crafter/entitlements/entitlements-context.xml"/>
     <import resource="classpath*:crafter/profile/extension/services-context.xml"/>
 
 </beans>
