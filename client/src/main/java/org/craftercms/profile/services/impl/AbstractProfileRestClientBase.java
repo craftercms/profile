@@ -33,7 +33,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -168,16 +167,16 @@ public abstract class AbstractProfileRestClientBase extends AbstractRestClientBa
     }
 
     protected void handleRestServiceException(RestServiceException e) throws ProfileException {
-        if (e.getErrorDetails() instanceof ErrorDetails) {
-            ErrorDetails errorDetails = (ErrorDetails) e.getErrorDetails();
-            HttpStatus responseStatus = e.getResponseStatus();
+        HttpStatus responseStatus = e.getResponseStatus();
+        Object details = e.getErrorDetails();
+        if (details instanceof ErrorDetails) {
+            ErrorDetails errorDetails = (ErrorDetails) details;
             ErrorCode errorCode = errorDetails.getErrorCode();
             String message = errorDetails.getMessage();
 
             throw new ProfileRestServiceException(responseStatus, errorCode, message);
         } else {
-            HttpStatus responseStatus = e.getResponseStatus();
-            String message = e.getErrorDetails().toString();
+            String message = details != null? details.toString() : e.getMessage();
 
             throw new ProfileRestServiceException(responseStatus, message);
         }
