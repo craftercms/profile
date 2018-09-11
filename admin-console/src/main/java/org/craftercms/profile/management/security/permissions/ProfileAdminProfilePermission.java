@@ -19,7 +19,7 @@ public class ProfileAdminProfilePermission extends CompositePermission {
     public ProfileAdminProfilePermission(Profile currentUser, Profile object) {
         super(new SubjectTenantIsSamePermission(currentUser.getTenant(), object.getTenant()),
               new SubjectRoleIsNotInferiorPermission(PROFILE_ADMIN_ROLE, object.getRoles()),
-              new DefaultPermission(GET_PROFILE, CREATE_PROFILE, UPDATE_PROFILE, DELETE_PROFILE));
+              new DefaultAdminConsolePermission(GET_PROFILE, CREATE_PROFILE, UPDATE_PROFILE, DELETE_PROFILE));
     }
 
 }
