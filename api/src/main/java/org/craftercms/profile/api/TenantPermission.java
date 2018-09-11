@@ -16,14 +16,14 @@
  */
 package org.craftercms.profile.api;
 
-import org.craftercms.commons.security.permissions.PermissionBase;
+import org.craftercms.commons.security.permissions.DefaultPermission;
 
 /**
  * {@link org.craftercms.commons.security.permissions.Permission} specific for tenants.
  *
  * @author avasquez
  */
-public class TenantPermission extends PermissionBase {
+public class TenantPermission extends DefaultPermission {
 
     public static final String ANY_TENANT = "*";
 

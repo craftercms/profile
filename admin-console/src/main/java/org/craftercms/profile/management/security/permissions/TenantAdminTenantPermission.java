@@ -17,7 +17,7 @@ public class TenantAdminTenantPermission extends CompositePermission {
 
     public TenantAdminTenantPermission(Profile currentUser, String tenant) {
         super(new SubjectTenantIsSamePermission(currentUser.getTenant(), tenant),
-              new DefaultPermission(GET_TENANT, UPDATE_TENANT, GET_PROFILE_COUNT, GET_PROFILE_LIST));
+              new DefaultAdminConsolePermission(GET_TENANT, UPDATE_TENANT, GET_PROFILE_COUNT, GET_PROFILE_LIST));
     }
 
 }
