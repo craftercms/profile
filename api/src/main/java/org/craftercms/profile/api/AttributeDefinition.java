@@ -1,16 +1,16 @@
 package org.craftercms.profile.api;
 
 
-import java.util.Map;
+import org.craftercms.commons.security.permissions.ProtectedResourceBase;
 
-import org.craftercms.commons.security.permissions.SecuredObjectBase;
+import java.util.Map;
 
 /**
  * Represents the definition of an attribute in a tenant.
  *
  * @author avasquez
  */
-public class AttributeDefinition extends SecuredObjectBase<AttributePermission> {
+public class AttributeDefinition extends ProtectedResourceBase<AttributePermission> {
 
     private String name;
     private Map<String, Object> metadata;
