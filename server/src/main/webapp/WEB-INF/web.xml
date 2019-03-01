@@ -28,6 +28,11 @@
         <param-value>classpath:crafter/profile/services-context.xml</param-value>
     </context-param>
 
+    <context-param>
+        <param-name>log4jConfiguration</param-name>
+        <param-value>classpath:crafter/profile/extension/logging.xml</param-value>
+    </context-param>
+
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
