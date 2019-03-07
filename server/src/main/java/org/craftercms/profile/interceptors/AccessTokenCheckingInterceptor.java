@@ -24,6 +24,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.i10n.I10nLogger;
+import org.craftercms.commons.lang.RegexUtils;
 import org.craftercms.commons.mongo.MongoDataException;
 import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.ProfileConstants;
@@ -51,6 +52,7 @@ public class AccessTokenCheckingInterceptor extends HandlerInterceptorAdapter {
 
     protected AccessTokenRepository accessTokenRepository ;
     protected String[] urlsToInclude;
+    protected String[] urlsToExclude;
 
     @Required
     public void setAccessTokenRepository(AccessTokenRepository accessTokenRepository) {
@@ -60,6 +62,10 @@ public class AccessTokenCheckingInterceptor extends HandlerInterceptorAdapter {
     @Required
     public void setUrlsToInclude(final String[] urlsToInclude) {
         this.urlsToInclude = urlsToInclude;
+    }
+
+    public void setUrlsToExclude(final String[] urlsToExclude) {
+        this.urlsToExclude = urlsToExclude;
     }
 
     @Override
@@ -81,11 +87,9 @@ public class AccessTokenCheckingInterceptor extends HandlerInterceptorAdapter {
 
     protected boolean includeRequest(HttpServletRequest request) {
         if (ArrayUtils.isNotEmpty(urlsToInclude)) {
-            for (String pathPattern : urlsToInclude) {
-                if (HttpUtils.getRequestUriWithoutContextPath(request).matches(pathPattern)) {
-                    return true;
-                }
-            }
+            String requestUri = HttpUtils.getRequestUriWithoutContextPath(request);
+            return RegexUtils.matchesAny(requestUri, urlsToInclude) &&
+                (ArrayUtils.isEmpty(urlsToExclude) || !RegexUtils.matchesAny(requestUri, urlsToExclude));
         }
 
         return false;
