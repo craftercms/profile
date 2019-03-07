@@ -61,6 +61,7 @@
           class="org.craftercms.profile.interceptors.AccessTokenCheckingInterceptor">
         <property name="accessTokenRepository" ref="crafter.accessTokenRepository"/>
         <property name="urlsToInclude" value="/api/1/.*"/>
+        <property name="urlsToExclude" value="/api/1/monitoring/.*"/>
     </bean>
 
     <!-- Jackson config -->
@@ -126,6 +127,8 @@
           class="org.craftercms.profile.controllers.rest.AuthenticationController">
         <property name="authenticationService" ref="crafter.authenticationService"/>
     </bean>
+
+    <bean id="crafter.monioringController" class="org.craftercms.profile.controllers.rest.MonitoringController"/>
 
     <!--bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
         <property name="templateLoaderPaths" value="classpath:/views/"/>
