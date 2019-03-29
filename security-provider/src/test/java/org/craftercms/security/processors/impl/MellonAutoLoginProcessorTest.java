@@ -57,6 +57,7 @@ public class MellonAutoLoginProcessorTest {
     private static final String FIRST_NAME_ATTRIB_NAME = "firstName";
     private static final String LAST_NAME_ATTRIB_NAME = "lastName";
 
+    private static final String TOKEN = "TOP_SECRET_TOKEN";
     private static final ObjectId PROFILE_ID = ObjectId.get();
     private static final String USERNAME = "jdoe";
     private static final String EMAIL = "john.doe@example.com";
@@ -87,6 +88,7 @@ public class MellonAutoLoginProcessorTest {
         when(authenticationManager.authenticateUser(profile)).thenReturn(new DefaultAuthentication(TICKET, profile));
 
         processor = new MellonAutoLoginProcessor();
+        processor.setTokenExpectedValue(TOKEN);
         processor.setTenantService(tenantService);
         processor.setProfileService(profileService);
         processor.setTenantsResolver(tenantsResolver);
@@ -149,6 +151,7 @@ public class MellonAutoLoginProcessorTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
 
+        request.addHeader(MellonAutoLoginProcessor.DEFAULT_TOKEN_HEADER_NAME, TOKEN);
         request.addHeader(MellonAutoLoginProcessor.DEFAULT_USERNAME_HEADER_NAME, USERNAME);
         request.addHeader(MellonAutoLoginProcessor.DEFAULT_EMAIL_HEADER_NAME, EMAIL);
         request.addHeader(MellonAutoLoginProcessor.DEFAULT_MELLON_HEADER_PREFIX + FIRST_NAME_ATTRIB_NAME, FIRST_NAME);

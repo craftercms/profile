@@ -238,6 +238,7 @@
 
     <bean id="crafter.mellonAutoLoginProcessor"
           class="org.craftercms.security.processors.impl.MellonAutoLoginProcessor">
+        <property name="tokenExpectedValue" value="${crafter.security.authentication.mellon.token}"/>
         <property name="tenantService" ref="crafter.tenantServiceRestClient"/>
         <property name="profileService" ref="crafter.profileServiceRestClient"/>
         <property name="tenantsResolver" ref="crafter.tenantsResolver"/>

@@ -53,6 +53,7 @@ public class MellonAutoLoginProcessor implements RequestSecurityProcessor {
     public static final String DEFAULT_MELLON_HEADER_PREFIX = "MELLON_";
     public static final String DEFAULT_USERNAME_HEADER_NAME = DEFAULT_MELLON_HEADER_PREFIX + "username";
     public static final String DEFAULT_EMAIL_HEADER_NAME = DEFAULT_MELLON_HEADER_PREFIX + "email";
+    public static final String DEFAULT_TOKEN_HEADER_NAME = DEFAULT_MELLON_HEADER_PREFIX + "secure_key";
 
     protected TenantService tenantService;
     protected ProfileService profileService;
@@ -61,11 +62,14 @@ public class MellonAutoLoginProcessor implements RequestSecurityProcessor {
     protected String mellonHeaderPrefix;
     protected String usernameHeaderName;
     protected String emailHeaderName;
+    protected String tokenHeaderName;
+    protected String tokenExpectedValue;
 
     public MellonAutoLoginProcessor() {
         mellonHeaderPrefix = DEFAULT_MELLON_HEADER_PREFIX;
         usernameHeaderName = DEFAULT_USERNAME_HEADER_NAME;
         emailHeaderName = DEFAULT_EMAIL_HEADER_NAME;
+        tokenHeaderName = DEFAULT_TOKEN_HEADER_NAME;
     }
 
     @Required
@@ -100,29 +104,55 @@ public class MellonAutoLoginProcessor implements RequestSecurityProcessor {
         this.emailHeaderName = emailHeaderName;
     }
 
+    public void setTokenHeaderName(final String tokenHeaderName) {
+        this.tokenHeaderName = tokenHeaderName;
+    }
+
+    public void setTokenExpectedValue(final String tokenExpectedValue) {
+        this.tokenExpectedValue = tokenExpectedValue;
+    }
+
+    public String getTokenExpectedValue() {
+        return tokenExpectedValue;
+    }
+
     @Override
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         HttpServletRequest request = context.getRequest();
-        String username = request.getHeader(usernameHeaderName);
-        Authentication auth = SecurityUtils.getAuthentication(request);
+        if (hasValidToken(request)) {
+            String username = request.getHeader(usernameHeaderName);
+            Authentication auth = SecurityUtils.getAuthentication(request);
 
-        if (StringUtils.isNotEmpty(username) && (auth == null || !auth.getProfile().getUsername().equals(username))) {
-            String[] tenantNames = tenantsResolver.getTenants();
-            Tenant tenant = getSsoEnabledTenant(tenantNames);
+            if (StringUtils.isNotEmpty(username) && (auth == null ||
+                !auth.getProfile().getUsername().equals(username))) {
+                String[] tenantNames = tenantsResolver.getTenants();
+                Tenant tenant = getSsoEnabledTenant(tenantNames);
 
-            if (tenant != null) {
-                Profile profile = profileService.getProfileByUsername(tenant.getName(), username);
-                if (profile == null) {
-                    profile = createProfileWithSsoInfo(username, tenant, request);
+                if (tenant != null) {
+                    Profile profile = profileService.getProfileByUsername(tenant.getName(), username);
+                    if (profile == null) {
+                        profile = createProfileWithSsoInfo(username, tenant, request);
+                    }
+
+                    SecurityUtils.setAuthentication(request, authenticationManager.authenticateUser(profile));
+                } else {
+                    logger.warn("An SSO login was attempted, but none of the tenants [{}] is enabled for SSO",
+                        tenantNames);
                 }
-
-                SecurityUtils.setAuthentication(request, authenticationManager.authenticateUser(profile));
-            } else {
-                logger.warn("An SSO login was attempted, but none of the tenants [{}] is enabled for SSO", tenantNames);
             }
         }
 
         processorChain.processRequest(context);
+    }
+
+    protected boolean hasValidToken(HttpServletRequest request) {
+        String tokenHeaderValue = request.getHeader(tokenHeaderName);
+        if (StringUtils.equals(tokenHeaderValue, getTokenExpectedValue())) {
+            return true;
+        } else {
+            logger.warn("Token mismatch during authentication from '{}'", request.getRemoteAddr());
+            return false;
+        }
     }
 
     protected Tenant getSsoEnabledTenant(String[] tenantNames) throws ProfileException {
