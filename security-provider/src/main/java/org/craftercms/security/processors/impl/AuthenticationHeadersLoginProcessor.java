@@ -46,9 +46,9 @@ import org.springframework.beans.factory.annotation.Required;
  *
  * @author avasquez
  */
-public class MellonAutoLoginProcessor implements RequestSecurityProcessor {
+public class AuthenticationHeadersLoginProcessor implements RequestSecurityProcessor {
 
-    public static final Logger logger = LoggerFactory.getLogger(MellonAutoLoginProcessor.class);
+    public static final Logger logger = LoggerFactory.getLogger(AuthenticationHeadersLoginProcessor.class);
 
     public static final String DEFAULT_MELLON_HEADER_PREFIX = "MELLON_";
     public static final String DEFAULT_USERNAME_HEADER_NAME = DEFAULT_MELLON_HEADER_PREFIX + "username";
@@ -65,7 +65,7 @@ public class MellonAutoLoginProcessor implements RequestSecurityProcessor {
     protected String tokenHeaderName;
     protected String tokenExpectedValue;
 
-    public MellonAutoLoginProcessor() {
+    public AuthenticationHeadersLoginProcessor() {
         mellonHeaderPrefix = DEFAULT_MELLON_HEADER_PREFIX;
         usernameHeaderName = DEFAULT_USERNAME_HEADER_NAME;
         emailHeaderName = DEFAULT_EMAIL_HEADER_NAME;

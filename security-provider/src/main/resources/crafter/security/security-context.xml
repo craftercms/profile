@@ -126,7 +126,7 @@
         <ref bean="crafter.loginProcessor"/>
         <ref bean="crafter.logoutProcessor"/>
         <ref bean="crafter.rememberMeAutoLoginProcessor"/>
-        <ref bean="crafter.mellonAutoLoginProcessor"/>
+        <ref bean="crafter.headersLoginProcessor"/>
         <ref bean="crafter.saveRequestAwareProcessor"/>
         <ref bean="crafter.securityExceptionProcessor"/>
         <ref bean="crafter.urlAccessRestrictionCheckingProcessor"/>
@@ -236,8 +236,8 @@
         <property name="rememberMeManager" ref="crafter.rememberMeManager"/>
     </bean>
 
-    <bean id="crafter.mellonAutoLoginProcessor"
-          class="org.craftercms.security.processors.impl.MellonAutoLoginProcessor">
+    <bean id="crafter.headersLoginProcessor"
+          class="org.craftercms.security.processors.impl.AuthenticationHeadersLoginProcessor">
         <property name="tokenExpectedValue" value="${crafter.security.authentication.mellon.token}"/>
         <property name="tenantService" ref="crafter.tenantServiceRestClient"/>
         <property name="profileService" ref="crafter.profileServiceRestClient"/>
