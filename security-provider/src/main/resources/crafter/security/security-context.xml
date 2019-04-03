@@ -238,7 +238,7 @@
 
     <bean id="crafter.headersLoginProcessor"
           class="org.craftercms.security.processors.impl.AuthenticationHeadersLoginProcessor">
-        <property name="tokenExpectedValue" value="${crafter.security.authentication.mellon.token}"/>
+        <property name="tokenExpectedValue" value="${crafter.security.authentication.headers.token}"/>
         <property name="tenantService" ref="crafter.tenantServiceRestClient"/>
         <property name="profileService" ref="crafter.profileServiceRestClient"/>
         <property name="tenantsResolver" ref="crafter.tenantsResolver"/>
