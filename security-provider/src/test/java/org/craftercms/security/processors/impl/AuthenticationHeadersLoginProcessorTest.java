@@ -46,17 +46,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link MellonAutoLoginProcessor}.
+ * Unit tests for {@link AuthenticationHeadersLoginProcessor}.
  *
  * @author avasquez
  */
-public class MellonAutoLoginProcessorTest {
+public class AuthenticationHeadersLoginProcessorTest {
 
     private static final String TENANT_NAME = "default";
 
     private static final String FIRST_NAME_ATTRIB_NAME = "firstName";
     private static final String LAST_NAME_ATTRIB_NAME = "lastName";
 
+    private static final String TOKEN = "TOP_SECRET_TOKEN";
     private static final ObjectId PROFILE_ID = ObjectId.get();
     private static final String USERNAME = "jdoe";
     private static final String EMAIL = "john.doe@example.com";
@@ -64,7 +65,7 @@ public class MellonAutoLoginProcessorTest {
     private static final String LAST_NAME = "Doe";
     private static final String TICKET = UUID.randomUUID().toString();
 
-    private MellonAutoLoginProcessor processor;
+    private AuthenticationHeadersLoginProcessor processor;
     @Mock
     private TenantService tenantService;
     @Mock
@@ -86,7 +87,8 @@ public class MellonAutoLoginProcessorTest {
         when(tenantsResolver.getTenants()).thenReturn(new String[] {TENANT_NAME});
         when(authenticationManager.authenticateUser(profile)).thenReturn(new DefaultAuthentication(TICKET, profile));
 
-        processor = new MellonAutoLoginProcessor();
+        processor = new AuthenticationHeadersLoginProcessor();
+        processor.setTokenExpectedValue(TOKEN);
         processor.setTenantService(tenantService);
         processor.setProfileService(profileService);
         processor.setTenantsResolver(tenantsResolver);
@@ -149,10 +151,11 @@ public class MellonAutoLoginProcessorTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        request.addHeader(MellonAutoLoginProcessor.DEFAULT_USERNAME_HEADER_NAME, USERNAME);
-        request.addHeader(MellonAutoLoginProcessor.DEFAULT_EMAIL_HEADER_NAME, EMAIL);
-        request.addHeader(MellonAutoLoginProcessor.DEFAULT_MELLON_HEADER_PREFIX + FIRST_NAME_ATTRIB_NAME, FIRST_NAME);
-        request.addHeader(MellonAutoLoginProcessor.DEFAULT_MELLON_HEADER_PREFIX + LAST_NAME_ATTRIB_NAME, LAST_NAME);
+        request.addHeader(AuthenticationHeadersLoginProcessor.DEFAULT_TOKEN_HEADER_NAME, TOKEN);
+        request.addHeader(AuthenticationHeadersLoginProcessor.DEFAULT_USERNAME_HEADER_NAME, USERNAME);
+        request.addHeader(AuthenticationHeadersLoginProcessor.DEFAULT_EMAIL_HEADER_NAME, EMAIL);
+        request.addHeader(AuthenticationHeadersLoginProcessor.DEFAULT_MELLON_HEADER_PREFIX + FIRST_NAME_ATTRIB_NAME, FIRST_NAME);
+        request.addHeader(AuthenticationHeadersLoginProcessor.DEFAULT_MELLON_HEADER_PREFIX + LAST_NAME_ATTRIB_NAME, LAST_NAME);
 
         return new RequestContext(request, response, null);
     }
