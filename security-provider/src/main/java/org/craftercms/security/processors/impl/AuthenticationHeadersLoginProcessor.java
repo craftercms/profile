@@ -20,6 +20,7 @@ package org.craftercms.security.processors.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -119,26 +120,25 @@ public class AuthenticationHeadersLoginProcessor implements RequestSecurityProce
     @Override
     public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
         HttpServletRequest request = context.getRequest();
-        if (hasValidToken(request)) {
-            String username = request.getHeader(usernameHeaderName);
-            Authentication auth = SecurityUtils.getAuthentication(request);
 
-            if (StringUtils.isNotEmpty(username) && (auth == null ||
-                !auth.getProfile().getUsername().equals(username))) {
-                String[] tenantNames = tenantsResolver.getTenants();
-                Tenant tenant = getSsoEnabledTenant(tenantNames);
+        String username = request.getHeader(usernameHeaderName);
+        Authentication auth = SecurityUtils.getAuthentication(request);
 
-                if (tenant != null) {
-                    Profile profile = profileService.getProfileByUsername(tenant.getName(), username);
-                    if (profile == null) {
-                        profile = createProfileWithSsoInfo(username, tenant, request);
-                    }
+        if (StringUtils.isNotEmpty(username) &&
+            (Objects.isNull(auth) || !auth.getProfile().getUsername().equals(username))  && hasValidToken(request)) {
+            String[] tenantNames = tenantsResolver.getTenants();
+            Tenant tenant = getSsoEnabledTenant(tenantNames);
 
-                    SecurityUtils.setAuthentication(request, authenticationManager.authenticateUser(profile));
-                } else {
-                    logger.warn("An SSO login was attempted, but none of the tenants [{}] is enabled for SSO",
-                        tenantNames);
+            if (tenant != null) {
+                Profile profile = profileService.getProfileByUsername(tenant.getName(), username);
+                if (profile == null) {
+                    profile = createProfileWithSsoInfo(username, tenant, request);
                 }
+
+                SecurityUtils.setAuthentication(request, authenticationManager.authenticateUser(profile));
+            } else {
+                logger.warn("An SSO login was attempted, but none of the tenants [{}] is enabled for SSO",
+                    tenantNames);
             }
         }
 
