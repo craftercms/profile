@@ -20,14 +20,12 @@ package org.craftercms.profile.entitlement;
 import java.util.Arrays;
 import java.util.List;
 
-import org.craftercms.commons.entitlements.model.Entitlement;
+import org.craftercms.commons.entitlements.exception.UnsupportedEntitlementException;
 import org.craftercms.commons.entitlements.model.EntitlementType;
 import org.craftercms.commons.entitlements.model.Module;
 import org.craftercms.commons.entitlements.usage.EntitlementUsageProvider;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TenantRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 import static org.craftercms.commons.entitlements.model.Module.PROFILE;
@@ -38,8 +36,6 @@ import static org.craftercms.commons.entitlements.model.Module.PROFILE;
  * @author joseross
  */
 public class ProfileLicenseUsageProvider implements EntitlementUsageProvider {
-
-    private static final Logger logger = LoggerFactory.getLogger(ProfileLicenseUsageProvider.class);
 
     /**
      * Current instance of {@link TenantRepository}.
@@ -73,19 +69,23 @@ public class ProfileLicenseUsageProvider implements EntitlementUsageProvider {
      * {@inheritDoc}
      */
     @Override
-    public List<Entitlement> getCurrentUsage() {
-        Entitlement sites = new Entitlement();
-        sites.setType(EntitlementType.SITE);
-        Entitlement users = new Entitlement();
-        users.setType(EntitlementType.USER);
+    public List<EntitlementType> getSupportedEntitlements() {
+        return Arrays.asList(EntitlementType.SITE, EntitlementType.USER);
+    }
 
-        try {
-            sites.setValue((int) tenantRepository.count());
-            users.setValue((int) profileRepository.count());
-        } catch (Exception e) {
-            logger.error("Error fetching data", e);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int doGetEntitlementUsage(final EntitlementType type) throws Exception {
+        switch (type) {
+            case SITE:
+                return (int) tenantRepository.count();
+            case USER:
+                return (int) profileRepository.count();
+            default:
+                throw new UnsupportedEntitlementException(PROFILE, type);
         }
-        return Arrays.asList(sites, users);
     }
 
 }

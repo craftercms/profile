@@ -42,7 +42,6 @@ import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.crypto.CryptoUtils;
 import org.craftercms.commons.entitlements.model.EntitlementType;
-import org.craftercms.commons.entitlements.model.Module;
 import org.craftercms.commons.entitlements.validator.EntitlementValidator;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.logging.Logged;
@@ -221,19 +220,10 @@ public class ProfileServiceImpl implements ProfileService {
                                  String verificationUrl) throws ProfileException {
         checkIfManageProfilesIsAllowed(tenantName);
 
-        long start = 0;
-        if(logger.isDebugEnabled()) {
-            start = System.currentTimeMillis();
-            logger.debug("profile.entitlement.start");
-        }
         try {
-            entitlementValidator.validateEntitlement(Module.PROFILE, EntitlementType.USER,
-                (int) profileRepository.count(), 1);
+            entitlementValidator.validateEntitlement(EntitlementType.USER, 1);
         } catch (Exception e) {
             throw new I10nProfileException(ERROR_KEY_ENTITLEMENT_ERROR, e);
-        }
-        if(logger.isDebugEnabled()) {
-            logger.debug("profile.entitlement.complete", System.currentTimeMillis() - start);
         }
 
         if (!EmailUtils.validateEmail(email)) {

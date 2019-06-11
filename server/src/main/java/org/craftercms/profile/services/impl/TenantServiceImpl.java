@@ -22,7 +22,6 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.craftercms.commons.collections.IterableUtils;
 import org.craftercms.commons.entitlements.model.EntitlementType;
-import org.craftercms.commons.entitlements.model.Module;
 import org.craftercms.commons.entitlements.validator.EntitlementValidator;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.logging.Logged;
@@ -124,19 +123,10 @@ public class TenantServiceImpl implements TenantService {
     public Tenant createTenant(Tenant tenant) throws ProfileException {
         checkIfTenantActionIsAllowed(null, TenantAction.CREATE_TENANT);
 
-        long start = 0;
-        if(logger.isDebugEnabled()) {
-            start = System.currentTimeMillis();
-            logger.debug("profile.entitlement.start");
-        }
         try {
-            entitlementValidator.validateEntitlement(Module.PROFILE, EntitlementType.SITE,
-                (int)tenantRepository.count(), 1);
+            entitlementValidator.validateEntitlement(EntitlementType.SITE, 1);
         } catch (Exception e) {
             throw new I10nProfileException(ERROR_KEY_ENTITLEMENT_ERROR, e);
-        }
-        if(logger.isDebugEnabled()) {
-            logger.debug("profile.entitlement.complete", System.currentTimeMillis() - start);
         }
 
         // Make sure ID is null, we want it auto-generated
