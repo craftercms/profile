@@ -316,7 +316,7 @@
         <property name="profileRepository" ref="crafter.profileRepository"/>
     </bean>
 
-    <import resource="classpath:crafter/entitlements/entitlements-context.xml"/>
     <import resource="classpath*:crafter/profile/extension/services-context.xml"/>
+    <import resource="classpath:crafter/entitlements/entitlements-context.xml"/>
 
 </beans>
