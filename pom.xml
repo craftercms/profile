@@ -43,8 +43,8 @@
         <commons.lang.version>3.3.2</commons.lang.version>
         <commons.collections.version>4.0</commons.collections.version>
         <jackson.version>2.9.9</jackson.version>
-        <jackson.databind.version>2.9.9.2</jackson.databind.version>
-        <xstream.version>1.4.10</xstream.version>
+        <jackson.databind.version>2.9.9.3</jackson.databind.version>
+        <xstream.version>1.4.11.1</xstream.version>
         <slf4j.version>1.7.7</slf4j.version>
         <log4j.version>2.11.2</log4j.version>
         <quartz.version>2.2.1</quartz.version>
