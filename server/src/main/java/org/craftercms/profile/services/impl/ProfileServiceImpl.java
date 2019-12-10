@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import javax.activation.MimetypesFileTypeMap;
@@ -37,6 +38,7 @@ import org.apache.commons.collections4.Predicate;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.collections.IterableUtils;
@@ -263,6 +265,10 @@ public class ProfileServiceImpl implements ProfileService {
                 profile.getAttributes().putAll(attributes);
             }
 
+            if (tenant.isCleanseAttributes()) {
+                cleanseAttributes(tenant, profile.getAttributes());
+            }
+
             profileRepository.insert(profile);
 
             logger.debug(LOG_KEY_PROFILE_CREATED, profile);
@@ -312,6 +318,10 @@ public class ProfileServiceImpl implements ProfileService {
                 rejectAttributesIfActionNotAllowed(tenantName, attributes.keySet(),
                                                    AttributeAction.WRITE_ATTRIBUTE);
 
+                Tenant tenant = getTenant(tenantName);
+                if (tenant.isCleanseAttributes()) {
+                    cleanseAttributes(tenant, attributes);
+                }
                 profileUpdater.addAttributes(attributes);
             }
         }, attributesToReturn);
@@ -319,6 +329,16 @@ public class ProfileServiceImpl implements ProfileService {
         logger.debug(LOG_KEY_PROFILE_UPDATED, profile);
 
         return profile;
+    }
+
+    protected void cleanseAttributes(Tenant tenant, Map<String, Object> attributes) {
+        attributes.entrySet().stream().forEach(entry -> {
+            Optional<AttributeDefinition> definition =
+                tenant.getAttributeDefinitions().stream().filter(d -> d.getName().equals(entry.getKey())).findFirst();
+            if (definition.isPresent() && definition.get().getMetadata().get("type").equals("TEXT")) {
+                entry.setValue(StringEscapeUtils.escapeHtml4(entry.getValue().toString()));
+            }
+        });
     }
 
     @Override

@@ -19,10 +19,8 @@ package org.craftercms.profile.utils.db;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.ListUtils;
@@ -91,6 +89,11 @@ public class TenantUpdater {
     public void setSsoEnabled(boolean ssoEnabled) {
         tenant.setSsoEnabled(ssoEnabled);
         updateHelper.set("ssoEnabled", ssoEnabled);
+    }
+
+    public void setCleanseAttributes(boolean cleanseAttributes) {
+        tenant.setCleanseAttributes(cleanseAttributes);
+        updateHelper.set("cleanseAttributes", cleanseAttributes);
     }
 
     public void setAttributeDefinitions(List<AttributeDefinition> attributeDefinitions) {

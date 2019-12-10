@@ -38,6 +38,8 @@ public class Tenant {
     private boolean ssoEnabled;
     private List<AttributeDefinition> attributeDefinitions;
 
+    protected boolean cleanseAttributes = true;
+
     /**
      * Returns the tenant's DB ID.
      */
@@ -138,6 +140,14 @@ public class Tenant {
      */
     public void setAttributeDefinitions(List<AttributeDefinition> attributeDefinitions) {
         this.attributeDefinitions = attributeDefinitions;
+    }
+
+    public boolean isCleanseAttributes() {
+        return cleanseAttributes;
+    }
+
+    public void setCleanseAttributes(final boolean cleanseAttributes) {
+        this.cleanseAttributes = cleanseAttributes;
     }
 
     @Override

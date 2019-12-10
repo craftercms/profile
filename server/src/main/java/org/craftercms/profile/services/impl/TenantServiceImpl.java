@@ -182,6 +182,7 @@ public class TenantServiceImpl implements TenantService {
 
                 tenantUpdater.setVerifyNewProfiles(tenant.isVerifyNewProfiles());
                 tenantUpdater.setSsoEnabled(tenant.isSsoEnabled());
+                tenantUpdater.setCleanseAttributes(tenant.isCleanseAttributes());
                 tenantUpdater.setAvailableRoles(tenant.getAvailableRoles());
                 tenantUpdater.setAttributeDefinitions(tenant.getAttributeDefinitions());
             }
