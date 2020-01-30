@@ -92,7 +92,8 @@ if (db.tenant.count() == 0) {
                     }
                 ]
             }
-        ]
+        ],
+        "cleanseAttributes": false
 	});
 }
 if (db.profile.count() == 0) {

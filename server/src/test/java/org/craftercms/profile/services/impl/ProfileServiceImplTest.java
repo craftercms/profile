@@ -947,6 +947,7 @@ public class ProfileServiceImplTest {
         tenant.setName(TENANT1_NAME);
         tenant.setVerifyNewProfiles(true);
         tenant.setAttributeDefinitions(getAttributeDefinitions());
+        tenant.setCleanseAttributes(false);
 
         return tenant;
     }
@@ -956,6 +957,7 @@ public class ProfileServiceImplTest {
         tenant.setName(TENANT2_NAME);
         tenant.setVerifyNewProfiles(false);
         tenant.setAttributeDefinitions(getAttributeDefinitions());
+        tenant.setCleanseAttributes(false);
 
         return tenant;
     }
