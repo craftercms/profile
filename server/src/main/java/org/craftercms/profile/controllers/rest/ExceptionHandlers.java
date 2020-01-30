@@ -16,6 +16,7 @@
  */
 package org.craftercms.profile.controllers.rest;
 
+import org.craftercms.commons.exceptions.InvalidManagementTokenException;
 import org.craftercms.commons.i10n.I10nLogger;
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.exception.PermissionException;
@@ -60,6 +61,12 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
     private static final I10nLogger logger = new I10nLogger(ExceptionHandlers.class, "crafter.profile.messages.logging");
 
     private static final String LOG_KEY_REST_ERROR = "profile.rest.error";
+
+    @ExceptionHandler(InvalidManagementTokenException.class)
+    public ResponseEntity<Object> handleInvalidTokenManagementException(InvalidManagementTokenException e,
+                                                                        WebRequest request) {
+        return handleExceptionInternal(e, HttpStatus.UNAUTHORIZED, ErrorCode.ACCESS_DENIED, request);
+    }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException e, WebRequest request) {

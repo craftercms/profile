@@ -41,6 +41,16 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
 
+    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="locations">
+            <list>
+                <value>classpath:crafter/profile/server-config.properties</value>
+                <value>classpath*:crafter/profile/extension/server-config.properties</value>
+            </list>
+        </property>
+    </bean>
+
     <bean id="crafter.contentNegotiationManager"
           class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
         <property name="favorPathExtension" value="true"/>
@@ -128,7 +138,9 @@
         <property name="authenticationService" ref="crafter.authenticationService"/>
     </bean>
 
-    <bean id="crafter.monioringController" class="org.craftercms.profile.controllers.rest.MonitoringController"/>
+    <bean id="crafter.monioringController" class="org.craftercms.profile.controllers.rest.MonitoringController">
+        <constructor-arg value="${crafter.profile.management.authorizationToken}"/>
+    </bean>
 
     <!--bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
         <property name="templateLoaderPaths" value="classpath:/views/"/>

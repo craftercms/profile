@@ -153,6 +153,7 @@ public class TenantServiceImplTest {
         expectedSetParams.put("availableRoles", expected.getAvailableRoles());
         expectedSetParams.put("ssoEnabled", expected.isSsoEnabled());
         expectedSetParams.put("attributeDefinitions", expected.getAttributeDefinitions());
+        expectedSetParams.put("cleanseAttributes", expected.isCleanseAttributes());
 
         Tenant actual = tenantService.updateTenant(expected);
 
@@ -314,6 +315,7 @@ public class TenantServiceImplTest {
         tenant.setVerifyNewProfiles(true);
         tenant.setAvailableRoles(SetUtils.asSet(ROLE1));
         tenant.setAttributeDefinitions(new ArrayList<>(Collections.singletonList(getAttribute1Definition())));
+        tenant.setCleanseAttributes(false);
 
         return tenant;
     }
@@ -325,6 +327,7 @@ public class TenantServiceImplTest {
         tenant.setVerifyNewProfiles(true);
         tenant.setAvailableRoles(SetUtils.asSet(ROLE1, ROLE2));
         tenant.setAttributeDefinitions(new ArrayList<>(Collections.singletonList(getAttribute1Definition())));
+        tenant.setCleanseAttributes(false);
 
         return tenant;
     }
