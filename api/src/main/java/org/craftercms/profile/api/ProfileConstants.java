@@ -29,6 +29,12 @@ public class ProfileConstants {
      */
     public static final String NO_ATTRIBUTE = "$none";
 
+    public static final String ATTRIBUTE_TYPE_TEXT = "TEXT";
+    public static final String ATTRIBUTE_TYPE_LARGE_TEXT = "LARGE_TEXT";
+    public static final String ATTRIBUTE_TYPE_STRING_LIST = "STRING_LIST";
+
+    public static final String ATTRIBUTE_TYPE_KEY = "type";
+
     // ********** REST Constants **********
 
     public static final String BASE_URL_REST_API = "/api/1";
