@@ -20,14 +20,12 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import javax.activation.MimetypesFileTypeMap;
@@ -83,6 +81,13 @@ import org.craftercms.profile.services.VerificationService;
 import org.craftercms.profile.utils.db.ProfileUpdater;
 import org.springframework.beans.factory.annotation.Required;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+import static org.craftercms.profile.api.ProfileConstants.ATTRIBUTE_TYPE_KEY;
+import static org.craftercms.profile.api.ProfileConstants.ATTRIBUTE_TYPE_LARGE_TEXT;
+import static org.craftercms.profile.api.ProfileConstants.ATTRIBUTE_TYPE_STRING_LIST;
+import static org.craftercms.profile.api.ProfileConstants.ATTRIBUTE_TYPE_TEXT;
+
 /**
  * Default implementation of {@link org.craftercms.profile.api.services.ProfileService}.
  *
@@ -133,6 +138,9 @@ public class ProfileServiceImpl implements ProfileService {
     public static final Pattern QUERY_WHERE_PATTERN = Pattern.compile("['\"]?\\$where['\"]?\\s*:");
     public static final String QUERY_ATTRIBUTE_PATTERN_FORMAT = "['\"]?attributes\\.%s(\\.[^'\":]+)?['\"]?\\s*:";
     public static final String QUERY_FINAL_FORMAT = "{$and: [{tenant: '%s'}, %s]}";
+
+    public static final List<String> CLEANSE_SUPPORTED_TYPES =
+        asList(ATTRIBUTE_TYPE_TEXT, ATTRIBUTE_TYPE_LARGE_TEXT, ATTRIBUTE_TYPE_STRING_LIST);
 
     protected PermissionEvaluator<AccessToken, String> tenantPermissionEvaluator;
     protected PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator;
@@ -332,13 +340,25 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     protected void cleanseAttributes(Tenant tenant, Map<String, Object> attributes) {
-        attributes.entrySet().stream().forEach(entry -> {
-            Optional<AttributeDefinition> definition =
-                tenant.getAttributeDefinitions().stream().filter(d -> d.getName().equals(entry.getKey())).findFirst();
-            if (definition.isPresent() && definition.get().getMetadata().get("type").equals("TEXT")) {
-                entry.setValue(StringEscapeUtils.escapeHtml4(entry.getValue().toString()));
-            }
-        });
+        List<AttributeDefinition> supportedAttributes = tenant.getAttributeDefinitions().stream()
+            .filter(definition ->
+                CLEANSE_SUPPORTED_TYPES.contains(definition.getMetadata().get(ATTRIBUTE_TYPE_KEY).toString()))
+            .collect(toList());
+        supportedAttributes.forEach(attribute -> attributes.compute(attribute.getName(),
+            (key, value) -> escapeValue(value, attribute.getMetadata().get(ATTRIBUTE_TYPE_KEY).toString())));
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Object escapeValue(Object value, String type) {
+        switch (type) {
+            case ATTRIBUTE_TYPE_TEXT:
+            case ATTRIBUTE_TYPE_LARGE_TEXT:
+                return StringEscapeUtils.escapeHtml4(value.toString());
+            case ATTRIBUTE_TYPE_STRING_LIST:
+                return ((List<String>) value).stream().map(StringEscapeUtils::escapeHtml4).collect(toList());
+            default:
+                throw new IllegalArgumentException("Attribute of type " + type + " can't be escaped");
+        }
     }
 
     @Override
@@ -977,7 +997,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     public void setValidAttachmentMimeTypes(final String validAttachmentMimeTypes) {
         if(StringUtils.isNotBlank(validAttachmentMimeTypes)){
-            this.validAttachmentMimeTypes=Arrays.asList(validAttachmentMimeTypes.split(","));
+            this.validAttachmentMimeTypes= asList(validAttachmentMimeTypes.split(","));
         }else{
             this.validAttachmentMimeTypes = Collections.EMPTY_LIST;
         }
