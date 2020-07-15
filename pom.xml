@@ -16,75 +16,29 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-profile-parent</artifactId>
     <version>3.2.0-SNAPSHOT</version><!-- craftercms version flag -->
+
     <name>Crafter Profile Parent POM</name>
     <description>Crafter Profile Parent POM</description>
     <packaging>pom</packaging>
-    <url>http://craftercms.org</url>
-    <organization>
-        <name>CrafterCMS</name>
-        <url>http://craftercms.org</url>
-    </organization>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.8</java.version>
-
-        <!-- Dependency versions -->
-        <spring.version>4.3.18.RELEASE</spring.version>
-        <servlet.api.version>3.0.1</servlet.api.version>
-        <junit.version>4.12</junit.version>
-        <mockito.version>1.9.5</mockito.version>
-        <commons.lang.version>3.3.2</commons.lang.version>
-        <commons.collections.version>4.0</commons.collections.version>
-        <jackson.version>2.10.3</jackson.version>
-        <jackson.databind.version>2.10.3</jackson.databind.version>
-        <xstream.version>1.4.11.1</xstream.version>
-        <slf4j.version>1.7.7</slf4j.version>
-        <log4j.version>2.11.2</log4j.version>
-        <quartz.version>2.3.2</quartz.version>
-        <freemarker.version>2.3.23</freemarker.version>
-        <aspectj.version>1.8.0</aspectj.version>
-        <bouncycastle.version>1.60</bouncycastle.version>
-
-        <!-- Sonar -->
-        <sonar.language>java</sonar.language>
-        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-        <sonar.jacoco.reportPath>${basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
-        <sonar.jacoco.itReportPath>${basedir}/../target/itjacoco.exec</sonar.jacoco.itReportPath>
-    </properties>
-
-    <licenses>
-        <license>
-            <name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
-            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <id>sumerjabri</id>
-            <name>Sumer Jabri</name>
-            <email>sumer.jabri@craftercms.org</email>
-        </developer>
-        <developer>
-            <id>avasquez</id>
-            <name>Alfonso Vásquez</name>
-            <email>alfonso.vasquez@craftercms.org</email>
-        </developer>
-    </developers>
+    <url>https://github.com/craftercms/profile</url>
 
     <scm>
-        <connection>scm:git:git://github.com/craftercms/profile/tree/master/server</connection>
-        <developerConnection>scm:git:git://github.com/craftercms/profile/tree/master/server</developerConnection>
-        <url>scm:git:git://github.com/craftercms/profile/tree/master/server</url>
+        <connection>scm:git:git://github.com/craftercms/profile</connection>
+        <developerConnection>scm:git:git://github.com/craftercms/profile</developerConnection>
+        <url>scm:git:git://github.com/craftercms/profile</url>
     </scm>
+
+    <parent>
+        <groupId>org.craftercms</groupId>
+        <artifactId>craftercms</artifactId>
+        <version>3.2.0-SNAPSHOT</version><!-- craftercms version flag -->
+    </parent>
 
     <modules>
         <module>api</module>
@@ -92,164 +46,6 @@
         <module>client</module>
         <module>security-provider</module>
         <module>admin-console</module>
-        <module>integration-tests</module>
+        <!--module>integration-tests</module-->
     </modules>
-
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.7.1.201405082137</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.17</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.17</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.2</version>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>create</goal>
-                            <goal>create-timestamp</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <doCheck>false</doCheck>
-                    <doUpdate>false</doUpdate>
-                    <revisionOnScmFailure>unknown</revisionOnScmFailure>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
-    <profiles>
-        <profile>
-            <id>release-sign-artifacts</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <version>2.7</version>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.4</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>JDK8</id>
-            <activation>
-                <jdk>[1.8,)</jdk>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10.4</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                                <configuration>
-                                    <additionalparam>-Xdoclint:none</additionalparam>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-    <distributionManagement>
-    			  <snapshotRepository>
-    			    <id>sonatype-nexus-snapshots</id>
-    			    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    			  </snapshotRepository>
-    			  <repository>
-    			    <id>sonatype-nexus-staging</id>
-    			    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    			  </repository>
-    	</distributionManagement>
 </project>

@@ -15,42 +15,17 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <parent>
-        <artifactId>crafter-profile-parent</artifactId>
-        <groupId>org.craftercms</groupId>
-        <version>3.2.0-SNAPSHOT</version><!-- craftercms version flag -->
-    </parent>
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-profile-api</artifactId>
+
     <name>Crafter Profile API</name>
     <description>Crafter Profile API</description>
     <url>https://github.com/craftercms/profile/tree/master/api</url>
     <packaging>jar</packaging>
-
-    <organization>
-        <name>CrafterCMS</name>
-        <url>http://craftercms.org</url>
-    </organization>
-    <licenses>
-        <license>
-            <name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
-            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <developers>
-        <developer>
-            <id>sumerjabri</id>
-            <name>Sumer Jabri</name>
-            <email>sumer.jabri@craftercms.org</email>
-        </developer>
-    </developers>
 
     <scm>
         <connection>scm:git:git://github.com/craftercms/profile/tree/master/api</connection>
@@ -58,10 +33,12 @@
         <url>scm:git:git://github.com/craftercms/profile/tree/master/api</url>
     </scm>
 
-    <properties>
-        <bson.version>3.5.0</bson.version>
-    </properties>
-
+    <parent>
+        <artifactId>crafter-profile-parent</artifactId>
+        <groupId>org.craftercms</groupId>
+        <version>3.2.0-SNAPSHOT</version><!-- craftercms version flag -->
+    </parent>
+    
     <dependencies>
         <dependency>
             <groupId>org.craftercms</groupId>
@@ -91,7 +68,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -106,5 +82,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

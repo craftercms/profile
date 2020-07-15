@@ -15,8 +15,10 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-profile-parent</artifactId>
@@ -28,33 +30,8 @@
     <name>Crafter Profile Admin Console</name>
     <description>Crafter Profile Admin Console</description>
     <url>https://github.com/craftercms/profile/tree/master/admin-console</url>
+
     <packaging>war</packaging>
-
-    <organization>
-        <name>CrafterCMS</name>
-        <url>http://craftercms.org</url>
-    </organization>
-
-    <licenses>
-        <license>
-            <name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
-            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <id>sumerjabri</id>
-            <name>Sumer Jabri</name>
-            <email>sumer.jabri@craftercms.org</email>
-        </developer>
-        <developer>
-            <id>avasquez</id>
-            <name>Alfonso Vásquez</name>
-            <email>alfonso.vasquez@craftercms.org</email>
-        </developer>
-    </developers>
 
     <scm>
         <connection>scm:git:git://github.com/craftercms/profile/tree/master/admin-console</connection>
@@ -280,7 +257,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.4</version>
                 <configuration>
                     <warName>crafter-profile-admin</warName>
                     <archive>
@@ -296,5 +272,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

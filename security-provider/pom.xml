@@ -16,58 +16,29 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.craftercms</groupId>
-        <artifactId>crafter-profile-parent</artifactId>
-        <version>3.2.0-SNAPSHOT</version><!-- craftercms version flag -->
-    </parent>
 
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-security-provider</artifactId>
+
     <name>Crafter Security Provider</name>
     <description>Crafter Security Provider</description>
     <url>https://github.com/craftercms/profile/tree/master/crafter-security-provider</url>
     <packaging>jar</packaging>
 
-    <organization>
-        <name>CrafterCMS</name>
-        <url>http://craftercms.org</url>
-    </organization>
-
-    <licenses>
-        <license>
-            <name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
-            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <id>sumerjabri</id>
-            <name>Sumer Jabri</name>
-            <email>sumer.jabri@craftercms.org</email>
-        </developer>
-    </developers>
-
     <scm>
         <connection>scm:git:git://github.com/craftercms/profile/tree/master/security-provider</connection>
-        <developerConnection>
-            scm:git:git://github.com/craftercms/profile/tree/master/security-provider
-        </developerConnection>
+        <developerConnection>scm:git:git://github.com/craftercms/profile/tree/master/security-provider</developerConnection>
         <url>scm:git:git://github.com/craftercms/profile/tree/master/security-provider</url>
     </scm>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Dependency Version Numbers -->
-        <ehcache.version>2.8.2</ehcache.version>
-        <spring.security.version>4.2.13.RELEASE</spring.security.version>
-        <spring.social.version>1.1.6.RELEASE</spring.social.version>
-        <spring.social.facebook.version>2.0.3.RELEASE</spring.social.facebook.version>
-    </properties>
+    <parent>
+        <groupId>org.craftercms</groupId>
+        <artifactId>crafter-profile-parent</artifactId>
+        <version>3.2.0-SNAPSHOT</version><!-- craftercms version flag -->
+    </parent>
 
     <dependencies>
         <!-- Testing -->
@@ -208,25 +179,4 @@
             <version>${aspectj.version}</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                        <manifestEntries>
-                            <Implementation-Build>${buildNumber}</Implementation-Build>
-                            <Build-On>${timestamp}</Build-On>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

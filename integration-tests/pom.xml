@@ -15,37 +15,29 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>crafter-profile-parent</artifactId>
-        <groupId>org.craftercms</groupId>
-        <version>3.2.0-SNAPSHOT</version><!-- craftercms version flag -->
-    </parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-profile-integration-tests</artifactId>
+
     <name>Crafter Profile Integration Tests</name>
     <description>Crafter Profile Integration Tests</description>
     <url>https://github.com/craftercms/profile/tree/master/api</url>
     <packaging>war</packaging>
 
-    <properties>
-        <greenmail.version>1.3.1b</greenmail.version>
+    <parent>
+        <artifactId>crafter-profile-parent</artifactId>
+        <groupId>org.craftercms</groupId>
+        <version>3.2.0-SNAPSHOT</version><!-- craftercms version flag -->
+    </parent>
 
+    <properties>
         <!-- Mongo -->
         <mongo.port>37017</mongo.port>
-        <mongo.version>3.4.3</mongo.version>
 
         <!-- Cargo -->
-        <cargo.container>jetty9x</cargo.container>
-        <cargo.container.url>http://central.maven.org/maven2/org/eclipse/jetty/jetty-distribution/9.4.14.v20181114/jetty-distribution-9.4.14.v20181114.tar.gz</cargo.container.url>
-        <cargo.container.downloadDir>${user.home}/.m2/cargo/containers</cargo.container.downloadDir>
-        <cargo.output>${basedir}/target/logs/container.log</cargo.output>
-        <cargo.log>${basedir}/target/logs/cargo.log</cargo.log>
-        <cargo.port>7070</cargo.port>
         <cargo.profile.context>crafter-profile</cargo.profile.context>
 
         <!-- Profile Logging -->
@@ -64,7 +56,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -73,7 +64,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.4</version>
                 <configuration>
                     <overlays>
                         <overlay>
@@ -87,7 +77,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.17</version>
                 <configuration>
                     <skipTests>true</skipTests>
                 </configuration>
@@ -113,12 +102,12 @@
             <plugin>
                 <groupId>com.github.joelittlejohn.embedmongo</groupId>
                 <artifactId>embedmongo-maven-plugin</artifactId>
-                <version>0.3.4</version>
+                <version>${embedmongo.maven.version}</version>
                 <dependencies>
                     <dependency>
                         <groupId>de.flapdoodle.embed</groupId>
                         <artifactId>de.flapdoodle.embed.mongo</artifactId>
-                        <version>2.0.0</version>
+                        <version>${de.flapdoodle.embed.mongo.version}</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -147,7 +136,7 @@
             <plugin>
                 <groupId>org.codehaus.cargo</groupId>
                 <artifactId>cargo-maven2-plugin</artifactId>
-                <version>1.7.0</version>
+                <version>${cargo.maven2.version}</version>
                 <executions>
                     <execution>
                         <id>start-jetty</id>
@@ -237,5 +226,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 </project>
