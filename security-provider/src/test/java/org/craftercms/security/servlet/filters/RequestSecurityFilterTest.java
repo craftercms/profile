@@ -29,6 +29,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.web.WebAppConfiguration;
+import javax.servlet.ServletContext;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
@@ -46,6 +48,8 @@ public class RequestSecurityFilterTest {
     private RequestSecurityFilter filter;
     @Mock
     private RequestSecurityProcessor processor;
+    @Mock
+    private ServletContext mockServletContext;
 
     @Before
     public void setUp() throws Exception {
@@ -70,6 +74,7 @@ public class RequestSecurityFilterTest {
         filter.setSecurityProcessors(Arrays.asList(processor));
         filter.setUrlsToInclude("/static-assets/paywall/**");
         filter.setUrlsToExclude("/static-assets/**");
+        filter.setServletContext(mockServletContext);
     }
 
     @Test

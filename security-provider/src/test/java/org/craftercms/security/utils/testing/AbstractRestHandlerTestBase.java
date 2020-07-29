@@ -56,7 +56,7 @@ public abstract class AbstractRestHandlerTestBase {
         CustomSerializationObjectMapper objectMapper = new CustomSerializationObjectMapper();
         objectMapper.setSerializers(serializers);
         objectMapper.setDeserializers(deserializers);
-        objectMapper.init();
+        objectMapper.afterPropertiesSet();
 
         MappingJackson2HttpMessageConverter jsonMessageConverter = new MappingJackson2HttpMessageConverter();
         jsonMessageConverter.setObjectMapper(objectMapper);
