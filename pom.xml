@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-profile-parent</artifactId>
-    <version>3.1.10-SNAPSHOT</version><!-- craftercms version flag -->
+    <version>3.1.11-SNAPSHOT</version><!-- craftercms version flag -->
     <name>Crafter Profile Parent POM</name>
     <description>Crafter Profile Parent POM</description>
     <packaging>pom</packaging>
@@ -49,7 +49,7 @@
         <quartz.version>2.3.2</quartz.version>
         <freemarker.version>2.3.23</freemarker.version>
         <aspectj.version>1.8.0</aspectj.version>
-        <bouncycastle.version>1.60</bouncycastle.version>
+        <bouncycastle.version>1.61</bouncycastle.version>
 
         <!-- Sonar -->
         <sonar.language>java</sonar.language>
