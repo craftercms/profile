@@ -24,7 +24,7 @@ import org.craftercms.security.authentication.AuthenticationCache;
  *
  * @author avasquez
  * @author joseross
- * @since 3.2.0
+ * @since 4.0.0
  */
 public class GuavaAuthenticationCache implements AuthenticationCache {
 
