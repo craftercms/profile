@@ -62,6 +62,10 @@
         <url>scm:git:git://github.com/craftercms/profile/tree/master/admin-console</url>
     </scm>
 
+    <properties>
+	<httpclient.version>4.5.2</httpclient.version>
+    </properties>
+
     <dependencies>
         <!-- Crafter -->
         <dependency>
@@ -88,6 +92,11 @@
             <groupId>org.craftercms</groupId>
             <artifactId>crafter-commons-security</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
         </dependency>
 
         <!-- Javax -->
