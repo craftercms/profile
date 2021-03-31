@@ -66,6 +66,11 @@
             <artifactId>crafter-commons-security</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+             <groupId>org.apache.httpcomponents</groupId>
+               <artifactId>httpclient</artifactId>
+               <version>${httpclient.version}</version>
+        </dependency>
 
         <!-- Javax -->
         <dependency>
