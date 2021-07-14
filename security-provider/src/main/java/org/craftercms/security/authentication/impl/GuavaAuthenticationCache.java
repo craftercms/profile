@@ -19,6 +19,8 @@ import com.google.common.cache.Cache;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.AuthenticationCache;
 
+import java.beans.ConstructorProperties;
+
 /**
  * Implementation of {@link org.craftercms.security.authentication.AuthenticationCache} that uses a Guava {@link Cache}.
  *
@@ -30,6 +32,7 @@ public class GuavaAuthenticationCache implements AuthenticationCache {
 
     protected Cache<String, Authentication> cache;
 
+    @ConstructorProperties({"cache"})
     public GuavaAuthenticationCache(Cache<String, Authentication> cache) {
         this.cache = cache;
     }

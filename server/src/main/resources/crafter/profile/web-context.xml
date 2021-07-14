@@ -138,7 +138,7 @@
     </bean>
 
     <bean id="crafter.monioringController" class="org.craftercms.profile.controllers.rest.MonitoringController">
-        <constructor-arg value="${crafter.profile.management.authorizationToken}"/>
+        <constructor-arg name="authorizationToken" value="${crafter.profile.management.authorizationToken}"/>
     </bean>
 
     <!--bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
