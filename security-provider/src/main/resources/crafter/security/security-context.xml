@@ -51,16 +51,16 @@
 
     <bean id="crafter.securityEnabledAwareProcessor"
           class="org.craftercms.security.utils.spring.SecurityEnabledAwareProcessor">
-        <constructor-arg value="${crafter.security.enabled}"/>
+        <constructor-arg name="securityEnabled" value="${crafter.security.enabled}"/>
     </bean>
 
     <bean id="crafter.restResponseWriter" class="org.craftercms.commons.rest.HttpMessageConvertingResponseWriter">
-        <constructor-arg>
+        <constructor-arg name="contentNegotiationManager">
             <bean class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
                 <property name="defaultContentType" value="application/json" />
             </bean>
         </constructor-arg>
-        <constructor-arg ref="crafter.profileMessageConverters"/>
+        <constructor-arg name="messageConverters" ref="crafter.profileMessageConverters"/>
     </bean>
 
     <!-- ////////////////////////////////// -->
@@ -171,7 +171,7 @@
 
     <bean id="crafter.authenticationCache"
           class="org.craftercms.security.authentication.impl.GuavaAuthenticationCache">
-        <constructor-arg ref="crafter.guavaAuthenticationCache"/>
+        <constructor-arg name="cache" ref="crafter.guavaAuthenticationCache"/>
     </bean>
 
     <!-- ////////////////////////////////// -->
