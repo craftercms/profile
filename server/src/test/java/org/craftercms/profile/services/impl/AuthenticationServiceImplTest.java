@@ -35,8 +35,9 @@ import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TicketRepository;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -50,6 +51,7 @@ import static org.mockito.Mockito.when;
  *
  * @author avasquez
  */
+@RunWith(MockitoJUnitRunner.class)
 public class AuthenticationServiceImplTest {
 
     private static final String TENANT_NAME = "tenant1";
@@ -79,8 +81,6 @@ public class AuthenticationServiceImplTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
         when(permissionEvaluator.isAllowed(anyString(), anyString())).thenReturn(true);
 
         when(ticketRepository.findByStringId(TICKET_ID)).thenReturn(getTicket());
