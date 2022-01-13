@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>crafter-profile-parent</artifactId>
-        <version>3.1.17.3</version><!-- craftercms version flag -->
+        <version>3.1.18-SNAPSHOT</version><!-- craftercms version flag -->
     </parent>
 
     <groupId>org.craftercms</groupId>
@@ -67,7 +67,7 @@
         <repository>
             <id>jcenter-release</id>
             <name>jcenter</name>
-            <url>http://oss.jfrog.org/artifactory/oss-release-local/</url>
+            <url>http://s01.oss.jfrog.org/artifactory/oss-release-local/</url>
         </repository>
     </repositories>
 
