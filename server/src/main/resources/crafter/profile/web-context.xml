@@ -32,6 +32,7 @@
     <context:annotation-config/>
 
     <mvc:annotation-driven content-negotiation-manager="crafter.contentNegotiationManager">
+        <mvc:path-matching suffix-pattern="true"/>
         <mvc:message-converters>
             <bean class="org.craftercms.commons.jackson.mvc.CrafterJackson2MessageConverter">
                 <property name="objectMapper" ref="crafter.objectMapper"/>
