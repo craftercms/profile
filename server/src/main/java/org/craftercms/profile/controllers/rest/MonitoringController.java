@@ -32,16 +32,9 @@ public class MonitoringController extends MonitoringRestControllerBase {
 
     public final static String URL_ROOT = "/api/1";
 
-    protected String authorizationToken;
-
     @ConstructorProperties({"authorizationToken"})
     public MonitoringController(final String authorizationToken) {
-        this.authorizationToken = authorizationToken;
-    }
-
-    @Override
-    public String getConfiguredToken() {
-        return authorizationToken;
+        super(authorizationToken);
     }
 
 }
