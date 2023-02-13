@@ -43,6 +43,7 @@ import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -87,7 +88,7 @@ public class TenantServiceImplTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        when(permissionEvaluator.isAllowed(anyString(), anyString()))
+        when(permissionEvaluator.isAllowed(any(), any()))
             .thenReturn(true);
 
         when(tenantRepository.findByName(TENANT1_NAME))
