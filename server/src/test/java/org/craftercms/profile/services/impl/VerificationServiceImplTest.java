@@ -83,7 +83,7 @@ public class VerificationServiceImplTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        when(permissionEvaluator.isAllowed(anyString(), anyString())).thenReturn(true);
+        when(permissionEvaluator.isAllowed(any(), any())).thenReturn(true);
 
         doAnswer(new Answer() {
 
