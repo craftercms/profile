@@ -23,7 +23,7 @@ import org.craftercms.profile.api.AccessToken;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AccessTokenService;
 import org.craftercms.profile.exceptions.NoSuchAccessTokenException;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,7 +46,7 @@ public class AccessTokenController {
 
     protected AccessTokenService accessTokenService;
 
-    @Required
+    @Autowired
     public void setAccessTokenService(AccessTokenService accessTokenService) {
         this.accessTokenService = accessTokenService;
     }

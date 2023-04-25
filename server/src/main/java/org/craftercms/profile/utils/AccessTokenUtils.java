@@ -16,8 +16,7 @@
 
 package org.craftercms.profile.utils;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.profile.api.AccessToken;
 

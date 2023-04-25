@@ -21,7 +21,7 @@ import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.LogoutSuccessHandler;
 import org.craftercms.security.exception.SecurityProviderException;
 import org.craftercms.security.utils.RedirectUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Default implementation for {@link org.craftercms.security.authentication.impl.LogoutSuccessHandlerImpl}, which
@@ -33,7 +33,7 @@ public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler {
 
     protected String targetUrl;
 
-    @Required
+    @Autowired
     public void setTargetUrl(String targetUrl) {
         this.targetUrl = targetUrl;
     }

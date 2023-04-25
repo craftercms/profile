@@ -19,13 +19,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.ArrayUtils;
 import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;
@@ -33,7 +33,7 @@ import org.craftercms.security.processors.RequestSecurityProcessor;
 import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.processors.impl.RequestSecurityProcessorChainImpl;
 import org.craftercms.security.utils.SecurityEnabledAware;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.filter.GenericFilterBean;
@@ -68,7 +68,7 @@ public class RequestSecurityFilter extends GenericFilterBean implements Security
     /**
      * Sets the chain of {@link RequestSecurityProcessor}.
      */
-    @Required
+    @Autowired
     public void setSecurityProcessors(List<RequestSecurityProcessor> securityProcessors) {
         this.securityProcessors = securityProcessors;
     }

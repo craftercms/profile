@@ -21,7 +21,7 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.exceptions.NoSuchPersistentLoginException;
 import org.craftercms.profile.exceptions.NoSuchTicketException;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,7 +57,7 @@ public class AuthenticationController {
 
     protected AuthenticationService authenticationService;
 
-    @Required
+    @Autowired
     public void setAuthenticationService(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }

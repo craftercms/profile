@@ -41,6 +41,7 @@ import org.craftercms.profile.exceptions.ProfileExistsException;
 import org.craftercms.profile.exceptions.TenantExistsException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -180,25 +181,25 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
-                                                             HttpStatus status, WebRequest request) {
-        return handleExceptionInternal(ex, headers, status, ErrorCode.OTHER, request);
+                                                             HttpStatusCode statusCode, WebRequest request) {
+        return handleExceptionInternal(ex, headers, statusCode, ErrorCode.OTHER, request);
     }
 
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpStatus status,
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpStatusCode statusCode,
                                                              ErrorCode errorCode,
                                                              WebRequest request) {
-        return handleExceptionInternal(ex, new HttpHeaders(), status, errorCode, request);
+        return handleExceptionInternal(ex, new HttpHeaders(), statusCode, errorCode, request);
     }
 
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpHeaders headers, HttpStatus status,
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpHeaders headers, HttpStatusCode statusCode,
                                                              ErrorCode errorCode, WebRequest request) {
-        if (status.series() == HttpStatus.Series.SERVER_ERROR) {
-            logger.error(LOG_KEY_REST_ERROR, ex, ((ServletWebRequest) request).getRequest().getRequestURI(), status);
+        if (HttpStatus.resolve(statusCode.value()) == HttpStatus.INTERNAL_SERVER_ERROR) {
+            logger.error(LOG_KEY_REST_ERROR, ex, ((ServletWebRequest) request).getRequest().getRequestURI(), statusCode);
         } else {
-            logger.debug(LOG_KEY_REST_ERROR, ex, ((ServletWebRequest) request).getRequest().getRequestURI(), status);
+            logger.debug(LOG_KEY_REST_ERROR, ex, ((ServletWebRequest) request).getRequest().getRequestURI(), statusCode);
         }
 
-        return new ResponseEntity<>(new ErrorDetails(errorCode, ex.getLocalizedMessage()), headers, status);
+        return new ResponseEntity<>(new ErrorDetails(errorCode, ex.getLocalizedMessage()), headers, statusCode);
     }
 
 }

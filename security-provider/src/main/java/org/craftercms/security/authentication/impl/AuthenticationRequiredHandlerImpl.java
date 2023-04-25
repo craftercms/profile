@@ -16,8 +16,8 @@
 package org.craftercms.security.authentication.impl;
 
 import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.AuthenticationRequiredHandler;

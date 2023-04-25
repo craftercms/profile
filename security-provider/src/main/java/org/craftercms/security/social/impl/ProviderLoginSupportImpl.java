@@ -18,8 +18,8 @@ package org.craftercms.security.social.impl;
 
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +35,7 @@ import org.craftercms.security.exception.OAuth2Exception;
 import org.craftercms.security.social.ProviderLoginSupport;
 import org.craftercms.security.utils.SecurityUtils;
 import org.craftercms.security.utils.social.ConnectionUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
@@ -75,22 +75,22 @@ public class ProviderLoginSupportImpl implements ProviderLoginSupport {
         this.connectSupport = connectSupport;
     }
 
-    @Required
+    @Autowired
     public void setConnectionFactoryLocator(ConnectionFactoryLocator connectionFactoryLocator) {
         this.connectionFactoryLocator = connectionFactoryLocator;
     }
 
-    @Required
+    @Autowired
     public void setProfileService(ProfileService profileService) {
         this.profileService = profileService;
     }
 
-    @Required
+    @Autowired
     public void setAuthenticationManager(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
 
-    @Required
+    @Autowired
     public void setTextEncryptor(TextEncryptor textEncryptor) {
         this.textEncryptor = textEncryptor;
     }

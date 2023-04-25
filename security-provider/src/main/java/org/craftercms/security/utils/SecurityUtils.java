@@ -15,8 +15,7 @@
  */
 package org.craftercms.security.utils;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;

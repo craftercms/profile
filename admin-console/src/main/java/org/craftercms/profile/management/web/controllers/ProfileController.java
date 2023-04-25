@@ -32,7 +32,7 @@ import org.craftercms.profile.management.exceptions.InvalidRequestParameterExcep
 import org.craftercms.profile.management.exceptions.ResourceNotFoundException;
 import org.craftercms.profile.management.security.permissions.Action;
 import org.craftercms.security.utils.SecurityUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -94,17 +94,17 @@ public class ProfileController {
         this.verificationUrl = verificationUrl;
     }
 
-    @Required
+    @Autowired
     public void setProfileService(ProfileService profileService) {
         this.profileService = profileService;
     }
 
-    @Required
+    @Autowired
     public void setTenantPermissionEvaluator(PermissionEvaluator<Profile, String> tenantPermissionEvaluator) {
         this.tenantPermissionEvaluator = tenantPermissionEvaluator;
     }
 
-    @Required
+    @Autowired
     public void setProfilePermissionEvaluator(PermissionEvaluator<Profile, Profile> profilePermissionEvaluator) {
         this.profilePermissionEvaluator = profilePermissionEvaluator;
     }

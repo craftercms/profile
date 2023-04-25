@@ -16,8 +16,8 @@
 package org.craftercms.security.authentication.impl;
 
 import java.util.UUID;
-import javax.servlet.http.HttpServletResponse;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.profile.api.Profile;

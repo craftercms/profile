@@ -31,7 +31,7 @@ import org.craftercms.profile.api.services.AccessTokenService;
 import org.craftercms.profile.exceptions.AccessTokenExistsException;
 import org.craftercms.profile.repositories.AccessTokenRepository;
 import org.craftercms.profile.utils.AccessTokenUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Default implementation of {@link AccessTokenService}.
@@ -54,7 +54,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     protected AccessTokenRepository accessTokenRepository;
     protected byte[] hashSalt;
 
-    @Required
+    @Autowired
     public void setAccessTokenRepository(AccessTokenRepository accessTokenRepository) {
         this.accessTokenRepository = accessTokenRepository;
     }

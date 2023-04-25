@@ -16,7 +16,7 @@
 
 package org.craftercms.security.utils.tenant;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * {@link TenantsResolver} that uses default tenant values.
@@ -27,7 +27,7 @@ public class DefaultTenantsResolver implements TenantsResolver {
 
     protected String[] defaultTenantNames;
 
-    @Required
+    @Autowired
     public void setDefaultTenantNames(String[] defaultTenantNames) {
         this.defaultTenantNames = defaultTenantNames;
     }

@@ -18,8 +18,8 @@ package org.craftercms.security.social;
 
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.exception.AuthenticationException;
 import org.springframework.social.connect.web.ConnectSupport;

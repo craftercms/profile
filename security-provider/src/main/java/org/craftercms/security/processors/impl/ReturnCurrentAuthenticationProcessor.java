@@ -17,9 +17,9 @@
 package org.craftercms.security.processors.impl;
 
 import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.commons.rest.HttpMessageConvertingResponseWriter;

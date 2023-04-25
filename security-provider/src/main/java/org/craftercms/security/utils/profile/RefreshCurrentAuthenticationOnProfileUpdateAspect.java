@@ -22,7 +22,7 @@ import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.AuthenticationCache;
 import org.craftercms.security.authentication.impl.DefaultAuthentication;
 import org.craftercms.security.utils.SecurityUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Aspect for {@link org.craftercms.profile.api.services.ProfileService} that refreshes the current authentication
@@ -35,7 +35,7 @@ public class RefreshCurrentAuthenticationOnProfileUpdateAspect {
 
     protected AuthenticationCache authenticationCache;
 
-    @Required
+    @Autowired
     public void setAuthenticationCache(AuthenticationCache authenticationCache) {
         this.authenticationCache = authenticationCache;
     }

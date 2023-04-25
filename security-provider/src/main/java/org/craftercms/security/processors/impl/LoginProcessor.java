@@ -15,9 +15,8 @@
  */
 package org.craftercms.security.processors.impl;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.craftercms.commons.http.HttpUtils;
@@ -35,7 +34,7 @@ import org.craftercms.security.utils.SecurityUtils;
 import org.craftercms.security.utils.tenant.TenantsResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Processes login requests.
@@ -94,27 +93,27 @@ public class LoginProcessor implements RequestSecurityProcessor {
         this.rememberMeParameter = rememberMeParameter;
     }
 
-    @Required
+    @Autowired
     public void setAuthenticationManager(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
 
-    @Required
+    @Autowired
     public void setLoginSuccessHandler(LoginSuccessHandler loginSuccessHandler) {
         this.loginSuccessHandler = loginSuccessHandler;
     }
 
-    @Required
+    @Autowired
     public void setLoginFailureHandler(LoginFailureHandler loginFailureHandler) {
         this.loginFailureHandler = loginFailureHandler;
     }
 
-    @Required
+    @Autowired
     public void setRememberMeManager(RememberMeManager rememberMeManager) {
         this.rememberMeManager = rememberMeManager;
     }
 
-    @Required
+    @Autowired
     public void setTenantsResolver(final TenantsResolver tenantsResolver) {
         this.tenantsResolver = tenantsResolver;
     }

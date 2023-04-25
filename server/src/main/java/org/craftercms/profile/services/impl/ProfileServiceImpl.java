@@ -78,7 +78,7 @@ import org.craftercms.profile.exceptions.ProfileExistsException;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.services.VerificationService;
 import org.craftercms.profile.utils.db.ProfileUpdater;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -157,68 +157,68 @@ public class ProfileServiceImpl implements ProfileService {
 
     protected EntitlementValidator entitlementValidator;
 
-    @Required
+    @Autowired
     public void setTenantPermissionEvaluator(PermissionEvaluator<AccessToken, String> tenantPermissionEvaluator) {
         this.tenantPermissionEvaluator = tenantPermissionEvaluator;
     }
 
-    @Required
+    @Autowired
     public void setAttributePermissionEvaluator(
         PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator) {
         this.attributePermissionEvaluator = attributePermissionEvaluator;
     }
 
-    @Required
+    @Autowired
     public void setProfileRepository(ProfileRepository profileRepository) {
         this.profileRepository = profileRepository;
     }
 
-    @Required
+    @Autowired
     public void setTenantService(TenantService tenantService) {
         this.tenantService = tenantService;
     }
 
-    @Required
+    @Autowired
     public void setAuthenticationService(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
-    @Required
+    @Autowired
     public void setVerificationService(final VerificationService verificationService) {
         this.verificationService = verificationService;
     }
 
-    @Required
+    @Autowired
     public void setNewProfileEmailFromAddress(final String newProfileEmailFromAddress) {
         this.newProfileEmailFromAddress = newProfileEmailFromAddress;
     }
 
-    @Required
+    @Autowired
     public void setNewProfileEmailSubject(final String newProfileEmailSubject) {
         this.newProfileEmailSubject = newProfileEmailSubject;
     }
 
-    @Required
+    @Autowired
     public void setNewProfileEmailTemplateName(final String newProfileEmailTemplateName) {
         this.newProfileEmailTemplateName = newProfileEmailTemplateName;
     }
 
-    @Required
+    @Autowired
     public void setResetPwdEmailFromAddress(final String resetPwdEmailFromAddress) {
         this.resetPwdEmailFromAddress = resetPwdEmailFromAddress;
     }
 
-    @Required
+    @Autowired
     public void setResetPwdEmailSubject(final String resetPwdEmailSubject) {
         this.resetPwdEmailSubject = resetPwdEmailSubject;
     }
 
-    @Required
+    @Autowired
     public void setResetPwdEmailTemplateName(final String resetPwdEmailTemplateName) {
         this.resetPwdEmailTemplateName = resetPwdEmailTemplateName;
     }
 
-    @Required
+    @Autowired
     public void setEntitlementValidator(final EntitlementValidator entitlementValidator) {
         this.entitlementValidator = entitlementValidator;
     }

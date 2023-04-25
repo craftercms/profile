@@ -15,9 +15,8 @@
  */
 package org.craftercms.security.processors.impl;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.processors.RequestSecurityProcessor;
 import org.craftercms.security.processors.RequestSecurityProcessorChain;

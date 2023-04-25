@@ -17,14 +17,14 @@ package org.craftercms.security.utils.handlers;
 
 import java.io.IOException;
 import java.util.Collections;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.commons.rest.HttpMessageConvertingResponseWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 
 /**
@@ -38,7 +38,7 @@ public abstract class AbstractRestHandlerBase {
 
     protected HttpMessageConvertingResponseWriter responseWriter;
 
-    @Required
+    @Autowired
     public void setResponseWriter(HttpMessageConvertingResponseWriter responseWriter) {
         this.responseWriter = responseWriter;
     }

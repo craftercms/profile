@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * {@link TenantsResolver} that returns the first tenants resolved by any resolver.
@@ -34,7 +34,7 @@ public class TenantsResolverChain implements TenantsResolver {
     protected List<TenantsResolver> resolvers;
     protected boolean chainAllTenants;
 
-    @Required
+    @Autowired
     public void setResolvers(final List<TenantsResolver> resolvers) {
         this.resolvers = resolvers;
     }

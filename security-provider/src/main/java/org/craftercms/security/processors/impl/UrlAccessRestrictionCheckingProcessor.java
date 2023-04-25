@@ -17,8 +17,8 @@ package org.craftercms.security.processors.impl;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.MapUtils;
 import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;
@@ -30,7 +30,7 @@ import org.craftercms.security.utils.SecurityUtils;
 import org.craftercms.security.utils.spring.el.AccessRestrictionExpressionRoot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -91,7 +91,7 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
      * Sets the map of restrictions. Each key of the map is ANT-style path pattern, used to match the URLs of incoming
      * requests, and each value is a Spring EL expression.
      */
-    @Required
+    @Autowired
     public void setUrlRestrictions(Map<String, String> restrictions) {
         urlRestrictions = new LinkedHashMap<>();
 

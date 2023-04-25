@@ -15,8 +15,7 @@
  */
 package org.craftercms.security.authorization.impl;
 
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpServletResponse;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.exception.AccessDeniedException;
 import org.craftercms.security.utils.testing.AbstractRestHandlerTestBase;

@@ -16,9 +16,9 @@
 package org.craftercms.security.processors.impl;
 
 import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
@@ -30,7 +30,7 @@ import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Processes logout requests.
@@ -66,17 +66,17 @@ public class LogoutProcessor implements RequestSecurityProcessor {
         this.logoutMethod = logoutMethod;
     }
 
-    @Required
+    @Autowired
     public void setAuthenticationManager(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
 
-    @Required
+    @Autowired
     public void setLogoutSuccessHandler(LogoutSuccessHandler logoutSuccessHandler) {
         this.logoutSuccessHandler = logoutSuccessHandler;
     }
 
-    @Required
+    @Autowired
     public void setRememberMeManager(final RememberMeManager rememberMeManager) {
         this.rememberMeManager = rememberMeManager;
     }

@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -75,18 +76,18 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
-                                                             HttpStatus status, WebRequest request) {
-        return handleExceptionInternal(ex, headers, status, request);
+                                                             HttpStatusCode statusCode, WebRequest request) {
+        return handleExceptionInternal(ex, headers, statusCode, request);
     }
 
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpStatus status, WebRequest request) {
         return handleExceptionInternal(ex, new HttpHeaders(), status, request);
     }
 
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpHeaders headers, HttpStatus status,
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, HttpHeaders headers, HttpStatusCode statusCode,
                                                              WebRequest request) {
         logger.error("Request for " + ((ServletWebRequest) request).getRequest().getRequestURI() + " failed " +
-                     "with HTTP status " + status, ex);
+                     "with HTTP status " + statusCode, ex);
 
         String message = ex.getMessage();
 
@@ -94,7 +95,7 @@ public class ExceptionHandlers extends ResponseEntityExceptionHandler {
             message = ((ProfileRestServiceException) ex).getDetailMessage();
         }
 
-        return new ResponseEntity<Object>(Collections.singletonMap(MESSAGE_KEY, message), headers, status);
+        return new ResponseEntity<Object>(Collections.singletonMap(MESSAGE_KEY, message), headers, statusCode);
     }
 
 }

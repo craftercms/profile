@@ -16,15 +16,15 @@
 package org.craftercms.security.authentication.impl;
 
 import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.LoginSuccessHandler;
 import org.craftercms.security.exception.SecurityProviderException;
 import org.craftercms.security.utils.RedirectUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
@@ -56,7 +56,7 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
         this.requestCache = requestCache;
     }
 
-    @Required
+    @Autowired
     public void setDefaultTargetUrl(String defaultTargetUrl) {
         this.defaultTargetUrl = defaultTargetUrl;
     }

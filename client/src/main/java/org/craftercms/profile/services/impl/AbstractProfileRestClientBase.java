@@ -25,7 +25,7 @@ import org.craftercms.profile.api.exceptions.ErrorCode;
 import org.craftercms.profile.api.exceptions.ErrorDetails;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.ProfileRestServiceException;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -44,7 +44,7 @@ public abstract class AbstractProfileRestClientBase extends AbstractRestClientBa
 
     protected AccessTokenIdResolver accessTokenIdResolver;
 
-    @Required
+    @Autowired
     public void setAccessTokenIdResolver(AccessTokenIdResolver accessTokenIdResolver) {
         this.accessTokenIdResolver = accessTokenIdResolver;
     }

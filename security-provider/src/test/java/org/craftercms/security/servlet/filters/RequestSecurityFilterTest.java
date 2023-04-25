@@ -16,8 +16,9 @@
 package org.craftercms.security.servlet.filters;
 
 import java.util.Arrays;
-import javax.servlet.FilterChain;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletContext;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.processors.RequestSecurityProcessor;
 import org.craftercms.security.processors.RequestSecurityProcessorChain;
@@ -29,8 +30,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.web.WebAppConfiguration;
-import javax.servlet.ServletContext;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;

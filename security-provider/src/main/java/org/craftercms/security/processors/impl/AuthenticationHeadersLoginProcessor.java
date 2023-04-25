@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javax.servlet.http.HttpServletRequest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.profile.api.AttributeDefinition;
@@ -38,7 +38,7 @@ import org.craftercms.security.utils.SecurityUtils;
 import org.craftercms.security.utils.tenant.TenantsResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * {@link org.craftercms.security.processors.RequestSecurityProcessor} that auto logins a user through the headers
@@ -72,22 +72,22 @@ public class AuthenticationHeadersLoginProcessor implements RequestSecurityProce
         tokenHeaderName = DEFAULT_TOKEN_HEADER_NAME;
     }
 
-    @Required
+    @Autowired
     public void setTenantService(TenantService tenantService) {
         this.tenantService = tenantService;
     }
 
-    @Required
+    @Autowired
     public void setProfileService(ProfileService profileService) {
         this.profileService = profileService;
     }
 
-    @Required
+    @Autowired
     public void setTenantsResolver(TenantsResolver tenantsResolver) {
         this.tenantsResolver = tenantsResolver;
     }
 
-    @Required
+    @Autowired
     public void setAuthenticationManager(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }

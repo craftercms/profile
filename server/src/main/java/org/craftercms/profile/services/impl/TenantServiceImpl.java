@@ -42,7 +42,7 @@ import org.craftercms.profile.exceptions.TenantExistsException;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TenantRepository;
 import org.craftercms.profile.utils.db.TenantUpdater;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Default implementation of {@link org.craftercms.profile.api.services.TenantService}.
@@ -87,33 +87,33 @@ public class TenantServiceImpl implements TenantService {
 
     protected EntitlementValidator entitlementValidator;
 
-    @Required
+    @Autowired
     public void setTenantPermissionEvaluator(PermissionEvaluator<AccessToken, String> tenantPermissionEvaluator) {
         this.tenantPermissionEvaluator = tenantPermissionEvaluator;
     }
 
-    @Required
+    @Autowired
     public void setAttributePermissionEvaluator(
         PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator) {
         this.attributePermissionEvaluator = attributePermissionEvaluator;
     }
 
-    @Required
+    @Autowired
     public void setTenantRepository(TenantRepository tenantRepository) {
         this.tenantRepository = tenantRepository;
     }
 
-    @Required
+    @Autowired
     public void setProfileRepository(ProfileRepository profileRepository) {
         this.profileRepository = profileRepository;
     }
 
-    @Required
+    @Autowired
     public void setProfileService(ProfileService profileService) {
         this.profileService = profileService;
     }
 
-    @Required
+    @Autowired
     public void setEntitlementValidator(final EntitlementValidator entitlementValidator) {
         this.entitlementValidator = entitlementValidator;
     }

@@ -18,8 +18,7 @@ package org.craftercms.security.authentication.impl;
 
 import java.util.UUID;
 
-import javax.servlet.http.Cookie;
-
+import jakarta.servlet.http.Cookie;
 import org.bson.types.ObjectId;
 import org.craftercms.commons.crypto.impl.NoOpTextEncryptor;
 import org.craftercms.commons.http.CookieManager;
