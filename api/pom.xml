@@ -36,7 +36,7 @@
     <parent>
         <artifactId>crafter-profile-parent</artifactId>
         <groupId>org.craftercms</groupId>
-        <version>4.0.5</version><!-- craftercms version flag -->
+        <version>4.1.0</version><!-- craftercms version flag -->
     </parent>
     
     <dependencies>
@@ -48,7 +48,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>bson</artifactId>
-            <version>${bson.version}</version>
+            <version>${mongo.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.databind.version}</version>
+            <version>${jackson.version}</version>
         </dependency>
     </dependencies>
 
