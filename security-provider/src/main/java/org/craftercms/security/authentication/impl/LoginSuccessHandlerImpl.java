@@ -31,7 +31,6 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 
 /**
  * Default implementation of {@link LoginSuccessHandler}:
- * <p/>
  * <ol>
  * <li>Deletes any authentication exception saved in the session.</li>
  * <li>Adds the ticket ID and profile last modified cookies to response.</li>
