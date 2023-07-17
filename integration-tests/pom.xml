@@ -30,7 +30,7 @@
     <parent>
         <artifactId>crafter-profile-parent</artifactId>
         <groupId>org.craftercms</groupId>
-        <version>4.0.7-SNAPSHOT</version><!-- craftercms version flag -->
+        <version>4.0.7</version><!-- craftercms version flag -->
     </parent>
 
     <properties>
