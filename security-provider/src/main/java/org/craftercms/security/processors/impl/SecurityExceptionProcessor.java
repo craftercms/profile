@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Handles certain security exceptions:
- * <p/>
  * <ul>
  * <li>If it's an {@link AuthenticationRequiredException}, the {@link AuthenticationRequiredHandler} is used.</li>
  * <li>If it's an {@link AccessDeniedException}, and the user is anonymous, the {@link AuthenticationRequiredHandler}

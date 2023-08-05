@@ -38,12 +38,12 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
 /**
- * Processor that checks if the current user has permission to access the current request URL. To do this,
+ * <p>Processor that checks if the current user has permission to access the current request URL. To do this,
  * the processor matches the URL against the keys of the {@code restriction} map, which are ANT-style path patterns.
  * If a key matches, the value is interpreted as a Spring EL expression, the expression is executed, and if it returns
  * true, the processor chain is continued, if not an {@link AccessDeniedException} is thrown. The expression should be
  * one of this method calls that return a boolean:
- * <p/>
+ * </p>
  * <ol>
  * <li>isAnonymous()</li>
  * <li>isAuthenticated()</li>
@@ -52,9 +52,7 @@ import org.springframework.util.PathMatcher;
  * <li>permitAll()</li>
  * <li>denyAll()</li>
  * </ol>
- * <p/>
  * <p>Examples of user URL restrictions:</p>
- * <p/>
  * <pre>
  * &lt;entry key="/static-assets" value="permitAll()"/&gt;
  * &lt;entry key="/user" value="hasAnyRole({'user', 'admin'})"/&gt;

@@ -451,7 +451,7 @@ public interface ProfileService {
      * @param profileId    Profile Owner of the Attachment.
      * @return Null If Attachment Id does no exist or does not belong to the given profile. InputStream of the actual
      * File.
-     * @throws ProfileService If unable to get the Attachment.
+     * @throws ProfileException If unable to get the Attachment.
      */
     InputStream getProfileAttachment(String attachmentId, String profileId) throws ProfileException;
 

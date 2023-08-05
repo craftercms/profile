@@ -31,7 +31,6 @@ import org.springframework.security.web.savedrequest.RequestCache;
 
 /**
  * Default implementation of {@link AuthenticationRequiredHandler}:
- * <p/>
  * <ol>
  * <li>Saves the current request so it can be reused after successful login.</li>
  * <li>Redirects to the login form URL.</li>
