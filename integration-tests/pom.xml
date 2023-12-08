@@ -16,214 +16,204 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.craftercms</groupId>
-    <artifactId>crafter-profile-integration-tests</artifactId>
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <name>Crafter Profile Integration Tests</name>
-    <description>Crafter Profile Integration Tests</description>
-    <url>https://github.com/craftercms/profile/tree/master/api</url>
-    <packaging>war</packaging>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.craftercms</groupId>
+	<artifactId>crafter-profile-integration-tests</artifactId>
 
-    <parent>
-        <artifactId>crafter-profile-parent</artifactId>
-        <groupId>org.craftercms</groupId>
-        <version>4.2.0-SNAPSHOT</version><!-- craftercms version flag -->
-    </parent>
+	<name>Crafter Profile Integration Tests</name>
+	<description>Crafter Profile Integration Tests</description>
+	<url>https://github.com/craftercms/profile/tree/master/api</url>
+	<packaging>war</packaging>
 
-    <properties>
-        <!-- Mongo -->
-        <mongo.port>37017</mongo.port>
+	<parent>
+		<artifactId>crafter-profile-parent</artifactId>
+		<groupId>org.craftercms</groupId>
+		<version>4.2.0-SNAPSHOT</version><!-- craftercms version flag -->
+	</parent>
 
-        <!-- Cargo -->
-        <cargo.profile.context>crafter-profile</cargo.profile.context>
+	<properties>
+		<!-- Mongo -->
+		<mongo.port>37017</mongo.port>
 
-        <!-- Profile Logging -->
-        <profile.log>${basedir}/target/logs/profile.log</profile.log>
-    </properties>
+		<!-- Cargo -->
+		<cargo.profile.context>crafter-profile</cargo.profile.context>
 
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-        <plugins>
-            <!-- Run overlay of Crafter Search server to make it the current webapp -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <overlays>
-                        <overlay>
-                            <groupId>org.craftercms</groupId>
-                            <artifactId>crafter-profile</artifactId>
-                        </overlay>
-                    </overlays>
-                </configuration>
-            </plugin>
-            <!-- Skip Surefire so that our integration tests are not run as unit tests -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <skipTests>true</skipTests>
-                </configuration>
-            </plugin>
-            <!-- Run Failsafe plugin on JUnit test classes -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>verify</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <forkMode>never</forkMode>
-                </configuration>
-            </plugin>
-            <!-- Start up Embedded Mongo DB -->
-            <plugin>
-                <groupId>com.github.joelittlejohn.embedmongo</groupId>
-                <artifactId>embedmongo-maven-plugin</artifactId>
-                <version>${embedmongo.maven.version}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>de.flapdoodle.embed</groupId>
-                        <artifactId>de.flapdoodle.embed.mongo</artifactId>
-                        <version>${de.flapdoodle.embed.mongo.version}</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <id>start</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                        <configuration>
-                            <port>${mongo.port}</port>
-                            <version>${mongo.version}</version>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>stop</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Use Cargo to startup Jetty with Crafter Profile WAR. Used instead of Jetty plugin because of
-            JaCoCo/Sonar -->
-            <plugin>
-                <groupId>org.codehaus.cargo</groupId>
-                <artifactId>cargo-maven2-plugin</artifactId>
-                <version>${cargo.maven2.version}</version>
-                <executions>
-                    <execution>
-                        <id>start-jetty</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>stop-jetty</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <configuration>
-                        <properties>
-                            <cargo.servlet.port>${cargo.port}</cargo.servlet.port>
-                        </properties>
-                    </configuration>
-                    <container>
-                        <containerId>${cargo.container}</containerId>
-                        <zipUrlInstaller>
-                            <url>${cargo.container.url}</url>
-                            <downloadDir>${cargo.container.downloadDir}</downloadDir>
-                        </zipUrlInstaller>
-                    </container>
-                    <deployables>
-                        <deployable>
-                            <!--<pingURL>${cargo.pingUrl}</pingURL>-->
-                            <!--<pingTimeout>${cargo.pingTimeOut}</pingTimeout>-->
-                            <properties>
-                                <context>${cargo.profile.context}</context>
-                            </properties>
-                        </deployable>
-                    </deployables>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+		<!-- Profile Logging -->
+		<profile.log>${basedir}/target/logs/profile.log</profile.log>
+	</properties>
 
-    <dependencies>
-        <!-- Crafter -->
-        <dependency>
-            <groupId>org.craftercms</groupId>
-            <artifactId>crafter-profile</artifactId>
-            <version>${project.version}</version>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>org.craftercms</groupId>
-            <artifactId>crafter-profile-client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<plugins>
+			<!-- Run overlay of Crafter Search server to make it the current webapp -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<overlays>
+						<overlay>
+							<groupId>org.craftercms</groupId>
+							<artifactId>crafter-profile</artifactId>
+						</overlay>
+					</overlays>
+				</configuration>
+			</plugin>
+			<!-- Skip Surefire so that our integration tests are not run as unit tests -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+			<!-- Run Failsafe plugin on JUnit test classes -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>verify</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<forkMode>never</forkMode>
+				</configuration>
+			</plugin>
+			<!-- Start up Embedded Mongo DB -->
+			<plugin>
+				<groupId>com.github.joelittlejohn.embedmongo</groupId>
+				<artifactId>embedmongo-maven-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<groupId>de.flapdoodle.embed</groupId>
+						<artifactId>de.flapdoodle.embed.mongo</artifactId>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<id>start</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>start</goal>
+						</goals>
+						<configuration>
+							<port>${mongo.port}</port>
+						</configuration>
+					</execution>
+					<execution>
+						<id>stop</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>stop</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Use Cargo to startup Jetty with Crafter Profile WAR. Used instead of Jetty plugin because of
+			JaCoCo/Sonar -->
+			<plugin>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven2-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>start-jetty</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>start</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>stop-jetty</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>stop</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<configuration>
+						<properties>
+							<cargo.servlet.port>${cargo.port}</cargo.servlet.port>
+						</properties>
+					</configuration>
+					<container>
+						<containerId>${cargo.container}</containerId>
+						<zipUrlInstaller>
+							<url>${cargo.container.url}</url>
+							<downloadDir>${cargo.container.downloadDir}</downloadDir>
+						</zipUrlInstaller>
+					</container>
+					<deployables>
+						<deployable>
+							<!--<pingURL>${cargo.pingUrl}</pingURL>-->
+							<!--<pingTimeout>${cargo.pingTimeOut}</pingTimeout>-->
+							<properties>
+								<context>${cargo.profile.context}</context>
+							</properties>
+						</deployable>
+					</deployables>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
-        <!-- Testing -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.icegreen</groupId>
-            <artifactId>greenmail</artifactId>
-            <version>${greenmail.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+	<dependencies>
+		<!-- Crafter -->
+		<dependency>
+			<groupId>org.craftercms</groupId>
+			<artifactId>crafter-profile</artifactId>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>org.craftercms</groupId>
+			<artifactId>crafter-profile-client</artifactId>
+		</dependency>
+
+		<!-- Testing -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.icegreen</groupId>
+			<artifactId>greenmail</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
