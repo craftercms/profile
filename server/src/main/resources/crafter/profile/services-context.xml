@@ -120,18 +120,13 @@
           class="org.craftercms.profile.repositories.impl.PersistentLoginRepositoryImpl"
           parent="crafter.jongoRepositoryBase"/>
 
-    <bean id="crafter.mongoInitScriptRunner" class="org.craftercms.commons.mongo.MongoScriptRunner">
+    <bean id="crafter.mongoInitialResourcesRunner" class="org.craftercms.profile.tasks.InitialResourcesRunner">
         <property name="mongo" ref="crafter.profile.mongoClient"/>
         <property name="dbName" value="${crafter.profile.mongodb.connection.dbName}"/>
-        <property name="username" value="${crafter.profile.mongodb.connection.dbUsername}"/>
-        <property name="password" value="${crafter.profile.mongodb.connection.dbPassword}"/>
-        <property name="runOnInit" value="${crafter.profile.mongodb.scripts.runOnInit}"/>
-        <property name="mongoClientBin" value="${crafter.profile.mongodb.connection.scriptRunner.clientPath}"/>
-        <property name="connectionStr" value="${crafter.profile.mongodb.connection.newConnectionStr}"/>
-        <property name="useMongoClient" value="${crafter.profile.mongodb.connection.scriptRunner.withClient}"/>
-        <property name="scriptPaths">
+        <property name="runOnInit" value="${crafter.profile.mongodb.resources.runOnInit}"/>
+        <property name="resourcesPaths">
             <bean class="org.apache.commons.lang3.StringUtils" factory-method="split">
-                <constructor-arg index="0" value="${crafter.profile.mongodb.scripts.paths}"/>
+                <constructor-arg index="0" value="${crafter.profile.mongodb.resources.paths}"/>
                 <constructor-arg index="1" value=","/>
             </bean>
         </property>
