@@ -343,8 +343,12 @@ public class ProfileServiceImpl implements ProfileService {
             .filter(definition ->
                 CLEANSE_SUPPORTED_TYPES.contains(definition.getMetadata().get(ATTRIBUTE_TYPE_KEY).toString()))
             .collect(toList());
-        supportedAttributes.forEach(attribute -> attributes.compute(attribute.getName(),
-            (key, value) -> escapeValue(value, attribute.getMetadata().get(ATTRIBUTE_TYPE_KEY).toString())));
+        supportedAttributes.forEach(attribute -> {
+            if (attributes.containsKey(attribute.getName())) {
+                attributes.compute(attribute.getName(),
+                        (key, value) -> escapeValue(value, attribute.getMetadata().get(ATTRIBUTE_TYPE_KEY).toString()));
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
