@@ -15,7 +15,7 @@
  */
 package org.craftercms.security.authentication.impl;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
@@ -51,9 +51,8 @@ public class LoginSuccessHandleImplTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        handler = new LoginSuccessHandlerImpl();
+        handler = new LoginSuccessHandlerImpl(DEFAULT_TARGET_URL);
         handler.setRequestCache(requestCache);
-        handler.setDefaultTargetUrl(DEFAULT_TARGET_URL);
     }
 
     @Test

@@ -89,10 +89,7 @@ public class AuthenticationManagerImplTest {
 
         when(authenticationCache.getAuthentication(TICKET_ID1)).thenReturn(getAuthentication1());
 
-        authenticationManager = new AuthenticationManagerImpl();
-        authenticationManager.setAuthenticationService(authenticationService);
-        authenticationManager.setProfileService(profileService);
-        authenticationManager.setAuthenticationCache(authenticationCache);
+        authenticationManager = new AuthenticationManagerImpl(authenticationService, profileService, authenticationCache);
     }
 
     @Test

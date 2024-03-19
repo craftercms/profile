@@ -18,6 +18,7 @@ package org.craftercms.profile.exceptions;
 import org.craftercms.profile.api.exceptions.ErrorCode;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 
 /**
  * {@link org.craftercms.profile.api.exceptions.ProfileException} used by clients to indicate a REST service error.
@@ -26,18 +27,18 @@ import org.springframework.http.HttpStatus;
  */
 public class ProfileRestServiceException extends ProfileException {
 
-    protected HttpStatus status;
+    protected HttpStatusCode status;
     protected ErrorCode errorCode;
     protected String detailMessage;
 
-    public ProfileRestServiceException(HttpStatus status, String detailMessage) {
+    public ProfileRestServiceException(HttpStatusCode status, String detailMessage) {
         super("status = " + status + ", detailMessage = " + detailMessage);
 
         this.status = status;
         this.detailMessage = detailMessage;
     }
 
-    public ProfileRestServiceException(HttpStatus status, ErrorCode errorCode, String detailMessage) {
+    public ProfileRestServiceException(HttpStatusCode status, ErrorCode errorCode, String detailMessage) {
         super("status = " + status + ", errorCode = " + errorCode + ", detailMessage = " + detailMessage);
 
         this.status = status;
@@ -45,7 +46,7 @@ public class ProfileRestServiceException extends ProfileException {
         this.detailMessage = detailMessage;
     }
 
-    public HttpStatus getStatus() {
+    public HttpStatusCode getStatus() {
         return status;
     }
 

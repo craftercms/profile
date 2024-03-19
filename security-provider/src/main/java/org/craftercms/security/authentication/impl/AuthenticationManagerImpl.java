@@ -31,7 +31,6 @@ import org.craftercms.security.exception.BadCredentialsException;
 import org.craftercms.security.exception.DisabledUserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Default implementation of {@link org.craftercms.security.authentication.AuthenticationManager}.
@@ -46,18 +45,10 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
     protected ProfileService profileService;
     protected AuthenticationCache authenticationCache;
 
-    @Required
-    public void setAuthenticationService(AuthenticationService authenticationService) {
+    public AuthenticationManagerImpl(AuthenticationService authenticationService, ProfileService profileService,
+                                     AuthenticationCache authenticationCache) {
         this.authenticationService = authenticationService;
-    }
-
-    @Required
-    public void setProfileService(ProfileService profileService) {
         this.profileService = profileService;
-    }
-
-    @Required
-    public void setAuthenticationCache(AuthenticationCache authenticationCache) {
         this.authenticationCache = authenticationCache;
     }
 

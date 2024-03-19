@@ -21,6 +21,7 @@ import org.craftercms.profile.api.Profile;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.AuthenticationManager;
 import org.craftercms.security.authentication.LogoutSuccessHandler;
+import org.craftercms.security.authentication.RememberMeManager;
 import org.craftercms.security.authentication.impl.DefaultAuthentication;
 import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.utils.SecurityUtils;
@@ -51,13 +52,14 @@ public class LogoutProcessorTest {
     @Mock
     private LogoutSuccessHandler logoutSuccessHandler;
 
+    @Mock
+    private RememberMeManager rememberMeManager;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        processor = new LogoutProcessor();
-        processor.setAuthenticationManager(authenticationManager);
-        processor.setLogoutSuccessHandler(logoutSuccessHandler);
+        processor = new LogoutProcessor(authenticationManager, logoutSuccessHandler, rememberMeManager);
     }
 
     @Test

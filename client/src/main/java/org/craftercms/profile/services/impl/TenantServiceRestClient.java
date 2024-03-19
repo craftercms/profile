@@ -27,6 +27,7 @@ import org.craftercms.profile.exceptions.ProfileRestServiceException;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import static org.craftercms.profile.api.ProfileConstants.BASE_URL_TENANT;
 import static org.craftercms.profile.api.ProfileConstants.PARAM_ATTRIBUTE_NAME;
@@ -54,6 +55,10 @@ public class TenantServiceRestClient extends AbstractProfileRestClientBase imple
 
     public static final ParameterizedTypeReference<List<Tenant>> tenantListTypeRef =
             new ParameterizedTypeReference<List<Tenant>>() {};
+
+    public TenantServiceRestClient(String baseUrl, RestTemplate restTemplate, AccessTokenIdResolver accessTokenIdResolver) {
+        super(baseUrl, restTemplate, accessTokenIdResolver);
+    }
 
     @Override
     public Tenant createTenant(Tenant tenant) throws ProfileException {

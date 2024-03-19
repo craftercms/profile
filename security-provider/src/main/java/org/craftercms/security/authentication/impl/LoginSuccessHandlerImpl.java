@@ -16,15 +16,14 @@
 package org.craftercms.security.authentication.impl;
 
 import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
 import org.craftercms.security.authentication.LoginSuccessHandler;
 import org.craftercms.security.exception.SecurityProviderException;
 import org.craftercms.security.utils.RedirectUtils;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
@@ -45,19 +44,15 @@ public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
     protected String defaultTargetUrl;
     protected boolean alwaysUseDefaultTargetUrl;
 
-    public LoginSuccessHandlerImpl() {
+    public LoginSuccessHandlerImpl(String defaultTargetUrl) {
         super();
+        this.defaultTargetUrl = defaultTargetUrl;
         requestCache = new HttpSessionRequestCache();
         alwaysUseDefaultTargetUrl = false;
     }
 
     public void setRequestCache(RequestCache requestCache) {
         this.requestCache = requestCache;
-    }
-
-    @Required
-    public void setDefaultTargetUrl(String defaultTargetUrl) {
-        this.defaultTargetUrl = defaultTargetUrl;
     }
 
     protected String getDefaultTargetUrl() {

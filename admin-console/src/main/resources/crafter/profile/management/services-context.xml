@@ -37,7 +37,7 @@
     </bean>
 
     <bean id="crafter.tenantsResolver" class="org.craftercms.security.utils.tenant.AllTenantsResolver">
-        <property name="tenantService" ref="crafter.tenantServiceRestClient"/>
+        <constructor-arg name="tenantService" ref="crafter.tenantServiceRestClient"/>
     </bean>
 
     <util:map id="crafter.urlRestrictions">

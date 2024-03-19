@@ -101,18 +101,11 @@ public class ProfileControllerTest {
         TenantPermissionResolver tenantPermissionResolver = new TenantPermissionResolver();
         ProfilePermissionResolver profilePermissionResolver = new ProfilePermissionResolver();
 
-        PermissionEvaluatorImpl<Profile, String> tenantPermissionEvaluator = new PermissionEvaluatorImpl<>();
-        tenantPermissionEvaluator.setSubjectResolver(subjectResolver);
-        tenantPermissionEvaluator.setPermissionResolver(tenantPermissionResolver);
+        PermissionEvaluatorImpl<Profile, String> tenantPermissionEvaluator = new PermissionEvaluatorImpl<>(subjectResolver, tenantPermissionResolver);
 
-        PermissionEvaluatorImpl<Profile, Profile> profilePermissionEvaluator = new PermissionEvaluatorImpl<>();
-        profilePermissionEvaluator.setSubjectResolver(subjectResolver);
-        profilePermissionEvaluator.setPermissionResolver(profilePermissionResolver);
+        PermissionEvaluatorImpl<Profile, Profile> profilePermissionEvaluator = new PermissionEvaluatorImpl<>(subjectResolver, profilePermissionResolver);
 
-        controller = new ProfileController();
-        controller.setProfileService(profileService);
-        controller.setTenantPermissionEvaluator(tenantPermissionEvaluator);
-        controller.setProfilePermissionEvaluator(profilePermissionEvaluator);
+        controller = new ProfileController(null, profileService, tenantPermissionEvaluator, profilePermissionEvaluator);
 
         setCurrentRequestContext();
     }

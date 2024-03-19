@@ -32,7 +32,6 @@ import org.craftercms.profile.management.exceptions.InvalidRequestParameterExcep
 import org.craftercms.profile.management.exceptions.ResourceNotFoundException;
 import org.craftercms.profile.management.security.permissions.Action;
 import org.craftercms.security.utils.SecurityUtils;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -90,22 +89,12 @@ public class ProfileController {
     private PermissionEvaluator<Profile, String> tenantPermissionEvaluator;
     private PermissionEvaluator<Profile, Profile> profilePermissionEvaluator;
 
-    public void setVerificationUrl(String verificationUrl) {
+    public ProfileController(String verificationUrl, ProfileService profileService,
+                             PermissionEvaluator<Profile, String> tenantPermissionEvaluator,
+                             PermissionEvaluator<Profile, Profile> profilePermissionEvaluator) {
         this.verificationUrl = verificationUrl;
-    }
-
-    @Required
-    public void setProfileService(ProfileService profileService) {
         this.profileService = profileService;
-    }
-
-    @Required
-    public void setTenantPermissionEvaluator(PermissionEvaluator<Profile, String> tenantPermissionEvaluator) {
         this.tenantPermissionEvaluator = tenantPermissionEvaluator;
-    }
-
-    @Required
-    public void setProfilePermissionEvaluator(PermissionEvaluator<Profile, Profile> profilePermissionEvaluator) {
         this.profilePermissionEvaluator = profilePermissionEvaluator;
     }
 

@@ -17,7 +17,7 @@ package org.craftercms.security.processors.impl;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.MapUtils;
 import org.craftercms.commons.http.HttpUtils;
@@ -30,7 +30,6 @@ import org.craftercms.security.utils.SecurityUtils;
 import org.craftercms.security.utils.spring.el.AccessRestrictionExpressionRoot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -74,23 +73,11 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
     /**
      * Default constructor. Creates {@link AntPathMatcher} as default path matcher.
      */
-    public UrlAccessRestrictionCheckingProcessor() {
+    public UrlAccessRestrictionCheckingProcessor(Map<String, String> restrictions) {
         pathMatcher = new AntPathMatcher();
-    }
 
-    /**
-     * Sets the path matcher to use to match the URLs for restriction checking.
-     */
-    public void setPathMatcher(PathMatcher pathMatcher) {
-        this.pathMatcher = pathMatcher;
-    }
-
-    /**
-     * Sets the map of restrictions. Each key of the map is ANT-style path pattern, used to match the URLs of incoming
-     * requests, and each value is a Spring EL expression.
-     */
-    @Required
-    public void setUrlRestrictions(Map<String, String> restrictions) {
+        // Sets the map of restrictions. Each key of the map is ANT-style path pattern, used to match the URLs of incoming
+        // requests, and each value is a Spring EL expression.
         urlRestrictions = new LinkedHashMap<>();
 
         ExpressionParser parser = new SpelExpressionParser();
@@ -98,6 +85,13 @@ public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityPro
         for (Map.Entry<String, String> entry : restrictions.entrySet()) {
             urlRestrictions.put(entry.getKey(), parser.parseExpression(entry.getValue()));
         }
+    }
+
+    /**
+     * Sets the path matcher to use to match the URLs for restriction checking.
+     */
+    public void setPathMatcher(PathMatcher pathMatcher) {
+        this.pathMatcher = pathMatcher;
     }
 
     protected Map<String, Expression> getUrlRestrictions() {
