@@ -49,8 +49,8 @@
     </util:list>
 
     <bean id="crafter.profileRestTemplate" class="org.craftercms.commons.rest.RestTemplate">
+        <constructor-arg name="errorResponseType" value="org.craftercms.profile.api.exceptions.ErrorDetails"/>
         <property name="messageConverters" ref="crafter.profileMessageConverters"/>
-        <property name="errorResponseType" value="org.craftercms.profile.api.exceptions.ErrorDetails"/>
     </bean>
 
     <!-- Jackson config -->
