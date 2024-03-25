@@ -15,7 +15,7 @@
  */
 package org.craftercms.security.authorization.impl;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.exception.AccessDeniedException;
@@ -41,8 +41,7 @@ public class RestAccessDeniedHandlerTest extends AbstractRestHandlerTestBase {
 
     @Before
     public void setUp() throws Exception {
-        handler = new RestAccessDeniedHandler();
-        handler.setResponseWriter(createResponseWriter());
+        handler = new RestAccessDeniedHandler(createResponseWriter());
     }
 
     @Test

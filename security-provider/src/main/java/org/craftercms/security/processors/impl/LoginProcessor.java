@@ -15,8 +15,8 @@
  */
 package org.craftercms.security.processors.impl;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -35,7 +35,6 @@ import org.craftercms.security.utils.SecurityUtils;
 import org.craftercms.security.utils.tenant.TenantsResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Processes login requests.
@@ -66,12 +65,19 @@ public class LoginProcessor implements RequestSecurityProcessor {
     /**
      * Default constructor.
      */
-    public LoginProcessor() {
+    public LoginProcessor(AuthenticationManager authenticationManager, LoginSuccessHandler loginSuccessHandler,
+                          LoginFailureHandler loginFailureHandler, RememberMeManager rememberMeManager, final TenantsResolver tenantsResolver) {
         loginUrl = DEFAULT_LOGIN_URL;
         loginMethod = DEFAULT_LOGIN_METHOD;
         usernameParameter = DEFAULT_USERNAME_PARAM;
         passwordParameter = DEFAULT_PASSWORD_PARAM;
         rememberMeParameter = DEFAULT_REMEMBER_ME_PARAM;
+
+        this.authenticationManager = authenticationManager;
+        this.loginSuccessHandler = loginSuccessHandler;
+        this.loginFailureHandler = loginFailureHandler;
+        this.rememberMeManager = rememberMeManager;
+        this.tenantsResolver = tenantsResolver;
     }
 
     public void setLoginUrl(String loginUrl) {
@@ -92,31 +98,6 @@ public class LoginProcessor implements RequestSecurityProcessor {
 
     public void setRememberMeParameter(final String rememberMeParameter) {
         this.rememberMeParameter = rememberMeParameter;
-    }
-
-    @Required
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
-
-    @Required
-    public void setLoginSuccessHandler(LoginSuccessHandler loginSuccessHandler) {
-        this.loginSuccessHandler = loginSuccessHandler;
-    }
-
-    @Required
-    public void setLoginFailureHandler(LoginFailureHandler loginFailureHandler) {
-        this.loginFailureHandler = loginFailureHandler;
-    }
-
-    @Required
-    public void setRememberMeManager(RememberMeManager rememberMeManager) {
-        this.rememberMeManager = rememberMeManager;
-    }
-
-    @Required
-    public void setTenantsResolver(final TenantsResolver tenantsResolver) {
-        this.tenantsResolver = tenantsResolver;
     }
 
     /**

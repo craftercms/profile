@@ -15,8 +15,6 @@
  */
 package org.craftercms.profile.services.impl;
 
-import org.springframework.beans.factory.annotation.Required;
-
 /**
  * Implementation of {@link org.craftercms.profile.services.impl.AccessTokenIdResolver} that uses a single
  * access token ID, set as property.
@@ -27,8 +25,7 @@ public class SingleAccessTokenIdResolver implements AccessTokenIdResolver {
 
     protected String accessTokenId;
 
-    @Required
-    public void setAccessTokenId(String accessTokenId) {
+    public SingleAccessTokenIdResolver(String accessTokenId) {
         this.accessTokenId = accessTokenId;
     }
 

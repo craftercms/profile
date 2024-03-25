@@ -30,7 +30,6 @@ import org.craftercms.profile.management.security.AuthorizationUtils;
 import org.craftercms.profile.management.security.permissions.Action;
 import org.craftercms.security.utils.SecurityUtils;
 import org.craftercms.security.utils.tenant.TenantUtils;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -78,13 +77,8 @@ public class TenantController {
     private TenantService tenantService;
     private PermissionEvaluator<Profile, String> tenantPermissionEvaluator;
 
-    @Required
-    public void setTenantService(TenantService tenantService) {
+    public TenantController(TenantService tenantService, PermissionEvaluator<Profile, String> tenantPermissionEvaluator) {
         this.tenantService = tenantService;
-    }
-
-    @Required
-    public void setTenantPermissionEvaluator(PermissionEvaluator<Profile, String> tenantPermissionEvaluator) {
         this.tenantPermissionEvaluator = tenantPermissionEvaluator;
     }
 

@@ -15,7 +15,7 @@
  */
 package org.craftercms.security.authentication.impl;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.exception.BadCredentialsException;
@@ -41,8 +41,7 @@ public class RestLoginFailureHandlerTest extends AbstractRestHandlerTestBase {
 
     @Before
     public void setUp() throws Exception {
-        handler = new RestLoginFailureHandler();
-        handler.setResponseWriter(createResponseWriter());
+        handler = new RestLoginFailureHandler(createResponseWriter());
     }
 
     @Test

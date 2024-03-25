@@ -24,6 +24,7 @@ import org.craftercms.profile.api.services.AuthenticationService;
 import org.craftercms.profile.exceptions.ProfileRestServiceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import static org.craftercms.profile.api.ProfileConstants.*;
 
@@ -33,6 +34,10 @@ import static org.craftercms.profile.api.ProfileConstants.*;
  * @author avasquez
  */
 public class AuthenticationServiceRestClient extends AbstractProfileRestClientBase implements AuthenticationService {
+
+    public AuthenticationServiceRestClient(String baseUrl, RestTemplate restTemplate, AccessTokenIdResolver accessTokenIdResolver) {
+        super(baseUrl, restTemplate, accessTokenIdResolver);
+    }
 
     @Override
     public Ticket authenticate(String tenantName, String username, String password) throws ProfileException {

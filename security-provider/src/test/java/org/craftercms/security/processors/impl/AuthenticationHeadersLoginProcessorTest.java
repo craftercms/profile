@@ -86,12 +86,8 @@ public class AuthenticationHeadersLoginProcessorTest {
         when(tenantsResolver.getTenants()).thenReturn(new String[] {TENANT_NAME});
         when(authenticationManager.authenticateUser(profile)).thenReturn(new DefaultAuthentication(TICKET, profile));
 
-        processor = new AuthenticationHeadersLoginProcessor();
+        processor = new AuthenticationHeadersLoginProcessor(tenantService, profileService, tenantsResolver, authenticationManager);
         processor.setTokenExpectedValue(TOKEN);
-        processor.setTenantService(tenantService);
-        processor.setProfileService(profileService);
-        processor.setTenantsResolver(tenantsResolver);
-        processor.setAuthenticationManager(authenticationManager);
     }
 
     @Test

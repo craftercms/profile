@@ -16,8 +16,8 @@
 package org.craftercms.security.processors.impl;
 
 import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.commons.http.RequestContext;
@@ -30,7 +30,6 @@ import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Processes logout requests.
@@ -53,9 +52,14 @@ public class LogoutProcessor implements RequestSecurityProcessor {
     /**
      * Default constructor.
      */
-    public LogoutProcessor() {
+    public LogoutProcessor(AuthenticationManager authenticationManager, LogoutSuccessHandler logoutSuccessHandler,
+                           final RememberMeManager rememberMeManager) {
         logoutUrl = DEFAULT_LOGOUT_URL;
         logoutMethod = DEFAULT_LOGOUT_METHOD;
+
+        this.authenticationManager = authenticationManager;
+        this.logoutSuccessHandler = logoutSuccessHandler;
+        this.rememberMeManager = rememberMeManager;
     }
 
     public void setLogoutUrl(String logoutUrl) {
@@ -64,21 +68,6 @@ public class LogoutProcessor implements RequestSecurityProcessor {
 
     public void setLogoutMethod(String logoutMethod) {
         this.logoutMethod = logoutMethod;
-    }
-
-    @Required
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
-
-    @Required
-    public void setLogoutSuccessHandler(LogoutSuccessHandler logoutSuccessHandler) {
-        this.logoutSuccessHandler = logoutSuccessHandler;
-    }
-
-    @Required
-    public void setRememberMeManager(final RememberMeManager rememberMeManager) {
-        this.rememberMeManager = rememberMeManager;
     }
 
     /**

@@ -16,7 +16,7 @@
 package org.craftercms.security.processors.impl;
 
 import java.util.Date;
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 
 import org.bson.types.ObjectId;
 import org.craftercms.commons.http.RequestContext;
@@ -56,8 +56,7 @@ public class CurrentAuthenticationResolvingProcessorTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        processor = new CurrentAuthenticationResolvingProcessor();
-        processor.setAuthenticationManager(authenticationManager);
+        processor = new CurrentAuthenticationResolvingProcessor(authenticationManager);
     }
 
     @Test

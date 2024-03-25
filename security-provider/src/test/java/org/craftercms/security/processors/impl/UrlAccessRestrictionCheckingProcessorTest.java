@@ -47,8 +47,7 @@ public class UrlAccessRestrictionCheckingProcessorTest {
 
     @Before
     public void setUp() throws Exception {
-        processor = new UrlAccessRestrictionCheckingProcessor();
-        processor.setUrlRestrictions(Collections.singletonMap(URL, "hasRole('" + ADMIN_ROLE + "')"));
+        processor = new UrlAccessRestrictionCheckingProcessor(Collections.singletonMap(URL, "hasRole('" + ADMIN_ROLE + "')"));
     }
 
     @Test

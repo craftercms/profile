@@ -101,11 +101,7 @@ public class VerificationServiceImplTest {
         when(emailFactory.getEmail(FROM, TO, null, null, SUBJECT, TEMPLATE_NAME, VERIFICATION_TEMPLATE_ARGS, true))
             .thenReturn(email);
 
-        verificationService = new VerificationServiceImpl();
-        verificationService.setPermissionEvaluator(permissionEvaluator);
-        verificationService.setTokenRepository(tokenRepository);
-        verificationService.setEmailFactory(emailFactory);
-        verificationService.setTokenMaxAge(TOKEN_MAX_AGE);
+        verificationService = new VerificationServiceImpl(permissionEvaluator, tokenRepository, emailFactory, TOKEN_MAX_AGE);
     }
 
     @Test

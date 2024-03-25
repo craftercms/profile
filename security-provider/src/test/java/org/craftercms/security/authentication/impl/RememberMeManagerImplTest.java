@@ -18,7 +18,7 @@ package org.craftercms.security.authentication.impl;
 
 import java.util.UUID;
 
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 
 import org.bson.types.ObjectId;
 import org.craftercms.commons.crypto.impl.NoOpTextEncryptor;
@@ -73,12 +73,8 @@ public class RememberMeManagerImplTest {
         when(authenticationManager.authenticateUser(getProfile(), true)).thenReturn(getAuthentication());
         when(profileService.getProfile(PROFILE_ID.toString(), new String[0])).thenReturn(getProfile());
 
-        rememberMeManager = new RememberMeManagerImpl();
-        rememberMeManager.setAuthenticationService(authenticationService);
-        rememberMeManager.setAuthenticationManager(authenticationManager);
-        rememberMeManager.setProfileService(profileService);
-        rememberMeManager.setEncryptor(new NoOpTextEncryptor());
-        rememberMeManager.setRememberMeCookieManager(new CookieManager());
+        rememberMeManager = new RememberMeManagerImpl(authenticationService, authenticationManager, profileService,
+                new NoOpTextEncryptor(), new CookieManager());
     }
 
     @Test

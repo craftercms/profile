@@ -18,7 +18,7 @@ package org.craftercms.security.social.impl;
 
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -35,7 +35,6 @@ import org.craftercms.security.exception.OAuth2Exception;
 import org.craftercms.security.social.ProviderLoginSupport;
 import org.craftercms.security.utils.SecurityUtils;
 import org.craftercms.security.utils.social.ConnectionUtils;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
@@ -67,32 +66,18 @@ public class ProviderLoginSupportImpl implements ProviderLoginSupport {
     protected AuthenticationManager authenticationManager;
     protected TextEncryptor textEncryptor;
 
-    public ProviderLoginSupportImpl() {
+    public ProviderLoginSupportImpl(ConnectionFactoryLocator connectionFactoryLocator, ProfileService profileService,
+                                    AuthenticationManager authenticationManager, TextEncryptor textEncryptor) {
         connectSupport = new ConnectSupport();
+
+        this.connectionFactoryLocator = connectionFactoryLocator;
+        this.profileService = profileService;
+        this.authenticationManager = authenticationManager;
+        this.textEncryptor = textEncryptor;
     }
 
     public void setConnectSupport(ConnectSupport connectSupport) {
         this.connectSupport = connectSupport;
-    }
-
-    @Required
-    public void setConnectionFactoryLocator(ConnectionFactoryLocator connectionFactoryLocator) {
-        this.connectionFactoryLocator = connectionFactoryLocator;
-    }
-
-    @Required
-    public void setProfileService(ProfileService profileService) {
-        this.profileService = profileService;
-    }
-
-    @Required
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
-
-    @Required
-    public void setTextEncryptor(TextEncryptor textEncryptor) {
-        this.textEncryptor = textEncryptor;
     }
 
     @Override

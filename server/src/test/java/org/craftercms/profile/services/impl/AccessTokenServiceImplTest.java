@@ -63,8 +63,7 @@ public class AccessTokenServiceImplTest {
         when(accessTokenRepository.findByStringId(TOKEN_ID)).thenReturn(getNormalToken());
         when(accessTokenRepository.findAll()).thenReturn(Arrays.asList(getNormalToken()));
 
-        accessTokenService = new AccessTokenServiceImpl();
-        accessTokenService.setAccessTokenRepository(accessTokenRepository);
+        accessTokenService = new AccessTokenServiceImpl(accessTokenRepository);
 
         setCurrentRequestContext();
         setCurrentAccessToken();

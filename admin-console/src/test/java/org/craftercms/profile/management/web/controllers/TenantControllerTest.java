@@ -87,13 +87,9 @@ public class TenantControllerTest {
         SubjectResolver<Profile> subjectResolver = new CurrentUserSubjectResolver();
         TenantPermissionResolver permissionResolver = new TenantPermissionResolver();
 
-        PermissionEvaluatorImpl<Profile, String> permissionEvaluator = new PermissionEvaluatorImpl<>();
-        permissionEvaluator.setSubjectResolver(subjectResolver);
-        permissionEvaluator.setPermissionResolver(permissionResolver);
+        PermissionEvaluatorImpl<Profile, String> permissionEvaluator = new PermissionEvaluatorImpl<>(subjectResolver, permissionResolver);
 
-        controller = new TenantController();
-        controller.setTenantService(tenantService);
-        controller.setTenantPermissionEvaluator(permissionEvaluator);
+        controller = new TenantController(tenantService, permissionEvaluator);
 
         setCurrentRequestContext();
     }

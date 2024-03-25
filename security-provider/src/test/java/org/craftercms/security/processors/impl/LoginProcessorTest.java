@@ -16,7 +16,7 @@
 package org.craftercms.security.processors.impl;
 
 import java.util.UUID;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.profile.api.Profile;
@@ -76,15 +76,9 @@ public class LoginProcessorTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        DefaultTenantsResolver resolver = new DefaultTenantsResolver();
-        resolver.setDefaultTenantNames(TENANTS);
+        DefaultTenantsResolver resolver = new DefaultTenantsResolver(TENANTS);
 
-        processor = new LoginProcessor();
-        processor.setTenantsResolver(resolver);
-        processor.setAuthenticationManager(authenticationManager);
-        processor.setLoginSuccessHandler(loginSuccessHandler);
-        processor.setLoginFailureHandler(loginFailureHandler);
-        processor.setRememberMeManager(rememberMeManager);
+        processor = new LoginProcessor(authenticationManager, loginSuccessHandler, loginFailureHandler, rememberMeManager, resolver);
 
         Profile profile = new Profile();
         profile.setUsername(USERNAME);

@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +35,6 @@ import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.exceptions.NoSuchVerificationTokenException;
 import org.craftercms.profile.exceptions.ParamDeserializationException;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -65,13 +64,8 @@ public class ProfileController {
     protected ProfileService profileService;
     protected ObjectMapper objectMapper;
 
-    @Required
-    public void setProfileService(ProfileService profileService) {
+    public ProfileController(ProfileService profileService, ObjectMapper objectMapper) {
         this.profileService = profileService;
-    }
-
-    @Required
-    public void setObjectMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 

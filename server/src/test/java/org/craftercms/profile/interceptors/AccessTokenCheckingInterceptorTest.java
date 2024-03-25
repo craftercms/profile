@@ -15,6 +15,7 @@
  */
 package org.craftercms.profile.interceptors;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
@@ -61,9 +62,7 @@ public class AccessTokenCheckingInterceptorTest {
         when(tokenRepository.findByStringId(NORMAL_TOKEN_ID)).thenReturn(getNormalToken());
         when(tokenRepository.findByStringId(EXPIRED_TOKEN_ID)).thenReturn(getExpiredToken());
         
-        interceptor = new AccessTokenCheckingInterceptor();
-        interceptor.setAccessTokenRepository(tokenRepository);
-        interceptor.setUrlsToInclude(new String[] { ".*" });
+        interceptor = new AccessTokenCheckingInterceptor(tokenRepository, new String[] { ".*" }, new String[0]);
     }
 
     @Test

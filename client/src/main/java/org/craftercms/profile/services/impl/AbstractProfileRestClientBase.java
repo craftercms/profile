@@ -25,15 +25,11 @@ import org.craftercms.profile.api.exceptions.ErrorCode;
 import org.craftercms.profile.api.exceptions.ErrorDetails;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.exceptions.ProfileRestServiceException;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Base class for all Profile REST clients.
@@ -44,8 +40,8 @@ public abstract class AbstractProfileRestClientBase extends AbstractRestClientBa
 
     protected AccessTokenIdResolver accessTokenIdResolver;
 
-    @Required
-    public void setAccessTokenIdResolver(AccessTokenIdResolver accessTokenIdResolver) {
+    public AbstractProfileRestClientBase(String baseUrl, RestTemplate restTemplate, AccessTokenIdResolver accessTokenIdResolver) {
+        super(baseUrl, restTemplate);
         this.accessTokenIdResolver = accessTokenIdResolver;
     }
 
@@ -166,7 +162,7 @@ public abstract class AbstractProfileRestClientBase extends AbstractRestClientBa
     }
 
     protected void handleRestServiceException(RestServiceException e) throws ProfileException {
-        HttpStatus responseStatus = e.getResponseStatus();
+        HttpStatusCode responseStatus = e.getResponseStatus();
         Object details = e.getErrorDetails();
         if (details instanceof ErrorDetails) {
             ErrorDetails errorDetails = (ErrorDetails) details;

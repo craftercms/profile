@@ -24,6 +24,7 @@ import org.craftercms.profile.api.services.AccessTokenService;
 import org.craftercms.profile.exceptions.ProfileRestServiceException;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.client.RestTemplate;
 
 import static org.craftercms.profile.api.ProfileConstants.BASE_URL_ACCESS_TOKEN;
 import static org.craftercms.profile.api.ProfileConstants.URL_ACCESS_TOKEN_CREATE;
@@ -40,6 +41,10 @@ public class AccessTokenServiceRestClient extends AbstractProfileRestClientBase 
 
     public static final ParameterizedTypeReference<List<AccessToken>> accessTokenListTypeRef =
         new ParameterizedTypeReference<List<AccessToken>>() {};
+
+    public AccessTokenServiceRestClient(String baseUrl, RestTemplate restTemplate, AccessTokenIdResolver accessTokenIdResolver) {
+        super(baseUrl, restTemplate, accessTokenIdResolver);
+    }
 
     @Override
     public AccessToken createToken(AccessToken token) throws ProfileException {

@@ -36,7 +36,6 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.repositories.VerificationTokenRepository;
 import org.craftercms.profile.services.VerificationService;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.scheduling.annotation.Async;
 
 /**
@@ -65,23 +64,12 @@ public class VerificationServiceImpl implements VerificationService {
     protected EmailFactory emailFactory;
     protected int tokenMaxAge;
 
-    @Required
-    public void setPermissionEvaluator(PermissionEvaluator<AccessToken, String> permissionEvaluator) {
+    public VerificationServiceImpl(PermissionEvaluator<AccessToken, String> permissionEvaluator,
+                                   VerificationTokenRepository tokenRepository, EmailFactory emailFactory,
+                                   int tokenMaxAge) {
         this.permissionEvaluator = permissionEvaluator;
-    }
-
-    @Required
-    public void setTokenRepository(VerificationTokenRepository tokenRepository) {
         this.tokenRepository = tokenRepository;
-    }
-
-    @Required
-    public void setEmailFactory(EmailFactory emailFactory) {
         this.emailFactory = emailFactory;
-    }
-
-    @Required
-    public void setTokenMaxAge(int tokenMaxAge) {
         this.tokenMaxAge = tokenMaxAge;
     }
 

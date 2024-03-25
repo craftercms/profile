@@ -15,7 +15,7 @@
  */
 package org.craftercms.security.processors.impl;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.authentication.Authentication;
@@ -25,7 +25,6 @@ import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Obtains and sets the authentication for the current request.
@@ -38,8 +37,7 @@ public class CurrentAuthenticationResolvingProcessor implements RequestSecurityP
 
     protected AuthenticationManager authenticationManager;
 
-    @Required
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+    public CurrentAuthenticationResolvingProcessor(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
 

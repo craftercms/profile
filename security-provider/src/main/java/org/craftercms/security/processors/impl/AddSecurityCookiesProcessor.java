@@ -17,10 +17,10 @@ package org.craftercms.security.processors.impl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.http.CookieManager;
@@ -31,7 +31,6 @@ import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 
 /**
  * {@link org.craftercms.security.processors.RequestSecurityProcessor} implementation that creates a wrapper so that
@@ -46,13 +45,8 @@ public class AddSecurityCookiesProcessor implements RequestSecurityProcessor {
     protected CookieManager ticketCookieManager;
     protected CookieManager profileLastModifiedCookieManager;
 
-    @Required
-    public void setTicketCookieManager(CookieManager ticketCookieManager) {
+    public AddSecurityCookiesProcessor(CookieManager ticketCookieManager, CookieManager profileLastModifiedCookieManager) {
         this.ticketCookieManager = ticketCookieManager;
-    }
-
-    @Required
-    public void setProfileLastModifiedCookieManager(CookieManager profileLastModifiedCookieManager) {
         this.profileLastModifiedCookieManager = profileLastModifiedCookieManager;
     }
 

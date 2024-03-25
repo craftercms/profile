@@ -15,7 +15,7 @@
  */
 package org.craftercms.security.authentication.impl;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.exception.AuthenticationRequiredException;
@@ -41,8 +41,7 @@ public class RestAuthenticationRequiredHandlerTest extends AbstractRestHandlerTe
 
     @Before
     public void setUp() throws Exception {
-        handler = new RestAuthenticationRequiredHandler();
-        handler.setResponseWriter(createResponseWriter());
+        handler = new RestAuthenticationRequiredHandler(createResponseWriter());
     }
 
     @Test

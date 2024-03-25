@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.http.RequestContext;
@@ -38,7 +38,6 @@ import org.craftercms.security.utils.SecurityUtils;
 import org.craftercms.security.utils.tenant.TenantsResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 
 /**
  * {@link org.craftercms.security.processors.RequestSecurityProcessor} that auto logins a user through the headers
@@ -65,30 +64,16 @@ public class AuthenticationHeadersLoginProcessor implements RequestSecurityProce
     protected String tokenHeaderName;
     protected String tokenExpectedValue;
 
-    public AuthenticationHeadersLoginProcessor() {
+    public AuthenticationHeadersLoginProcessor(TenantService tenantService, ProfileService profileService,
+                                               TenantsResolver tenantsResolver, AuthenticationManager authenticationManager) {
         mellonHeaderPrefix = DEFAULT_MELLON_HEADER_PREFIX;
         usernameHeaderName = DEFAULT_USERNAME_HEADER_NAME;
         emailHeaderName = DEFAULT_EMAIL_HEADER_NAME;
         tokenHeaderName = DEFAULT_TOKEN_HEADER_NAME;
-    }
 
-    @Required
-    public void setTenantService(TenantService tenantService) {
         this.tenantService = tenantService;
-    }
-
-    @Required
-    public void setProfileService(ProfileService profileService) {
         this.profileService = profileService;
-    }
-
-    @Required
-    public void setTenantsResolver(TenantsResolver tenantsResolver) {
         this.tenantsResolver = tenantsResolver;
-    }
-
-    @Required
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
 

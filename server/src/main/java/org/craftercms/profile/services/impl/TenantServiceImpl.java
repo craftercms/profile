@@ -42,7 +42,6 @@ import org.craftercms.profile.exceptions.TenantExistsException;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TenantRepository;
 import org.craftercms.profile.utils.db.TenantUpdater;
-import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Default implementation of {@link org.craftercms.profile.api.services.TenantService}.
@@ -87,34 +86,15 @@ public class TenantServiceImpl implements TenantService {
 
     protected EntitlementValidator entitlementValidator;
 
-    @Required
-    public void setTenantPermissionEvaluator(PermissionEvaluator<AccessToken, String> tenantPermissionEvaluator) {
+    public TenantServiceImpl(PermissionEvaluator<AccessToken, String> tenantPermissionEvaluator,
+                             PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator,
+                             TenantRepository tenantRepository, ProfileRepository profileRepository,
+                             ProfileService profileService, final EntitlementValidator entitlementValidator) {
         this.tenantPermissionEvaluator = tenantPermissionEvaluator;
-    }
-
-    @Required
-    public void setAttributePermissionEvaluator(
-        PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator) {
         this.attributePermissionEvaluator = attributePermissionEvaluator;
-    }
-
-    @Required
-    public void setTenantRepository(TenantRepository tenantRepository) {
         this.tenantRepository = tenantRepository;
-    }
-
-    @Required
-    public void setProfileRepository(ProfileRepository profileRepository) {
         this.profileRepository = profileRepository;
-    }
-
-    @Required
-    public void setProfileService(ProfileService profileService) {
         this.profileService = profileService;
-    }
-
-    @Required
-    public void setEntitlementValidator(final EntitlementValidator entitlementValidator) {
         this.entitlementValidator = entitlementValidator;
     }
 

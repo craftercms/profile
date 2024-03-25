@@ -15,7 +15,7 @@
  */
 package org.craftercms.security.authentication.impl;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.craftercms.commons.http.RequestContext;
 import org.junit.Before;
@@ -39,8 +39,7 @@ public class LogoutSuccessHandlerImplTest {
 
     @Before
     public void setUp() throws Exception {
-        handler = new LogoutSuccessHandlerImpl();
-        handler.setTargetUrl(TARGET_URl);
+        handler = new LogoutSuccessHandlerImpl(TARGET_URl);
     }
 
     @Test

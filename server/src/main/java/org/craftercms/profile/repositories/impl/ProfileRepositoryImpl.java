@@ -29,6 +29,7 @@ import org.craftercms.profile.api.SortOrder;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.jongo.Find;
 import org.jongo.FindOne;
+import org.jongo.Jongo;
 import org.jongo.Update;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,8 +68,8 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
     public static final String MODIFIER_UPDATE_ATTRIBUTE = "{$set: {attributes.#: #}}";
 
     @Override
-    public void init() throws Exception {
-        super.init();
+    public void init(Jongo jongo) throws Exception {
+        super.init(jongo);
 
         getCollection().ensureIndex(getQueryFor(KEY_INDEX_KEYS), getQueryFor(KEY_INDEX_OPTIONS));
     }

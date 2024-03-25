@@ -22,7 +22,6 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.TenantService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 
 /**
  * {@link TenantsResolver} that uses all the available tenants.
@@ -35,8 +34,7 @@ public class AllTenantsResolver implements TenantsResolver {
 
     protected TenantService tenantService;
 
-    @Required
-    public void setTenantService(TenantService tenantService) {
+    public AllTenantsResolver(TenantService tenantService) {
         this.tenantService = tenantService;
     }
 
