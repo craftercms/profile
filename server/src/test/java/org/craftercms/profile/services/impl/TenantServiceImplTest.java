@@ -108,7 +108,8 @@ public class TenantServiceImplTest {
             .thenReturn(Arrays.asList(mock(Profile.class)));
 
         tenantService = new TenantServiceImpl(permissionEvaluator, attributePermissionEvaluator, tenantRepository,
-                profileRepository, profileService, entitlementValidator);
+                profileRepository, entitlementValidator);
+        tenantService.setProfileService(profileService);
     }
 
     @Test

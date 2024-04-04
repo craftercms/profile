@@ -242,9 +242,11 @@ public class ProfileServiceImplTest {
         when(verificationService.getToken(VERIFICATION_TOKEN_ID2)).thenReturn(token2);
 
         profileService = new ProfileServiceImpl(tenantPermissionEvaluator, attributePermissionEvaluator, profileRepository,
-                tenantService, authenticationService, verificationService, VERIFICATION_FROM_ADDRESS, VERIFICATION_SUBJECT,
+                verificationService, VERIFICATION_FROM_ADDRESS, VERIFICATION_SUBJECT,
                 VERIFICATION_TEMPLATE_NAME, RESET_PASSWORD_FROM_ADDRESS, RESET_PASSWORD_SUBJECT, RESET_PASSWORD_TEMPLATE_NAME,
                 entitlementValidator);
+        profileService.setTenantService(tenantService);
+        profileService.setAuthenticationService(authenticationService);
     }
 
     @Test

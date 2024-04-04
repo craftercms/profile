@@ -42,6 +42,8 @@ import org.craftercms.profile.exceptions.TenantExistsException;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TenantRepository;
 import org.craftercms.profile.utils.db.TenantUpdater;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * Default implementation of {@link org.craftercms.profile.api.services.TenantService}.
@@ -89,13 +91,17 @@ public class TenantServiceImpl implements TenantService {
     public TenantServiceImpl(PermissionEvaluator<AccessToken, String> tenantPermissionEvaluator,
                              PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator,
                              TenantRepository tenantRepository, ProfileRepository profileRepository,
-                             ProfileService profileService, final EntitlementValidator entitlementValidator) {
+                             final EntitlementValidator entitlementValidator) {
         this.tenantPermissionEvaluator = tenantPermissionEvaluator;
         this.attributePermissionEvaluator = attributePermissionEvaluator;
         this.tenantRepository = tenantRepository;
         this.profileRepository = profileRepository;
-        this.profileService = profileService;
         this.entitlementValidator = entitlementValidator;
+    }
+
+    @Autowired
+    public void setProfileService(@Lazy final ProfileService profileService) {
+        this.profileService = profileService;
     }
 
     @Override

@@ -35,8 +35,8 @@
         <mvc:path-matching suffix-pattern="true"/>
         <mvc:message-converters>
             <bean class="org.craftercms.commons.jackson.mvc.CrafterJackson2MessageConverter">
+                <constructor-arg name="filter" ref="crafter.jacksonFilterProvider"/>
                 <property name="objectMapper" ref="crafter.objectMapper"/>
-                <property name="filter" ref="crafter.jacksonFilterProvider"/>
             </bean>
         </mvc:message-converters>
     </mvc:annotation-driven>
@@ -90,7 +90,7 @@
     
     <bean id="crafter.jacksonAnnotationIntrospector"
           class="org.craftercms.commons.jackson.mvc.CrafterJacksonAnnotationIntrospector">
-        <property name="defaultFilter" value="gdata"/>
+        <constructor-arg name="defaultFilter" value="gdata"/>
     </bean>
 
     <bean id="crafter.objectMapper" class="org.craftercms.commons.jackson.CustomSerializationObjectMapper">

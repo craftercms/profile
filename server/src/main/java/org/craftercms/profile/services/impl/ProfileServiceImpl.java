@@ -78,6 +78,8 @@ import org.craftercms.profile.exceptions.ProfileExistsException;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.services.VerificationService;
 import org.craftercms.profile.utils.db.ProfileUpdater;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -158,7 +160,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     public ProfileServiceImpl(PermissionEvaluator<AccessToken, String> tenantPermissionEvaluator,
                               PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator,
-                              ProfileRepository profileRepository, TenantService tenantService, AuthenticationService authenticationService,
+                              ProfileRepository profileRepository,
                               final VerificationService verificationService, final String newProfileEmailFromAddress,
                               final String newProfileEmailSubject, final String newProfileEmailTemplateName,
                               final String resetPwdEmailFromAddress, final String resetPwdEmailSubject,
@@ -166,8 +168,6 @@ public class ProfileServiceImpl implements ProfileService {
         this.tenantPermissionEvaluator = tenantPermissionEvaluator;
         this.attributePermissionEvaluator = attributePermissionEvaluator;
         this.profileRepository = profileRepository;
-        this.tenantService = tenantService;
-        this.authenticationService = authenticationService;
         this.verificationService = verificationService;
         this.newProfileEmailFromAddress = newProfileEmailFromAddress;
         this.newProfileEmailSubject = newProfileEmailSubject;
@@ -176,6 +176,16 @@ public class ProfileServiceImpl implements ProfileService {
         this.resetPwdEmailSubject = resetPwdEmailSubject;
         this.resetPwdEmailTemplateName = resetPwdEmailTemplateName;
         this.entitlementValidator = entitlementValidator;
+    }
+
+    @Autowired
+    public void setTenantService(@Lazy final TenantService tenantService) {
+        this.tenantService = tenantService;
+    }
+
+    @Autowired
+    public void setAuthenticationService(@Lazy final AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 
     @Override

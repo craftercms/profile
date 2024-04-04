@@ -55,14 +55,14 @@
 
     <!-- Mongo -->
     <bean id="crafter.profile.mongoClient" class="org.craftercms.commons.mongo.MongoClientFromUriFactoryBean">
-        <property name="uri" value="${crafter.profile.mongodb.connection.connectionStr}"/>
+        <constructor-arg name="uri" value="${crafter.profile.mongodb.connection.connectionStr}"/>
     </bean>
 
     <bean id="crafter.jongo" class="org.craftercms.commons.mongo.JongoFactoryBean">
-        <property name="mongo" ref="crafter.profile.mongoClient"/>
+        <constructor-arg name="dbName" value="${crafter.profile.mongodb.connection.dbName}"/>
+        <constructor-arg name="mongo" ref="crafter.profile.mongoClient"/>
         <property name="username" value="${crafter.profile.mongodb.connection.dbUsername}"/>
         <property name="password" value="${crafter.profile.mongodb.connection.dbPassword}"/>
-        <property name="dbName" value="${crafter.profile.mongodb.connection.dbName}"/>
     </bean>
 
     <bean id="crafter.jongoQueries" class="org.craftercms.commons.mongo.JongoQueries" init-method="init">
@@ -77,7 +77,7 @@
 
     <bean id="crafter.jongoRepositoryBase" class="org.craftercms.commons.mongo.AbstractJongoRepository"
           init-method="init" abstract="true">
-        <constructor-arg name="jongo" ref="crafter.jongo"/>
+        <property name="jongo" ref="crafter.jongo"/>
         <property name="queries" ref="crafter.jongoQueries"/>
     </bean>
 
@@ -136,7 +136,7 @@
     </bean>
 
     <bean id="crafter.emailFactory" class="org.craftercms.commons.mail.impl.EmailFactoryImpl">
-        <property name="mailSender" ref="crafter.mailSender"/>
+        <constructor-arg name="mailSender" ref="crafter.mailSender"/>
         <property name="freeMarkerConfig" ref="crafter.mailFreeMarkerConfig"/>
         <property name="templateEncoding" value="${crafter.profile.mail.encoding}"/>
     </bean>
@@ -152,14 +152,14 @@
 
     <bean id="crafter.tenantPermissionEvaluator"
           class="org.craftercms.commons.security.permissions.impl.PermissionEvaluatorImpl">
-        <property name="subjectResolver" ref="crafter.accessTokenSubjectResolver"/>
-        <property name="permissionResolver" ref="crafter.tenantPermissionResolver"/>
+        <constructor-arg name="subjectResolver" ref="crafter.accessTokenSubjectResolver"/>
+        <constructor-arg name="permissionResolver" ref="crafter.tenantPermissionResolver"/>
     </bean>
 
     <bean id="crafter.attributePermissionEvaluator"
           class="org.craftercms.commons.security.permissions.impl.PermissionEvaluatorImpl">
-        <property name="subjectResolver" ref="crafter.accessTokenSubjectResolver"/>
-        <property name="permissionResolver" ref="crafter.attributePermissionResolver"/>
+        <constructor-arg name="subjectResolver" ref="crafter.accessTokenSubjectResolver"/>
+        <constructor-arg name="permissionResolver" ref="crafter.attributePermissionResolver"/>
     </bean>
 
     <!-- Services -->
@@ -180,16 +180,14 @@
         <constructor-arg name="attributePermissionEvaluator" ref="crafter.attributePermissionEvaluator"/>
         <constructor-arg name="tenantRepository" ref="crafter.tenantRepository"/>
         <constructor-arg name="profileRepository" ref="crafter.profileRepository"/>
-        <constructor-arg name="profileService" ref="crafter.profileService"/>
         <constructor-arg name="entitlementValidator" ref="crafter.entitlementValidator"/>
+        <property name="profileService" ref="crafter.profileService"/>
     </bean>
 
     <bean id="crafter.profileService" class="org.craftercms.profile.services.impl.ProfileServiceImpl">
         <constructor-arg name="tenantPermissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
         <constructor-arg name="attributePermissionEvaluator" ref="crafter.attributePermissionEvaluator"/>
         <constructor-arg name="profileRepository" ref="crafter.profileRepository"/>
-        <constructor-arg name="tenantService" ref="crafter.tenantService"/>
-        <constructor-arg name="authenticationService" ref="crafter.authenticationService"/>
         <constructor-arg name="verificationService" ref="crafter.verificationService"/>
         <constructor-arg name="newProfileEmailFromAddress" value="${crafter.profile.verification.newProfile.mail.from}"/>
         <constructor-arg name="newProfileEmailSubject" value="${crafter.profile.verification.newProfile.mail.subject}"/>
@@ -199,16 +197,18 @@
         <constructor-arg name="resetPwdEmailTemplateName" value="${crafter.profile.verification.resetPassword.mail.templateName}"/>
         <constructor-arg name="entitlementValidator" ref="crafter.entitlementValidator"/>
         <property name="validAttachmentMimeTypes" value="${crafter.profile.attachments.validMimeTypes}"/>
+        <property name="tenantService" ref="crafter.tenantService"/>
+        <property name="authenticationService" ref="crafter.authenticationService"/>
     </bean>
 
     <bean id="crafter.authenticationService" class="org.craftercms.profile.services.impl.AuthenticationServiceImpl">
         <constructor-arg name="permissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
         <constructor-arg name="ticketRepository" ref="crafter.ticketRepository"/>
         <constructor-arg name="persistentLoginRepository" ref="crafter.persistentLoginRepository"/>
-        <constructor-arg name="profileService" ref="crafter.profileService"/>
         <property name="lockTime" value="${crafter.profile.auth.lockTime}"/>
         <property name="failedLoginAttemptsBeforeLock" value="${crafter.profile.auth.failedLoginAttemptsBeforeLock}"/>
         <property name="failedLoginAttemptsBeforeDelay" value="${crafter.profile.auth.failedLoginAttemptsBeforeDelay}"/>
+        <property name="profileService" ref="crafter.profileService"/>
     </bean>
 
     <!-- Quartz -->
@@ -279,11 +279,11 @@
         </property>
     </bean>
 
-    <bean id="multipartResolver"
-          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <property name="maxUploadSize" value="${crafter.profile.attachments.maxSizeUpload}"/>
-        <property name="maxInMemorySize" value="${crafter.profile.attachments.maxSizeMem}"/>
-    </bean>
+<!--    <bean id="multipartResolver"-->
+<!--          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->
+<!--        <property name="maxUploadSize" value="${crafter.profile.attachments.maxSizeUpload}"/>-->
+<!--        <property name="maxInMemorySize" value="${crafter.profile.attachments.maxSizeMem}"/>-->
+<!--    </bean>-->
 
     <!-- Entitlements -->
     <bean id="crafter.entitlementsProvider" class="org.craftercms.profile.entitlement.ProfileLicenseUsageProvider">
