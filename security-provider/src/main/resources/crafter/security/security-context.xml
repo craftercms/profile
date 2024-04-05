@@ -221,7 +221,7 @@
 
     <bean id="crafter.urlAccessRestrictionCheckingProcessor"
           class="org.craftercms.security.processors.impl.UrlAccessRestrictionCheckingProcessor">
-        <constructor-arg name="urlRestrictions" ref="crafter.urlRestrictions"/>
+        <constructor-arg name="restrictions" ref="crafter.urlRestrictions"/>
     </bean>
 
     <bean id="crafter.rememberMeAutoLoginProcessor"
