@@ -54,11 +54,11 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
     public static final String KEY_FIND_BY_TENANT_QUERY = "profile.profile.byTenant";
     public static final String KEY_FIND_BY_TENANT_AND_ROLE_QUERY = "profile.profile.byTenantAndRole";
     public static final String KEY_FIND_BY_TENANT_AND_EXISTING_ATTRIB_QUERY = "profile.profile" +
-                                                                              ".byTenantAndExistingAttribute";
+            ".byTenantAndExistingAttribute";
     public static final String KEY_FIND_BY_TENANT_AND_ATTRIB_VALUE_QUERY = "profile.profile" +
-                                                                           ".byTenantAndAttributeValue";
+            ".byTenantAndAttributeValue";
     public static final String KEY_FIND_BY_TENANT_AND_NON_EXISTING_ATTRIB_QUERY = "profile.profile" +
-                                                                                  ".byTenantAndNonExistingAttribute";
+            ".byTenantAndNonExistingAttribute";
 
     public static final String ATTRIBUTE_FIELD_PREFIX = "attributes.";
 
@@ -225,7 +225,7 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
             return find.as(Profile.class);
         } catch (MongoException ex) {
             String msg = "Unable to find profiles for attribute " + attributeName + " = " + attributeValue +
-                " and tenant '" + tenantName + "'";
+                    " and tenant '" + tenantName + "'";
             logger.error(msg, ex);
             throw new MongoDataException(msg, ex);
         }
@@ -233,7 +233,7 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
 
     @Override
     public Profile findByTenantAndUsername(String tenantName, String username, String... attributesToReturn)
-        throws MongoDataException {
+            throws MongoDataException {
         try {
             String query = getQueryFor(KEY_FIND_BY_TENANT_AND_USERNAME_QUERY);
             FindOne findOne = getCollection().findOne(query, tenantName, username);
@@ -283,7 +283,7 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
             update.with(MODIFIER_REMOVE_ATTRIBUTE, attributeName);
         } catch (MongoException ex) {
             String msg = "Unable to remove attribute with name '" + attributeName + "' from profiles of tenant '" +
-                         tenantName + "'";
+                    tenantName + "'";
             logger.error(msg, ex);
             throw new MongoDataException(msg, ex);
         }
@@ -298,7 +298,7 @@ public class ProfileRepositoryImpl extends AbstractJongoRepository<Profile> impl
             update.with(MODIFIER_UPDATE_ATTRIBUTE, attributeName, defaultValue);
         } catch (MongoException ex) {
             String msg = "Unable to add attribute with name '" + attributeName + "' to profiles of tenant '" +
-                         tenantName + "'";
+                    tenantName + "'";
             logger.error(msg, ex);
             throw new MongoDataException(msg, ex);
         }

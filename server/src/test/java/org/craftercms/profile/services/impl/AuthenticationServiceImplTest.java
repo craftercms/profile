@@ -98,10 +98,7 @@ public class AuthenticationServiceImplTest {
             .thenReturn(getProfile2());
 
 
-        authenticationService = new AuthenticationServiceImpl();
-        authenticationService.setPermissionEvaluator(permissionEvaluator);
-        authenticationService.setTicketRepository(ticketRepository);
-        authenticationService.setPersistentLoginRepository(persistentLoginRepository);
+        authenticationService = new AuthenticationServiceImpl(permissionEvaluator, ticketRepository, persistentLoginRepository);
         authenticationService.setProfileService(profileService);
         authenticationService.setFailedLoginAttemptsBeforeDelay(2);
         authenticationService.setLockTime(5);

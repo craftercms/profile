@@ -21,7 +21,7 @@
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
-    
+
     <import resource="classpath:crafter/security/security-context.xml"/>
 
     <bean name="crafter.adminConsoleProperties"
@@ -37,7 +37,7 @@
     </bean>
 
     <bean id="crafter.tenantsResolver" class="org.craftercms.security.utils.tenant.AllTenantsResolver">
-        <property name="tenantService" ref="crafter.tenantServiceRestClient"/>
+        <constructor-arg name="tenantService" ref="crafter.tenantServiceRestClient"/>
     </bean>
 
     <util:map id="crafter.urlRestrictions">
@@ -56,14 +56,14 @@
 
     <bean id="crafter.tenantPermissionEvaluator"
           class="org.craftercms.commons.security.permissions.impl.PermissionEvaluatorImpl">
-        <property name="subjectResolver" ref="crafter.subjectResolver"/>
-        <property name="permissionResolver" ref="crafter.tenantPermissionResolver"/>
+        <constructor-arg name="subjectResolver" ref="crafter.subjectResolver"/>
+        <constructor-arg name="permissionResolver" ref="crafter.tenantPermissionResolver"/>
     </bean>
 
     <bean id="crafter.profilePermissionEvaluator"
           class="org.craftercms.commons.security.permissions.impl.PermissionEvaluatorImpl">
-        <property name="subjectResolver" ref="crafter.subjectResolver"/>
-        <property name="permissionResolver" ref="crafter.profilePermissionResolver"/>
+        <constructor-arg name="subjectResolver" ref="crafter.subjectResolver"/>
+        <constructor-arg name="permissionResolver" ref="crafter.profilePermissionResolver"/>
     </bean>
 
     <import resource="classpath*:crafter/profile/management/extension/services-context.xml"/>

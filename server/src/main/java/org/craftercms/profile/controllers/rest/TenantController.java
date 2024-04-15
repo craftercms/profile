@@ -24,7 +24,6 @@ import org.craftercms.profile.api.Tenant;
 import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.TenantService;
 import org.craftercms.profile.exceptions.NoSuchTenantException;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,11 +60,9 @@ import static org.craftercms.profile.api.ProfileConstants.URL_TENANT_VERIFY_NEW_
 @Controller
 @RequestMapping(BASE_URL_TENANT)
 public class TenantController {
-
     private TenantService tenantService;
 
-    @Required
-    public void setTenantService(TenantService tenantService) {
+    public TenantController(TenantService tenantService) {
         this.tenantService = tenantService;
     }
 

@@ -30,20 +30,20 @@
     <!-- ////////////////////////////////// -->
 
     <bean id="crafter.loginSuccessHandler" class="org.craftercms.security.authentication.impl.RestLoginSuccessHandler">
-        <property name="responseWriter" ref="crafter.restResponseWriter"/>
+        <constructor-arg name="responseWriter" ref="crafter.restResponseWriter"/>
     </bean>
 
     <bean id="crafter.loginFailureHandler" class="org.craftercms.security.authentication.impl.RestLoginFailureHandler">
-        <property name="responseWriter" ref="crafter.restResponseWriter"/>
+        <constructor-arg name="responseWriter" ref="crafter.restResponseWriter"/>
     </bean>
 
     <bean id="crafter.logoutSuccessHandler" class="org.craftercms.security.authentication.impl.RestLogoutSuccessHandler">
-        <property name="responseWriter" ref="crafter.restResponseWriter"/>
+        <constructor-arg name="responseWriter" ref="crafter.restResponseWriter"/>
     </bean>
 
     <bean id="crafter.authenticationRequiredHandler"
           class="org.craftercms.security.authentication.impl.RestAuthenticationRequiredHandler">
-        <property name="responseWriter" ref="crafter.restResponseWriter"/>
+        <constructor-arg name="responseWriter" ref="crafter.restResponseWriter"/>
     </bean>
 
     <!-- ////////////////////////////////// -->
@@ -53,7 +53,7 @@
     <!-- ////////////////////////////////// -->
 
     <bean id="crafter.accessDeniedHandler" class="org.craftercms.security.authorization.impl.RestAccessDeniedHandler">
-        <property name="responseWriter" ref="crafter.restResponseWriter"/>
+        <constructor-arg name="responseWriter" ref="crafter.restResponseWriter"/>
     </bean>
 
 </beans>

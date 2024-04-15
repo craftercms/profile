@@ -16,9 +16,10 @@
 package org.craftercms.security.authorization.impl;
 
 import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.craftercms.commons.http.RequestContext;
+import org.craftercms.commons.rest.HttpMessageConvertingResponseWriter;
 import org.craftercms.security.authorization.AccessDeniedHandler;
 import org.craftercms.security.exception.AccessDeniedException;
 import org.craftercms.security.exception.SecurityProviderException;
@@ -31,6 +32,10 @@ import org.craftercms.security.utils.handlers.AbstractRestHandlerBase;
  * @author avasquez
  */
 public class RestAccessDeniedHandler extends AbstractRestHandlerBase implements AccessDeniedHandler {
+
+    public RestAccessDeniedHandler(HttpMessageConvertingResponseWriter responseWriter) {
+        super(responseWriter);
+    }
 
     @Override
     public void handle(RequestContext context, AccessDeniedException e) throws SecurityProviderException, IOException {

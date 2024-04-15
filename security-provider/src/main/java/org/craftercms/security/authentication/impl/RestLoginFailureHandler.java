@@ -16,9 +16,10 @@
 package org.craftercms.security.authentication.impl;
 
 import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.craftercms.commons.http.RequestContext;
+import org.craftercms.commons.rest.HttpMessageConvertingResponseWriter;
 import org.craftercms.security.authentication.LoginFailureHandler;
 import org.craftercms.security.exception.AuthenticationException;
 import org.craftercms.security.exception.SecurityProviderException;
@@ -31,6 +32,10 @@ import org.craftercms.security.utils.handlers.AbstractRestHandlerBase;
  * @author avasquez
  */
 public class RestLoginFailureHandler extends AbstractRestHandlerBase implements LoginFailureHandler {
+
+    public RestLoginFailureHandler(HttpMessageConvertingResponseWriter responseWriter) {
+        super(responseWriter);
+    }
 
     @Override
     public void handle(RequestContext context, AuthenticationException e) throws SecurityProviderException,

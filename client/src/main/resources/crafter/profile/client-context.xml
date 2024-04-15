@@ -49,8 +49,8 @@
     </util:list>
 
     <bean id="crafter.profileRestTemplate" class="org.craftercms.commons.rest.RestTemplate">
+        <constructor-arg name="errorResponseType" value="org.craftercms.profile.api.exceptions.ErrorDetails"/>
         <property name="messageConverters" ref="crafter.profileMessageConverters"/>
-        <property name="errorResponseType" value="org.craftercms.profile.api.exceptions.ErrorDetails"/>
     </bean>
 
     <!-- Jackson config -->
@@ -74,16 +74,16 @@
 
     <bean id="crafter.accessTokenIdResolver"
           class="org.craftercms.profile.services.impl.SingleAccessTokenIdResolver">
-        <property name="accessTokenId" value="${crafter.profile.rest.client.accessToken.id}"/>
+        <constructor-arg name="accessTokenId" value="${crafter.profile.rest.client.accessToken.id}"/>
     </bean>
 
     <bean id="crafter.profileRestClientBase"
           class="org.craftercms.profile.services.impl.AbstractProfileRestClientBase"
           abstract="true">
-        <property name="baseUrl" value="${crafter.profile.rest.client.url.base}"/>
+        <constructor-arg name="baseUrl" value="${crafter.profile.rest.client.url.base}"/>
+        <constructor-arg name="restTemplate" ref="crafter.profileRestTemplate"/>
+        <constructor-arg name="accessTokenIdResolver" ref="crafter.accessTokenIdResolver"/>
         <property name="extension" value="${crafter.profile.rest.client.url.extension}"/>
-        <property name="restTemplate" ref="crafter.profileRestTemplate"/>
-        <property name="accessTokenIdResolver" ref="crafter.accessTokenIdResolver"/>
     </bean>
 
     <bean id="crafter.accessTokenServiceRestClient"
@@ -95,7 +95,7 @@
 
     <bean id="crafter.profileServiceRestClient" class="org.craftercms.profile.services.impl.ProfileServiceRestClient"
           parent="crafter.profileRestClientBase">
-        <property name="objectMapper" ref="crafter.profileObjectMapper"/>
+        <constructor-arg name="objectMapper" ref="crafter.profileObjectMapper"/>
     </bean>
 
     <bean id="crafter.authenticationServiceRestClient"

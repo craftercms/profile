@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-import javax.activation.MimetypesFileTypeMap;
+import jakarta.activation.MimetypesFileTypeMap;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -78,7 +78,8 @@ import org.craftercms.profile.exceptions.ProfileExistsException;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.services.VerificationService;
 import org.craftercms.profile.utils.db.ProfileUpdater;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -157,70 +158,34 @@ public class ProfileServiceImpl implements ProfileService {
 
     protected EntitlementValidator entitlementValidator;
 
-    @Required
-    public void setTenantPermissionEvaluator(PermissionEvaluator<AccessToken, String> tenantPermissionEvaluator) {
+    public ProfileServiceImpl(PermissionEvaluator<AccessToken, String> tenantPermissionEvaluator,
+                              PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator,
+                              ProfileRepository profileRepository,
+                              final VerificationService verificationService, final String newProfileEmailFromAddress,
+                              final String newProfileEmailSubject, final String newProfileEmailTemplateName,
+                              final String resetPwdEmailFromAddress, final String resetPwdEmailSubject,
+                              final String resetPwdEmailTemplateName, final EntitlementValidator entitlementValidator) {
         this.tenantPermissionEvaluator = tenantPermissionEvaluator;
-    }
-
-    @Required
-    public void setAttributePermissionEvaluator(
-        PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator) {
         this.attributePermissionEvaluator = attributePermissionEvaluator;
-    }
-
-    @Required
-    public void setProfileRepository(ProfileRepository profileRepository) {
         this.profileRepository = profileRepository;
+        this.verificationService = verificationService;
+        this.newProfileEmailFromAddress = newProfileEmailFromAddress;
+        this.newProfileEmailSubject = newProfileEmailSubject;
+        this.newProfileEmailTemplateName = newProfileEmailTemplateName;
+        this.resetPwdEmailFromAddress = resetPwdEmailFromAddress;
+        this.resetPwdEmailSubject = resetPwdEmailSubject;
+        this.resetPwdEmailTemplateName = resetPwdEmailTemplateName;
+        this.entitlementValidator = entitlementValidator;
     }
 
-    @Required
-    public void setTenantService(TenantService tenantService) {
+    @Autowired
+    public void setTenantService(@Lazy final TenantService tenantService) {
         this.tenantService = tenantService;
     }
 
-    @Required
-    public void setAuthenticationService(AuthenticationService authenticationService) {
+    @Autowired
+    public void setAuthenticationService(@Lazy final AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
-    }
-
-    @Required
-    public void setVerificationService(final VerificationService verificationService) {
-        this.verificationService = verificationService;
-    }
-
-    @Required
-    public void setNewProfileEmailFromAddress(final String newProfileEmailFromAddress) {
-        this.newProfileEmailFromAddress = newProfileEmailFromAddress;
-    }
-
-    @Required
-    public void setNewProfileEmailSubject(final String newProfileEmailSubject) {
-        this.newProfileEmailSubject = newProfileEmailSubject;
-    }
-
-    @Required
-    public void setNewProfileEmailTemplateName(final String newProfileEmailTemplateName) {
-        this.newProfileEmailTemplateName = newProfileEmailTemplateName;
-    }
-
-    @Required
-    public void setResetPwdEmailFromAddress(final String resetPwdEmailFromAddress) {
-        this.resetPwdEmailFromAddress = resetPwdEmailFromAddress;
-    }
-
-    @Required
-    public void setResetPwdEmailSubject(final String resetPwdEmailSubject) {
-        this.resetPwdEmailSubject = resetPwdEmailSubject;
-    }
-
-    @Required
-    public void setResetPwdEmailTemplateName(final String resetPwdEmailTemplateName) {
-        this.resetPwdEmailTemplateName = resetPwdEmailTemplateName;
-    }
-
-    @Required
-    public void setEntitlementValidator(final EntitlementValidator entitlementValidator) {
-        this.entitlementValidator = entitlementValidator;
     }
 
     @Override
