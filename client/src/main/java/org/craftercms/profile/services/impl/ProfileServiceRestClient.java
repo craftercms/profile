@@ -41,12 +41,12 @@ import org.craftercms.profile.api.exceptions.ProfileException;
 import org.craftercms.profile.api.services.ProfileAttachment;
 import org.craftercms.profile.api.services.ProfileService;
 import org.craftercms.profile.exceptions.ProfileRestServiceException;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import static org.craftercms.profile.api.ProfileConstants.*;
 
@@ -74,8 +74,9 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
 
     private ObjectMapper objectMapper;
 
-    @Required
-    public void setObjectMapper(ObjectMapper objectMapper) {
+    public ProfileServiceRestClient(String baseUrl, RestTemplate restTemplate,
+                                    AccessTokenIdResolver accessTokenIdResolver, ObjectMapper objectMapper) {
+        super(baseUrl, restTemplate, accessTokenIdResolver);
         this.objectMapper = objectMapper;
     }
 

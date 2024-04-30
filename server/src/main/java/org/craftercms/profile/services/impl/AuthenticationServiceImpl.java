@@ -42,7 +42,8 @@ import org.craftercms.profile.exceptions.NoSuchProfileException;
 import org.craftercms.profile.exceptions.ProfileLockedException;
 import org.craftercms.profile.repositories.PersistentLoginRepository;
 import org.craftercms.profile.repositories.TicketRepository;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * Default implementation of {@link org.craftercms.profile.api.services.AuthenticationService}.
@@ -82,23 +83,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     protected int failedLoginAttemptsBeforeLock;
     protected int failedLoginAttemptsBeforeDelay;
 
-    @Required
-    public void setPermissionEvaluator(PermissionEvaluator<AccessToken, String> permissionEvaluator) {
+    public AuthenticationServiceImpl(PermissionEvaluator<AccessToken, String> permissionEvaluator, TicketRepository ticketRepository,
+                                     PersistentLoginRepository persistentLoginRepository) {
         this.permissionEvaluator = permissionEvaluator;
-    }
-
-    @Required
-    public void setTicketRepository(TicketRepository ticketRepository) {
         this.ticketRepository = ticketRepository;
-    }
-
-    @Required
-    public void setPersistentLoginRepository(PersistentLoginRepository persistentLoginRepository) {
         this.persistentLoginRepository = persistentLoginRepository;
     }
 
-    @Required
-    public void setProfileService(ProfileService profileService) {
+    @Autowired
+    public void setProfileService(@Lazy final ProfileService profileService) {
         this.profileService = profileService;
     }
 

@@ -241,19 +241,12 @@ public class ProfileServiceImplTest {
         when(verificationService.getToken(VERIFICATION_TOKEN_ID1)).thenReturn(token1);
         when(verificationService.getToken(VERIFICATION_TOKEN_ID2)).thenReturn(token2);
 
-        profileService = new ProfileServiceImpl();
-        profileService.setTenantPermissionEvaluator(tenantPermissionEvaluator);
-        profileService.setAttributePermissionEvaluator(attributePermissionEvaluator);
-        profileService.setProfileRepository(profileRepository);
+        profileService = new ProfileServiceImpl(tenantPermissionEvaluator, attributePermissionEvaluator, profileRepository,
+                verificationService, VERIFICATION_FROM_ADDRESS, VERIFICATION_SUBJECT,
+                VERIFICATION_TEMPLATE_NAME, RESET_PASSWORD_FROM_ADDRESS, RESET_PASSWORD_SUBJECT, RESET_PASSWORD_TEMPLATE_NAME,
+                entitlementValidator);
         profileService.setTenantService(tenantService);
-        profileService.setVerificationService(verificationService);
-        profileService.setNewProfileEmailFromAddress(VERIFICATION_FROM_ADDRESS);
-        profileService.setNewProfileEmailSubject(VERIFICATION_SUBJECT);
-        profileService.setNewProfileEmailTemplateName(VERIFICATION_TEMPLATE_NAME);
-        profileService.setResetPwdEmailFromAddress(RESET_PASSWORD_FROM_ADDRESS);
-        profileService.setResetPwdEmailSubject(RESET_PASSWORD_SUBJECT);
-        profileService.setResetPwdEmailTemplateName(RESET_PASSWORD_TEMPLATE_NAME);
-        profileService.setEntitlementValidator(entitlementValidator);
+        profileService.setAuthenticationService(authenticationService);
     }
 
     @Test

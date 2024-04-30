@@ -30,7 +30,6 @@ import org.craftercms.security.processors.RequestSecurityProcessorChain;
 import org.craftercms.security.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Handles certain security exceptions:
@@ -49,19 +48,9 @@ public class SecurityExceptionProcessor implements RequestSecurityProcessor {
     protected AuthenticationRequiredHandler authenticationRequiredHandler;
     protected AccessDeniedHandler accessDeniedHandler;
 
-    /**
-     * Sets the {@link AuthenticationRequiredHandler}, to handle any {@link AuthenticationRequiredException}s thrown.
-     */
-    @Required
-    public void setAuthenticationRequiredHandler(AuthenticationRequiredHandler authenticationRequiredHandler) {
+    public SecurityExceptionProcessor(AuthenticationRequiredHandler authenticationRequiredHandler,
+                                      AccessDeniedHandler accessDeniedHandler) {
         this.authenticationRequiredHandler = authenticationRequiredHandler;
-    }
-
-    /**
-     * Sets the {@link AccessDeniedHandler}, to handle any {@link AccessDeniedException}s thrown.
-     */
-    @Required
-    public void setAccessDeniedHandler(AccessDeniedHandler accessDeniedHandler) {
         this.accessDeniedHandler = accessDeniedHandler;
     }
 

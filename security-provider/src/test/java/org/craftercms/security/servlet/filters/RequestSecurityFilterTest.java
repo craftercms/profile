@@ -16,7 +16,7 @@
 package org.craftercms.security.servlet.filters;
 
 import java.util.Arrays;
-import javax.servlet.FilterChain;
+import jakarta.servlet.FilterChain;
 
 import org.craftercms.commons.http.RequestContext;
 import org.craftercms.security.processors.RequestSecurityProcessor;
@@ -30,7 +30,7 @@ import org.mockito.stubbing.Answer;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.web.WebAppConfiguration;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
@@ -69,9 +69,8 @@ public class RequestSecurityFilterTest {
 
         }).when(processor).processRequest(any(RequestContext.class), any(RequestSecurityProcessorChain.class));
 
-        filter = new RequestSecurityFilter();
+        filter = new RequestSecurityFilter(Arrays.asList(processor));
         filter.setSecurityEnabled(true);
-        filter.setSecurityProcessors(Arrays.asList(processor));
         filter.setUrlsToInclude("/static-assets/paywall/**");
         filter.setUrlsToExclude("/static-assets/**");
         filter.setServletContext(mockServletContext);

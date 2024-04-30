@@ -16,7 +16,7 @@
 package org.craftercms.security.authentication.impl;
 
 import java.util.UUID;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
 import org.craftercms.commons.http.RequestContext;
@@ -41,8 +41,7 @@ public class RestLoginSuccessHandlerTest extends AbstractRestHandlerTestBase {
 
     @Before
     public void setUp() throws Exception {
-        handler = new RestLoginSuccessHandler();
-        handler.setResponseWriter(createResponseWriter());
+        handler = new RestLoginSuccessHandler(createResponseWriter());
     }
 
     @Test

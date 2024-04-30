@@ -52,8 +52,7 @@ public class RememberMeAutoLoginProcessorTest {
 
         when(rememberMeManager.autoLogin(any(RequestContext.class))).thenReturn(authentication);
 
-        processor = new RememberMeAutoLoginProcessor();
-        processor.setRememberMeManager(rememberMeManager);
+        processor = new RememberMeAutoLoginProcessor(rememberMeManager);
     }
 
     @Test

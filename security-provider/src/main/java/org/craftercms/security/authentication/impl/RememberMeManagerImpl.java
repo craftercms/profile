@@ -16,8 +16,8 @@
 
 package org.craftercms.security.authentication.impl;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +41,6 @@ import org.craftercms.security.exception.rememberme.InvalidCookieException;
 import org.craftercms.security.exception.rememberme.RememberMeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Default implementation of {@link org.craftercms.security.authentication.RememberMeManager}.
@@ -61,28 +60,12 @@ public class RememberMeManagerImpl implements RememberMeManager {
     protected TextEncryptor encryptor;
     protected CookieManager rememberMeCookieManager;
 
-    @Required
-    public void setAuthenticationService(final AuthenticationService authenticationService) {
+    public RememberMeManagerImpl(final AuthenticationService authenticationService, final AuthenticationManager authenticationManager,
+                                 final ProfileService profileService, final TextEncryptor encryptor, final CookieManager rememberMeCookieManager) {
         this.authenticationService = authenticationService;
-    }
-
-    @Required
-    public void setAuthenticationManager(final AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
-    }
-
-    @Required
-    public void setProfileService(final ProfileService profileService) {
         this.profileService = profileService;
-    }
-
-    @Required
-    public void setEncryptor(final TextEncryptor encryptor) {
         this.encryptor = encryptor;
-    }
-
-    @Required
-    public void setRememberMeCookieManager(final CookieManager rememberMeCookieManager) {
         this.rememberMeCookieManager = rememberMeCookieManager;
     }
 

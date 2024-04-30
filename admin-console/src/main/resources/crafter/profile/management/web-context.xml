@@ -86,20 +86,20 @@
     <bean id="crafter.mainController" class="org.craftercms.profile.management.web.controllers.MainController"/>
 
     <bean id="crafter.profileController" class="org.craftercms.profile.management.web.controllers.ProfileController">
-        <property name="verificationUrl" value="${crafter.profile.management.profile.verificationUrl}"/>
-        <property name="profileService" ref="crafter.profileServiceRestClient"/>
-        <property name="profilePermissionEvaluator" ref="crafter.profilePermissionEvaluator"/>
-        <property name="tenantPermissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
+        <constructor-arg name="verificationUrl" value="${crafter.profile.management.profile.verificationUrl}"/>
+        <constructor-arg name="profileService" ref="crafter.profileServiceRestClient"/>
+        <constructor-arg name="tenantPermissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
+        <constructor-arg name="profilePermissionEvaluator" ref="crafter.profilePermissionEvaluator"/>
     </bean>
 
     <bean id="crafter.tenantController" class="org.craftercms.profile.management.web.controllers.TenantController">
-        <property name="tenantService" ref="crafter.tenantServiceRestClient"/>
-        <property name="tenantPermissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
+        <constructor-arg name="tenantService" ref="crafter.tenantServiceRestClient"/>
+        <constructor-arg name="tenantPermissionEvaluator" ref="crafter.tenantPermissionEvaluator"/>
     </bean>
 
     <bean id="crafter.accessTokenController"
           class="org.craftercms.profile.management.web.controllers.AccessTokenController">
-        <property name="accessTokenService" ref="crafter.accessTokenServiceRestClient"/>
+        <constructor-arg name="accessTokenService" ref="crafter.accessTokenServiceRestClient"/>
     </bean>
 
     <bean id="crafter.fallbackController" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
@@ -113,7 +113,7 @@
       View resolvers can also be configured with ResourceBundles or XML files. If you need
       different view resolving based on Locale, you have to use the resource bundle resolver.
     -->
-    <bean id="crafter.viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+    <bean id="crafter.viewResolver" class="org.craftercms.commons.freemarker.CrafterFreeMarkerViewResolver">
         <property name="contentType" value="text/html;charset=UTF-8"/>
         <property name="cache" value="true"/>
         <property name="prefix" value=""/>
