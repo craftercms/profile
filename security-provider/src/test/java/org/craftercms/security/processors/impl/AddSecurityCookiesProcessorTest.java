@@ -17,7 +17,7 @@ package org.craftercms.security.processors.impl;
 
 import java.util.Arrays;
 import java.util.Date;
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 
 import org.bson.types.ObjectId;
 import org.craftercms.commons.http.CookieManager;
@@ -47,9 +47,7 @@ public class AddSecurityCookiesProcessorTest {
 
     @Before
     public void setUp() throws Exception {
-        processor = new AddSecurityCookiesProcessor();
-        processor.setTicketCookieManager(new CookieManager());
-        processor.setProfileLastModifiedCookieManager(new CookieManager());
+        processor = new AddSecurityCookiesProcessor(new CookieManager(), new CookieManager());
     }
 
     @Test

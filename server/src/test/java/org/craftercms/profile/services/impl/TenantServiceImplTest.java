@@ -75,6 +75,7 @@ public class TenantServiceImplTest {
     private TenantServiceImpl tenantService;
     @Mock
     private PermissionEvaluator<AccessToken, String> permissionEvaluator;
+    @Mock PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator;
     @Mock
     private TenantRepository tenantRepository;
     @Mock
@@ -106,12 +107,9 @@ public class TenantServiceImplTest {
                                                            ProfileConstants.NO_ATTRIBUTE))
             .thenReturn(Arrays.asList(mock(Profile.class)));
 
-        tenantService = new TenantServiceImpl();
-        tenantService.setTenantPermissionEvaluator(permissionEvaluator);
-        tenantService.setTenantRepository(tenantRepository);
+        tenantService = new TenantServiceImpl(permissionEvaluator, attributePermissionEvaluator, tenantRepository,
+                profileRepository, entitlementValidator);
         tenantService.setProfileService(profileService);
-        tenantService.setProfileRepository(profileRepository);
-        tenantService.setEntitlementValidator(entitlementValidator);
     }
 
     @Test

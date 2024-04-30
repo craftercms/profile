@@ -16,8 +16,8 @@
 package org.craftercms.profile.interceptors;
 
 import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,8 +33,7 @@ import org.craftercms.profile.exceptions.AccessDeniedException;
 import org.craftercms.profile.repositories.AccessTokenRepository;
 import org.craftercms.profile.services.impl.AccessTokenServiceImpl;
 import org.craftercms.profile.utils.AccessTokenUtils;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
  * Filter that checks that in every call the access token ID is specified, and that it's a recognized access token ID and
@@ -42,7 +41,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  *
  * @author avasquez
  */
-public class AccessTokenCheckingInterceptor extends HandlerInterceptorAdapter {
+public class AccessTokenCheckingInterceptor implements HandlerInterceptor {
 
     private static final I10nLogger logger = new I10nLogger(AccessTokenCheckingInterceptor.class,
                                                             "crafter.profile.messages.logging");
@@ -53,17 +52,10 @@ public class AccessTokenCheckingInterceptor extends HandlerInterceptorAdapter {
     protected String[] urlsToInclude;
     protected String[] urlsToExclude;
 
-    @Required
-    public void setAccessTokenRepository(AccessTokenRepository accessTokenRepository) {
+    public AccessTokenCheckingInterceptor(AccessTokenRepository accessTokenRepository,
+                                          final String[] urlsToInclude, final String[] urlsToExclude) {
         this.accessTokenRepository = accessTokenRepository;
-    }
-
-    @Required
-    public void setUrlsToInclude(final String[] urlsToInclude) {
         this.urlsToInclude = urlsToInclude;
-    }
-
-    public void setUrlsToExclude(final String[] urlsToExclude) {
         this.urlsToExclude = urlsToExclude;
     }
 

@@ -55,9 +55,7 @@ public class SecurityExceptionProcessorTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        processor = new SecurityExceptionProcessor();
-        processor.setAuthenticationRequiredHandler(authenticationRequiredHandler);
-        processor.setAccessDeniedHandler(accessDeniedHandler);
+        processor = new SecurityExceptionProcessor(authenticationRequiredHandler, accessDeniedHandler);
     }
 
     @Test

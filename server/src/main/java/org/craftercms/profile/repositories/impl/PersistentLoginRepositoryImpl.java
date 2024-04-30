@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author avasquez
  */
 public class PersistentLoginRepositoryImpl extends AbstractJongoRepository<PersistentLogin>
-    implements PersistentLoginRepository {
+        implements PersistentLoginRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(PersistentLoginRepositoryImpl.class);
 

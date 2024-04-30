@@ -73,7 +73,7 @@
 
     <bean id="crafter.refreshCurrentAuthenticationOnProfileUpdateAspect"
           class="org.craftercms.security.utils.profile.RefreshCurrentAuthenticationOnProfileUpdateAspect">
-        <property name="authenticationCache" ref="crafter.authenticationCache"/>
+        <constructor-arg name="authenticationCache" ref="crafter.authenticationCache"/>
     </bean>
 
     <!-- ////////////////////////////////// -->
@@ -91,18 +91,18 @@
     <!-- ////////////////////////////////// -->
 
     <bean id="crafter.defaultTenantResolver" class="org.craftercms.security.utils.tenant.DefaultTenantsResolver">
-        <property name="defaultTenantNames" value="${crafter.security.tenant.default.names}"/>
+        <constructor-arg name="defaultTenantNames" value="${crafter.security.tenant.default.names}"/>
     </bean>
 
     <bean id="crafter.paramTenantResolver" class="org.craftercms.security.utils.tenant.ParamTenantsResolver"/>
 
     <bean id="crafter.tenantsResolver" class="org.craftercms.security.utils.tenant.TenantsResolverChain">
-        <property name="resolvers">
+        <constructor-arg name="resolvers">
             <list>
                 <ref bean="crafter.paramTenantResolver"/>
                 <ref bean="crafter.defaultTenantResolver"/>
             </list>
-        </property>
+        </constructor-arg>
     </bean>
 
     <!-- ////////////////////////////////// -->
@@ -113,7 +113,7 @@
 
     <!-- Order of the processors is important, so if you need to override this bean try to maintain a similar order -->
     <bean id="crafter.securityFilter" class="org.craftercms.security.servlet.filters.RequestSecurityFilter">
-        <property name="securityProcessors" ref="crafter.securityProcessors"/>
+        <constructor-arg name="securityProcessors" ref="crafter.securityProcessors"/>
         <property name="urlsToInclude" value="${crafter.security.urlsToInclude}"/>
         <property name="urlsToExclude" value="${crafter.security.urlsToExclude}"/>
     </bean>
@@ -182,13 +182,13 @@
 
     <bean id="crafter.addSecurityCookiesProcessor"
           class="org.craftercms.security.processors.impl.AddSecurityCookiesProcessor">
-        <property name="ticketCookieManager" ref="crafter.ticketCookieManager"/>
-        <property name="profileLastModifiedCookieManager" ref="crafter.profileLastModifiedCookieManager"/>
+        <constructor-arg name="ticketCookieManager" ref="crafter.ticketCookieManager"/>
+        <constructor-arg name="profileLastModifiedCookieManager" ref="crafter.profileLastModifiedCookieManager"/>
     </bean>
 
     <bean id="crafter.currentAuthenticationResolvingProcessor"
           class="org.craftercms.security.processors.impl.CurrentAuthenticationResolvingProcessor">
-        <property name="authenticationManager" ref="crafter.authenticationManager"/>
+        <constructor-arg name="authenticationManager" ref="crafter.authenticationManager"/>
     </bean>
 
     <bean id="crafter.returnCurrentAuthenticationProcessor"
@@ -197,17 +197,17 @@
     </bean>
 
     <bean id="crafter.loginProcessor" class="org.craftercms.security.processors.impl.LoginProcessor">
-        <property name="tenantsResolver" ref="crafter.tenantsResolver"/>
-        <property name="authenticationManager" ref="crafter.authenticationManager"/>
-        <property name="rememberMeManager" ref="crafter.rememberMeManager"/>
-        <property name="loginSuccessHandler" ref="crafter.loginSuccessHandler"/>
-        <property name="loginFailureHandler" ref="crafter.loginFailureHandler"/>
+        <constructor-arg name="authenticationManager" ref="crafter.authenticationManager"/>
+        <constructor-arg name="loginSuccessHandler" ref="crafter.loginSuccessHandler"/>
+        <constructor-arg name="loginFailureHandler" ref="crafter.loginFailureHandler"/>
+        <constructor-arg name="rememberMeManager" ref="crafter.rememberMeManager"/>
+        <constructor-arg name="tenantsResolver" ref="crafter.tenantsResolver"/>
     </bean>
 
     <bean id="crafter.logoutProcessor" class="org.craftercms.security.processors.impl.LogoutProcessor">
-        <property name="authenticationManager" ref="crafter.authenticationManager"/>
-        <property name="logoutSuccessHandler" ref="crafter.logoutSuccessHandler"/>
-        <property name="rememberMeManager" ref="crafter.rememberMeManager"/>
+        <constructor-arg name="authenticationManager" ref="crafter.authenticationManager"/>
+        <constructor-arg name="logoutSuccessHandler" ref="crafter.logoutSuccessHandler"/>
+        <constructor-arg name="rememberMeManager" ref="crafter.rememberMeManager"/>
     </bean>
 
     <bean id="crafter.saveRequestAwareProcessor"
@@ -215,27 +215,27 @@
 
     <bean id="crafter.securityExceptionProcessor"
           class="org.craftercms.security.processors.impl.SecurityExceptionProcessor">
-        <property name="authenticationRequiredHandler" ref="crafter.authenticationRequiredHandler"/>
-        <property name="accessDeniedHandler" ref="crafter.accessDeniedHandler"/>
+        <constructor-arg name="authenticationRequiredHandler" ref="crafter.authenticationRequiredHandler"/>
+        <constructor-arg name="accessDeniedHandler" ref="crafter.accessDeniedHandler"/>
     </bean>
 
     <bean id="crafter.urlAccessRestrictionCheckingProcessor"
           class="org.craftercms.security.processors.impl.UrlAccessRestrictionCheckingProcessor">
-        <property name="urlRestrictions" ref="crafter.urlRestrictions"/>
+        <constructor-arg name="restrictions" ref="crafter.urlRestrictions"/>
     </bean>
 
     <bean id="crafter.rememberMeAutoLoginProcessor"
           class="org.craftercms.security.processors.impl.RememberMeAutoLoginProcessor">
-        <property name="rememberMeManager" ref="crafter.rememberMeManager"/>
+        <constructor-arg name="rememberMeManager" ref="crafter.rememberMeManager"/>
     </bean>
 
     <bean id="crafter.headersLoginProcessor"
           class="org.craftercms.security.processors.impl.AuthenticationHeadersLoginProcessor">
+        <constructor-arg name="tenantService" ref="crafter.tenantServiceRestClient"/>
+        <constructor-arg name="profileService" ref="crafter.profileServiceRestClient"/>
+        <constructor-arg name="tenantsResolver" ref="crafter.tenantsResolver"/>
+        <constructor-arg name="authenticationManager" ref="crafter.authenticationManager"/>
         <property name="tokenExpectedValue" value="${crafter.security.authentication.headers.token}"/>
-        <property name="tenantService" ref="crafter.tenantServiceRestClient"/>
-        <property name="profileService" ref="crafter.profileServiceRestClient"/>
-        <property name="tenantsResolver" ref="crafter.tenantsResolver"/>
-        <property name="authenticationManager" ref="crafter.authenticationManager"/>
     </bean>
 
     <!-- ////////////////////////////////// -->
@@ -246,13 +246,13 @@
 
     <bean id="crafter.authenticationManager"
           class="org.craftercms.security.authentication.impl.AuthenticationManagerImpl">
-        <property name="authenticationService" ref="crafter.authenticationServiceRestClient"/>
-        <property name="authenticationCache" ref="crafter.authenticationCache"/>
-        <property name="profileService" ref="crafter.profileServiceRestClient"/>
+        <constructor-arg name="authenticationService" ref="crafter.authenticationServiceRestClient"/>
+        <constructor-arg name="profileService" ref="crafter.profileServiceRestClient"/>
+        <constructor-arg name="authenticationCache" ref="crafter.authenticationCache"/>
     </bean>
 
     <bean id="crafter.loginSuccessHandler" class="org.craftercms.security.authentication.impl.LoginSuccessHandlerImpl">
-        <property name="defaultTargetUrl" value="${crafter.security.login.success.url}"/>
+        <constructor-arg name="defaultTargetUrl" value="${crafter.security.login.success.url}"/>
         <property name="alwaysUseDefaultTargetUrl" value="${crafter.security.login.success.alwaysUseDefaultUrl}"/>
     </bean>
 
@@ -261,7 +261,7 @@
     </bean>
 
     <bean id="crafter.logoutSuccessHandler" class="org.craftercms.security.authentication.impl.LogoutSuccessHandlerImpl">
-        <property name="targetUrl" value="${crafter.security.logout.success.url}"/>
+        <constructor-arg name="targetUrl" value="${crafter.security.logout.success.url}"/>
     </bean>
 
     <bean id="crafter.authenticationRequiredHandler"
@@ -276,11 +276,11 @@
     <!-- ////////////////////////////////// -->
 
     <bean id="crafter.rememberMeManager" class="org.craftercms.security.authentication.impl.RememberMeManagerImpl">
-        <property name="authenticationService" ref="crafter.authenticationServiceRestClient"/>
-        <property name="authenticationManager" ref="crafter.authenticationManager"/>
-        <property name="rememberMeCookieManager" ref="crafter.rememberMeCookieManager"/>
-        <property name="profileService" ref="crafter.profileServiceRestClient"/>
-        <property name="encryptor" ref="crafter.textEncryptor"/>
+        <constructor-arg name="authenticationService" ref="crafter.authenticationServiceRestClient"/>
+        <constructor-arg name="authenticationManager" ref="crafter.authenticationManager"/>
+        <constructor-arg name="profileService" ref="crafter.profileServiceRestClient"/>
+        <constructor-arg name="encryptor" ref="crafter.textEncryptor"/>
+        <constructor-arg name="rememberMeCookieManager" ref="crafter.rememberMeCookieManager"/>
     </bean>
 
     <!-- ////////////////////////////////// -->

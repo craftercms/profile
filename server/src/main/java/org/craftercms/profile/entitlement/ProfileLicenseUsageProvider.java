@@ -25,7 +25,6 @@ import org.craftercms.commons.entitlements.model.Module;
 import org.craftercms.commons.entitlements.usage.EntitlementUsageProvider;
 import org.craftercms.profile.repositories.ProfileRepository;
 import org.craftercms.profile.repositories.TenantRepository;
-import org.springframework.beans.factory.annotation.Required;
 
 import static org.craftercms.commons.entitlements.model.Module.PROFILE;
 
@@ -46,13 +45,8 @@ public class ProfileLicenseUsageProvider implements EntitlementUsageProvider {
      */
     protected ProfileRepository profileRepository;
 
-    @Required
-    public void setTenantRepository(final TenantRepository tenantRepository) {
+    public ProfileLicenseUsageProvider(final TenantRepository tenantRepository, final ProfileRepository profileRepository) {
         this.tenantRepository = tenantRepository;
-    }
-
-    @Required
-    public void setProfileRepository(final ProfileRepository profileRepository) {
         this.profileRepository = profileRepository;
     }
 

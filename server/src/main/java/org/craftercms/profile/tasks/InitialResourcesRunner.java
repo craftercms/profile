@@ -29,7 +29,6 @@ import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
@@ -53,28 +52,15 @@ public class InitialResourcesRunner implements InitializingBean {
     private List<Resource> resourcesPaths;
     private boolean runOnInit;
 
-    public InitialResourcesRunner() {
-        this.runOnInit = true;
-    }
-
-    @Required
-    public void setMongo(MongoClient mongo) {
+    public InitialResourcesRunner(MongoClient mongo, String dbName, boolean runOnInit, List<Resource> resourcesPaths) {
         this.mongo = mongo;
-    }
-
-    @Required
-    public void setResourcesPaths(List<Resource> resourcesPaths) {
+        this.dbName = dbName;
+        this.runOnInit = runOnInit;
         this.resourcesPaths = resourcesPaths;
     }
 
-    @Required
-    public void setRunOnInit(boolean runOnInit) {
-        this.runOnInit = runOnInit;
-    }
-
-    @Required
-    public void setDbName(String dbName) {
-        this.dbName = dbName;
+    public InitialResourcesRunner() {
+        this.runOnInit = true;
     }
 
     @Override

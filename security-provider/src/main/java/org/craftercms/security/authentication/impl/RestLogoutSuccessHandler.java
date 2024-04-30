@@ -16,9 +16,10 @@
 package org.craftercms.security.authentication.impl;
 
 import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.craftercms.commons.http.RequestContext;
+import org.craftercms.commons.rest.HttpMessageConvertingResponseWriter;
 import org.craftercms.security.authentication.LogoutSuccessHandler;
 import org.craftercms.security.exception.SecurityProviderException;
 import org.craftercms.security.utils.handlers.AbstractRestHandlerBase;
@@ -35,7 +36,8 @@ public class RestLogoutSuccessHandler extends AbstractRestHandlerBase implements
 
     protected String logoutSuccessMessage;
 
-    public RestLogoutSuccessHandler() {
+    public RestLogoutSuccessHandler(HttpMessageConvertingResponseWriter responseWriter) {
+        super(responseWriter);
         logoutSuccessMessage = DEFAULT_LOGOUT_SUCCESS_MESSAGE;
     }
 

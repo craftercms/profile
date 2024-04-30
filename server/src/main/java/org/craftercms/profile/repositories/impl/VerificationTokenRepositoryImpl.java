@@ -29,7 +29,7 @@ import org.craftercms.profile.api.VerificationToken;
  * @author avasquez
  */
 public class VerificationTokenRepositoryImpl extends AbstractJongoRepository<VerificationToken>
-    implements VerificationTokenRepository {
+        implements VerificationTokenRepository {
 
     public static final String KEY_REMOVE_TOKENS_OLDER_THAN_QUERy = "profile.verificationToken.removeOlderThan";
 
