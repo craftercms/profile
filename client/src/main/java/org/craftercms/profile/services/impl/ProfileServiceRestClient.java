@@ -539,7 +539,13 @@ public class ProfileServiceRestClient extends AbstractProfileRestClientBase impl
         String url = getAbsoluteUrl(BASE_URL_PROFILE + URL_PROFILE_GET_ATTACHMENT);
         url = addQueryParams(url, params, false);
 
-        return new ByteArrayInputStream(doGetForObject(url, byteArrayTypeRef, profileId, attachmentId));
+        byte[] objectStream = doGetForObject(url, byteArrayTypeRef, profileId, attachmentId);
+
+        if (objectStream == null) {
+            return null;
+        }
+
+        return new ByteArrayInputStream(objectStream);
     }
 
     @Override
