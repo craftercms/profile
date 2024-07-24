@@ -279,11 +279,9 @@
         </property>
     </bean>
 
-<!--    <bean id="multipartResolver"-->
-<!--          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->
-<!--        <property name="maxUploadSize" value="${crafter.profile.attachments.maxSizeUpload}"/>-->
-<!--        <property name="maxInMemorySize" value="${crafter.profile.attachments.maxSizeMem}"/>-->
-<!--    </bean>-->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+    </bean>
 
     <!-- Entitlements -->
     <bean id="crafter.entitlementsProvider" class="org.craftercms.profile.entitlement.ProfileLicenseUsageProvider">
