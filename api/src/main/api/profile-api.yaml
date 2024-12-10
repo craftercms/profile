@@ -14,7 +14,7 @@ info:
     url: 'https://www.gnu.org/licenses/gpl-3.0.en.html'
 externalDocs:
   description: CrafterCMS - Profile
-  url: 'https://docs.craftercms.org/current/reference/modules/profile/index.html'
+  url: 'https://craftercms.com/docs/current/reference/modules/profile/index.html'
 tags:
   - name: access_token
     description: Access token management
