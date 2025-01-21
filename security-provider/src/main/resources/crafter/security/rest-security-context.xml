@@ -16,44 +16,44 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-		<!-- Use instead of security-context.xml for REST based applications (like Crafter Social) -->
+	<!-- Use instead of security-context.xml for REST based applications (like Crafter Social) -->
 
-		<import resource="classpath:crafter/security/security-context.xml"/>
+	<import resource="classpath:crafter/security/security-context.xml"/>
 
-		<!-- ////////////////////////////////// -->
-		<!--								 	-->
-		<!--		   Authentication			-->
-		<!--									-->
-		<!-- ////////////////////////////////// -->
+	<!-- ////////////////////////////////// -->
+	<!--								 	-->
+	<!--		   Authentication			-->
+	<!--									-->
+	<!-- ////////////////////////////////// -->
 
-		<bean id="crafter.loginSuccessHandler" class="org.craftercms.security.authentication.impl.RestLoginSuccessHandler">
-				<constructor-arg name="responseWriter" ref="crafter.restResponseWriter"/>
-		</bean>
+	<bean id="crafter.loginSuccessHandler" class="org.craftercms.security.authentication.impl.RestLoginSuccessHandler">
+		<constructor-arg name="responseWriter" ref="crafter.restResponseWriter"/>
+	</bean>
 
-		<bean id="crafter.loginFailureHandler" class="org.craftercms.security.authentication.impl.RestLoginFailureHandler">
-				<constructor-arg name="responseWriter" ref="crafter.restResponseWriter"/>
-		</bean>
+	<bean id="crafter.loginFailureHandler" class="org.craftercms.security.authentication.impl.RestLoginFailureHandler">
+		<constructor-arg name="responseWriter" ref="crafter.restResponseWriter"/>
+	</bean>
 
-		<bean id="crafter.logoutSuccessHandler" class="org.craftercms.security.authentication.impl.RestLogoutSuccessHandler">
-				<constructor-arg name="responseWriter" ref="crafter.restResponseWriter"/>
-		</bean>
+	<bean id="crafter.logoutSuccessHandler" class="org.craftercms.security.authentication.impl.RestLogoutSuccessHandler">
+		<constructor-arg name="responseWriter" ref="crafter.restResponseWriter"/>
+	</bean>
 
-		<bean id="crafter.authenticationRequiredHandler"
-			  class="org.craftercms.security.authentication.impl.RestAuthenticationRequiredHandler">
-				<constructor-arg name="responseWriter" ref="crafter.restResponseWriter"/>
-		</bean>
+	<bean id="crafter.authenticationRequiredHandler"
+	      class="org.craftercms.security.authentication.impl.RestAuthenticationRequiredHandler">
+		<constructor-arg name="responseWriter" ref="crafter.restResponseWriter"/>
+	</bean>
 
-		<!-- ////////////////////////////////// -->
-		<!--								 	-->
-		<!--		   Authorization			-->
-		<!--									-->
-		<!-- ////////////////////////////////// -->
+	<!-- ////////////////////////////////// -->
+	<!--								 	-->
+	<!--		   Authorization			-->
+	<!--									-->
+	<!-- ////////////////////////////////// -->
 
-		<bean id="crafter.accessDeniedHandler" class="org.craftercms.security.authorization.impl.RestAccessDeniedHandler">
-				<constructor-arg name="responseWriter" ref="crafter.restResponseWriter"/>
-		</bean>
+	<bean id="crafter.accessDeniedHandler" class="org.craftercms.security.authorization.impl.RestAccessDeniedHandler">
+		<constructor-arg name="responseWriter" ref="crafter.restResponseWriter"/>
+	</bean>
 
 </beans>

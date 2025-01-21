@@ -15,26 +15,26 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <Configuration>
-		<!-- Appenders -->
-		<Appenders>
-				<Console name="consoleAppender" target="SYSTEM_OUT">
-						<PatternLayout pattern="%d{yyyy-MM-dd_HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
-				</Console>
-		</Appenders>
+	<!-- Appenders -->
+	<Appenders>
+		<Console name="consoleAppender" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{yyyy-MM-dd_HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+		</Console>
+	</Appenders>
 
-		<Loggers>
-				<!-- Application Loggers -->
-				<Logger name="org.craftercms.profile" level="debug"/>
-				<Logger name="org.craftercms" level="info"/>
+	<Loggers>
+		<!-- Application Loggers -->
+		<Logger name="org.craftercms.profile" level="debug"/>
+		<Logger name="org.craftercms" level="info"/>
 
 
-				<!-- 3rdparty Loggers -->
-				<Logger name="org.springframework" level="info"/>
-				<Logger name="org.craftercms.commons.mongo" level="debug"/>
+		<!-- 3rdparty Loggers -->
+		<Logger name="org.springframework" level="info"/>
+		<Logger name="org.craftercms.commons.mongo" level="debug"/>
 
-				<!-- Root Logger -->
-				<Root level="info">
-						<AppenderRef ref="consoleAppender"/>
-				</Root>
-		</Loggers>
+		<!-- Root Logger -->
+		<Root level="info">
+			<AppenderRef ref="consoleAppender"/>
+		</Root>
+	</Loggers>
 </Configuration>

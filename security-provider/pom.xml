@@ -16,99 +16,99 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-		<modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
+	<groupId>org.craftercms</groupId>
+	<artifactId>crafter-security-provider</artifactId>
+
+	<name>Crafter Security Provider</name>
+	<description>Crafter Security Provider</description>
+	<url>https://github.com/craftercms/profile/tree/master/crafter-security-provider</url>
+	<packaging>jar</packaging>
+
+	<scm>
+		<connection>scm:git:git://github.com/craftercms/profile/tree/master/security-provider</connection>
+		<developerConnection>scm:git:git://github.com/craftercms/profile/tree/master/security-provider
+		</developerConnection>
+		<url>scm:git:git://github.com/craftercms/profile/tree/master/security-provider</url>
+	</scm>
+
+	<parent>
 		<groupId>org.craftercms</groupId>
-		<artifactId>crafter-security-provider</artifactId>
+		<artifactId>crafter-profile-parent</artifactId>
+		<version>5.0.0-SNAPSHOT</version><!-- craftercms version flag -->
+	</parent>
 
-		<name>Crafter Security Provider</name>
-		<description>Crafter Security Provider</description>
-		<url>https://github.com/craftercms/profile/tree/master/crafter-security-provider</url>
-		<packaging>jar</packaging>
+	<dependencies>
+		<!-- Testing -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<scope>test</scope>
+		</dependency>
 
-		<scm>
-				<connection>scm:git:git://github.com/craftercms/profile/tree/master/security-provider</connection>
-				<developerConnection>scm:git:git://github.com/craftercms/profile/tree/master/security-provider
-				</developerConnection>
-				<url>scm:git:git://github.com/craftercms/profile/tree/master/security-provider</url>
-		</scm>
+		<!-- Servlet API -->
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
-		<parent>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-profile-parent</artifactId>
-				<version>5.0.0-SNAPSHOT</version><!-- craftercms version flag -->
-		</parent>
+		<!-- Spring Security -->
+		<!-- WARN: Spring Security is only used for some utility classes that are
+			cumbersome to re-program, like RequestCache and SavedRequest. -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+		</dependency>
 
-		<dependencies>
-				<!-- Testing -->
-				<dependency>
-						<groupId>junit</groupId>
-						<artifactId>junit</artifactId>
-						<scope>test</scope>
-				</dependency>
-				<dependency>
-						<groupId>org.mockito</groupId>
-						<artifactId>mockito-core</artifactId>
-						<scope>test</scope>
-				</dependency>
-				<dependency>
-						<groupId>org.springframework</groupId>
-						<artifactId>spring-test</artifactId>
-						<scope>test</scope>
-				</dependency>
-				<dependency>
-						<groupId>org.slf4j</groupId>
-						<artifactId>slf4j-simple</artifactId>
-						<scope>test</scope>
-				</dependency>
+		<!-- Spring Social -->
+		<dependency>
+			<groupId>org.springframework.social</groupId>
+			<artifactId>spring-social-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.social</groupId>
+			<artifactId>spring-social-facebook</artifactId>
+		</dependency>
 
-				<!-- Servlet API -->
-				<dependency>
-						<groupId>jakarta.servlet</groupId>
-						<artifactId>jakarta.servlet-api</artifactId>
-						<scope>provided</scope>
-				</dependency>
+		<!-- Crafter Profile -->
+		<dependency>
+			<groupId>org.craftercms</groupId>
+			<artifactId>crafter-profile-client</artifactId>
+		</dependency>
 
-				<!-- Spring Security -->
-				<!-- WARN: Spring Security is only used for some utility classes that are
-					cumbersome to re-program, like RequestCache and SavedRequest. -->
-				<dependency>
-						<groupId>org.springframework.security</groupId>
-						<artifactId>spring-security-web</artifactId>
-				</dependency>
+		<!-- Guava -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
 
-				<!-- Spring Social -->
-				<dependency>
-						<groupId>org.springframework.social</groupId>
-						<artifactId>spring-social-web</artifactId>
-				</dependency>
-				<dependency>
-						<groupId>org.springframework.social</groupId>
-						<artifactId>spring-social-facebook</artifactId>
-				</dependency>
-
-				<!-- Crafter Profile -->
-				<dependency>
-						<groupId>org.craftercms</groupId>
-						<artifactId>crafter-profile-client</artifactId>
-				</dependency>
-
-				<!-- Guava -->
-				<dependency>
-						<groupId>com.google.guava</groupId>
-						<artifactId>guava</artifactId>
-				</dependency>
-
-				<!-- AspectJ -->
-				<dependency>
-						<groupId>org.aspectj</groupId>
-						<artifactId>aspectjrt</artifactId>
-				</dependency>
-				<dependency>
-						<groupId>org.aspectj</groupId>
-						<artifactId>aspectjweaver</artifactId>
-				</dependency>
-		</dependencies>
+		<!-- AspectJ -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+		</dependency>
+	</dependencies>
 </project>
