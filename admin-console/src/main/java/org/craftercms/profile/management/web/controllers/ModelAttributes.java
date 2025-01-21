@@ -30,11 +30,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 @ControllerAdvice
 public class ModelAttributes {
 
-    public static final String MODEL_LOGGED_IN_USER = "loggedInUser";
+	public static final String MODEL_LOGGED_IN_USER = "loggedInUser";
 
-    @ModelAttribute(MODEL_LOGGED_IN_USER)
-    public Profile getLoggedInUser() {
-        return SecurityUtils.getCurrentProfile();
-    }
+	@ModelAttribute(MODEL_LOGGED_IN_USER)
+	public Profile getLoggedInUser() {
+		return SecurityUtils.getCurrentProfile();
+	}
 
 }

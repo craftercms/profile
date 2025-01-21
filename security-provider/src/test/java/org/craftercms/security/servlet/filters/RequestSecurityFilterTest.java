@@ -16,6 +16,7 @@
 package org.craftercms.security.servlet.filters;
 
 import java.util.Arrays;
+
 import jakarta.servlet.FilterChain;
 
 import org.craftercms.commons.http.RequestContext;
@@ -45,85 +46,85 @@ import static org.mockito.Mockito.verify;
  */
 public class RequestSecurityFilterTest {
 
-    private RequestSecurityFilter filter;
-    @Mock
-    private RequestSecurityProcessor processor;
-    @Mock
-    private ServletContext mockServletContext;
+	private RequestSecurityFilter filter;
+	@Mock
+	private RequestSecurityProcessor processor;
+	@Mock
+	private ServletContext mockServletContext;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-        doAnswer(new Answer() {
+		doAnswer(new Answer() {
 
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                RequestContext context = (RequestContext) invocation.getArguments()[0];
-                RequestSecurityProcessorChain chain = (RequestSecurityProcessorChain) invocation.getArguments()[1];
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				RequestContext context = (RequestContext) invocation.getArguments()[0];
+				RequestSecurityProcessorChain chain = (RequestSecurityProcessorChain) invocation.getArguments()[1];
 
-                chain.processRequest(context);
+				chain.processRequest(context);
 
-                return null;
-            }
+				return null;
+			}
 
-        }).when(processor).processRequest(any(RequestContext.class), any(RequestSecurityProcessorChain.class));
+		}).when(processor).processRequest(any(RequestContext.class), any(RequestSecurityProcessorChain.class));
 
-        filter = new RequestSecurityFilter(Arrays.asList(processor));
-        filter.setSecurityEnabled(true);
-        filter.setUrlsToInclude("/static-assets/paywall/**");
-        filter.setUrlsToExclude("/static-assets/**");
-        filter.setServletContext(mockServletContext);
-    }
+		filter = new RequestSecurityFilter(Arrays.asList(processor));
+		filter.setSecurityEnabled(true);
+		filter.setUrlsToInclude("/static-assets/paywall/**");
+		filter.setUrlsToExclude("/static-assets/**");
+		filter.setServletContext(mockServletContext);
+	}
 
-    @Test
-    public void testFilter() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/home");
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        FilterChain chain = mock(FilterChain.class);
+	@Test
+	public void testFilter() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/home");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		FilterChain chain = mock(FilterChain.class);
 
-        filter.doFilter(request, response, chain);
+		filter.doFilter(request, response, chain);
 
-        verify(processor).processRequest(any(RequestContext.class), any(RequestSecurityProcessorChain.class));
-        verify(chain).doFilter(request, response);
-    }
+		verify(processor).processRequest(any(RequestContext.class), any(RequestSecurityProcessorChain.class));
+		verify(chain).doFilter(request, response);
+	}
 
-    @Test
-    public void testFilterIncludeUrl() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/static-assets/paywall/image.jpg");
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        FilterChain chain = mock(FilterChain.class);
+	@Test
+	public void testFilterIncludeUrl() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/static-assets/paywall/image.jpg");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		FilterChain chain = mock(FilterChain.class);
 
-        filter.doFilter(request, response, chain);
+		filter.doFilter(request, response, chain);
 
-        verify(processor).processRequest(any(RequestContext.class), any(RequestSecurityProcessorChain.class));
-        verify(chain).doFilter(request, response);
-    }
+		verify(processor).processRequest(any(RequestContext.class), any(RequestSecurityProcessorChain.class));
+		verify(chain).doFilter(request, response);
+	}
 
-    @Test
-    public void testFilterExcludeUrl() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/static-assets/image.jpg");
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        FilterChain chain = mock(FilterChain.class);
+	@Test
+	public void testFilterExcludeUrl() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/static-assets/image.jpg");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		FilterChain chain = mock(FilterChain.class);
 
-        filter.doFilter(request, response, chain);
+		filter.doFilter(request, response, chain);
 
-        verify(processor, never()).processRequest(any(RequestContext.class), any(RequestSecurityProcessorChain.class));
-        verify(chain).doFilter(request, response);
-    }
+		verify(processor, never()).processRequest(any(RequestContext.class), any(RequestSecurityProcessorChain.class));
+		verify(chain).doFilter(request, response);
+	}
 
-    @Test
-    public void testFilterSecurityDisabled() throws Exception {
-        filter.setSecurityEnabled(false);
+	@Test
+	public void testFilterSecurityDisabled() throws Exception {
+		filter.setSecurityEnabled(false);
 
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/home");
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        FilterChain chain = mock(FilterChain.class);
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/home");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		FilterChain chain = mock(FilterChain.class);
 
-        filter.doFilter(request, response, chain);
+		filter.doFilter(request, response, chain);
 
-        verify(processor, never()).processRequest(any(RequestContext.class), any(RequestSecurityProcessorChain.class));
-        verify(chain).doFilter(request, response);
-    }
+		verify(processor, never()).processRequest(any(RequestContext.class), any(RequestSecurityProcessorChain.class));
+		verify(chain).doFilter(request, response);
+	}
 
 }

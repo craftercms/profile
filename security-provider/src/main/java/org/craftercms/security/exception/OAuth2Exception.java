@@ -24,28 +24,28 @@ package org.craftercms.security.exception;
  */
 public class OAuth2Exception extends AuthenticationException {
 
-    private String error;
-    private String errorDescription;
-    private String errorUri;
+	private String error;
+	private String errorDescription;
+	private String errorUri;
 
-    public OAuth2Exception(final String error, final String errorDescription, final String errorUri) {
-        super("[" + error + "] " + errorDescription);
+	public OAuth2Exception(final String error, final String errorDescription, final String errorUri) {
+		super("[" + error + "] " + errorDescription);
 
-        this.error = error;
-        this.errorDescription = errorDescription;
-        this.errorUri = errorUri;
-    }
+		this.error = error;
+		this.errorDescription = errorDescription;
+		this.errorUri = errorUri;
+	}
 
-    public String getError() {
-        return error;
-    }
+	public String getError() {
+		return error;
+	}
 
-    public String getErrorDescription() {
-        return errorDescription;
-    }
+	public String getErrorDescription() {
+		return errorDescription;
+	}
 
-    public String getErrorUri() {
-        return errorUri;
-    }
+	public String getErrorUri() {
+		return errorUri;
+	}
 
 }

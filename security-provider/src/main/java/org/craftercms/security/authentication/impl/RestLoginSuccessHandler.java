@@ -16,6 +16,7 @@
 package org.craftercms.security.authentication.impl;
 
 import java.io.IOException;
+
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.craftercms.commons.http.RequestContext;
@@ -33,14 +34,14 @@ import org.craftercms.security.utils.handlers.AbstractRestHandlerBase;
  */
 public class RestLoginSuccessHandler extends AbstractRestHandlerBase implements LoginSuccessHandler {
 
-    public RestLoginSuccessHandler(HttpMessageConvertingResponseWriter responseWriter) {
-        super(responseWriter);
-    }
+	public RestLoginSuccessHandler(HttpMessageConvertingResponseWriter responseWriter) {
+		super(responseWriter);
+	}
 
-    @Override
-    public void handle(RequestContext context, Authentication authentication) throws SecurityProviderException,
-            IOException {
-        sendObject(HttpServletResponse.SC_OK, authentication, context);
-    }
+	@Override
+	public void handle(RequestContext context, Authentication authentication) throws SecurityProviderException,
+		IOException {
+		sendObject(HttpServletResponse.SC_OK, authentication, context);
+	}
 
 }

@@ -30,26 +30,26 @@ import java.beans.ConstructorProperties;
  */
 public class GuavaAuthenticationCache implements AuthenticationCache {
 
-    protected Cache<String, Authentication> cache;
+	protected Cache<String, Authentication> cache;
 
-    @ConstructorProperties({"cache"})
-    public GuavaAuthenticationCache(Cache<String, Authentication> cache) {
-        this.cache = cache;
-    }
+	@ConstructorProperties({"cache"})
+	public GuavaAuthenticationCache(Cache<String, Authentication> cache) {
+		this.cache = cache;
+	}
 
-    @Override
-    public Authentication getAuthentication(String ticket) {
-        return cache.getIfPresent(ticket);
-    }
+	@Override
+	public Authentication getAuthentication(String ticket) {
+		return cache.getIfPresent(ticket);
+	}
 
-    @Override
-    public void putAuthentication(Authentication authentication) {
-        cache.put(authentication.getTicket(), authentication);
-    }
+	@Override
+	public void putAuthentication(Authentication authentication) {
+		cache.put(authentication.getTicket(), authentication);
+	}
 
-    @Override
-    public void removeAuthentication(String ticket) {
-        cache.invalidate(ticket);
-    }
+	@Override
+	public void removeAuthentication(String ticket) {
+		cache.invalidate(ticket);
+	}
 
 }

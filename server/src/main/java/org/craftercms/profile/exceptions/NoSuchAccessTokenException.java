@@ -24,10 +24,10 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  */
 public class NoSuchAccessTokenException extends I10nProfileException {
 
-    private static final String KEY = "profile.accessToken.noSuchAccessToken";
+	private static final String KEY = "profile.accessToken.noSuchAccessToken";
 
-    public NoSuchAccessTokenException(String id) {
-        super(KEY, id);
-    }
+	public NoSuchAccessTokenException(String id) {
+		super(KEY, id);
+	}
 
 }

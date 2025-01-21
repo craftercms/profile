@@ -30,158 +30,158 @@ import org.bson.types.ObjectId;
  */
 public class Tenant {
 
-    private ObjectId _id;
-    private String name;
-    private boolean verifyNewProfiles;
-    private Set<String> availableRoles;
-    private boolean ssoEnabled;
-    private List<AttributeDefinition> attributeDefinitions;
+	private ObjectId _id;
+	private String name;
+	private boolean verifyNewProfiles;
+	private Set<String> availableRoles;
+	private boolean ssoEnabled;
+	private List<AttributeDefinition> attributeDefinitions;
 
-    protected boolean cleanseAttributes = true;
+	protected boolean cleanseAttributes = true;
 
-    /**
-     * Returns the tenant's DB ID.
-     */
-    public ObjectId getId() {
-        return _id;
-    }
+	/**
+	 * Returns the tenant's DB ID.
+	 */
+	public ObjectId getId() {
+		return _id;
+	}
 
-    /**
-     * Sets the tenant's DB ID.
-     *
-     * @param id the ID
-     */
-    public void setId(ObjectId id) {
-        this._id = id;
-    }
+	/**
+	 * Sets the tenant's DB ID.
+	 *
+	 * @param id the ID
+	 */
+	public void setId(ObjectId id) {
+		this._id = id;
+	}
 
-    /**
-     * Returns the name of the tenant.
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * Returns the name of the tenant.
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * Sets the name of the tenant.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+	/**
+	 * Sets the name of the tenant.
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    /**
-     * Returns true if new profiles should be verified through email by the user, for the accounts or users of
-     * this tenant.
-     */
-    public boolean isVerifyNewProfiles() {
-        return verifyNewProfiles;
-    }
+	/**
+	 * Returns true if new profiles should be verified through email by the user, for the accounts or users of
+	 * this tenant.
+	 */
+	public boolean isVerifyNewProfiles() {
+		return verifyNewProfiles;
+	}
 
-    /**
-     * Sets if new profiles should be verified through email by the user, for the accounts or users of
-     * this tenant.
-     *
-     * @param verifyNewProfiles true to verify new profiles, false otherwise
-     */
-    public void setVerifyNewProfiles(boolean verifyNewProfiles) {
-        this.verifyNewProfiles = verifyNewProfiles;
-    }
+	/**
+	 * Sets if new profiles should be verified through email by the user, for the accounts or users of
+	 * this tenant.
+	 *
+	 * @param verifyNewProfiles true to verify new profiles, false otherwise
+	 */
+	public void setVerifyNewProfiles(boolean verifyNewProfiles) {
+		this.verifyNewProfiles = verifyNewProfiles;
+	}
 
-    /**
-     * Returns the available roles that can be assigned to users of this tenant.
-     */
-    public Set<String> getAvailableRoles() {
-        if (availableRoles == null) {
-            availableRoles = new HashSet<>();
-        }
+	/**
+	 * Returns the available roles that can be assigned to users of this tenant.
+	 */
+	public Set<String> getAvailableRoles() {
+		if (availableRoles == null) {
+			availableRoles = new HashSet<>();
+		}
 
-        return availableRoles;
-    }
+		return availableRoles;
+	}
 
-    /**
-     * Sets the available roles that can be assigned to users of this tenant.
-     *
-     * @param availableRoles the available roles for users of the tenant.
-     */
-    public void setAvailableRoles(Set<String> availableRoles) {
-        this.availableRoles = availableRoles;
-    }
+	/**
+	 * Sets the available roles that can be assigned to users of this tenant.
+	 *
+	 * @param availableRoles the available roles for users of the tenant.
+	 */
+	public void setAvailableRoles(Set<String> availableRoles) {
+		this.availableRoles = availableRoles;
+	}
 
-    /**
-     * Returns true is single-sign on (SSO) is enabled for this tenant .
-     */
-    public boolean isSsoEnabled() {
-        return ssoEnabled;
-    }
+	/**
+	 * Returns true is single-sign on (SSO) is enabled for this tenant .
+	 */
+	public boolean isSsoEnabled() {
+		return ssoEnabled;
+	}
 
-    /**
-     * Sets if single sign-on (SSO) should be enabled for this tenant.
-     */
-    public void setSsoEnabled(boolean ssoEnabled) {
-        this.ssoEnabled = ssoEnabled;
-    }
+	/**
+	 * Sets if single sign-on (SSO) should be enabled for this tenant.
+	 */
+	public void setSsoEnabled(boolean ssoEnabled) {
+		this.ssoEnabled = ssoEnabled;
+	}
 
-    /**
-     * Returns the definitions of attributes that users of this tenant can have.
-     */
-    public List<AttributeDefinition> getAttributeDefinitions() {
-        if (attributeDefinitions == null) {
-            attributeDefinitions = new ArrayList<>();
-        }
+	/**
+	 * Returns the definitions of attributes that users of this tenant can have.
+	 */
+	public List<AttributeDefinition> getAttributeDefinitions() {
+		if (attributeDefinitions == null) {
+			attributeDefinitions = new ArrayList<>();
+		}
 
-        return attributeDefinitions;
-    }
+		return attributeDefinitions;
+	}
 
-    /**
-     * Sets the definitions of attributes that users of this tenant can have.
-     *
-     * @param attributeDefinitions  the available attribute definitions for users of the tenant
-     */
-    public void setAttributeDefinitions(List<AttributeDefinition> attributeDefinitions) {
-        this.attributeDefinitions = attributeDefinitions;
-    }
+	/**
+	 * Sets the definitions of attributes that users of this tenant can have.
+	 *
+	 * @param attributeDefinitions the available attribute definitions for users of the tenant
+	 */
+	public void setAttributeDefinitions(List<AttributeDefinition> attributeDefinitions) {
+		this.attributeDefinitions = attributeDefinitions;
+	}
 
-    public boolean isCleanseAttributes() {
-        return cleanseAttributes;
-    }
+	public boolean isCleanseAttributes() {
+		return cleanseAttributes;
+	}
 
-    public void setCleanseAttributes(final boolean cleanseAttributes) {
-        this.cleanseAttributes = cleanseAttributes;
-    }
+	public void setCleanseAttributes(final boolean cleanseAttributes) {
+		this.cleanseAttributes = cleanseAttributes;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-        Tenant tenant = (Tenant) o;
+		Tenant tenant = (Tenant) o;
 
-        if (!_id.equals(tenant._id)) {
-            return false;
-        }
+		if (!_id.equals(tenant._id)) {
+			return false;
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public int hashCode() {
-        return _id.hashCode();
-    }
+	@Override
+	public int hashCode() {
+		return _id.hashCode();
+	}
 
-    @Override
-    public String toString() {
-        return "Tenant{" +
-               "_id=" + _id +
-               ", name='" + name + '\'' +
-               ", verifyNewProfiles=" + verifyNewProfiles +
-               ", availableRoles=" + availableRoles +
-               ", ssoEnabled=" + ssoEnabled +
-               ", attributeDefinitions=" + attributeDefinitions +
-               '}';
-    }
+	@Override
+	public String toString() {
+		return "Tenant{" +
+			"_id=" + _id +
+			", name='" + name + '\'' +
+			", verifyNewProfiles=" + verifyNewProfiles +
+			", availableRoles=" + availableRoles +
+			", ssoEnabled=" + ssoEnabled +
+			", attributeDefinitions=" + attributeDefinitions +
+			'}';
+	}
 
 }

@@ -40,49 +40,49 @@ import static org.mockito.Mockito.when;
  */
 public class LoginSuccessHandleImplTest {
 
-    private static final String SAVED_REQUEST_URL =     "/myprofile";
-    private static final String DEFAULT_TARGET_URL =    "/home";
+	private static final String SAVED_REQUEST_URL = "/myprofile";
+	private static final String DEFAULT_TARGET_URL = "/home";
 
-    private LoginSuccessHandlerImpl handler;
-    @Mock
-    private RequestCache requestCache;
+	private LoginSuccessHandlerImpl handler;
+	@Mock
+	private RequestCache requestCache;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-        handler = new LoginSuccessHandlerImpl(DEFAULT_TARGET_URL);
-        handler.setRequestCache(requestCache);
-    }
+		handler = new LoginSuccessHandlerImpl(DEFAULT_TARGET_URL);
+		handler.setRequestCache(requestCache);
+	}
 
-    @Test
-    public void testRedirectToSavedRequest() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
-        SavedRequest savedRequest = mock(SavedRequest.class);
+	@Test
+	public void testRedirectToSavedRequest() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
+		SavedRequest savedRequest = mock(SavedRequest.class);
 
-        when(savedRequest.getRedirectUrl()).thenReturn(SAVED_REQUEST_URL);
-        when(requestCache.getRequest(request, response)).thenReturn(savedRequest);
+		when(savedRequest.getRedirectUrl()).thenReturn(SAVED_REQUEST_URL);
+		when(requestCache.getRequest(request, response)).thenReturn(savedRequest);
 
-        handler.handle(context, mock(Authentication.class));
+		handler.handle(context, mock(Authentication.class));
 
-        assertEquals(SAVED_REQUEST_URL, response.getRedirectedUrl());
-        assertEquals(HttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
-        assertTrue(response.isCommitted());
-    }
+		assertEquals(SAVED_REQUEST_URL, response.getRedirectedUrl());
+		assertEquals(HttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
+		assertTrue(response.isCommitted());
+	}
 
-    @Test
-    public void testRedirectToDefaultTargetUrl() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test
+	public void testRedirectToDefaultTargetUrl() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        handler.handle(context, mock(Authentication.class));
+		handler.handle(context, mock(Authentication.class));
 
-        assertEquals(DEFAULT_TARGET_URL, response.getRedirectedUrl());
-        assertEquals(HttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
-        assertTrue(response.isCommitted());
-    }
+		assertEquals(DEFAULT_TARGET_URL, response.getRedirectedUrl());
+		assertEquals(HttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
+		assertTrue(response.isCommitted());
+	}
 
 }

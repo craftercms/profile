@@ -25,67 +25,67 @@ import org.craftercms.security.authentication.Authentication;
  */
 public class DefaultAuthentication implements Authentication {
 
-    private String ticket;
-    private Profile profile;
-    private boolean remembered;
+	private String ticket;
+	private Profile profile;
+	private boolean remembered;
 
-    public DefaultAuthentication(String ticket, Profile profile) {
-        this.ticket = ticket;
-        this.profile = profile;
-        this.remembered = false;
-    }
+	public DefaultAuthentication(String ticket, Profile profile) {
+		this.ticket = ticket;
+		this.profile = profile;
+		this.remembered = false;
+	}
 
-    public DefaultAuthentication(String ticket, Profile profile, boolean remembered) {
-        this.ticket = ticket;
-        this.profile = profile;
-        this.remembered = remembered;
-    }
+	public DefaultAuthentication(String ticket, Profile profile, boolean remembered) {
+		this.ticket = ticket;
+		this.profile = profile;
+		this.remembered = remembered;
+	}
 
-    @Override
-    public String getTicket() {
-        return ticket;
-    }
+	@Override
+	public String getTicket() {
+		return ticket;
+	}
 
-    @Override
-    public Profile getProfile() {
-        return profile;
-    }
+	@Override
+	public Profile getProfile() {
+		return profile;
+	}
 
-    @Override
-    public boolean isRemembered() {
-        return remembered;
-    }
+	@Override
+	public boolean isRemembered() {
+		return remembered;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-        DefaultAuthentication auth = (DefaultAuthentication) o;
+		DefaultAuthentication auth = (DefaultAuthentication) o;
 
-        if (ticket != null ? !ticket.equals(auth.ticket) : auth.ticket != null) {
-            return false;
-        }
+		if (ticket != null ? !ticket.equals(auth.ticket) : auth.ticket != null) {
+			return false;
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public int hashCode() {
-        return ticket != null ? ticket.hashCode() : 0;
-    }
+	@Override
+	public int hashCode() {
+		return ticket != null ? ticket.hashCode() : 0;
+	}
 
-    @Override
-    public String toString() {
-        return "DefaultAuthentication{" +
-               "ticket='" + ticket + '\'' +
-               ", profile=" + profile +
-               ", remembered=" + remembered +
-               '}';
-    }
+	@Override
+	public String toString() {
+		return "DefaultAuthentication{" +
+			"ticket='" + ticket + '\'' +
+			", profile=" + profile +
+			", remembered=" + remembered +
+			'}';
+	}
 
 }

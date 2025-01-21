@@ -22,12 +22,12 @@ package org.craftercms.security.exception;
  */
 public class DisabledUserException extends AuthenticationException {
 
-    public DisabledUserException(String s) {
-        super(s);
-    }
+	public DisabledUserException(String s) {
+		super(s);
+	}
 
-    public DisabledUserException(String s, Throwable throwable) {
-        super(s, throwable);
-    }
+	public DisabledUserException(String s, Throwable throwable) {
+		super(s, throwable);
+	}
 
 }

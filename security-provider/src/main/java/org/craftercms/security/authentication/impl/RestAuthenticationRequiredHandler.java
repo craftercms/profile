@@ -16,6 +16,7 @@
 package org.craftercms.security.authentication.impl;
 
 import java.io.IOException;
+
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.craftercms.commons.http.RequestContext;
@@ -33,14 +34,14 @@ import org.craftercms.security.utils.handlers.AbstractRestHandlerBase;
  */
 public class RestAuthenticationRequiredHandler extends AbstractRestHandlerBase implements AuthenticationRequiredHandler {
 
-    public RestAuthenticationRequiredHandler(HttpMessageConvertingResponseWriter responseWriter) {
-        super(responseWriter);
-    }
+	public RestAuthenticationRequiredHandler(HttpMessageConvertingResponseWriter responseWriter) {
+		super(responseWriter);
+	}
 
-    @Override
-    public void handle(RequestContext context, AuthenticationException e) throws SecurityProviderException,
-            IOException {
-        sendErrorMessage(HttpServletResponse.SC_UNAUTHORIZED, e, context);
-    }
+	@Override
+	public void handle(RequestContext context, AuthenticationException e) throws SecurityProviderException,
+		IOException {
+		sendErrorMessage(HttpServletResponse.SC_UNAUTHORIZED, e, context);
+	}
 
 }

@@ -39,47 +39,48 @@ import static org.craftercms.profile.api.ProfileConstants.URL_ACCESS_TOKEN_GET_A
  */
 public class AccessTokenServiceRestClient extends AbstractProfileRestClientBase implements AccessTokenService {
 
-    public static final ParameterizedTypeReference<List<AccessToken>> accessTokenListTypeRef =
-        new ParameterizedTypeReference<List<AccessToken>>() {};
+	public static final ParameterizedTypeReference<List<AccessToken>> accessTokenListTypeRef =
+		new ParameterizedTypeReference<List<AccessToken>>() {
+		};
 
-    public AccessTokenServiceRestClient(String baseUrl, RestTemplate restTemplate, AccessTokenIdResolver accessTokenIdResolver) {
-        super(baseUrl, restTemplate, accessTokenIdResolver);
-    }
+	public AccessTokenServiceRestClient(String baseUrl, RestTemplate restTemplate, AccessTokenIdResolver accessTokenIdResolver) {
+		super(baseUrl, restTemplate, accessTokenIdResolver);
+	}
 
-    @Override
-    public AccessToken createToken(AccessToken token) throws ProfileException {
-        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_ACCESS_TOKEN + URL_ACCESS_TOKEN_CREATE);
+	@Override
+	public AccessToken createToken(AccessToken token) throws ProfileException {
+		String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_ACCESS_TOKEN + URL_ACCESS_TOKEN_CREATE);
 
-        return doPostForObject(url, token, AccessToken.class);
-    }
+		return doPostForObject(url, token, AccessToken.class);
+	}
 
-    @Override
-    public AccessToken getToken(String id) throws ProfileException {
-        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_ACCESS_TOKEN + URL_ACCESS_TOKEN_GET);
+	@Override
+	public AccessToken getToken(String id) throws ProfileException {
+		String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_ACCESS_TOKEN + URL_ACCESS_TOKEN_GET);
 
-        try {
-            return doGetForObject(url, AccessToken.class, id);
-        } catch (ProfileRestServiceException e) {
-            if (e.getStatus() == HttpStatus.NOT_FOUND) {
-                return null;
-            } else {
-                throw e;
-            }
-        }
-    }
+		try {
+			return doGetForObject(url, AccessToken.class, id);
+		} catch (ProfileRestServiceException e) {
+			if (e.getStatus() == HttpStatus.NOT_FOUND) {
+				return null;
+			} else {
+				throw e;
+			}
+		}
+	}
 
-    @Override
-    public List<AccessToken> getAllTokens() throws ProfileException {
-        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_ACCESS_TOKEN + URL_ACCESS_TOKEN_GET_ALL);
+	@Override
+	public List<AccessToken> getAllTokens() throws ProfileException {
+		String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_ACCESS_TOKEN + URL_ACCESS_TOKEN_GET_ALL);
 
-        return doGetForObject(url, accessTokenListTypeRef);
-    }
+		return doGetForObject(url, accessTokenListTypeRef);
+	}
 
-    @Override
-    public void deleteToken(String id) throws ProfileException {
-        String url = getAbsoluteUrl(BASE_URL_ACCESS_TOKEN + URL_ACCESS_TOKEN_DELETE);
+	@Override
+	public void deleteToken(String id) throws ProfileException {
+		String url = getAbsoluteUrl(BASE_URL_ACCESS_TOKEN + URL_ACCESS_TOKEN_DELETE);
 
-        doPostForLocation(url, createBaseParams(), id);
-    }
+		doPostForLocation(url, createBaseParams(), id);
+	}
 
 }

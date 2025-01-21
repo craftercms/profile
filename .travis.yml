@@ -1,29 +1,29 @@
 version: "~> 1.0"
 git:
-  depth: 1
-  quiet: true
+    depth: 1
+    quiet: true
 language: java
 jdk:
-  - openjdk21
+    - openjdk21
 branches:
-  only:
-    - develop
-    - support/4.1.x
-    - support/4.0.x
-    - master
+    only:
+        - develop
+        - support/4.1.x
+        - support/4.0.x
+        - master
 cache:
-  directories:
-    - "$HOME/.m2"
+    directories:
+        - "$HOME/.m2"
 notifications:
-  slack: craftersoftware:7YiSb41ZG5rfMgiAY7Qgprc7
+    slack: craftersoftware:7YiSb41ZG5rfMgiAY7Qgprc7
 before_install:
-  - mkdir -p $HOME/.m2
-  - cp .travis-settings.xml $HOME/.m2/settings.xml
+    - mkdir -p $HOME/.m2
+    - cp .travis-settings.xml $HOME/.m2/settings.xml
 install: skip
 script:
-  - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then bash -c "mvn deploy --settings .travis-settings.xml"; fi
-  - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then bash -c "mvn clean install"; fi
+    - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then bash -c "mvn deploy --settings .travis-settings.xml"; fi
+    - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then bash -c "mvn clean install"; fi
 env:
-  global:
-    - secure: "bPt8VyITLGXK2a/qr6b+yWWo8XB8cnyCyqErNuzKRIcSiZNzswakYBcDCJBSEJxWJuvtUlqWofi+9q5HW0uN/OemHAwA5qJ6ZNDMt8vj0pZ4q8HkUeIhhyixjImzEUyboZA6p1DX7FxZNXl/c2KwsWcLf6pl9BKE0L1OnKbj9gQ="
-    - secure: "TJey3Zhh5eaFbFrq1X2xN8zkkCMXF38Xita0VGoDj3siW9FsMe+qVgfx/nQSyqu7Vt0bOfcwQ3joXQzk6oebyIQ3ZrQ7HTmaMprDXVxwmL6qBWDsOLddCK4HnWGRjnggWjwXq6lkXArc0yDzQPul2Q5d2eis70PQB9ecOHcDNyQ="
+    global:
+        -   secure: "bPt8VyITLGXK2a/qr6b+yWWo8XB8cnyCyqErNuzKRIcSiZNzswakYBcDCJBSEJxWJuvtUlqWofi+9q5HW0uN/OemHAwA5qJ6ZNDMt8vj0pZ4q8HkUeIhhyixjImzEUyboZA6p1DX7FxZNXl/c2KwsWcLf6pl9BKE0L1OnKbj9gQ="
+        -   secure: "TJey3Zhh5eaFbFrq1X2xN8zkkCMXF38Xita0VGoDj3siW9FsMe+qVgfx/nQSyqu7Vt0bOfcwQ3joXQzk6oebyIQ3ZrQ7HTmaMprDXVxwmL6qBWDsOLddCK4HnWGRjnggWjwXq6lkXArc0yDzQPul2Q5d2eis70PQB9ecOHcDNyQ="

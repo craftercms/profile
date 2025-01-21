@@ -46,86 +46,86 @@ import static org.mockito.Mockito.when;
  */
 public class AccessTokenCheckingInterceptorTest {
 
-    private static final String NORMAL_TOKEN_ID = UUID.randomUUID().toString();
-    private static final String EXPIRED_TOKEN_ID =   UUID.randomUUID().toString();
+	private static final String NORMAL_TOKEN_ID = UUID.randomUUID().toString();
+	private static final String EXPIRED_TOKEN_ID = UUID.randomUUID().toString();
 
-    private static final String APPLICATION = "profile-admin";
+	private static final String APPLICATION = "profile-admin";
 
-    private AccessTokenCheckingInterceptor interceptor;
-    @Mock
-    private AccessTokenRepository tokenRepository;
+	private AccessTokenCheckingInterceptor interceptor;
+	@Mock
+	private AccessTokenRepository tokenRepository;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-        when(tokenRepository.findByStringId(NORMAL_TOKEN_ID)).thenReturn(getNormalToken());
-        when(tokenRepository.findByStringId(EXPIRED_TOKEN_ID)).thenReturn(getExpiredToken());
-        
-        interceptor = new AccessTokenCheckingInterceptor(tokenRepository, new String[] { ".*" }, new String[0]);
-    }
+		when(tokenRepository.findByStringId(NORMAL_TOKEN_ID)).thenReturn(getNormalToken());
+		when(tokenRepository.findByStringId(EXPIRED_TOKEN_ID)).thenReturn(getExpiredToken());
 
-    @Test
-    public void testPreHandle() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setParameter(ProfileConstants.PARAM_ACCESS_TOKEN_ID, NORMAL_TOKEN_ID);
+		interceptor = new AccessTokenCheckingInterceptor(tokenRepository, new String[]{".*"}, new String[0]);
+	}
 
-        interceptor.preHandle(request, null, null);
+	@Test
+	public void testPreHandle() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setParameter(ProfileConstants.PARAM_ACCESS_TOKEN_ID, NORMAL_TOKEN_ID);
 
-        AccessToken token = AccessTokenUtils.getAccessToken(request);
+		interceptor.preHandle(request, null, null);
 
-        TenantPermission permission = new TenantPermission();
-        permission.allow("*");
+		AccessToken token = AccessTokenUtils.getAccessToken(request);
 
-        assertNotNull(token);
-        assertEquals(APPLICATION, token.getApplication());
-        assertTrue(token.isMaster());
-        assertEquals(Arrays.asList(permission), token.getTenantPermissions());
+		TenantPermission permission = new TenantPermission();
+		permission.allow("*");
 
-        verify(tokenRepository).findByStringId(NORMAL_TOKEN_ID);
-    }
+		assertNotNull(token);
+		assertEquals(APPLICATION, token.getApplication());
+		assertTrue(token.isMaster());
+		assertEquals(Arrays.asList(permission), token.getTenantPermissions());
 
-    @Test(expected = AccessDeniedException.MissingAccessToken.class)
-    public void testPreHandleMissingAccessTokenIdParam() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
+		verify(tokenRepository).findByStringId(NORMAL_TOKEN_ID);
+	}
 
-        interceptor.preHandle(request, null, null);
-    }
+	@Test(expected = AccessDeniedException.MissingAccessToken.class)
+	public void testPreHandleMissingAccessTokenIdParam() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
 
-    @Test(expected = AccessDeniedException.ExpiredAccessToken.class)
-    public void testPreHandleExpiredAccessToken() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setParameter(ProfileConstants.PARAM_ACCESS_TOKEN_ID, EXPIRED_TOKEN_ID);
+		interceptor.preHandle(request, null, null);
+	}
 
-        interceptor.preHandle(request, null, null);
-    }
+	@Test(expected = AccessDeniedException.ExpiredAccessToken.class)
+	public void testPreHandleExpiredAccessToken() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setParameter(ProfileConstants.PARAM_ACCESS_TOKEN_ID, EXPIRED_TOKEN_ID);
 
-    private AccessToken getNormalToken() {
-        TenantPermission permission = new TenantPermission();
-        permission.allowAny();
+		interceptor.preHandle(request, null, null);
+	}
 
-        AccessToken token = new AccessToken();
-        token.setId(NORMAL_TOKEN_ID);
-        token.setApplication(APPLICATION);
-        token.setMaster(true);
-        token.setTenantPermissions(Arrays.asList(permission));
-        token.setExpiresOn(new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(24)));
+	private AccessToken getNormalToken() {
+		TenantPermission permission = new TenantPermission();
+		permission.allowAny();
 
-        return token;
-    }
+		AccessToken token = new AccessToken();
+		token.setId(NORMAL_TOKEN_ID);
+		token.setApplication(APPLICATION);
+		token.setMaster(true);
+		token.setTenantPermissions(Arrays.asList(permission));
+		token.setExpiresOn(new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(24)));
 
-    private AccessToken getExpiredToken() {
-        TenantPermission permission = new TenantPermission();
-        permission.allowAny();
+		return token;
+	}
 
-        AccessToken token = new AccessToken();
-        token.setId(EXPIRED_TOKEN_ID);
-        token.setApplication(APPLICATION);
-        token.setMaster(true);
-        token.setTenantPermissions(Arrays.asList(permission));
-        token.setExpiresOn(new Date());
+	private AccessToken getExpiredToken() {
+		TenantPermission permission = new TenantPermission();
+		permission.allowAny();
 
-        return token;
-    }
+		AccessToken token = new AccessToken();
+		token.setId(EXPIRED_TOKEN_ID);
+		token.setApplication(APPLICATION);
+		token.setMaster(true);
+		token.setTenantPermissions(Arrays.asList(permission));
+		token.setExpiresOn(new Date());
+
+		return token;
+	}
 
 }

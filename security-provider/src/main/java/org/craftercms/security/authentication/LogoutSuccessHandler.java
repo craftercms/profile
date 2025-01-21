@@ -27,11 +27,11 @@ import org.craftercms.security.exception.SecurityProviderException;
  */
 public interface LogoutSuccessHandler {
 
-    /**
-     * Handles the request after a successful logout.
-     *
-     * @param context           the request context
-     */
-    void handle(RequestContext context) throws SecurityProviderException, IOException;
+	/**
+	 * Handles the request after a successful logout.
+	 *
+	 * @param context the request context
+	 */
+	void handle(RequestContext context) throws SecurityProviderException, IOException;
 
 }

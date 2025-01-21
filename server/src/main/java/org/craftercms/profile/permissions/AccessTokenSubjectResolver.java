@@ -27,9 +27,9 @@ import org.craftercms.profile.utils.AccessTokenUtils;
  */
 public class AccessTokenSubjectResolver implements SubjectResolver<AccessToken> {
 
-    @Override
-    public AccessToken getCurrentSubject() {
-        return AccessTokenUtils.getCurrentToken();
-    }
+	@Override
+	public AccessToken getCurrentSubject() {
+		return AccessTokenUtils.getCurrentToken();
+	}
 
 }

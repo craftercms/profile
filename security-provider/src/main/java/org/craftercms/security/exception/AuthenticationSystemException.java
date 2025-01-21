@@ -22,15 +22,15 @@ package org.craftercms.security.exception;
  */
 public class AuthenticationSystemException extends AuthenticationException {
 
-    public AuthenticationSystemException() {
-    }
+	public AuthenticationSystemException() {
+	}
 
-    public AuthenticationSystemException(String s) {
-        super(s);
-    }
+	public AuthenticationSystemException(String s) {
+		super(s);
+	}
 
-    public AuthenticationSystemException(String s, Throwable throwable) {
-        super(s, throwable);
-    }
+	public AuthenticationSystemException(String s, Throwable throwable) {
+		super(s, throwable);
+	}
 
 }

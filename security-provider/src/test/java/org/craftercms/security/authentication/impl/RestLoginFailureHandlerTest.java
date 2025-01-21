@@ -34,26 +34,26 @@ import static org.junit.Assert.assertEquals;
  */
 public class RestLoginFailureHandlerTest extends AbstractRestHandlerTestBase {
 
-    private static final String ERROR_MESSAGE =             "Invalid username and/or password";
-    private static final String EXPECTED_RESPONSE_CONTENT = "{\"message\":\"" + ERROR_MESSAGE + "\"}";
+	private static final String ERROR_MESSAGE = "Invalid username and/or password";
+	private static final String EXPECTED_RESPONSE_CONTENT = "{\"message\":\"" + ERROR_MESSAGE + "\"}";
 
-    private RestLoginFailureHandler handler;
+	private RestLoginFailureHandler handler;
 
-    @Before
-    public void setUp() throws Exception {
-        handler = new RestLoginFailureHandler(createResponseWriter());
-    }
+	@Before
+	public void setUp() throws Exception {
+		handler = new RestLoginFailureHandler(createResponseWriter());
+	}
 
-    @Test
-    public void testHandle() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/login.json");
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test
+	public void testHandle() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/login.json");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        handler.handle(context, new BadCredentialsException(ERROR_MESSAGE));
+		handler.handle(context, new BadCredentialsException(ERROR_MESSAGE));
 
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        assertEquals(EXPECTED_RESPONSE_CONTENT, response.getContentAsString());
-    }
+		assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
+		assertEquals(EXPECTED_RESPONSE_CONTENT, response.getContentAsString());
+	}
 
 }

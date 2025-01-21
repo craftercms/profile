@@ -24,10 +24,10 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  */
 public class NoSuchVerificationTokenException extends I10nProfileException {
 
-    private static final String KEY = "profile.verification.noSuchVerificationToken";
+	private static final String KEY = "profile.verification.noSuchVerificationToken";
 
-    public NoSuchVerificationTokenException(String id) {
-        super(KEY, id);
-    }
+	public NoSuchVerificationTokenException(String id) {
+		super(KEY, id);
+	}
 
 }

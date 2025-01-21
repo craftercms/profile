@@ -23,9 +23,9 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  */
 public class ProfileLockedException extends I10nProfileException {
 
-    public static final String KEY = "profile.auth.lockedAccount";
+	public static final String KEY = "profile.auth.lockedAccount";
 
-    public ProfileLockedException() {
-        super(KEY);
-    }
+	public ProfileLockedException() {
+		super(KEY);
+	}
 }

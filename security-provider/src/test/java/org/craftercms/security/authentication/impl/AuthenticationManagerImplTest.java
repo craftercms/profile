@@ -49,164 +49,164 @@ import static org.mockito.Mockito.when;
  */
 public class AuthenticationManagerImplTest {
 
-    private static final String TENANT1 = "default";
-    private static final String TENANT2 = "mysite";
-    private static final String USERNAME1 = "avasquez";
-    private static final String USERNAME2 = "avasquez2";
-    private static final String DISABLED_USERNAME = "jdoe";
-    private static final String PASSWORD1 = "1234";
-    private static final String PASSWORD2 = "4321";
-    private static final ObjectId PROFILE_ID1 = new ObjectId();
-    private static final ObjectId PROFILE_ID2 = new ObjectId();
-    private static final String TICKET_ID1 = UUID.randomUUID().toString();
-    private static final String TICKET_ID2 = UUID.randomUUID().toString();
-    private static final String INVALID_TICKET_ID = UUID.randomUUID().toString();
+	private static final String TENANT1 = "default";
+	private static final String TENANT2 = "mysite";
+	private static final String USERNAME1 = "avasquez";
+	private static final String USERNAME2 = "avasquez2";
+	private static final String DISABLED_USERNAME = "jdoe";
+	private static final String PASSWORD1 = "1234";
+	private static final String PASSWORD2 = "4321";
+	private static final ObjectId PROFILE_ID1 = new ObjectId();
+	private static final ObjectId PROFILE_ID2 = new ObjectId();
+	private static final String TICKET_ID1 = UUID.randomUUID().toString();
+	private static final String TICKET_ID2 = UUID.randomUUID().toString();
+	private static final String INVALID_TICKET_ID = UUID.randomUUID().toString();
 
-    private AuthenticationManagerImpl authenticationManager;
-    @Mock
-    private AuthenticationService authenticationService;
-    @Mock
-    private ProfileService profileService;
-    @Mock
-    private AuthenticationCache authenticationCache;
+	private AuthenticationManagerImpl authenticationManager;
+	@Mock
+	private AuthenticationService authenticationService;
+	@Mock
+	private ProfileService profileService;
+	@Mock
+	private AuthenticationCache authenticationCache;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-        when(authenticationService.authenticate(TENANT1, USERNAME1, PASSWORD1)).thenReturn(getTicket1());
-        when(authenticationService.authenticate(TENANT2, USERNAME2, PASSWORD2)).thenReturn(getTicket2());
-        doThrow(new ProfileRestServiceException(HttpStatus.UNAUTHORIZED, ErrorCode.BAD_CREDENTIALS, ""))
-            .when(authenticationService).authenticate(TENANT1, USERNAME2, PASSWORD2);
-        doThrow(new ProfileRestServiceException(HttpStatus.FORBIDDEN, ErrorCode.DISABLED_PROFILE, ""))
-            .when(authenticationService).authenticate(TENANT1, DISABLED_USERNAME, PASSWORD1);
+		when(authenticationService.authenticate(TENANT1, USERNAME1, PASSWORD1)).thenReturn(getTicket1());
+		when(authenticationService.authenticate(TENANT2, USERNAME2, PASSWORD2)).thenReturn(getTicket2());
+		doThrow(new ProfileRestServiceException(HttpStatus.UNAUTHORIZED, ErrorCode.BAD_CREDENTIALS, ""))
+			.when(authenticationService).authenticate(TENANT1, USERNAME2, PASSWORD2);
+		doThrow(new ProfileRestServiceException(HttpStatus.FORBIDDEN, ErrorCode.DISABLED_PROFILE, ""))
+			.when(authenticationService).authenticate(TENANT1, DISABLED_USERNAME, PASSWORD1);
 
-        when(profileService.getProfile(PROFILE_ID1.toString(), new String[0])).thenReturn(getProfile1());
-        when(profileService.getProfile(PROFILE_ID2.toString(), new String[0])).thenReturn(getProfile2());
-        when(profileService.getProfileByTicket(TICKET_ID1, new String[0])).thenReturn(getProfile1());
-        doThrow(new ProfileRestServiceException(HttpStatus.BAD_REQUEST, ErrorCode.NO_SUCH_TICKET, ""))
-            .when(profileService).getProfileByTicket(INVALID_TICKET_ID, new String[0]);
+		when(profileService.getProfile(PROFILE_ID1.toString(), new String[0])).thenReturn(getProfile1());
+		when(profileService.getProfile(PROFILE_ID2.toString(), new String[0])).thenReturn(getProfile2());
+		when(profileService.getProfileByTicket(TICKET_ID1, new String[0])).thenReturn(getProfile1());
+		doThrow(new ProfileRestServiceException(HttpStatus.BAD_REQUEST, ErrorCode.NO_SUCH_TICKET, ""))
+			.when(profileService).getProfileByTicket(INVALID_TICKET_ID, new String[0]);
 
-        when(authenticationCache.getAuthentication(TICKET_ID1)).thenReturn(getAuthentication1());
+		when(authenticationCache.getAuthentication(TICKET_ID1)).thenReturn(getAuthentication1());
 
-        authenticationManager = new AuthenticationManagerImpl(authenticationService, profileService, authenticationCache);
-    }
+		authenticationManager = new AuthenticationManagerImpl(authenticationService, profileService, authenticationCache);
+	}
 
-    @Test
-    public void testAuthenticateUser() throws Exception {
-        Authentication authentication = authenticationManager.authenticateUser(TENANT1, USERNAME1, PASSWORD1);
-        Authentication expected = getAuthentication1();
+	@Test
+	public void testAuthenticateUser() throws Exception {
+		Authentication authentication = authenticationManager.authenticateUser(TENANT1, USERNAME1, PASSWORD1);
+		Authentication expected = getAuthentication1();
 
-        assertNotNull(authentication);
-        assertEquals(expected.getTicket(), authentication.getTicket());
-        assertEquals(expected.getProfile().getId(), authentication.getProfile().getId());
+		assertNotNull(authentication);
+		assertEquals(expected.getTicket(), authentication.getTicket());
+		assertEquals(expected.getProfile().getId(), authentication.getProfile().getId());
 
-        verify(authenticationService).authenticate(TENANT1, USERNAME1, PASSWORD1);
-        verify(profileService).getProfile(PROFILE_ID1.toString(), new String[0]);
-    }
+		verify(authenticationService).authenticate(TENANT1, USERNAME1, PASSWORD1);
+		verify(profileService).getProfile(PROFILE_ID1.toString(), new String[0]);
+	}
 
-    @Test
-    public void testAuthenticateUserWithMultipleTenants() throws Exception {
-        Authentication authentication = authenticationManager.authenticateUser(new String[] {TENANT1, TENANT2},
-                                                                               USERNAME2, PASSWORD2);
-        Authentication expected = getAuthentication2();
+	@Test
+	public void testAuthenticateUserWithMultipleTenants() throws Exception {
+		Authentication authentication = authenticationManager.authenticateUser(new String[]{TENANT1, TENANT2},
+			USERNAME2, PASSWORD2);
+		Authentication expected = getAuthentication2();
 
-        assertNotNull(authentication);
-        assertEquals(expected.getTicket(), authentication.getTicket());
-        assertEquals(expected.getProfile().getId(), authentication.getProfile().getId());
+		assertNotNull(authentication);
+		assertEquals(expected.getTicket(), authentication.getTicket());
+		assertEquals(expected.getProfile().getId(), authentication.getProfile().getId());
 
-        verify(authenticationService).authenticate(TENANT1, USERNAME2, PASSWORD2);
-        verify(authenticationService).authenticate(TENANT2, USERNAME2, PASSWORD2);
-        verify(profileService).getProfile(PROFILE_ID2.toString(), new String[0]);
-    }
+		verify(authenticationService).authenticate(TENANT1, USERNAME2, PASSWORD2);
+		verify(authenticationService).authenticate(TENANT2, USERNAME2, PASSWORD2);
+		verify(profileService).getProfile(PROFILE_ID2.toString(), new String[0]);
+	}
 
-    @Test(expected = DisabledUserException.class)
-    public void testAuthenticateDisabledUser() throws Exception {
-        authenticationManager.authenticateUser(TENANT1, DISABLED_USERNAME, PASSWORD1);
-    }
+	@Test(expected = DisabledUserException.class)
+	public void testAuthenticateDisabledUser() throws Exception {
+		authenticationManager.authenticateUser(TENANT1, DISABLED_USERNAME, PASSWORD1);
+	}
 
-    @Test(expected = BadCredentialsException.class)
-    public void testAuthenticateUserBadCredentials() throws Exception {
-        authenticationManager.authenticateUser(TENANT1, USERNAME2, PASSWORD2);
-    }
+	@Test(expected = BadCredentialsException.class)
+	public void testAuthenticateUserBadCredentials() throws Exception {
+		authenticationManager.authenticateUser(TENANT1, USERNAME2, PASSWORD2);
+	}
 
-    @Test
-    public void testGetAuthentication() throws Exception {
-        Authentication authentication = authenticationManager.getAuthentication(TICKET_ID1, false);
-        Authentication expected = getAuthentication1();
+	@Test
+	public void testGetAuthentication() throws Exception {
+		Authentication authentication = authenticationManager.getAuthentication(TICKET_ID1, false);
+		Authentication expected = getAuthentication1();
 
-        assertNotNull(authentication);
-        assertEquals(expected.getTicket(), authentication.getTicket());
-        assertEquals(expected.getProfile().getId(), authentication.getProfile().getId());
+		assertNotNull(authentication);
+		assertEquals(expected.getTicket(), authentication.getTicket());
+		assertEquals(expected.getProfile().getId(), authentication.getProfile().getId());
 
-        verify(authenticationCache).getAuthentication(TICKET_ID1);
+		verify(authenticationCache).getAuthentication(TICKET_ID1);
 
-        authentication = authenticationManager.getAuthentication(TICKET_ID1, true);
+		authentication = authenticationManager.getAuthentication(TICKET_ID1, true);
 
-        assertNotNull(authentication);
-        assertEquals(expected.getTicket(), authentication.getTicket());
-        assertEquals(expected.getProfile().getId(), authentication.getProfile().getId());
+		assertNotNull(authentication);
+		assertEquals(expected.getTicket(), authentication.getTicket());
+		assertEquals(expected.getProfile().getId(), authentication.getProfile().getId());
 
-        verify(authenticationCache).putAuthentication(authentication);
-    }
+		verify(authenticationCache).putAuthentication(authentication);
+	}
 
-    @Test
-    public void testGetAuthenticationInvalidTicket() throws Exception {
-        Authentication auth = authenticationManager.getAuthentication(INVALID_TICKET_ID, false);
+	@Test
+	public void testGetAuthenticationInvalidTicket() throws Exception {
+		Authentication auth = authenticationManager.getAuthentication(INVALID_TICKET_ID, false);
 
-        assertNull(auth);
-    }
+		assertNull(auth);
+	}
 
-    @Test
-    public void testInvalidateAuthentication() throws Exception {
-        Authentication auth = getAuthentication1();
+	@Test
+	public void testInvalidateAuthentication() throws Exception {
+		Authentication auth = getAuthentication1();
 
-        authenticationManager.invalidateAuthentication(auth);
+		authenticationManager.invalidateAuthentication(auth);
 
-        verify(authenticationCache).removeAuthentication(auth.getTicket());
-        verify(authenticationService).invalidateTicket(auth.getTicket());
-    }
+		verify(authenticationCache).removeAuthentication(auth.getTicket());
+		verify(authenticationService).invalidateTicket(auth.getTicket());
+	}
 
-    private Ticket getTicket1() {
-        Ticket ticket = new Ticket();
-        ticket.setId(TICKET_ID1);
-        ticket.setTenant(TENANT1);
-        ticket.setProfileId(PROFILE_ID1.toString());
-        ticket.setLastRequestTime(new Date());
+	private Ticket getTicket1() {
+		Ticket ticket = new Ticket();
+		ticket.setId(TICKET_ID1);
+		ticket.setTenant(TENANT1);
+		ticket.setProfileId(PROFILE_ID1.toString());
+		ticket.setLastRequestTime(new Date());
 
-        return ticket;
-    }
+		return ticket;
+	}
 
-    private Ticket getTicket2() {
-        Ticket ticket = new Ticket();
-        ticket.setId(TICKET_ID2);
-        ticket.setTenant(TENANT2);
-        ticket.setProfileId(PROFILE_ID2.toString());
-        ticket.setLastRequestTime(new Date());
+	private Ticket getTicket2() {
+		Ticket ticket = new Ticket();
+		ticket.setId(TICKET_ID2);
+		ticket.setTenant(TENANT2);
+		ticket.setProfileId(PROFILE_ID2.toString());
+		ticket.setLastRequestTime(new Date());
 
-        return ticket;
-    }
+		return ticket;
+	}
 
-    private Profile getProfile1() {
-        Profile profile = new Profile();
-        profile.setId(PROFILE_ID1);
+	private Profile getProfile1() {
+		Profile profile = new Profile();
+		profile.setId(PROFILE_ID1);
 
-        return profile;
-    }
+		return profile;
+	}
 
-    private Profile getProfile2() {
-        Profile profile = new Profile();
-        profile.setId(PROFILE_ID2);
+	private Profile getProfile2() {
+		Profile profile = new Profile();
+		profile.setId(PROFILE_ID2);
 
-        return profile;
-    }
+		return profile;
+	}
 
-    private Authentication getAuthentication1() {
-        return new DefaultAuthentication(TICKET_ID1, getProfile1());
-    }
+	private Authentication getAuthentication1() {
+		return new DefaultAuthentication(TICKET_ID1, getProfile1());
+	}
 
-    private Authentication getAuthentication2() {
-        return new DefaultAuthentication(TICKET_ID2, getProfile2());
-    }
+	private Authentication getAuthentication2() {
+		return new DefaultAuthentication(TICKET_ID2, getProfile2());
+	}
 
 }

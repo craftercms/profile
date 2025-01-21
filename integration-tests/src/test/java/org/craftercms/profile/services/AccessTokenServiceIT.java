@@ -41,91 +41,91 @@ import static org.junit.Assert.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:crafter/profile/extension/client-context.xml")
-public class AccessTokenServiceIT  {
+public class AccessTokenServiceIT {
 
-    private static final String ADMIN_CONSOLE_TOKEN_ID = "e8f5170c-877b-416f-b70f-4b09772f8e2d";
-    private static final String CRAFTER_SOCIAL_TOKEN_ID = "2ba3ac10-c43e-11e3-9c1a-0800200c9a66";
-    private static final String RANDOM_APP_TOKEN_ID = "f91cdaf0-e5c6-11e3-ac10-0800200c9a66";
+	private static final String ADMIN_CONSOLE_TOKEN_ID = "e8f5170c-877b-416f-b70f-4b09772f8e2d";
+	private static final String CRAFTER_SOCIAL_TOKEN_ID = "2ba3ac10-c43e-11e3-9c1a-0800200c9a66";
+	private static final String RANDOM_APP_TOKEN_ID = "f91cdaf0-e5c6-11e3-ac10-0800200c9a66";
 
-    private static final String ADMIN_CONSOLE_APPLICATION = "profile-admin";
-    private static final String CRAFTER_STUDIO_APPLICATION = "studio";
+	private static final String ADMIN_CONSOLE_APPLICATION = "profile-admin";
+	private static final String CRAFTER_STUDIO_APPLICATION = "studio";
 
-    private static final Date EXPIRES_ON = new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365));
+	private static final Date EXPIRES_ON = new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365));
 
-    @Autowired
-    private AccessTokenService accessTokenService;
+	@Autowired
+	private AccessTokenService accessTokenService;
 
-    @Test
-    public void testCreateAccessToken() throws Exception {
-        AccessToken token = accessTokenService.createToken(getCrafterStudioAccessToken());
-        try {
-            assertNotNull(token);
-            assertNotNull(token.getId());
-            assertEquals(CRAFTER_STUDIO_APPLICATION, token.getApplication());
-            assertEquals(true, token.isMaster());
-            assertEquals(EXPIRES_ON, token.getExpiresOn());
+	@Test
+	public void testCreateAccessToken() throws Exception {
+		AccessToken token = accessTokenService.createToken(getCrafterStudioAccessToken());
+		try {
+			assertNotNull(token);
+			assertNotNull(token.getId());
+			assertEquals(CRAFTER_STUDIO_APPLICATION, token.getApplication());
+			assertEquals(true, token.isMaster());
+			assertEquals(EXPIRES_ON, token.getExpiresOn());
 
-            assertEquals(1, token.getTenantPermissions().size());
-            assertEquals("*", token.getTenantPermissions().get(0).getTenant());
-            assertEquals(SetUtils.asSet("*"), token.getTenantPermissions().get(0).getAllowedActions());
-        } finally {
-            accessTokenService.deleteToken(token.getId());
-        }
-    }
+			assertEquals(1, token.getTenantPermissions().size());
+			assertEquals("*", token.getTenantPermissions().get(0).getTenant());
+			assertEquals(SetUtils.asSet("*"), token.getTenantPermissions().get(0).getAllowedActions());
+		} finally {
+			accessTokenService.deleteToken(token.getId());
+		}
+	}
 
-    @Test
-    public void testGetToken() throws Exception {
-        AccessToken token = accessTokenService.getToken(ADMIN_CONSOLE_TOKEN_ID);
+	@Test
+	public void testGetToken() throws Exception {
+		AccessToken token = accessTokenService.getToken(ADMIN_CONSOLE_TOKEN_ID);
 
-        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy");
-        Date expiresOn = format.parse("01/01/24");
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy");
+		Date expiresOn = format.parse("01/01/24");
 
-        assertNotNull(token);
-        assertNotNull(token.getId());
-        assertEquals(ADMIN_CONSOLE_APPLICATION, token.getApplication());
-        assertEquals(true, token.isMaster());
-        assertEquals(expiresOn, token.getExpiresOn());
+		assertNotNull(token);
+		assertNotNull(token.getId());
+		assertEquals(ADMIN_CONSOLE_APPLICATION, token.getApplication());
+		assertEquals(true, token.isMaster());
+		assertEquals(expiresOn, token.getExpiresOn());
 
-        assertEquals(1, token.getTenantPermissions().size());
-        assertEquals("*", token.getTenantPermissions().get(0).getTenant());
-        assertEquals(SetUtils.asSet("*"), token.getTenantPermissions().get(0).getAllowedActions());
-    }
+		assertEquals(1, token.getTenantPermissions().size());
+		assertEquals("*", token.getTenantPermissions().get(0).getTenant());
+		assertEquals(SetUtils.asSet("*"), token.getTenantPermissions().get(0).getAllowedActions());
+	}
 
-    @Test
-    public void testGetAllTokens() throws Exception {
-        List<AccessToken> tokens = accessTokenService.getAllTokens();
+	@Test
+	public void testGetAllTokens() throws Exception {
+		List<AccessToken> tokens = accessTokenService.getAllTokens();
 
-        assertNotNull(tokens);
-        assertEquals(3, tokens.size());
-        assertEquals(ADMIN_CONSOLE_TOKEN_ID, tokens.get(0).getId());
-        assertEquals(CRAFTER_SOCIAL_TOKEN_ID, tokens.get(1).getId());
-        assertEquals(RANDOM_APP_TOKEN_ID, tokens.get(2).getId());
-    }
+		assertNotNull(tokens);
+		assertEquals(3, tokens.size());
+		assertEquals(ADMIN_CONSOLE_TOKEN_ID, tokens.get(0).getId());
+		assertEquals(CRAFTER_SOCIAL_TOKEN_ID, tokens.get(1).getId());
+		assertEquals(RANDOM_APP_TOKEN_ID, tokens.get(2).getId());
+	}
 
-    @Test
-    public void testDeleteToken() throws Exception {
-        AccessToken token = accessTokenService.createToken(getCrafterStudioAccessToken());
+	@Test
+	public void testDeleteToken() throws Exception {
+		AccessToken token = accessTokenService.createToken(getCrafterStudioAccessToken());
 
-        assertNotNull(token);
+		assertNotNull(token);
 
-        accessTokenService.deleteToken(token.getId());
+		accessTokenService.deleteToken(token.getId());
 
-        token = accessTokenService.getToken(token.getId());
+		token = accessTokenService.getToken(token.getId());
 
-        assertNull(token);
-    }
+		assertNull(token);
+	}
 
-    private AccessToken getCrafterStudioAccessToken() {
-        TenantPermission permission = new TenantPermission();
-        permission.allowAny();
+	private AccessToken getCrafterStudioAccessToken() {
+		TenantPermission permission = new TenantPermission();
+		permission.allowAny();
 
-        AccessToken token = new AccessToken();
-        token.setApplication(CRAFTER_STUDIO_APPLICATION);
-        token.setMaster(true);
-        token.setTenantPermissions(Arrays.asList(permission));
-        token.setExpiresOn(EXPIRES_ON);
+		AccessToken token = new AccessToken();
+		token.setApplication(CRAFTER_STUDIO_APPLICATION);
+		token.setMaster(true);
+		token.setTenantPermissions(Arrays.asList(permission));
+		token.setExpiresOn(EXPIRES_ON);
 
-        return token;
-    }
+		return token;
+	}
 
 }

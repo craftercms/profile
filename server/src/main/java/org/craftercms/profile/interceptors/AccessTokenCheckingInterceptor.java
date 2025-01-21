@@ -16,6 +16,7 @@
 package org.craftercms.profile.interceptors;
 
 import java.util.Date;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -43,70 +44,70 @@ import org.springframework.web.servlet.HandlerInterceptor;
  */
 public class AccessTokenCheckingInterceptor implements HandlerInterceptor {
 
-    private static final I10nLogger logger = new I10nLogger(AccessTokenCheckingInterceptor.class,
-                                                            "crafter.profile.messages.logging");
+	private static final I10nLogger logger = new I10nLogger(AccessTokenCheckingInterceptor.class,
+		"crafter.profile.messages.logging");
 
-    public static final String LOG_KEY_ACCESS_TOKEN_FOUND = "profile.accessToken.accessTokenFound";
+	public static final String LOG_KEY_ACCESS_TOKEN_FOUND = "profile.accessToken.accessTokenFound";
 
-    protected AccessTokenRepository accessTokenRepository ;
-    protected String[] urlsToInclude;
-    protected String[] urlsToExclude;
+	protected AccessTokenRepository accessTokenRepository;
+	protected String[] urlsToInclude;
+	protected String[] urlsToExclude;
 
-    public AccessTokenCheckingInterceptor(AccessTokenRepository accessTokenRepository,
-                                          final String[] urlsToInclude, final String[] urlsToExclude) {
-        this.accessTokenRepository = accessTokenRepository;
-        this.urlsToInclude = urlsToInclude;
-        this.urlsToExclude = urlsToExclude;
-    }
+	public AccessTokenCheckingInterceptor(AccessTokenRepository accessTokenRepository,
+					      final String[] urlsToInclude, final String[] urlsToExclude) {
+		this.accessTokenRepository = accessTokenRepository;
+		this.urlsToInclude = urlsToInclude;
+		this.urlsToExclude = urlsToExclude;
+	}
 
-    @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws Exception {
-        if (includeRequest(request)) {
-            AccessToken token = getAccessToken(request);
-            Date now = new Date();
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+		throws Exception {
+		if (includeRequest(request)) {
+			AccessToken token = getAccessToken(request);
+			Date now = new Date();
 
-            if (token.getExpiresOn() == null || now.before(token.getExpiresOn())) {
-                AccessTokenUtils.setAccessToken(request, token);
-            } else {
-                throw new AccessDeniedException.ExpiredAccessToken(token.getId(), token.getApplication(), token.getExpiresOn());
-            }
-        }
+			if (token.getExpiresOn() == null || now.before(token.getExpiresOn())) {
+				AccessTokenUtils.setAccessToken(request, token);
+			} else {
+				throw new AccessDeniedException.ExpiredAccessToken(token.getId(), token.getApplication(), token.getExpiresOn());
+			}
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    protected boolean includeRequest(HttpServletRequest request) {
-        if (ArrayUtils.isNotEmpty(urlsToInclude)) {
-            String requestUri = HttpUtils.getRequestUriWithoutContextPath(request);
-            return RegexUtils.matchesAny(requestUri, urlsToInclude) &&
-                (ArrayUtils.isEmpty(urlsToExclude) || !RegexUtils.matchesAny(requestUri, urlsToExclude));
-        }
+	protected boolean includeRequest(HttpServletRequest request) {
+		if (ArrayUtils.isNotEmpty(urlsToInclude)) {
+			String requestUri = HttpUtils.getRequestUriWithoutContextPath(request);
+			return RegexUtils.matchesAny(requestUri, urlsToInclude) &&
+				(ArrayUtils.isEmpty(urlsToExclude) || !RegexUtils.matchesAny(requestUri, urlsToExclude));
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    protected AccessToken getAccessToken(HttpServletRequest request) throws ProfileException {
-        String tokenId = request.getParameter(ProfileConstants.PARAM_ACCESS_TOKEN_ID);
+	protected AccessToken getAccessToken(HttpServletRequest request) throws ProfileException {
+		String tokenId = request.getParameter(ProfileConstants.PARAM_ACCESS_TOKEN_ID);
 
-        if (StringUtils.isNotEmpty(tokenId)) {
-            AccessToken token;
-            try {
-                token = accessTokenRepository.findByStringId(tokenId);
-            } catch (MongoDataException e) {
-                throw new I10nProfileException(AccessTokenServiceImpl.ERROR_KEY_GET_ACCESS_TOKEN_ERROR, e, tokenId);
-            }
+		if (StringUtils.isNotEmpty(tokenId)) {
+			AccessToken token;
+			try {
+				token = accessTokenRepository.findByStringId(tokenId);
+			} catch (MongoDataException e) {
+				throw new I10nProfileException(AccessTokenServiceImpl.ERROR_KEY_GET_ACCESS_TOKEN_ERROR, e, tokenId);
+			}
 
-            if (token != null) {
-                logger.debug(LOG_KEY_ACCESS_TOKEN_FOUND, tokenId, token);
+			if (token != null) {
+				logger.debug(LOG_KEY_ACCESS_TOKEN_FOUND, tokenId, token);
 
-                return token;
-            } else {
-                throw new AccessDeniedException.NoSuchAccessToken(tokenId);
-            }
-        } else {
-            throw new AccessDeniedException.MissingAccessToken();
-        }
-    }
+				return token;
+			} else {
+				throw new AccessDeniedException.NoSuchAccessToken(tokenId);
+			}
+		} else {
+			throw new AccessDeniedException.MissingAccessToken();
+		}
+	}
 
 }

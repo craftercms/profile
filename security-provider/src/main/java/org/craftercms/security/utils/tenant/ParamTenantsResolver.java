@@ -25,26 +25,26 @@ import org.craftercms.commons.http.RequestContext;
  */
 public class ParamTenantsResolver implements TenantsResolver {
 
-    public static final String DEFAULT_TENANT_NAME_PARAM = "tenantName";
+	public static final String DEFAULT_TENANT_NAME_PARAM = "tenantName";
 
-    protected String tenantNameParam;
+	protected String tenantNameParam;
 
-    public ParamTenantsResolver() {
-        tenantNameParam = DEFAULT_TENANT_NAME_PARAM;
-    }
+	public ParamTenantsResolver() {
+		tenantNameParam = DEFAULT_TENANT_NAME_PARAM;
+	}
 
-    public void setTenantNameParam(String tenantNameParam) {
-        this.tenantNameParam = tenantNameParam;
-    }
+	public void setTenantNameParam(String tenantNameParam) {
+		this.tenantNameParam = tenantNameParam;
+	}
 
-    @Override
-    public String[] getTenants() {
-        RequestContext context = RequestContext.getCurrent();
-        if (context != null) {
-            return context.getRequest().getParameterValues(tenantNameParam);
-        } else {
-            return null;
-        }
-    }
+	@Override
+	public String[] getTenants() {
+		RequestContext context = RequestContext.getCurrent();
+		if (context != null) {
+			return context.getRequest().getParameterValues(tenantNameParam);
+		} else {
+			return null;
+		}
+	}
 
 }

@@ -24,18 +24,18 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  */
 public class NoSuchTicketException extends I10nProfileException {
 
-    public static final String KEY = "profile.auth.noSuchTicket";
+	public static final String KEY = "profile.auth.noSuchTicket";
 
-    public NoSuchTicketException(String ticketId) {
-        super(KEY, ticketId);
-    }
+	public NoSuchTicketException(String ticketId) {
+		super(KEY, ticketId);
+	}
 
-    public static class Expired extends NoSuchTicketException {
+	public static class Expired extends NoSuchTicketException {
 
-        public Expired(String ticketId) {
-            super(ticketId);
-        }
+		public Expired(String ticketId) {
+			super(ticketId);
+		}
 
-    }
+	}
 
 }

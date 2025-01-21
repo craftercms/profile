@@ -47,142 +47,142 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping(TenantController.BASE_URL_TENANT)
 public class TenantController {
 
-    public static final String BASE_URL_TENANT = "/tenant";
+	public static final String BASE_URL_TENANT = "/tenant";
 
-    public static final String PATH_VAR_NAME = "name";
+	public static final String PATH_VAR_NAME = "name";
 
-    public static final String URL_VIEW_TENANT_LIST = "/list/view";
-    public static final String URL_VIEW_NEW_TENANT = "/new/view";
-    public static final String URL_VIEW_TENANT = "/view";
+	public static final String URL_VIEW_TENANT_LIST = "/list/view";
+	public static final String URL_VIEW_NEW_TENANT = "/new/view";
+	public static final String URL_VIEW_TENANT = "/view";
 
-    public static final String URL_GET_TENANT_NAMES = "/names";
-    public static final String URL_GET_TENANT = "/{" + PATH_VAR_NAME + "}";
-    public static final String URL_CREATE_TENANT = "/create";
-    public static final String URL_UPDATE_TENANT = "/update";
-    public static final String URL_DELETE_TENANT = "/{" + PATH_VAR_NAME + "}/delete";
+	public static final String URL_GET_TENANT_NAMES = "/names";
+	public static final String URL_GET_TENANT = "/{" + PATH_VAR_NAME + "}";
+	public static final String URL_CREATE_TENANT = "/create";
+	public static final String URL_UPDATE_TENANT = "/update";
+	public static final String URL_DELETE_TENANT = "/{" + PATH_VAR_NAME + "}/delete";
 
-    public static final String VIEW_TENANT_LIST = "tenant-list";
-    public static final String VIEW_TENANT = "tenant";
+	public static final String VIEW_TENANT_LIST = "tenant-list";
+	public static final String VIEW_TENANT = "tenant";
 
-    public static final String MODEL_PAGE_HEADER = "pageHeader";
-    public static final String MODEL_MESSAGE = "message";
+	public static final String MODEL_PAGE_HEADER = "pageHeader";
+	public static final String MODEL_MESSAGE = "message";
 
-    public static final String PAGE_HEADER_NEW = "New Tenant";
-    public static final String PAGE_HEADER_UPDATE = "Update Tenant";
+	public static final String PAGE_HEADER_NEW = "New Tenant";
+	public static final String PAGE_HEADER_UPDATE = "Update Tenant";
 
-    public static final String MSG_TENANT_CREATED_FORMAT = "Tenant '%s' created";
-    public static final String MSG_TENANT_UPDATED_FORMAT = "Tenant '%s' updated";
-    public static final String MSG_TENANT_DELETED_FORMAT = "Tenant '%s' deleted";
+	public static final String MSG_TENANT_CREATED_FORMAT = "Tenant '%s' created";
+	public static final String MSG_TENANT_UPDATED_FORMAT = "Tenant '%s' updated";
+	public static final String MSG_TENANT_DELETED_FORMAT = "Tenant '%s' deleted";
 
-    private TenantService tenantService;
-    private PermissionEvaluator<Profile, String> tenantPermissionEvaluator;
+	private TenantService tenantService;
+	private PermissionEvaluator<Profile, String> tenantPermissionEvaluator;
 
-    public TenantController(TenantService tenantService, PermissionEvaluator<Profile, String> tenantPermissionEvaluator) {
-        this.tenantService = tenantService;
-        this.tenantPermissionEvaluator = tenantPermissionEvaluator;
-    }
+	public TenantController(TenantService tenantService, PermissionEvaluator<Profile, String> tenantPermissionEvaluator) {
+		this.tenantService = tenantService;
+		this.tenantPermissionEvaluator = tenantPermissionEvaluator;
+	}
 
-    @RequestMapping(value = URL_VIEW_TENANT_LIST, method = RequestMethod.GET)
-    public String viewTenantList() throws ProfileException {
-        return VIEW_TENANT_LIST;
-    }
+	@RequestMapping(value = URL_VIEW_TENANT_LIST, method = RequestMethod.GET)
+	public String viewTenantList() throws ProfileException {
+		return VIEW_TENANT_LIST;
+	}
 
-    @RequestMapping(value = URL_VIEW_NEW_TENANT, method = RequestMethod.GET)
-    public ModelAndView viewNewTenant() throws ProfileException {
-        return new ModelAndView(VIEW_TENANT, MODEL_PAGE_HEADER, PAGE_HEADER_NEW);
-    }
+	@RequestMapping(value = URL_VIEW_NEW_TENANT, method = RequestMethod.GET)
+	public ModelAndView viewNewTenant() throws ProfileException {
+		return new ModelAndView(VIEW_TENANT, MODEL_PAGE_HEADER, PAGE_HEADER_NEW);
+	}
 
-    @RequestMapping(value = URL_VIEW_TENANT, method = RequestMethod.GET)
-    public ModelAndView viewTenant() throws ProfileException {
-        return new ModelAndView(VIEW_TENANT, MODEL_PAGE_HEADER, PAGE_HEADER_UPDATE);
-    }
+	@RequestMapping(value = URL_VIEW_TENANT, method = RequestMethod.GET)
+	public ModelAndView viewTenant() throws ProfileException {
+		return new ModelAndView(VIEW_TENANT, MODEL_PAGE_HEADER, PAGE_HEADER_UPDATE);
+	}
 
-    @RequestMapping(value = URL_GET_TENANT_NAMES, method = RequestMethod.GET)
-    @ResponseBody
-    public List<String> getTenantNames() throws ProfileException {
-        if (AuthorizationUtils.isSuperadmin(SecurityUtils.getCurrentProfile())) {
-            return TenantUtils.getTenantNames(tenantService);
-        } else {
-            return Collections.singletonList(SecurityUtils.getCurrentProfile().getTenant());
-        }
-    }
+	@RequestMapping(value = URL_GET_TENANT_NAMES, method = RequestMethod.GET)
+	@ResponseBody
+	public List<String> getTenantNames() throws ProfileException {
+		if (AuthorizationUtils.isSuperadmin(SecurityUtils.getCurrentProfile())) {
+			return TenantUtils.getTenantNames(tenantService);
+		} else {
+			return Collections.singletonList(SecurityUtils.getCurrentProfile().getTenant());
+		}
+	}
 
-    @RequestMapping(value = URL_GET_TENANT, method = RequestMethod.GET)
-    @ResponseBody
-    public Tenant getTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
-        checkIfAllowed(name, Action.GET_TENANT);
+	@RequestMapping(value = URL_GET_TENANT, method = RequestMethod.GET)
+	@ResponseBody
+	public Tenant getTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
+		checkIfAllowed(name, Action.GET_TENANT);
 
-        Tenant tenant = tenantService.getTenant(name);
-        if (tenant != null) {
-            return tenant;
-        } else {
-            throw new ResourceNotFoundException("No tenant found with name '" + name + "'");
-        }
-    }
+		Tenant tenant = tenantService.getTenant(name);
+		if (tenant != null) {
+			return tenant;
+		} else {
+			throw new ResourceNotFoundException("No tenant found with name '" + name + "'");
+		}
+	}
 
-    @RequestMapping(value = URL_CREATE_TENANT, method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, String> createTenant(@RequestBody Tenant tenant) throws ProfileException {
-        checkIfAllowed(null, Action.CREATE_TENANT);
+	@RequestMapping(value = URL_CREATE_TENANT, method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, String> createTenant(@RequestBody Tenant tenant) throws ProfileException {
+		checkIfAllowed(null, Action.CREATE_TENANT);
 
-        if (tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
-            throw new ActionDeniedException(Action.CREATE_TENANT.toString(), tenant.getName());
-        }
+		if (tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
+			throw new ActionDeniedException(Action.CREATE_TENANT.toString(), tenant.getName());
+		}
 
-        tenant = tenantService.createTenant(tenant);
+		tenant = tenantService.createTenant(tenant);
 
-        return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_CREATED_FORMAT, tenant.getName()));
-    }
+		return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_CREATED_FORMAT, tenant.getName()));
+	}
 
-    @RequestMapping(value = URL_UPDATE_TENANT, method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, String> updateTenant(@RequestBody Tenant tenant) throws ProfileException {
-        String name = tenant.getName();
+	@RequestMapping(value = URL_UPDATE_TENANT, method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, String> updateTenant(@RequestBody Tenant tenant) throws ProfileException {
+		String name = tenant.getName();
 
-        checkIfAllowed(name, Action.UPDATE_TENANT);
+		checkIfAllowed(name, Action.UPDATE_TENANT);
 
-        Tenant currentTenant = tenantService.getTenant(name);
-        if (currentTenant != null) {
-            if (!currentTenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE) &&
-                tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
-                throw new ActionDeniedException(Action.UPDATE_TENANT.toString(), name);
-            }
-            if (currentTenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE) &&
-                !tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
-                throw new ActionDeniedException(Action.UPDATE_TENANT.toString(), name);
-            }
+		Tenant currentTenant = tenantService.getTenant(name);
+		if (currentTenant != null) {
+			if (!currentTenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE) &&
+				tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
+				throw new ActionDeniedException(Action.UPDATE_TENANT.toString(), name);
+			}
+			if (currentTenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE) &&
+				!tenant.getAvailableRoles().contains(AuthorizationUtils.SUPERADMIN_ROLE)) {
+				throw new ActionDeniedException(Action.UPDATE_TENANT.toString(), name);
+			}
 
-            tenantService.updateTenant(tenant);
+			tenantService.updateTenant(tenant);
 
-            return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_UPDATED_FORMAT, name));
-        } else {
-            throw new ResourceNotFoundException("No tenant found with name '" + name + "'");
-        }
-    }
+			return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_UPDATED_FORMAT, name));
+		} else {
+			throw new ResourceNotFoundException("No tenant found with name '" + name + "'");
+		}
+	}
 
-    @RequestMapping(value = URL_DELETE_TENANT, method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, String> deleteTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
-        checkIfAllowed(name, Action.DELETE_TENANT);
+	@RequestMapping(value = URL_DELETE_TENANT, method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, String> deleteTenant(@PathVariable(PATH_VAR_NAME) String name) throws ProfileException {
+		checkIfAllowed(name, Action.DELETE_TENANT);
 
-        Tenant tenant = tenantService.getTenant(name);
-        if (tenant != null) {
-            tenantService.deleteTenant(name);
+		Tenant tenant = tenantService.getTenant(name);
+		if (tenant != null) {
+			tenantService.deleteTenant(name);
 
-            return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_DELETED_FORMAT, name));
-        } else {
-            throw new ResourceNotFoundException("No tenant found with name '" + name + "'");
-        }
-    }
+			return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_TENANT_DELETED_FORMAT, name));
+		} else {
+			throw new ResourceNotFoundException("No tenant found with name '" + name + "'");
+		}
+	}
 
-    private void checkIfAllowed(String tenant, Action action) throws ActionDeniedException {
-        if (!tenantPermissionEvaluator.isAllowed(tenant, action.toString())) {
-            if (tenant != null) {
-                throw new ActionDeniedException(action.toString(), tenant);
-            } else {
-                throw new ActionDeniedException(action.toString());
-            }
-        }
-    }
+	private void checkIfAllowed(String tenant, Action action) throws ActionDeniedException {
+		if (!tenantPermissionEvaluator.isAllowed(tenant, action.toString())) {
+			if (tenant != null) {
+				throw new ActionDeniedException(action.toString(), tenant);
+			} else {
+				throw new ActionDeniedException(action.toString());
+			}
+		}
+	}
 
 }

@@ -17,6 +17,7 @@
 package org.craftercms.security.processors.impl;
 
 import java.io.IOException;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -39,65 +40,65 @@ import org.springframework.web.HttpMediaTypeNotAcceptableException;
  */
 public class ReturnCurrentAuthenticationProcessor implements RequestSecurityProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(ReturnCurrentAuthenticationProcessor.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReturnCurrentAuthenticationProcessor.class);
 
-    public static final String DEFAULT_SERVICE_URL = "/crafter-security-current-auth";
-    public static final String DEFAULT_SERVICE_METHOD = "GET";
+	public static final String DEFAULT_SERVICE_URL = "/crafter-security-current-auth";
+	public static final String DEFAULT_SERVICE_METHOD = "GET";
 
-    private String serviceUrl;
-    private String serviceMethod;
-    private HttpMessageConvertingResponseWriter responseWriter;
+	private String serviceUrl;
+	private String serviceMethod;
+	private HttpMessageConvertingResponseWriter responseWriter;
 
-    public ReturnCurrentAuthenticationProcessor() {
-        serviceUrl = DEFAULT_SERVICE_URL;
-        serviceMethod = DEFAULT_SERVICE_METHOD;
-    }
+	public ReturnCurrentAuthenticationProcessor() {
+		serviceUrl = DEFAULT_SERVICE_URL;
+		serviceMethod = DEFAULT_SERVICE_METHOD;
+	}
 
-    public void setServiceUrl(String serviceUrl) {
-        this.serviceUrl = serviceUrl;
-    }
+	public void setServiceUrl(String serviceUrl) {
+		this.serviceUrl = serviceUrl;
+	}
 
-    public void setServiceMethod(String serviceMethod) {
-        this.serviceMethod = serviceMethod;
-    }
+	public void setServiceMethod(String serviceMethod) {
+		this.serviceMethod = serviceMethod;
+	}
 
-    public void setResponseWriter(HttpMessageConvertingResponseWriter responseWriter) {
-        this.responseWriter = responseWriter;
-    }
+	public void setResponseWriter(HttpMessageConvertingResponseWriter responseWriter) {
+		this.responseWriter = responseWriter;
+	}
 
-    @Override
-    public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
-        HttpServletRequest request = context.getRequest();
+	@Override
+	public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
+		HttpServletRequest request = context.getRequest();
 
-        if (isServiceRequest(request)) {
-            sendAuthentication(SecurityUtils.getAuthentication(request), context);
-        } else {
-            processorChain.processRequest(context);
-        }
-    }
+		if (isServiceRequest(request)) {
+			sendAuthentication(SecurityUtils.getAuthentication(request), context);
+		} else {
+			processorChain.processRequest(context);
+		}
+	}
 
-    protected boolean isServiceRequest(HttpServletRequest request) {
-        return HttpUtils.getRequestUriWithoutContextPath(request).equals(serviceUrl) && request.getMethod().equals(
-            serviceMethod);
-    }
+	protected boolean isServiceRequest(HttpServletRequest request) {
+		return HttpUtils.getRequestUriWithoutContextPath(request).equals(serviceUrl) && request.getMethod().equals(
+			serviceMethod);
+	}
 
-    protected <T> void sendAuthentication(Authentication auth, RequestContext context) throws IOException {
-        HttpServletRequest request = context.getRequest();
-        HttpServletResponse response = context.getResponse();
+	protected <T> void sendAuthentication(Authentication auth, RequestContext context) throws IOException {
+		HttpServletRequest request = context.getRequest();
+		HttpServletResponse response = context.getResponse();
 
-        if (auth != null) {
-            response.setStatus(HttpServletResponse.SC_OK);
+		if (auth != null) {
+			response.setStatus(HttpServletResponse.SC_OK);
 
-            try {
-                responseWriter.writeWithMessageConverters(auth, request, response);
-            } catch (HttpMediaTypeNotAcceptableException e) {
-                logger.error(e.getMessage(), e);
+			try {
+				responseWriter.writeWithMessageConverters(auth, request, response);
+			} catch (HttpMediaTypeNotAcceptableException e) {
+				logger.error(e.getMessage(), e);
 
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-            }
-        } else {
-            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-        }
-    }
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+			}
+		} else {
+			response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+		}
+	}
 
 }

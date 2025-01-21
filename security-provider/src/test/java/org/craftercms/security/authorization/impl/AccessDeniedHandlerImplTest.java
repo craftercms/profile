@@ -34,39 +34,39 @@ import static org.junit.Assert.assertTrue;
  */
 public class AccessDeniedHandlerImplTest {
 
-    private static final String ERROR_PAGE_URL = "/access-denied";
+	private static final String ERROR_PAGE_URL = "/access-denied";
 
-    private AccessDeniedHandlerImpl handler;
+	private AccessDeniedHandlerImpl handler;
 
-    @Before
-    public void setUp() throws Exception {
-        handler = new AccessDeniedHandlerImpl();
-    }
+	@Before
+	public void setUp() throws Exception {
+		handler = new AccessDeniedHandlerImpl();
+	}
 
-    @Test
-    public void testForwardToErrorPage() throws Exception {
-        handler.setErrorPageUrl(ERROR_PAGE_URL);
+	@Test
+	public void testForwardToErrorPage() throws Exception {
+		handler.setErrorPageUrl(ERROR_PAGE_URL);
 
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        handler.handle(context, new AccessDeniedException(""));
+		handler.handle(context, new AccessDeniedException(""));
 
-        assertEquals(ERROR_PAGE_URL, response.getForwardedUrl());
-        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
-    }
+		assertEquals(ERROR_PAGE_URL, response.getForwardedUrl());
+		assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
+	}
 
-    @Test
-    public void testSendError() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test
+	public void testSendError() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        handler.handle(context, new AccessDeniedException(""));
+		handler.handle(context, new AccessDeniedException(""));
 
-        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
-        assertTrue(response.isCommitted());
-    }
+		assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
+		assertTrue(response.isCommitted());
+	}
 
 }

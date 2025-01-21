@@ -23,15 +23,15 @@ package org.craftercms.profile.services.impl;
  */
 public class SingleAccessTokenIdResolver implements AccessTokenIdResolver {
 
-    protected String accessTokenId;
+	protected String accessTokenId;
 
-    public SingleAccessTokenIdResolver(String accessTokenId) {
-        this.accessTokenId = accessTokenId;
-    }
+	public SingleAccessTokenIdResolver(String accessTokenId) {
+		this.accessTokenId = accessTokenId;
+	}
 
-    @Override
-    public String getAccessTokenId() {
-        return accessTokenId;
-    }
+	@Override
+	public String getAccessTokenId() {
+		return accessTokenId;
+	}
 
 }

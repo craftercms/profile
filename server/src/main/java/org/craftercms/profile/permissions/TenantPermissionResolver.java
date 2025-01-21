@@ -28,22 +28,22 @@ import org.craftercms.profile.api.TenantPermission;
  */
 public class TenantPermissionResolver implements PermissionResolver<AccessToken, String> {
 
-    @Override
-    public Permission getGlobalPermission(AccessToken token) throws IllegalArgumentException, PermissionException {
-        return getPermission(token, TenantPermission.ANY_TENANT);
-    }
+	@Override
+	public Permission getGlobalPermission(AccessToken token) throws IllegalArgumentException, PermissionException {
+		return getPermission(token, TenantPermission.ANY_TENANT);
+	}
 
-    @Override
-    public Permission getPermission(AccessToken token, String tenantName) throws PermissionException {
-        for (TenantPermission permission : token.getTenantPermissions()) {
-            String permittedTenant = permission.getTenant();
+	@Override
+	public Permission getPermission(AccessToken token, String tenantName) throws PermissionException {
+		for (TenantPermission permission : token.getTenantPermissions()) {
+			String permittedTenant = permission.getTenant();
 
-            if (permittedTenant.equals(TenantPermission.ANY_TENANT) || permittedTenant.equals(tenantName)) {
-                return permission;
-            }
-        }
+			if (permittedTenant.equals(TenantPermission.ANY_TENANT) || permittedTenant.equals(tenantName)) {
+				return permission;
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
 }

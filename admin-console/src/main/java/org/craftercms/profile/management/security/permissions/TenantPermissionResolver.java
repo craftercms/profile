@@ -29,24 +29,24 @@ import org.craftercms.profile.management.security.AuthorizationUtils;
  */
 public class TenantPermissionResolver implements PermissionResolver<Profile, String> {
 
-    @Override
-    public Permission getGlobalPermission(Profile currentUser) throws PermissionException {
-        if (AuthorizationUtils.isSuperadmin(currentUser)) {
-            return new SuperadminPermission();
-        } else {
-            return null;
-        }
-    }
+	@Override
+	public Permission getGlobalPermission(Profile currentUser) throws PermissionException {
+		if (AuthorizationUtils.isSuperadmin(currentUser)) {
+			return new SuperadminPermission();
+		} else {
+			return null;
+		}
+	}
 
-    @Override
-    public Permission getPermission(Profile currentUser, String tenant) throws PermissionException {
-        if (AuthorizationUtils.isSuperadmin(currentUser)) {
-            return new SuperadminPermission();
-        } else if (AuthorizationUtils.isTenantAdmin(currentUser)) {
-            return new TenantAdminTenantPermission(currentUser, tenant);
-        } else {
-            return new ProfileAdminTenantPermission(currentUser, tenant);
-        }
-    }
+	@Override
+	public Permission getPermission(Profile currentUser, String tenant) throws PermissionException {
+		if (AuthorizationUtils.isSuperadmin(currentUser)) {
+			return new SuperadminPermission();
+		} else if (AuthorizationUtils.isTenantAdmin(currentUser)) {
+			return new TenantAdminTenantPermission(currentUser, tenant);
+		} else {
+			return new ProfileAdminTenantPermission(currentUser, tenant);
+		}
+	}
 
 }

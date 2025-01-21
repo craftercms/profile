@@ -28,19 +28,19 @@ import org.craftercms.security.utils.SecurityEnabledAware;
 @Aspect
 public class RunIfSecurityEnabledAspect implements SecurityEnabledAware {
 
-    private boolean securityEnabled;
+	private boolean securityEnabled;
 
-    public void setSecurityEnabled(boolean securityEnabled) {
-        this.securityEnabled = securityEnabled;
-    }
+	public void setSecurityEnabled(boolean securityEnabled) {
+		this.securityEnabled = securityEnabled;
+	}
 
-    @Around("@annotation(org.craftercms.security.annotations.RunIfSecurityEnabled)")
-    public Object runIfSecurityEnabled(ProceedingJoinPoint pjp) throws Throwable {
-        if (securityEnabled) {
-            return pjp.proceed();
-        } else {
-            return null;
-        }
-    }
+	@Around("@annotation(org.craftercms.security.annotations.RunIfSecurityEnabled)")
+	public Object runIfSecurityEnabled(ProceedingJoinPoint pjp) throws Throwable {
+		if (securityEnabled) {
+			return pjp.proceed();
+		} else {
+			return null;
+		}
+	}
 
 }

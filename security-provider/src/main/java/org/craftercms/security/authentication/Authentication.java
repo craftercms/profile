@@ -24,19 +24,19 @@ import org.craftercms.profile.api.Profile;
  */
 public interface Authentication {
 
-    /**
-     * Returns the ticket that identifies the authentication.
-     */
-    String getTicket();
+	/**
+	 * Returns the ticket that identifies the authentication.
+	 */
+	String getTicket();
 
-    /**
-     * Returns the profile associated to the authentication.
-     */
-    Profile getProfile();
+	/**
+	 * Returns the profile associated to the authentication.
+	 */
+	Profile getProfile();
 
-    /**
-     * Indicates if it's a remembered authentication.
-     */
-    boolean isRemembered();
+	/**
+	 * Indicates if it's a remembered authentication.
+	 */
+	boolean isRemembered();
 
 }

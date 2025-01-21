@@ -23,15 +23,15 @@ package org.craftercms.security.utils.tenant;
  */
 public class DefaultTenantsResolver implements TenantsResolver {
 
-    protected String[] defaultTenantNames;
+	protected String[] defaultTenantNames;
 
-    public DefaultTenantsResolver(String[] defaultTenantNames) {
-        this.defaultTenantNames = defaultTenantNames;
-    }
+	public DefaultTenantsResolver(String[] defaultTenantNames) {
+		this.defaultTenantNames = defaultTenantNames;
+	}
 
-    @Override
-    public String[] getTenants() {
-        return defaultTenantNames;
-    }
+	@Override
+	public String[] getTenants() {
+		return defaultTenantNames;
+	}
 
 }

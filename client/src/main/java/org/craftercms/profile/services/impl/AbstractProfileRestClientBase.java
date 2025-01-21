@@ -38,147 +38,147 @@ import org.springframework.web.client.RestTemplate;
  */
 public abstract class AbstractProfileRestClientBase extends AbstractRestClientBase {
 
-    protected AccessTokenIdResolver accessTokenIdResolver;
+	protected AccessTokenIdResolver accessTokenIdResolver;
 
-    public AbstractProfileRestClientBase(String baseUrl, RestTemplate restTemplate, AccessTokenIdResolver accessTokenIdResolver) {
-        super(baseUrl, restTemplate);
-        this.accessTokenIdResolver = accessTokenIdResolver;
-    }
+	public AbstractProfileRestClientBase(String baseUrl, RestTemplate restTemplate, AccessTokenIdResolver accessTokenIdResolver) {
+		super(baseUrl, restTemplate);
+		this.accessTokenIdResolver = accessTokenIdResolver;
+	}
 
-    protected String getAbsoluteUrlWithAccessTokenIdParam(String relativeUrl) {
-        String absoluteUrl = getAbsoluteUrl(relativeUrl);
-        String accessTokenId = accessTokenIdResolver.getAccessTokenId();
+	protected String getAbsoluteUrlWithAccessTokenIdParam(String relativeUrl) {
+		String absoluteUrl = getAbsoluteUrl(relativeUrl);
+		String accessTokenId = accessTokenIdResolver.getAccessTokenId();
 
-        if (accessTokenId != null) {
-            if (absoluteUrl.contains("?")) {
-                return absoluteUrl + "&" + ProfileConstants.PARAM_ACCESS_TOKEN_ID + "=" + accessTokenId;
-            } else {
-                return absoluteUrl + "?" + ProfileConstants.PARAM_ACCESS_TOKEN_ID + "=" + accessTokenId;
-            }
-        } else {
-            return absoluteUrl;
-        }
-    }
+		if (accessTokenId != null) {
+			if (absoluteUrl.contains("?")) {
+				return absoluteUrl + "&" + ProfileConstants.PARAM_ACCESS_TOKEN_ID + "=" + accessTokenId;
+			} else {
+				return absoluteUrl + "?" + ProfileConstants.PARAM_ACCESS_TOKEN_ID + "=" + accessTokenId;
+			}
+		} else {
+			return absoluteUrl;
+		}
+	}
 
-    protected MultiValueMap<String, String> createBaseParams() {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        HttpUtils.addValue(ProfileConstants.PARAM_ACCESS_TOKEN_ID, accessTokenIdResolver.getAccessTokenId(),
-                           params);
+	protected MultiValueMap<String, String> createBaseParams() {
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		HttpUtils.addValue(ProfileConstants.PARAM_ACCESS_TOKEN_ID, accessTokenIdResolver.getAccessTokenId(),
+			params);
 
-        return params;
-    }
+		return params;
+	}
 
 
-    protected <T> T doPostForObject(String url, Object request, Class<T> responseType, Object... uriVariables)
-            throws ProfileException {
-        try {
-            return restTemplate.postForObject(url, request, responseType, uriVariables);
-        } catch (RestServiceException e) {
-            handleRestServiceException(e);
-        } catch (Exception e) {
-            handleException(e);
-        }
+	protected <T> T doPostForObject(String url, Object request, Class<T> responseType, Object... uriVariables)
+		throws ProfileException {
+		try {
+			return restTemplate.postForObject(url, request, responseType, uriVariables);
+		} catch (RestServiceException e) {
+			handleRestServiceException(e);
+		} catch (Exception e) {
+			handleException(e);
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    protected <T> T doPostForUpload(String url, MultiValueMap<String, Object> request, Class<T> responseType,
-                                    Object... uriVariables) throws ProfileException {
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+	protected <T> T doPostForUpload(String url, MultiValueMap<String, Object> request, Class<T> responseType,
+					Object... uriVariables) throws ProfileException {
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(request, headers);
+			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(request, headers);
 
-            return restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType, uriVariables).getBody();
-        } catch (RestServiceException e) {
-            handleRestServiceException(e);
-        } catch (Exception e) {
-            handleException(e);
-        }
+			return restTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType, uriVariables).getBody();
+		} catch (RestServiceException e) {
+			handleRestServiceException(e);
+		} catch (Exception e) {
+			handleException(e);
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    protected URI doPostForLocation(String url, Object request, Object... uriVariables) throws ProfileException {
-        try {
-            return restTemplate.postForLocation(url, request, uriVariables);
-        } catch (RestServiceException e) {
-            handleRestServiceException(e);
-        } catch (Exception e) {
-            handleException(e);
-        }
+	protected URI doPostForLocation(String url, Object request, Object... uriVariables) throws ProfileException {
+		try {
+			return restTemplate.postForLocation(url, request, uriVariables);
+		} catch (RestServiceException e) {
+			handleRestServiceException(e);
+		} catch (Exception e) {
+			handleException(e);
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    protected <T> T doGetForObject(String url, Class<T> responseType, Object... uriVariables) throws ProfileException {
-        try {
-            return restTemplate.getForObject(url, responseType, uriVariables);
-        } catch (RestServiceException e) {
-            handleRestServiceException(e);
-        } catch (Exception e) {
-            handleException(e);
-        }
+	protected <T> T doGetForObject(String url, Class<T> responseType, Object... uriVariables) throws ProfileException {
+		try {
+			return restTemplate.getForObject(url, responseType, uriVariables);
+		} catch (RestServiceException e) {
+			handleRestServiceException(e);
+		} catch (Exception e) {
+			handleException(e);
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    protected <T> T doGetForObject(URI url, Class<T> responseType) throws ProfileException {
-        try {
-            return restTemplate.getForObject(url, responseType);
-        } catch (RestServiceException e) {
-            handleRestServiceException(e);
-        } catch (Exception e) {
-            handleException(e);
-        }
+	protected <T> T doGetForObject(URI url, Class<T> responseType) throws ProfileException {
+		try {
+			return restTemplate.getForObject(url, responseType);
+		} catch (RestServiceException e) {
+			handleRestServiceException(e);
+		} catch (Exception e) {
+			handleException(e);
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    protected <T> T doGetForObject(String url, ParameterizedTypeReference<T> responseType, Object... uriVariables)
-            throws ProfileException {
-        try {
-            return restTemplate.exchange(url, HttpMethod.GET, null, responseType, uriVariables).getBody();
-        } catch (RestServiceException e) {
-            handleRestServiceException(e);
-        } catch (Exception e) {
-            handleException(e);
-        }
+	protected <T> T doGetForObject(String url, ParameterizedTypeReference<T> responseType, Object... uriVariables)
+		throws ProfileException {
+		try {
+			return restTemplate.exchange(url, HttpMethod.GET, null, responseType, uriVariables).getBody();
+		} catch (RestServiceException e) {
+			handleRestServiceException(e);
+		} catch (Exception e) {
+			handleException(e);
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    protected <T> T doGetForObject(URI url, ParameterizedTypeReference<T> responseType) throws ProfileException {
-        try {
-            return restTemplate.exchange(url, HttpMethod.GET, null, responseType).getBody();
-        } catch (RestServiceException e) {
-            handleRestServiceException(e);
-        } catch (Exception e) {
-            handleException(e);
-        }
+	protected <T> T doGetForObject(URI url, ParameterizedTypeReference<T> responseType) throws ProfileException {
+		try {
+			return restTemplate.exchange(url, HttpMethod.GET, null, responseType).getBody();
+		} catch (RestServiceException e) {
+			handleRestServiceException(e);
+		} catch (Exception e) {
+			handleException(e);
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    protected void handleRestServiceException(RestServiceException e) throws ProfileException {
-        HttpStatusCode responseStatus = e.getResponseStatus();
-        Object details = e.getErrorDetails();
-        if (details instanceof ErrorDetails) {
-            ErrorDetails errorDetails = (ErrorDetails) details;
-            ErrorCode errorCode = errorDetails.getErrorCode();
-            String message = errorDetails.getMessage();
+	protected void handleRestServiceException(RestServiceException e) throws ProfileException {
+		HttpStatusCode responseStatus = e.getResponseStatus();
+		Object details = e.getErrorDetails();
+		if (details instanceof ErrorDetails) {
+			ErrorDetails errorDetails = (ErrorDetails) details;
+			ErrorCode errorCode = errorDetails.getErrorCode();
+			String message = errorDetails.getMessage();
 
-            throw new ProfileRestServiceException(responseStatus, errorCode, message);
-        } else {
-            String message = details != null? details.toString() : e.getMessage();
+			throw new ProfileRestServiceException(responseStatus, errorCode, message);
+		} else {
+			String message = details != null ? details.toString() : e.getMessage();
 
-            throw new ProfileRestServiceException(responseStatus, message);
-        }
-    }
+			throw new ProfileRestServiceException(responseStatus, message);
+		}
+	}
 
-    protected void handleException(Exception e) throws ProfileException {
-        throw new ProfileException(e.getMessage(), e);
-    }
+	protected void handleException(Exception e) throws ProfileException {
+		throw new ProfileException(e.getMessage(), e);
+	}
 
 }

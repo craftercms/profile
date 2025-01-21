@@ -30,25 +30,25 @@ import java.beans.ConstructorProperties;
  */
 public class SecurityEnabledAwareProcessor implements BeanPostProcessor {
 
-    private boolean securityEnabled;
+	private boolean securityEnabled;
 
-    @ConstructorProperties({"securityEnabled"})
-    public SecurityEnabledAwareProcessor(boolean securityEnabled) {
-        this.securityEnabled = securityEnabled;
-    }
+	@ConstructorProperties({"securityEnabled"})
+	public SecurityEnabledAwareProcessor(boolean securityEnabled) {
+		this.securityEnabled = securityEnabled;
+	}
 
-    @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        if (bean instanceof SecurityEnabledAware) {
-            ((SecurityEnabledAware) bean).setSecurityEnabled(securityEnabled);
-        }
+	@Override
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+		if (bean instanceof SecurityEnabledAware) {
+			((SecurityEnabledAware) bean).setSecurityEnabled(securityEnabled);
+		}
 
-        return bean;
-    }
+		return bean;
+	}
 
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        return bean;
-    }
+	@Override
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+		return bean;
+	}
 
 }

@@ -30,37 +30,37 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class TenantsResolverChain implements TenantsResolver {
 
-    protected List<TenantsResolver> resolvers;
-    protected boolean chainAllTenants;
+	protected List<TenantsResolver> resolvers;
+	protected boolean chainAllTenants;
 
-    public TenantsResolverChain(final List<TenantsResolver> resolvers) {
-        this.resolvers = resolvers;
-    }
+	public TenantsResolverChain(final List<TenantsResolver> resolvers) {
+		this.resolvers = resolvers;
+	}
 
-    public void setChainAllTenants(final boolean chainAllTenants) {
-        this.chainAllTenants = chainAllTenants;
-    }
+	public void setChainAllTenants(final boolean chainAllTenants) {
+		this.chainAllTenants = chainAllTenants;
+	}
 
-    @Override
-    public String[] getTenants() {
-        List<String> finalTenants = null;
+	@Override
+	public String[] getTenants() {
+		List<String> finalTenants = null;
 
-        for (TenantsResolver resolver : resolvers) {
-            String[] tenants = resolver.getTenants();
-            if (ArrayUtils.isNotEmpty(tenants)) {
-                if (chainAllTenants) {
-                    if (finalTenants == null) {
-                        finalTenants = new ArrayList<>();
-                    }
+		for (TenantsResolver resolver : resolvers) {
+			String[] tenants = resolver.getTenants();
+			if (ArrayUtils.isNotEmpty(tenants)) {
+				if (chainAllTenants) {
+					if (finalTenants == null) {
+						finalTenants = new ArrayList<>();
+					}
 
-                    finalTenants.addAll(Arrays.asList(tenants));
-                } else {
-                    return tenants;
-                }
-            }
-        }
+					finalTenants.addAll(Arrays.asList(tenants));
+				} else {
+					return tenants;
+				}
+			}
+		}
 
-        return finalTenants != null ? finalTenants.toArray(new String[finalTenants.size()]) : null;
-    }
+		return finalTenants != null ? finalTenants.toArray(new String[finalTenants.size()]) : null;
+	}
 
 }

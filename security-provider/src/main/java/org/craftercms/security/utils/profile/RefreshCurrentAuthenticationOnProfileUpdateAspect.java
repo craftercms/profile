@@ -32,39 +32,39 @@ import org.craftercms.security.utils.SecurityUtils;
 @Aspect
 public class RefreshCurrentAuthenticationOnProfileUpdateAspect {
 
-    protected AuthenticationCache authenticationCache;
+	protected AuthenticationCache authenticationCache;
 
-    public RefreshCurrentAuthenticationOnProfileUpdateAspect(AuthenticationCache authenticationCache) {
-        this.authenticationCache = authenticationCache;
-    }
+	public RefreshCurrentAuthenticationOnProfileUpdateAspect(AuthenticationCache authenticationCache) {
+		this.authenticationCache = authenticationCache;
+	}
 
-    @AfterReturning(value = "execution(* org.craftercms.profile.api.services.ProfileService.updateProfile(..)) || " +
-            "execution(* org.craftercms.profile.api.services.ProfileService.verifyProfile(..)) || " +
-            "execution(* org.craftercms.profile.api.services.ProfileService.enableProfile(..)) || " +
-            "execution(* org.craftercms.profile.api.services.ProfileService.disableProfile(..)) || " +
-            "execution(* org.craftercms.profile.api.services.ProfileService.addRoles(..)) || " +
-            "execution(* org.craftercms.profile.api.services.ProfileService.removeRoles(..)) || " +
-            "execution(* org.craftercms.profile.api.services.ProfileService.updateAttributes(..)) || " +
-            "execution(* org.craftercms.profile.api.services.ProfileService.removeAttributes(..)) || " +
-            "execution(* org.craftercms.profile.api.services.ProfileService.changePassword(..))",
-            returning = "updatedProfile")
-    public void refreshCurrentAuthentication(Profile updatedProfile) {
-        Authentication auth = SecurityUtils.getCurrentAuthentication();
+	@AfterReturning(value = "execution(* org.craftercms.profile.api.services.ProfileService.updateProfile(..)) || " +
+		"execution(* org.craftercms.profile.api.services.ProfileService.verifyProfile(..)) || " +
+		"execution(* org.craftercms.profile.api.services.ProfileService.enableProfile(..)) || " +
+		"execution(* org.craftercms.profile.api.services.ProfileService.disableProfile(..)) || " +
+		"execution(* org.craftercms.profile.api.services.ProfileService.addRoles(..)) || " +
+		"execution(* org.craftercms.profile.api.services.ProfileService.removeRoles(..)) || " +
+		"execution(* org.craftercms.profile.api.services.ProfileService.updateAttributes(..)) || " +
+		"execution(* org.craftercms.profile.api.services.ProfileService.removeAttributes(..)) || " +
+		"execution(* org.craftercms.profile.api.services.ProfileService.changePassword(..))",
+		returning = "updatedProfile")
+	public void refreshCurrentAuthentication(Profile updatedProfile) {
+		Authentication auth = SecurityUtils.getCurrentAuthentication();
 
-        if (auth != null) {
-            Profile profile = auth.getProfile();
+		if (auth != null) {
+			Profile profile = auth.getProfile();
 
-            if (profile.equals(updatedProfile)) {
-                String ticket = auth.getTicket();
-                auth = new DefaultAuthentication(ticket, updatedProfile);
+			if (profile.equals(updatedProfile)) {
+				String ticket = auth.getTicket();
+				auth = new DefaultAuthentication(ticket, updatedProfile);
 
-                // Put updated authentication in cache
-                authenticationCache.putAuthentication(auth);
+				// Put updated authentication in cache
+				authenticationCache.putAuthentication(auth);
 
-                // Update current authentication object
-                SecurityUtils.setCurrentAuthentication(auth);
-            }
-        }
-    }
+				// Update current authentication object
+				SecurityUtils.setCurrentAuthentication(auth);
+			}
+		}
+	}
 
 }

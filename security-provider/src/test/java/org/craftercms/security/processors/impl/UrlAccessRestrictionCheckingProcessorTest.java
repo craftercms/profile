@@ -40,43 +40,43 @@ import static org.mockito.Mockito.verify;
  */
 public class UrlAccessRestrictionCheckingProcessorTest {
 
-    private static final String URL =           "/admin";
-    private static final String ADMIN_ROLE =    "ADMIN";
+	private static final String URL = "/admin";
+	private static final String ADMIN_ROLE = "ADMIN";
 
-    private UrlAccessRestrictionCheckingProcessor processor;
+	private UrlAccessRestrictionCheckingProcessor processor;
 
-    @Before
-    public void setUp() throws Exception {
-        processor = new UrlAccessRestrictionCheckingProcessor(Collections.singletonMap(URL, "hasRole('" + ADMIN_ROLE + "')"));
-    }
+	@Before
+	public void setUp() throws Exception {
+		processor = new UrlAccessRestrictionCheckingProcessor(Collections.singletonMap(URL, "hasRole('" + ADMIN_ROLE + "')"));
+	}
 
-    @Test
-    public void testAllowedAccess() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", URL);
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
-        RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
+	@Test
+	public void testAllowedAccess() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", URL);
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
+		RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
-        Profile profile = new Profile();
-        profile.setRoles(SetUtils.asSet(ADMIN_ROLE));
+		Profile profile = new Profile();
+		profile.setRoles(SetUtils.asSet(ADMIN_ROLE));
 
-        SecurityUtils.setAuthentication(request, new DefaultAuthentication(new ObjectId().toString(), profile));
+		SecurityUtils.setAuthentication(request, new DefaultAuthentication(new ObjectId().toString(), profile));
 
-        processor.processRequest(context, chain);
+		processor.processRequest(context, chain);
 
-        verify(chain).processRequest(context);
-    }
+		verify(chain).processRequest(context);
+	}
 
-    @Test(expected = AccessDeniedException.class)
-    public void testUnAllowedAccess() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", URL);
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
-        RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
+	@Test(expected = AccessDeniedException.class)
+	public void testUnAllowedAccess() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", URL);
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
+		RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
-        SecurityUtils.setAuthentication(request, new DefaultAuthentication(new ObjectId().toString(), new Profile()));
+		SecurityUtils.setAuthentication(request, new DefaultAuthentication(new ObjectId().toString(), new Profile()));
 
-        processor.processRequest(context, chain);
-    }
+		processor.processRequest(context, chain);
+	}
 
 }

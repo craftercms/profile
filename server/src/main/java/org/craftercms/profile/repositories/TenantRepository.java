@@ -24,19 +24,19 @@ import org.craftercms.profile.api.Tenant;
  */
 public interface TenantRepository extends CrudRepository<Tenant> {
 
-    /**
-     * Returns the tenant for the given name.
-     *
-     * @param name the tenant's name
-     * @return the tenant, or null if not found.
-     */
-    Tenant findByName(String name) throws MongoDataException;
+	/**
+	 * Returns the tenant for the given name.
+	 *
+	 * @param name the tenant's name
+	 * @return the tenant, or null if not found.
+	 */
+	Tenant findByName(String name) throws MongoDataException;
 
-    /**
-     * Removes the tenant for the given name.
-     *
-     * @param name  the tenant's name
-     */
-    void removeByName(String name) throws MongoDataException;
+	/**
+	 * Removes the tenant for the given name.
+	 *
+	 * @param name the tenant's name
+	 */
+	void removeByName(String name) throws MongoDataException;
 
 }

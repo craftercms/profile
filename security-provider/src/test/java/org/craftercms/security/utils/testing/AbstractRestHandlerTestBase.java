@@ -40,30 +40,30 @@ import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
  */
 public abstract class AbstractRestHandlerTestBase {
 
-    protected HttpMessageConvertingResponseWriter createResponseWriter() {
-        ContentNegotiationManagerFactoryBean factoryBean = new ContentNegotiationManagerFactoryBean();
-        factoryBean.afterPropertiesSet();
+	protected HttpMessageConvertingResponseWriter createResponseWriter() {
+		ContentNegotiationManagerFactoryBean factoryBean = new ContentNegotiationManagerFactoryBean();
+		factoryBean.afterPropertiesSet();
 
-        ContentNegotiationManager contentNegotiationManager = factoryBean.getObject();
-        List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
+		ContentNegotiationManager contentNegotiationManager = factoryBean.getObject();
+		List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
 
-        List<JsonSerializer<?>> serializers = new ArrayList<>();
-        serializers.add(new ObjectIdSerializer());
+		List<JsonSerializer<?>> serializers = new ArrayList<>();
+		serializers.add(new ObjectIdSerializer());
 
-        Map<Class<?>, JsonDeserializer<?>> deserializers = new HashMap<>();
-        deserializers.put(ObjectId.class, new ObjectIdDeserializer());
+		Map<Class<?>, JsonDeserializer<?>> deserializers = new HashMap<>();
+		deserializers.put(ObjectId.class, new ObjectIdDeserializer());
 
-        CustomSerializationObjectMapper objectMapper = new CustomSerializationObjectMapper();
-        objectMapper.setSerializers(serializers);
-        objectMapper.setDeserializers(deserializers);
-        objectMapper.afterPropertiesSet();
+		CustomSerializationObjectMapper objectMapper = new CustomSerializationObjectMapper();
+		objectMapper.setSerializers(serializers);
+		objectMapper.setDeserializers(deserializers);
+		objectMapper.afterPropertiesSet();
 
-        MappingJackson2HttpMessageConverter jsonMessageConverter = new MappingJackson2HttpMessageConverter();
-        jsonMessageConverter.setObjectMapper(objectMapper);
+		MappingJackson2HttpMessageConverter jsonMessageConverter = new MappingJackson2HttpMessageConverter();
+		jsonMessageConverter.setObjectMapper(objectMapper);
 
-        messageConverters.add(jsonMessageConverter);
+		messageConverters.add(jsonMessageConverter);
 
-        return new HttpMessageConvertingResponseWriter(contentNegotiationManager, messageConverters);
-    }
+		return new HttpMessageConvertingResponseWriter(contentNegotiationManager, messageConverters);
+	}
 
 }

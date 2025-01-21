@@ -43,92 +43,92 @@ import org.slf4j.LoggerFactory;
  */
 public class SecurityExceptionProcessor implements RequestSecurityProcessor {
 
-    public static final Logger logger = LoggerFactory.getLogger(SecurityExceptionProcessor.class);
+	public static final Logger logger = LoggerFactory.getLogger(SecurityExceptionProcessor.class);
 
-    protected AuthenticationRequiredHandler authenticationRequiredHandler;
-    protected AccessDeniedHandler accessDeniedHandler;
+	protected AuthenticationRequiredHandler authenticationRequiredHandler;
+	protected AccessDeniedHandler accessDeniedHandler;
 
-    public SecurityExceptionProcessor(AuthenticationRequiredHandler authenticationRequiredHandler,
-                                      AccessDeniedHandler accessDeniedHandler) {
-        this.authenticationRequiredHandler = authenticationRequiredHandler;
-        this.accessDeniedHandler = accessDeniedHandler;
-    }
+	public SecurityExceptionProcessor(AuthenticationRequiredHandler authenticationRequiredHandler,
+					  AccessDeniedHandler accessDeniedHandler) {
+		this.authenticationRequiredHandler = authenticationRequiredHandler;
+		this.accessDeniedHandler = accessDeniedHandler;
+	}
 
-    /**
-     * Catches any exception thrown by the processor chain. If the exception is an instance of a {@link
-     * SecurityProviderException}, the exception is handled to see if authentication is required
-     * ({@link AuthenticationRequiredException}), or if access to the resource is denied
-     * ({@link AccessDeniedException}).
-     *
-     * @param context        the context which holds the current request and response
-     * @param processorChain the processor chain, used to call the next processor
-     * @throws Exception
-     */
-    public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
-        try {
-            processorChain.processRequest(context);
-        } catch (IOException e) {
-            throw e;
-        } catch (Exception e) {
-            SecurityProviderException se = findSecurityException(e);
-            if (se != null) {
-                handleSecurityProviderException(se, context);
-            } else {
-                throw e;
-            }
-        }
-    }
+	/**
+	 * Catches any exception thrown by the processor chain. If the exception is an instance of a {@link
+	 * SecurityProviderException}, the exception is handled to see if authentication is required
+	 * ({@link AuthenticationRequiredException}), or if access to the resource is denied
+	 * ({@link AccessDeniedException}).
+	 *
+	 * @param context        the context which holds the current request and response
+	 * @param processorChain the processor chain, used to call the next processor
+	 * @throws Exception
+	 */
+	public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
+		try {
+			processorChain.processRequest(context);
+		} catch (IOException e) {
+			throw e;
+		} catch (Exception e) {
+			SecurityProviderException se = findSecurityException(e);
+			if (se != null) {
+				handleSecurityProviderException(se, context);
+			} else {
+				throw e;
+			}
+		}
+	}
 
-    public SecurityProviderException findSecurityException(Exception topException) {
-        Throwable[] exceptionChain = ExceptionUtils.getThrowables(topException);
-        for (Throwable e : exceptionChain) {
-            if (e instanceof SecurityProviderException) {
-                return (SecurityProviderException)e;
-            }
-        }
+	public SecurityProviderException findSecurityException(Exception topException) {
+		Throwable[] exceptionChain = ExceptionUtils.getThrowables(topException);
+		for (Throwable e : exceptionChain) {
+			if (e instanceof SecurityProviderException) {
+				return (SecurityProviderException) e;
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    protected void handleSecurityProviderException(SecurityProviderException e, RequestContext context) throws
-            SecurityProviderException, IOException {
-        if (e instanceof AuthenticationRequiredException) {
-            handleAuthenticationRequiredException(context, (AuthenticationRequiredException)e);
-        } else if (e instanceof AccessDeniedException) {
-            handleAccessDeniedException(context, (AccessDeniedException)e);
-        } else {
-            throw e;
-        }
-    }
+	protected void handleSecurityProviderException(SecurityProviderException e, RequestContext context) throws
+		SecurityProviderException, IOException {
+		if (e instanceof AuthenticationRequiredException) {
+			handleAuthenticationRequiredException(context, (AuthenticationRequiredException) e);
+		} else if (e instanceof AccessDeniedException) {
+			handleAccessDeniedException(context, (AccessDeniedException) e);
+		} else {
+			throw e;
+		}
+	}
 
-    protected void handleAuthenticationRequiredException(RequestContext context, AuthenticationRequiredException e)
-            throws SecurityProviderException, IOException {
-        logger.debug("Authentication is required", e);
+	protected void handleAuthenticationRequiredException(RequestContext context, AuthenticationRequiredException e)
+		throws SecurityProviderException, IOException {
+		logger.debug("Authentication is required", e);
 
-        authenticationRequiredHandler.handle(context, e);
-    }
+		authenticationRequiredHandler.handle(context, e);
+	}
 
-    /**
-     * Handles the specified {@link AccessDeniedException}, by calling the {@link AccessDeniedHandler}.
-     */
-    protected void handleAccessDeniedException(RequestContext context, AccessDeniedException e) throws
-            SecurityProviderException, IOException {
-        Authentication auth = SecurityUtils.getAuthentication(context.getRequest());
-        // If user is anonymous, authentication is required
-        if (auth == null) {
-            try {
-                // Throw ex just to initialize stack trace
-                throw new AuthenticationRequiredException("Authentication required to access the resource", e);
-            } catch (AuthenticationRequiredException ae) {
-                logger.debug("Authentication is required", ae);
+	/**
+	 * Handles the specified {@link AccessDeniedException}, by calling the {@link AccessDeniedHandler}.
+	 */
+	protected void handleAccessDeniedException(RequestContext context, AccessDeniedException e) throws
+		SecurityProviderException, IOException {
+		Authentication auth = SecurityUtils.getAuthentication(context.getRequest());
+		// If user is anonymous, authentication is required
+		if (auth == null) {
+			try {
+				// Throw ex just to initialize stack trace
+				throw new AuthenticationRequiredException("Authentication required to access the resource", e);
+			} catch (AuthenticationRequiredException ae) {
+				logger.debug("Authentication is required", ae);
 
-                authenticationRequiredHandler.handle(context, ae);
-            }
-        } else {
-            logger.debug("Access denied to user '" + auth.getProfile().getUsername() + "'", e);
+				authenticationRequiredHandler.handle(context, ae);
+			}
+		} else {
+			logger.debug("Access denied to user '" + auth.getProfile().getUsername() + "'", e);
 
-            accessDeniedHandler.handle(context, e);
-        }
-    }
+			accessDeniedHandler.handle(context, e);
+		}
+	}
 
 }

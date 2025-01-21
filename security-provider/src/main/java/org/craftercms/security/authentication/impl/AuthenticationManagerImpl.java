@@ -39,161 +39,161 @@ import org.slf4j.LoggerFactory;
  */
 public class AuthenticationManagerImpl implements AuthenticationManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationManagerImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(AuthenticationManagerImpl.class);
 
-    protected AuthenticationService authenticationService;
-    protected ProfileService profileService;
-    protected AuthenticationCache authenticationCache;
+	protected AuthenticationService authenticationService;
+	protected ProfileService profileService;
+	protected AuthenticationCache authenticationCache;
 
-    public AuthenticationManagerImpl(AuthenticationService authenticationService, ProfileService profileService,
-                                     AuthenticationCache authenticationCache) {
-        this.authenticationService = authenticationService;
-        this.profileService = profileService;
-        this.authenticationCache = authenticationCache;
-    }
+	public AuthenticationManagerImpl(AuthenticationService authenticationService, ProfileService profileService,
+					 AuthenticationCache authenticationCache) {
+		this.authenticationService = authenticationService;
+		this.profileService = profileService;
+		this.authenticationCache = authenticationCache;
+	}
 
-    @Override
-    public Authentication authenticateUser(String tenant, String username, String password) {
-        try {
-            Ticket ticket = authenticationService.authenticate(tenant, username, password);
-            Profile profile = profileService.getProfile(ticket.getProfileId());
+	@Override
+	public Authentication authenticateUser(String tenant, String username, String password) {
+		try {
+			Ticket ticket = authenticationService.authenticate(tenant, username, password);
+			Profile profile = profileService.getProfile(ticket.getProfileId());
 
-            if (profile == null) {
-                throw new AuthenticationSystemException("No profile found for ID '" + ticket.getProfileId() + "'");
-            }
+			if (profile == null) {
+				throw new AuthenticationSystemException("No profile found for ID '" + ticket.getProfileId() + "'");
+			}
 
-            String ticketId = ticket.getId();
-            DefaultAuthentication auth = new DefaultAuthentication(ticketId, profile);
+			String ticketId = ticket.getId();
+			DefaultAuthentication auth = new DefaultAuthentication(ticketId, profile);
 
-            authenticationCache.putAuthentication(auth);
+			authenticationCache.putAuthentication(auth);
 
-            logger.debug("Authentication successful for user '{}' (ticket ID = '{}')", ticket.getProfileId(), ticketId);
+			logger.debug("Authentication successful for user '{}' (ticket ID = '{}')", ticket.getProfileId(), ticketId);
 
-            return auth;
-        } catch (ProfileRestServiceException e) {
-            switch (e.getErrorCode()) {
-                case DISABLED_PROFILE:
-                    throw new DisabledUserException("User is disabled", e);
-                case BAD_CREDENTIALS:
-                    throw new BadCredentialsException("Invalid username and/or password", e);
-                default:
-                    throw new AuthenticationSystemException("An unexpected error occurred while authenticating", e);
-            }
-        } catch (ProfileException e) {
-            throw new AuthenticationSystemException("An unexpected error occurred while authenticating", e);
-        }
-    }
+			return auth;
+		} catch (ProfileRestServiceException e) {
+			switch (e.getErrorCode()) {
+				case DISABLED_PROFILE:
+					throw new DisabledUserException("User is disabled", e);
+				case BAD_CREDENTIALS:
+					throw new BadCredentialsException("Invalid username and/or password", e);
+				default:
+					throw new AuthenticationSystemException("An unexpected error occurred while authenticating", e);
+			}
+		} catch (ProfileException e) {
+			throw new AuthenticationSystemException("An unexpected error occurred while authenticating", e);
+		}
+	}
 
-    @Override
-    public Authentication authenticateUser(String[] tenants, String username,
-                                           String password) throws AuthenticationException {
-        for (String tenant : tenants) {
-            try {
-                return authenticateUser(tenant, username, password);
-            } catch (BadCredentialsException e) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Authentication attempt for user '" + username + "' with tenant '" + tenant +
-                                 "' failed. Trying with next tenant...", e);
-                }
-            }
-        }
+	@Override
+	public Authentication authenticateUser(String[] tenants, String username,
+					       String password) throws AuthenticationException {
+		for (String tenant : tenants) {
+			try {
+				return authenticateUser(tenant, username, password);
+			} catch (BadCredentialsException e) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Authentication attempt for user '" + username + "' with tenant '" + tenant +
+						"' failed. Trying with next tenant...", e);
+				}
+			}
+		}
 
-        throw new BadCredentialsException("Invalid username and/or password");
-    }
+		throw new BadCredentialsException("Invalid username and/or password");
+	}
 
-    @Override
-    public Authentication authenticateUser(Profile profile) throws AuthenticationException {
-        return authenticateUser(profile, false);
-    }
+	@Override
+	public Authentication authenticateUser(Profile profile) throws AuthenticationException {
+		return authenticateUser(profile, false);
+	}
 
-    @Override
-    public Authentication authenticateUser(Profile profile, boolean remembered) throws AuthenticationException {
-        try {
-            Ticket ticket = authenticationService.createTicket(profile.getId().toString());
-            String ticketId = ticket.getId();
-            DefaultAuthentication auth = new DefaultAuthentication(ticketId, profile, remembered);
+	@Override
+	public Authentication authenticateUser(Profile profile, boolean remembered) throws AuthenticationException {
+		try {
+			Ticket ticket = authenticationService.createTicket(profile.getId().toString());
+			String ticketId = ticket.getId();
+			DefaultAuthentication auth = new DefaultAuthentication(ticketId, profile, remembered);
 
-            authenticationCache.putAuthentication(auth);
+			authenticationCache.putAuthentication(auth);
 
-            logger.debug("Authentication successful for user '{}' (ticket ID = '{}')", ticket.getProfileId(), ticketId);
+			logger.debug("Authentication successful for user '{}' (ticket ID = '{}')", ticket.getProfileId(), ticketId);
 
-            return auth;
-        } catch (ProfileRestServiceException e) {
-            if (e.getErrorCode() == ErrorCode.DISABLED_PROFILE) {
-                throw new DisabledUserException("User is disabled", e);
-            } else {
-                throw new AuthenticationSystemException("An unexpected error occurred while authenticating", e);
-            }
-        } catch (ProfileException e) {
-            throw new AuthenticationSystemException("An unexpected error occurred while authenticating", e);
-        }
-    }
+			return auth;
+		} catch (ProfileRestServiceException e) {
+			if (e.getErrorCode() == ErrorCode.DISABLED_PROFILE) {
+				throw new DisabledUserException("User is disabled", e);
+			} else {
+				throw new AuthenticationSystemException("An unexpected error occurred while authenticating", e);
+			}
+		} catch (ProfileException e) {
+			throw new AuthenticationSystemException("An unexpected error occurred while authenticating", e);
+		}
+	}
 
-    @Override
-    public Authentication getAuthentication(String ticket, boolean reloadProfile) throws AuthenticationException {
-        Authentication auth = null;
+	@Override
+	public Authentication getAuthentication(String ticket, boolean reloadProfile) throws AuthenticationException {
+		Authentication auth = null;
 
-        if (!reloadProfile) {
-            auth = authenticationCache.getAuthentication(ticket);
-        }
+		if (!reloadProfile) {
+			auth = authenticationCache.getAuthentication(ticket);
+		}
 
-        if (auth == null) {
-            if (reloadProfile) {
-                logger.debug("Profile reload forced for ticket '{}'", ticket);
-            } else {
-                logger.debug("Ticket '{}' found in request but there's no cached authentication for it", ticket);
-            }
+		if (auth == null) {
+			if (reloadProfile) {
+				logger.debug("Profile reload forced for ticket '{}'", ticket);
+			} else {
+				logger.debug("Ticket '{}' found in request but there's no cached authentication for it", ticket);
+			}
 
-            Profile profile = loadProfile(ticket);
-            if (profile != null) {
-                auth = new DefaultAuthentication(ticket, profile);
+			Profile profile = loadProfile(ticket);
+			if (profile != null) {
+				auth = new DefaultAuthentication(ticket, profile);
 
-                authenticationCache.putAuthentication(auth);
-            } else {
-                return null;
-            }
-        }
+				authenticationCache.putAuthentication(auth);
+			} else {
+				return null;
+			}
+		}
 
-        return auth;
-    }
+		return auth;
+	}
 
-    @Override
-    public void invalidateAuthentication(Authentication authentication) {
-        try {
-            authenticationCache.removeAuthentication(authentication.getTicket());
+	@Override
+	public void invalidateAuthentication(Authentication authentication) {
+		try {
+			authenticationCache.removeAuthentication(authentication.getTicket());
 
-            authenticationService.invalidateTicket(authentication.getTicket());
+			authenticationService.invalidateTicket(authentication.getTicket());
 
-            logger.debug("Ticket '{}' successfully invalidated");
-        } catch (ProfileException e) {
-            throw new AuthenticationSystemException("An unexpected error occurred while attempting to invalidate " +
-                    "ticket '" + authentication.getTicket() + "'", e);
-        }
-    }
+			logger.debug("Ticket '{}' successfully invalidated");
+		} catch (ProfileException e) {
+			throw new AuthenticationSystemException("An unexpected error occurred while attempting to invalidate " +
+				"ticket '" + authentication.getTicket() + "'", e);
+		}
+	}
 
-    protected Profile loadProfile(String ticketId) throws AuthenticationException {
-        try {
-            Profile profile = profileService.getProfileByTicket(ticketId);
-            if (profile != null) {
-                logger.debug("Profile '{}' retrieved for ticket '{}'", profile.getId(), ticketId);
+	protected Profile loadProfile(String ticketId) throws AuthenticationException {
+		try {
+			Profile profile = profileService.getProfileByTicket(ticketId);
+			if (profile != null) {
+				logger.debug("Profile '{}' retrieved for ticket '{}'", profile.getId(), ticketId);
 
-                return profile;
-            } else {
-                throw new AuthenticationSystemException("No profile found for ticket '" + ticketId + "'");
-            }
-        } catch (ProfileRestServiceException e) {
-            if (e.getErrorCode() == ErrorCode.NO_SUCH_TICKET) {
-                logger.debug("Ticket '{}' is invalid", ticketId);
+				return profile;
+			} else {
+				throw new AuthenticationSystemException("No profile found for ticket '" + ticketId + "'");
+			}
+		} catch (ProfileRestServiceException e) {
+			if (e.getErrorCode() == ErrorCode.NO_SUCH_TICKET) {
+				logger.debug("Ticket '{}' is invalid", ticketId);
 
-                return null;
-            } else {
-                throw new AuthenticationSystemException("An unexpected error occurred while attempting to retrieve " +
-                        "profile for ticket '" + ticketId + "'", e);
-            }
-        } catch (ProfileException e) {
-            throw new AuthenticationSystemException("An unexpected error occurred while attempting to retrieve " +
-                    "profile for ticket '" + ticketId + "'", e);
-        }
-    }
+				return null;
+			} else {
+				throw new AuthenticationSystemException("An unexpected error occurred while attempting to retrieve " +
+					"profile for ticket '" + ticketId + "'", e);
+			}
+		} catch (ProfileException e) {
+			throw new AuthenticationSystemException("An unexpected error occurred while attempting to retrieve " +
+				"profile for ticket '" + ticketId + "'", e);
+		}
+	}
 
 }

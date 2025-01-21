@@ -22,19 +22,19 @@ package org.craftercms.security.exception;
  */
 public class SecurityProviderException extends RuntimeException {
 
-    public SecurityProviderException() {
-    }
+	public SecurityProviderException() {
+	}
 
-    public SecurityProviderException(String s) {
-        super(s);
-    }
+	public SecurityProviderException(String s) {
+		super(s);
+	}
 
-    public SecurityProviderException(String s, Throwable throwable) {
-        super(s, throwable);
-    }
+	public SecurityProviderException(String s, Throwable throwable) {
+		super(s, throwable);
+	}
 
-    public SecurityProviderException(Throwable throwable) {
-        super(throwable);
-    }
+	public SecurityProviderException(Throwable throwable) {
+		super(throwable);
+	}
 
 }

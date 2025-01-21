@@ -25,12 +25,12 @@ import org.craftercms.security.exception.AuthenticationException;
  */
 public class RememberMeException extends AuthenticationException {
 
-    public RememberMeException(String s) {
-        super(s);
-    }
+	public RememberMeException(String s) {
+		super(s);
+	}
 
-    public RememberMeException(String s, Throwable throwable) {
-        super(s, throwable);
-    }
-    
+	public RememberMeException(String s, Throwable throwable) {
+		super(s, throwable);
+	}
+
 }

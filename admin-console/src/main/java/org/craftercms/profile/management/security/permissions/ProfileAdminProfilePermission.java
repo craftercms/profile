@@ -32,10 +32,10 @@ import static org.craftercms.profile.management.security.AuthorizationUtils.PROF
  */
 public class ProfileAdminProfilePermission extends CompositePermission {
 
-    public ProfileAdminProfilePermission(Profile currentUser, Profile object) {
-        super(new SubjectTenantIsSamePermission(currentUser.getTenant(), object.getTenant()),
-              new SubjectRoleIsNotInferiorPermission(PROFILE_ADMIN_ROLE, object.getRoles()),
-              new DefaultAdminConsolePermission(GET_PROFILE, CREATE_PROFILE, UPDATE_PROFILE, DELETE_PROFILE));
-    }
+	public ProfileAdminProfilePermission(Profile currentUser, Profile object) {
+		super(new SubjectTenantIsSamePermission(currentUser.getTenant(), object.getTenant()),
+			new SubjectRoleIsNotInferiorPermission(PROFILE_ADMIN_ROLE, object.getRoles()),
+			new DefaultAdminConsolePermission(GET_PROFILE, CREATE_PROFILE, UPDATE_PROFILE, DELETE_PROFILE));
+	}
 
 }

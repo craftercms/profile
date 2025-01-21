@@ -16,6 +16,7 @@
 package org.craftercms.security.processors.impl;
 
 import java.util.Date;
+
 import jakarta.servlet.http.Cookie;
 
 import org.bson.types.ObjectId;
@@ -46,84 +47,84 @@ import static org.mockito.Mockito.when;
  */
 public class CurrentAuthenticationResolvingProcessorTest {
 
-    private static final String TICKET = new ObjectId().toString();
+	private static final String TICKET = new ObjectId().toString();
 
-    private CurrentAuthenticationResolvingProcessor processor;
-    @Mock
-    private AuthenticationManager authenticationManager;
+	private CurrentAuthenticationResolvingProcessor processor;
+	@Mock
+	private AuthenticationManager authenticationManager;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-        processor = new CurrentAuthenticationResolvingProcessor(authenticationManager);
-    }
+		processor = new CurrentAuthenticationResolvingProcessor(authenticationManager);
+	}
 
-    @Test
-    public void testGetAuthentication() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
-        RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
-        Date profileLastModified = new Date();
-        Cookie ticketCookie = new Cookie(SecurityUtils.TICKET_COOKIE_NAME, TICKET);
-        Cookie profileLastModifiedCookie = new Cookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME,
-                                                      String.valueOf(profileLastModified.getTime()));
+	@Test
+	public void testGetAuthentication() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
+		RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
+		Date profileLastModified = new Date();
+		Cookie ticketCookie = new Cookie(SecurityUtils.TICKET_COOKIE_NAME, TICKET);
+		Cookie profileLastModifiedCookie = new Cookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME,
+			String.valueOf(profileLastModified.getTime()));
 
-        request.setCookies(ticketCookie, profileLastModifiedCookie);
+		request.setCookies(ticketCookie, profileLastModifiedCookie);
 
-        Profile profile = new Profile();
-        profile.setLastModified(profileLastModified);
+		Profile profile = new Profile();
+		profile.setLastModified(profileLastModified);
 
-        Authentication auth = new DefaultAuthentication(TICKET, profile);
+		Authentication auth = new DefaultAuthentication(TICKET, profile);
 
-        when(authenticationManager.getAuthentication(TICKET, false)).thenReturn(auth);
+		when(authenticationManager.getAuthentication(TICKET, false)).thenReturn(auth);
 
-        processor.processRequest(context, chain);
+		processor.processRequest(context, chain);
 
-        verify(chain).processRequest(context);
+		verify(chain).processRequest(context);
 
-        Authentication newAuth = SecurityUtils.getAuthentication(request);
+		Authentication newAuth = SecurityUtils.getAuthentication(request);
 
-        assertNotNull(newAuth);
-        assertEquals(auth.getTicket(), newAuth.getTicket());
-        assertEquals(auth.getProfile().getLastModified(), newAuth.getProfile().getLastModified());
-    }
+		assertNotNull(newAuth);
+		assertEquals(auth.getTicket(), newAuth.getTicket());
+		assertEquals(auth.getProfile().getLastModified(), newAuth.getProfile().getLastModified());
+	}
 
-    @Test
-    public void testGetAuthenticationProfileLastModifiedChanged() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
-        RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
-        Date profileLastModified = new Date();
-        Cookie ticketCookie = new Cookie(SecurityUtils.TICKET_COOKIE_NAME, TICKET);
-        Cookie profileLastModifiedCookie = new Cookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME,
-                String.valueOf(profileLastModified.getTime() + 60000));
+	@Test
+	public void testGetAuthenticationProfileLastModifiedChanged() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
+		RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
+		Date profileLastModified = new Date();
+		Cookie ticketCookie = new Cookie(SecurityUtils.TICKET_COOKIE_NAME, TICKET);
+		Cookie profileLastModifiedCookie = new Cookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME,
+			String.valueOf(profileLastModified.getTime() + 60000));
 
-        request.setCookies(ticketCookie, profileLastModifiedCookie);
+		request.setCookies(ticketCookie, profileLastModifiedCookie);
 
-        Profile profile = new Profile();
-        profile.setLastModified(profileLastModified);
+		Profile profile = new Profile();
+		profile.setLastModified(profileLastModified);
 
-        Profile modifiedProfile = new Profile();
-        modifiedProfile.setLastModified(new Date(profileLastModified.getTime() + 60000));
+		Profile modifiedProfile = new Profile();
+		modifiedProfile.setLastModified(new Date(profileLastModified.getTime() + 60000));
 
-        Authentication auth = new DefaultAuthentication(TICKET, profile);
-        Authentication modifiedAuth = new DefaultAuthentication(TICKET, modifiedProfile);
+		Authentication auth = new DefaultAuthentication(TICKET, profile);
+		Authentication modifiedAuth = new DefaultAuthentication(TICKET, modifiedProfile);
 
-        when(authenticationManager.getAuthentication(TICKET, false)).thenReturn(auth);
-        when(authenticationManager.getAuthentication(TICKET, true)).thenReturn(modifiedAuth);
+		when(authenticationManager.getAuthentication(TICKET, false)).thenReturn(auth);
+		when(authenticationManager.getAuthentication(TICKET, true)).thenReturn(modifiedAuth);
 
-        processor.processRequest(context, chain);
+		processor.processRequest(context, chain);
 
-        verify(chain).processRequest(context);
+		verify(chain).processRequest(context);
 
-        Authentication newAuth = SecurityUtils.getAuthentication(request);
+		Authentication newAuth = SecurityUtils.getAuthentication(request);
 
-        assertNotNull(newAuth);
-        assertEquals(modifiedAuth.getTicket(), newAuth.getTicket());
-        assertEquals(modifiedAuth.getProfile().getLastModified(), newAuth.getProfile().getLastModified());
-    }
+		assertNotNull(newAuth);
+		assertEquals(modifiedAuth.getTicket(), newAuth.getTicket());
+		assertEquals(modifiedAuth.getProfile().getLastModified(), newAuth.getProfile().getLastModified());
+	}
 
 }

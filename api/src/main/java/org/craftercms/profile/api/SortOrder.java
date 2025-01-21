@@ -23,13 +23,13 @@ package org.craftercms.profile.api;
  */
 public enum SortOrder {
 
-    /**
-     * Ascending order.
-     */
-    ASC,
-    /**
-     * Descending order
-     */
-    DESC;
+	/**
+	 * Ascending order.
+	 */
+	ASC,
+	/**
+	 * Descending order
+	 */
+	DESC;
 
 }

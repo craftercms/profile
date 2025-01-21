@@ -23,11 +23,11 @@ package org.craftercms.security.utils.tenant;
  */
 public interface TenantsResolver {
 
-    /**
-     * Returns the tenants the application can use.
-     *
-     * @return the current tenants
-     */
-    String[] getTenants();
+	/**
+	 * Returns the tenants the application can use.
+	 *
+	 * @return the current tenants
+	 */
+	String[] getTenants();
 
 }

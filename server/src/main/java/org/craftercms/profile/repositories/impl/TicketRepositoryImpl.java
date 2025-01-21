@@ -30,15 +30,15 @@ import org.craftercms.profile.repositories.TicketRepository;
  */
 public class TicketRepositoryImpl extends AbstractJongoRepository<Ticket> implements TicketRepository {
 
-    public static final String KEY_REMOVE_WITH_LAST_REQUEST_TIME_OLDER_THAN_QUERY = "profile.ticket" +
-            ".removeWithLastRequestTimeOlderThan";
+	public static final String KEY_REMOVE_WITH_LAST_REQUEST_TIME_OLDER_THAN_QUERY = "profile.ticket" +
+		".removeWithLastRequestTimeOlderThan";
 
-    @Override
-    public void removeWithLastRequestTimeOlderThan(long seconds) throws MongoDataException {
-        long millis = TimeUnit.SECONDS.toMillis(seconds);
-        Date limit = new Date(System.currentTimeMillis() - millis);
+	@Override
+	public void removeWithLastRequestTimeOlderThan(long seconds) throws MongoDataException {
+		long millis = TimeUnit.SECONDS.toMillis(seconds);
+		Date limit = new Date(System.currentTimeMillis() - millis);
 
-        remove(getQueryFor(KEY_REMOVE_WITH_LAST_REQUEST_TIME_OLDER_THAN_QUERY), limit);
-    }
+		remove(getQueryFor(KEY_REMOVE_WITH_LAST_REQUEST_TIME_OLDER_THAN_QUERY), limit);
+	}
 
 }

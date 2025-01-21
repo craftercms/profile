@@ -24,10 +24,10 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  */
 public class InvalidEmailAddressException extends I10nProfileException {
 
-    private static final String KEY = "profile.profile.invalidEmailAddress";
+	private static final String KEY = "profile.profile.invalidEmailAddress";
 
-    public InvalidEmailAddressException(String emailAddress) {
-        super(KEY, emailAddress);
-    }
+	public InvalidEmailAddressException(String emailAddress) {
+		super(KEY, emailAddress);
+	}
 
 }

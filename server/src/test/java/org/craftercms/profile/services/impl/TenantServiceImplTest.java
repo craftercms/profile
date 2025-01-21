@@ -56,346 +56,347 @@ import static org.mockito.Mockito.when;
  */
 public class TenantServiceImplTest {
 
-    private static final String LABEL_KEY = "label";
-
-    private static final ObjectId TENANT1_ID = new ObjectId();
-    private static final ObjectId TENANT2_ID = new ObjectId();
-    private static final String TENANT1_NAME = "tenant1";
-    private static final String TENANT2_NAME = "tenant2";
-    private static final String ROLE1 = "role1";
-    private static final String ROLE2 = "role2";
-
-    private static final String ATTRIB1_NAME = "attrib1";
-    private static final String ATTRIB1_LABEL = "Attribute #1";
-    private static final String ATTRIB2_NAME = "attrib2";
-    private static final String ATTRIB2_LABEL = "Attribute #2";
-    private static final Object DEFAULT_ATTRIB_VALUE = "test";
-    private static final String APP_NAME = "app";
-
-    private TenantServiceImpl tenantService;
-    @Mock
-    private PermissionEvaluator<AccessToken, String> permissionEvaluator;
-    @Mock PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator;
-    @Mock
-    private TenantRepository tenantRepository;
-    @Mock
-    private ProfileRepository profileRepository;
-    @Mock
-    private ProfileService profileService;
-    @Mock
-    private EntitlementValidator entitlementValidator;
-
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
-        when(permissionEvaluator.isAllowed(any(), any()))
-            .thenReturn(true);
-
-        when(tenantRepository.findByName(TENANT1_NAME))
-            .thenReturn(getTenant1());
-        when(tenantRepository.findByName(TENANT2_NAME))
-            .thenReturn(getTenant2());
-        when(tenantRepository.findAll())
-            .thenReturn(Arrays.asList(getTenant1(), getTenant2()));
-        when(tenantRepository.count())
-            .thenReturn(2L);
-
-        when(profileService.getProfilesByRole(TENANT2_NAME, ROLE1, null, null, ProfileConstants.NO_ATTRIBUTE))
-                .thenReturn(Arrays.asList(mock(Profile.class)));
-        when(profileService.getProfilesByExistingAttribute(TENANT2_NAME, ATTRIB1_NAME, null, null,
-                                                           ProfileConstants.NO_ATTRIBUTE))
-            .thenReturn(Arrays.asList(mock(Profile.class)));
-
-        tenantService = new TenantServiceImpl(permissionEvaluator, attributePermissionEvaluator, tenantRepository,
-                profileRepository, entitlementValidator);
-        tenantService.setProfileService(profileService);
-    }
-
-    @Test
-    public void testCreateTenant() throws Exception {
-        Tenant actual = tenantService.createTenant(getTenant1());
-        Tenant expected = getTenant1();
-
-        assertEqualTenants(expected, actual);
-
-        verify(tenantRepository).insert(actual);
-    }
-
-    @Test
-    public void testGetTenant() throws Exception {
-        Tenant actual = tenantService.getTenant(TENANT1_NAME);
-        Tenant expected = getTenant1();
-
-        assertEqualTenants(expected, actual);
-
-        verify(tenantRepository).findByName(TENANT1_NAME);
-    }
-
-    @Test
-    public void testUpdateTenant() throws Exception {
-        AttributeDefinition def1 = new AttributeDefinition();
-        def1.setName(ATTRIB1_NAME);
-
-        AttributeDefinition def2 = new AttributeDefinition();
-        def2.setName(ATTRIB2_NAME);
-        def2.setDefaultValue(DEFAULT_ATTRIB_VALUE);
-
-        Tenant expected = getTenant1();
-        expected.getAvailableRoles().remove(ROLE1);
-        expected.getAttributeDefinitions().remove(def1);
-        expected.getAttributeDefinitions().add(def2);
-
-        Map<String, Object> expectedSetParams = new HashMap<>();
-        expectedSetParams.put("verifyNewProfiles", expected.isVerifyNewProfiles());
-        expectedSetParams.put("availableRoles", expected.getAvailableRoles());
-        expectedSetParams.put("ssoEnabled", expected.isSsoEnabled());
-        expectedSetParams.put("attributeDefinitions", expected.getAttributeDefinitions());
-        expectedSetParams.put("cleanseAttributes", expected.isCleanseAttributes());
-
-        Tenant actual = tenantService.updateTenant(expected);
-
-        assertEqualTenants(expected, actual);
-
-        verify(profileRepository).removeRoleFromAll(TENANT1_NAME, ROLE1);
-        verify(profileRepository).removeAttributeFromAll(TENANT1_NAME, ATTRIB1_NAME);
-        verify(profileRepository).updateAllWithDefaultValue(TENANT1_NAME, ATTRIB2_NAME, DEFAULT_ATTRIB_VALUE);
-        verify(tenantRepository).update(TENANT1_ID.toString(), "{$set: #}", false, false, expectedSetParams);
-    }
+	private static final String LABEL_KEY = "label";
+
+	private static final ObjectId TENANT1_ID = new ObjectId();
+	private static final ObjectId TENANT2_ID = new ObjectId();
+	private static final String TENANT1_NAME = "tenant1";
+	private static final String TENANT2_NAME = "tenant2";
+	private static final String ROLE1 = "role1";
+	private static final String ROLE2 = "role2";
+
+	private static final String ATTRIB1_NAME = "attrib1";
+	private static final String ATTRIB1_LABEL = "Attribute #1";
+	private static final String ATTRIB2_NAME = "attrib2";
+	private static final String ATTRIB2_LABEL = "Attribute #2";
+	private static final Object DEFAULT_ATTRIB_VALUE = "test";
+	private static final String APP_NAME = "app";
+
+	private TenantServiceImpl tenantService;
+	@Mock
+	private PermissionEvaluator<AccessToken, String> permissionEvaluator;
+	@Mock
+	PermissionEvaluator<AccessToken, AttributeDefinition> attributePermissionEvaluator;
+	@Mock
+	private TenantRepository tenantRepository;
+	@Mock
+	private ProfileRepository profileRepository;
+	@Mock
+	private ProfileService profileService;
+	@Mock
+	private EntitlementValidator entitlementValidator;
+
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
+
+		when(permissionEvaluator.isAllowed(any(), any()))
+			.thenReturn(true);
+
+		when(tenantRepository.findByName(TENANT1_NAME))
+			.thenReturn(getTenant1());
+		when(tenantRepository.findByName(TENANT2_NAME))
+			.thenReturn(getTenant2());
+		when(tenantRepository.findAll())
+			.thenReturn(Arrays.asList(getTenant1(), getTenant2()));
+		when(tenantRepository.count())
+			.thenReturn(2L);
+
+		when(profileService.getProfilesByRole(TENANT2_NAME, ROLE1, null, null, ProfileConstants.NO_ATTRIBUTE))
+			.thenReturn(Arrays.asList(mock(Profile.class)));
+		when(profileService.getProfilesByExistingAttribute(TENANT2_NAME, ATTRIB1_NAME, null, null,
+			ProfileConstants.NO_ATTRIBUTE))
+			.thenReturn(Arrays.asList(mock(Profile.class)));
+
+		tenantService = new TenantServiceImpl(permissionEvaluator, attributePermissionEvaluator, tenantRepository,
+			profileRepository, entitlementValidator);
+		tenantService.setProfileService(profileService);
+	}
+
+	@Test
+	public void testCreateTenant() throws Exception {
+		Tenant actual = tenantService.createTenant(getTenant1());
+		Tenant expected = getTenant1();
+
+		assertEqualTenants(expected, actual);
+
+		verify(tenantRepository).insert(actual);
+	}
+
+	@Test
+	public void testGetTenant() throws Exception {
+		Tenant actual = tenantService.getTenant(TENANT1_NAME);
+		Tenant expected = getTenant1();
+
+		assertEqualTenants(expected, actual);
+
+		verify(tenantRepository).findByName(TENANT1_NAME);
+	}
+
+	@Test
+	public void testUpdateTenant() throws Exception {
+		AttributeDefinition def1 = new AttributeDefinition();
+		def1.setName(ATTRIB1_NAME);
+
+		AttributeDefinition def2 = new AttributeDefinition();
+		def2.setName(ATTRIB2_NAME);
+		def2.setDefaultValue(DEFAULT_ATTRIB_VALUE);
+
+		Tenant expected = getTenant1();
+		expected.getAvailableRoles().remove(ROLE1);
+		expected.getAttributeDefinitions().remove(def1);
+		expected.getAttributeDefinitions().add(def2);
+
+		Map<String, Object> expectedSetParams = new HashMap<>();
+		expectedSetParams.put("verifyNewProfiles", expected.isVerifyNewProfiles());
+		expectedSetParams.put("availableRoles", expected.getAvailableRoles());
+		expectedSetParams.put("ssoEnabled", expected.isSsoEnabled());
+		expectedSetParams.put("attributeDefinitions", expected.getAttributeDefinitions());
+		expectedSetParams.put("cleanseAttributes", expected.isCleanseAttributes());
+
+		Tenant actual = tenantService.updateTenant(expected);
+
+		assertEqualTenants(expected, actual);
 
-    @Test
-    public void testDeleteTenant() throws Exception {
-        tenantService.deleteTenant(TENANT1_NAME);
+		verify(profileRepository).removeRoleFromAll(TENANT1_NAME, ROLE1);
+		verify(profileRepository).removeAttributeFromAll(TENANT1_NAME, ATTRIB1_NAME);
+		verify(profileRepository).updateAllWithDefaultValue(TENANT1_NAME, ATTRIB2_NAME, DEFAULT_ATTRIB_VALUE);
+		verify(tenantRepository).update(TENANT1_ID.toString(), "{$set: #}", false, false, expectedSetParams);
+	}
 
-        verify(profileRepository).removeAll(TENANT1_NAME);
-        verify(tenantRepository).removeByName(TENANT1_NAME);
-    }
+	@Test
+	public void testDeleteTenant() throws Exception {
+		tenantService.deleteTenant(TENANT1_NAME);
 
-    @Test
-    public void testGetTenantCount() throws Exception {
-        long expected = 2L;
-        long actual = tenantService.getTenantCount();
+		verify(profileRepository).removeAll(TENANT1_NAME);
+		verify(tenantRepository).removeByName(TENANT1_NAME);
+	}
 
-        assertEquals(expected, actual);
+	@Test
+	public void testGetTenantCount() throws Exception {
+		long expected = 2L;
+		long actual = tenantService.getTenantCount();
 
-        verify(tenantRepository).count();
-    }
+		assertEquals(expected, actual);
 
-    @Test
-    public void testGetAllTenants() throws Exception {
-        List<Tenant> expected = Arrays.asList(getTenant1(), getTenant2());
-        List<Tenant> actual = tenantService.getAllTenants();
+		verify(tenantRepository).count();
+	}
 
-        assertNotNull(actual);
-        assertEquals(2, actual.size());
-        assertEqualTenants(expected.get(0), actual.get(0));
-        assertEqualTenants(expected.get(1), actual.get(1));
+	@Test
+	public void testGetAllTenants() throws Exception {
+		List<Tenant> expected = Arrays.asList(getTenant1(), getTenant2());
+		List<Tenant> actual = tenantService.getAllTenants();
 
-        verify(tenantRepository).findAll();
-    }
+		assertNotNull(actual);
+		assertEquals(2, actual.size());
+		assertEqualTenants(expected.get(0), actual.get(0));
+		assertEqualTenants(expected.get(1), actual.get(1));
 
-    @Test
-    public void testVerifyNewProfiles() throws Exception {
-        Tenant expected = getTenant1();
-        expected.setVerifyNewProfiles(false);
+		verify(tenantRepository).findAll();
+	}
 
-        Map<String, Object> expectedSetParams = new HashMap<>();
-        expectedSetParams.put("verifyNewProfiles", expected.isVerifyNewProfiles());
+	@Test
+	public void testVerifyNewProfiles() throws Exception {
+		Tenant expected = getTenant1();
+		expected.setVerifyNewProfiles(false);
 
-        Tenant actual = tenantService.verifyNewProfiles(TENANT1_NAME, false);
+		Map<String, Object> expectedSetParams = new HashMap<>();
+		expectedSetParams.put("verifyNewProfiles", expected.isVerifyNewProfiles());
 
-        assertEqualTenants(expected, actual);
+		Tenant actual = tenantService.verifyNewProfiles(TENANT1_NAME, false);
 
-        verify(tenantRepository).findByName(TENANT1_NAME);
-        verify(tenantRepository).update(TENANT1_ID.toString(), "{$set: #}", false, false, expectedSetParams);
-    }
+		assertEqualTenants(expected, actual);
 
-    @Test
-    public void testAddAvailableRoles() throws Exception {
-        Tenant expected = getTenant1();
-        expected.getAvailableRoles().add(ROLE2);
+		verify(tenantRepository).findByName(TENANT1_NAME);
+		verify(tenantRepository).update(TENANT1_ID.toString(), "{$set: #}", false, false, expectedSetParams);
+	}
 
-        List<String> rolesToAdd = Collections.singletonList(ROLE2);
+	@Test
+	public void testAddAvailableRoles() throws Exception {
+		Tenant expected = getTenant1();
+		expected.getAvailableRoles().add(ROLE2);
 
-        Map<String, Object> expectedPushParams = new HashMap<>();
-        expectedPushParams.put("availableRoles", Collections.singletonMap("$each", rolesToAdd));
+		List<String> rolesToAdd = Collections.singletonList(ROLE2);
 
-        Tenant actual = tenantService.addRoles(TENANT1_NAME, rolesToAdd);
+		Map<String, Object> expectedPushParams = new HashMap<>();
+		expectedPushParams.put("availableRoles", Collections.singletonMap("$each", rolesToAdd));
 
-        assertEqualTenants(expected, actual);
+		Tenant actual = tenantService.addRoles(TENANT1_NAME, rolesToAdd);
 
-        verify(tenantRepository).findByName(TENANT1_NAME);
-        verify(tenantRepository).update(TENANT1_ID.toString(), "{$push: #}", false, false, expectedPushParams);
-    }
+		assertEqualTenants(expected, actual);
 
-    @Test
-    public void testRemoveAvailableRoles() throws Exception {
-        Tenant expected = getTenant1();
-        expected.getAvailableRoles().remove(ROLE1);
+		verify(tenantRepository).findByName(TENANT1_NAME);
+		verify(tenantRepository).update(TENANT1_ID.toString(), "{$push: #}", false, false, expectedPushParams);
+	}
 
-        List<String> rolesToRemove = Collections.singletonList(ROLE1);
+	@Test
+	public void testRemoveAvailableRoles() throws Exception {
+		Tenant expected = getTenant1();
+		expected.getAvailableRoles().remove(ROLE1);
 
-        Map<String, Object> expectedPullParams = new HashMap<>();
-        expectedPullParams.put("availableRoles", Collections.singletonMap("$in", rolesToRemove));
+		List<String> rolesToRemove = Collections.singletonList(ROLE1);
 
-        Tenant actual = tenantService.removeRoles(TENANT1_NAME, rolesToRemove);
+		Map<String, Object> expectedPullParams = new HashMap<>();
+		expectedPullParams.put("availableRoles", Collections.singletonMap("$in", rolesToRemove));
 
-        assertEqualTenants(expected, actual);
+		Tenant actual = tenantService.removeRoles(TENANT1_NAME, rolesToRemove);
 
-        verify(profileRepository).removeRoleFromAll(TENANT1_NAME, ROLE1);
-        verify(tenantRepository).findByName(TENANT1_NAME);
-        verify(tenantRepository).update(TENANT1_ID.toString(), "{$pull: #}", false, false, expectedPullParams);
-    }
+		assertEqualTenants(expected, actual);
 
-    @Test
-    public void testAddAttributeDefinitions() throws Exception {
-        AttributeDefinition def = getAttribute2Definition();
-        List<AttributeDefinition> defsToAdd = Collections.singletonList(def);
+		verify(profileRepository).removeRoleFromAll(TENANT1_NAME, ROLE1);
+		verify(tenantRepository).findByName(TENANT1_NAME);
+		verify(tenantRepository).update(TENANT1_ID.toString(), "{$pull: #}", false, false, expectedPullParams);
+	}
 
-        Tenant expected = getTenant1();
-        expected.getAttributeDefinitions().add(def);
+	@Test
+	public void testAddAttributeDefinitions() throws Exception {
+		AttributeDefinition def = getAttribute2Definition();
+		List<AttributeDefinition> defsToAdd = Collections.singletonList(def);
 
-        Map<String, Object> expectedPushParams = new HashMap<>();
-        expectedPushParams.put("attributeDefinitions", Collections.singletonMap("$each", defsToAdd));
+		Tenant expected = getTenant1();
+		expected.getAttributeDefinitions().add(def);
 
-        Tenant actual = tenantService.addAttributeDefinitions(TENANT1_NAME, defsToAdd);
+		Map<String, Object> expectedPushParams = new HashMap<>();
+		expectedPushParams.put("attributeDefinitions", Collections.singletonMap("$each", defsToAdd));
 
-        assertEqualTenants(expected, actual);
+		Tenant actual = tenantService.addAttributeDefinitions(TENANT1_NAME, defsToAdd);
 
-        verify(profileRepository).updateAllWithDefaultValue(TENANT1_NAME, ATTRIB2_NAME, DEFAULT_ATTRIB_VALUE);
-        verify(tenantRepository).findByName(TENANT1_NAME);
-        verify(tenantRepository).update(TENANT1_ID.toString(), "{$push: #}", false, false, expectedPushParams);
-    }
+		assertEqualTenants(expected, actual);
 
-    @Test
-    public void testUpdateAttributeDefinitions() throws Exception {
-        AttributeDefinition def = getAttribute2Definition();
-        def.setName(ATTRIB1_NAME);
+		verify(profileRepository).updateAllWithDefaultValue(TENANT1_NAME, ATTRIB2_NAME, DEFAULT_ATTRIB_VALUE);
+		verify(tenantRepository).findByName(TENANT1_NAME);
+		verify(tenantRepository).update(TENANT1_ID.toString(), "{$push: #}", false, false, expectedPushParams);
+	}
 
-        Tenant expected = getTenant1();
-        expected.getAttributeDefinitions().clear();
-        expected.getAttributeDefinitions().add(def);
+	@Test
+	public void testUpdateAttributeDefinitions() throws Exception {
+		AttributeDefinition def = getAttribute2Definition();
+		def.setName(ATTRIB1_NAME);
 
-        Map<String, Object> expectedSetParams = new HashMap<>();
-        expectedSetParams.put("attributeDefinitions.0", def);
+		Tenant expected = getTenant1();
+		expected.getAttributeDefinitions().clear();
+		expected.getAttributeDefinitions().add(def);
 
-        Tenant actual = tenantService.updateAttributeDefinitions(TENANT1_NAME, Collections.singletonList(def));
+		Map<String, Object> expectedSetParams = new HashMap<>();
+		expectedSetParams.put("attributeDefinitions.0", def);
 
-        assertEqualTenants(expected, actual);
+		Tenant actual = tenantService.updateAttributeDefinitions(TENANT1_NAME, Collections.singletonList(def));
 
-        verify(tenantRepository).findByName(TENANT1_NAME);
-        verify(tenantRepository).update(TENANT1_ID.toString(), "{$set: #}", false, false, expectedSetParams);
-    }
+		assertEqualTenants(expected, actual);
 
-    @Test
-    public void testRemoveAttributeDefinitions() throws Exception {
-        Tenant expected = getTenant1();
-        expected.getAttributeDefinitions().clear();
+		verify(tenantRepository).findByName(TENANT1_NAME);
+		verify(tenantRepository).update(TENANT1_ID.toString(), "{$set: #}", false, false, expectedSetParams);
+	}
 
-        Map<String, Object> attrNameCondition = Collections.singletonMap("$in", Collections.singletonList(ATTRIB1_NAME));
+	@Test
+	public void testRemoveAttributeDefinitions() throws Exception {
+		Tenant expected = getTenant1();
+		expected.getAttributeDefinitions().clear();
 
-        Map<String, Object> expectedPullParams = new HashMap<>();
-        expectedPullParams.put("attributeDefinitions",
-                               Collections.singletonMap("name", attrNameCondition));
+		Map<String, Object> attrNameCondition = Collections.singletonMap("$in", Collections.singletonList(ATTRIB1_NAME));
 
-        Tenant actual = tenantService.removeAttributeDefinitions(TENANT1_NAME, Collections.singletonList(ATTRIB1_NAME));
+		Map<String, Object> expectedPullParams = new HashMap<>();
+		expectedPullParams.put("attributeDefinitions",
+			Collections.singletonMap("name", attrNameCondition));
 
-        assertEqualTenants(expected, actual);
+		Tenant actual = tenantService.removeAttributeDefinitions(TENANT1_NAME, Collections.singletonList(ATTRIB1_NAME));
 
-        verify(tenantRepository).findByName(TENANT1_NAME);
-        verify(tenantRepository).update(TENANT1_ID.toString(), "{$pull: #}", false, false, expectedPullParams);
-    }
+		assertEqualTenants(expected, actual);
 
-    private Tenant getTenant1() {
-        Tenant tenant = new Tenant();
-        tenant.setId(TENANT1_ID);
-        tenant.setName(TENANT1_NAME);
-        tenant.setVerifyNewProfiles(true);
-        tenant.setAvailableRoles(SetUtils.asSet(ROLE1));
-        tenant.setAttributeDefinitions(new ArrayList<>(Collections.singletonList(getAttribute1Definition())));
-        tenant.setCleanseAttributes(false);
+		verify(tenantRepository).findByName(TENANT1_NAME);
+		verify(tenantRepository).update(TENANT1_ID.toString(), "{$pull: #}", false, false, expectedPullParams);
+	}
 
-        return tenant;
-    }
+	private Tenant getTenant1() {
+		Tenant tenant = new Tenant();
+		tenant.setId(TENANT1_ID);
+		tenant.setName(TENANT1_NAME);
+		tenant.setVerifyNewProfiles(true);
+		tenant.setAvailableRoles(SetUtils.asSet(ROLE1));
+		tenant.setAttributeDefinitions(new ArrayList<>(Collections.singletonList(getAttribute1Definition())));
+		tenant.setCleanseAttributes(false);
 
-    private Tenant getTenant2() {
-        Tenant tenant = new Tenant();
-        tenant.setId(TENANT2_ID);
-        tenant.setName(TENANT2_NAME);
-        tenant.setVerifyNewProfiles(true);
-        tenant.setAvailableRoles(SetUtils.asSet(ROLE1, ROLE2));
-        tenant.setAttributeDefinitions(new ArrayList<>(Collections.singletonList(getAttribute1Definition())));
-        tenant.setCleanseAttributes(false);
+		return tenant;
+	}
 
-        return tenant;
-    }
+	private Tenant getTenant2() {
+		Tenant tenant = new Tenant();
+		tenant.setId(TENANT2_ID);
+		tenant.setName(TENANT2_NAME);
+		tenant.setVerifyNewProfiles(true);
+		tenant.setAvailableRoles(SetUtils.asSet(ROLE1, ROLE2));
+		tenant.setAttributeDefinitions(new ArrayList<>(Collections.singletonList(getAttribute1Definition())));
+		tenant.setCleanseAttributes(false);
 
-    private AttributeDefinition getAttribute1Definition() {
-        AttributePermission permission = new AttributePermission();
-        permission.allow(AttributePermission.ANY_ACTION);
+		return tenant;
+	}
 
-        AttributeDefinition def = new AttributeDefinition();
-        def.setName(ATTRIB1_NAME);
-        def.setMetadata(Collections.<String, Object>singletonMap(LABEL_KEY, ATTRIB1_LABEL));
-        def.addPermission(permission);
+	private AttributeDefinition getAttribute1Definition() {
+		AttributePermission permission = new AttributePermission();
+		permission.allow(AttributePermission.ANY_ACTION);
 
-        return def;
-    }
+		AttributeDefinition def = new AttributeDefinition();
+		def.setName(ATTRIB1_NAME);
+		def.setMetadata(Collections.<String, Object>singletonMap(LABEL_KEY, ATTRIB1_LABEL));
+		def.addPermission(permission);
 
-    private AttributeDefinition getAttribute2Definition() {
-        AttributePermission permission = new AttributePermission(APP_NAME);
-        permission.allow(AttributePermission.ANY_ACTION);
+		return def;
+	}
 
-        AttributeDefinition def = new AttributeDefinition();
-        def.setName(ATTRIB2_NAME);
-        def.setMetadata(Collections.<String, Object>singletonMap(LABEL_KEY, ATTRIB2_LABEL));
-        def.addPermission(permission);
-        def.setDefaultValue(DEFAULT_ATTRIB_VALUE);
+	private AttributeDefinition getAttribute2Definition() {
+		AttributePermission permission = new AttributePermission(APP_NAME);
+		permission.allow(AttributePermission.ANY_ACTION);
 
-        return def;
-    }
+		AttributeDefinition def = new AttributeDefinition();
+		def.setName(ATTRIB2_NAME);
+		def.setMetadata(Collections.<String, Object>singletonMap(LABEL_KEY, ATTRIB2_LABEL));
+		def.addPermission(permission);
+		def.setDefaultValue(DEFAULT_ATTRIB_VALUE);
 
-    private void assertEqualTenants(Tenant expected, Tenant actual) {
-        assertNotNull(actual);
-        assertEquals(expected.getName(), actual.getName());
-        assertEquals(expected.isVerifyNewProfiles(), actual.isVerifyNewProfiles());
-        assertEquals(expected.getAvailableRoles(), actual.getAvailableRoles());
-        assertEqualAttributeDefinitions(expected.getAttributeDefinitions(), actual.getAttributeDefinitions());
-    }
+		return def;
+	}
 
-    private void assertEqualAttributeDefinitions(List<AttributeDefinition> expected,
-                                                 List<AttributeDefinition> actual) {
-        assertNotNull(expected);
-        assertEquals(expected.size(), actual.size());
+	private void assertEqualTenants(Tenant expected, Tenant actual) {
+		assertNotNull(actual);
+		assertEquals(expected.getName(), actual.getName());
+		assertEquals(expected.isVerifyNewProfiles(), actual.isVerifyNewProfiles());
+		assertEquals(expected.getAvailableRoles(), actual.getAvailableRoles());
+		assertEqualAttributeDefinitions(expected.getAttributeDefinitions(), actual.getAttributeDefinitions());
+	}
 
-        Iterator<AttributeDefinition> expectedIter = expected.iterator();
-        Iterator<AttributeDefinition> actualIter = actual.iterator();
+	private void assertEqualAttributeDefinitions(List<AttributeDefinition> expected,
+						     List<AttributeDefinition> actual) {
+		assertNotNull(expected);
+		assertEquals(expected.size(), actual.size());
 
-        while (expectedIter.hasNext()) {
-            AttributeDefinition expectedDefinition = expectedIter.next();
-            AttributeDefinition actualDefinition = actualIter.next();
+		Iterator<AttributeDefinition> expectedIter = expected.iterator();
+		Iterator<AttributeDefinition> actualIter = actual.iterator();
 
-            assertEqualAttributeDefinitions(expectedDefinition, actualDefinition);
-        }
-    }
+		while (expectedIter.hasNext()) {
+			AttributeDefinition expectedDefinition = expectedIter.next();
+			AttributeDefinition actualDefinition = actualIter.next();
 
-    private void assertEqualAttributeDefinitions(AttributeDefinition expected, AttributeDefinition actual) {
-        List<AttributePermission> expectedPermissions = expected.getPermissions();
-        List<AttributePermission> actualPermissions = actual.getPermissions();
+			assertEqualAttributeDefinitions(expectedDefinition, actualDefinition);
+		}
+	}
 
-        assertEquals(expected.getName(), actual.getName());
-        assertEquals(expected.getMetadata(), actual.getMetadata());
+	private void assertEqualAttributeDefinitions(AttributeDefinition expected, AttributeDefinition actual) {
+		List<AttributePermission> expectedPermissions = expected.getPermissions();
+		List<AttributePermission> actualPermissions = actual.getPermissions();
 
-        assertNotNull(actualPermissions);
-        assertEquals(expectedPermissions.size(), actualPermissions.size());
+		assertEquals(expected.getName(), actual.getName());
+		assertEquals(expected.getMetadata(), actual.getMetadata());
 
-        for (int i = 0; i < expectedPermissions.size(); i++) {
-            AttributePermission expectedPermission = expectedPermissions.get(i);
-            AttributePermission actualPermission = actualPermissions.get(i);
+		assertNotNull(actualPermissions);
+		assertEquals(expectedPermissions.size(), actualPermissions.size());
 
-            assertEquals(expectedPermission.getApplication(), actualPermission.getApplication());
-            assertEquals(expectedPermission.getAllowedActions(), actualPermission.getAllowedActions());
-        }
-    }
+		for (int i = 0; i < expectedPermissions.size(); i++) {
+			AttributePermission expectedPermission = expectedPermissions.get(i);
+			AttributePermission actualPermission = actualPermissions.get(i);
+
+			assertEquals(expectedPermission.getApplication(), actualPermission.getApplication());
+			assertEquals(expectedPermission.getAllowedActions(), actualPermission.getAllowedActions());
+		}
+	}
 
 }

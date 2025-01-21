@@ -28,9 +28,9 @@ import org.craftercms.security.utils.SecurityUtils;
  */
 public class CurrentUserSubjectResolver implements SubjectResolver<Profile> {
 
-    @Override
-    public Profile getCurrentSubject() {
-        return SecurityUtils.getCurrentProfile();
-    }
+	@Override
+	public Profile getCurrentSubject() {
+		return SecurityUtils.getCurrentProfile();
+	}
 
 }

@@ -30,24 +30,24 @@ import org.craftercms.security.utils.RedirectUtils;
  */
 public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler {
 
-    protected String targetUrl;
+	protected String targetUrl;
 
-    public LogoutSuccessHandlerImpl(String targetUrl) {
-        this.targetUrl = targetUrl;
-    }
+	public LogoutSuccessHandlerImpl(String targetUrl) {
+		this.targetUrl = targetUrl;
+	}
 
-    protected String getTargetUrl() {
-        return targetUrl;
-    }
+	protected String getTargetUrl() {
+		return targetUrl;
+	}
 
-    /**
-     * Redirects to the target URL.
-     *
-     * @param context           the request context
-     */
-    @Override
-    public void handle(RequestContext context) throws SecurityProviderException, IOException {
-        RedirectUtils.redirect(context.getRequest(), context.getResponse(), getTargetUrl());
-    }
+	/**
+	 * Redirects to the target URL.
+	 *
+	 * @param context the request context
+	 */
+	@Override
+	public void handle(RequestContext context) throws SecurityProviderException, IOException {
+		RedirectUtils.redirect(context.getRequest(), context.getResponse(), getTargetUrl());
+	}
 
 }

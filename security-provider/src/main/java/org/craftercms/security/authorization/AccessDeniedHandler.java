@@ -28,12 +28,12 @@ import org.craftercms.security.exception.SecurityProviderException;
  */
 public interface AccessDeniedHandler {
 
-    /**
-     * Handles the request after access to a resource is denied for a user.
-     *
-     * @param context the request context
-     * @param e       the exception with the reason of the access deny
-     */
-    void handle(RequestContext context, AccessDeniedException e) throws SecurityProviderException, IOException;
+	/**
+	 * Handles the request after access to a resource is denied for a user.
+	 *
+	 * @param context the request context
+	 * @param e       the exception with the reason of the access deny
+	 */
+	void handle(RequestContext context, AccessDeniedException e) throws SecurityProviderException, IOException;
 
 }

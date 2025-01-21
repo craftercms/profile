@@ -28,11 +28,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping("/")
 public class MainController {
 
-    public static final String VIEW_MAIN = "main";
+	public static final String VIEW_MAIN = "main";
 
-    @RequestMapping(method = RequestMethod.GET)
-    public String viewMain() {
-        return VIEW_MAIN;
-    }
+	@RequestMapping(method = RequestMethod.GET)
+	public String viewMain() {
+		return VIEW_MAIN;
+	}
 
 }

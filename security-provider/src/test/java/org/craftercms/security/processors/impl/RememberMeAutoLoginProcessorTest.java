@@ -38,50 +38,50 @@ import static org.junit.Assert.*;
  */
 public class RememberMeAutoLoginProcessorTest {
 
-    private RememberMeAutoLoginProcessor processor;
-    @Mock
-    private RememberMeManager rememberMeManager;
-    @Mock
-    private Authentication authentication;
-    @Mock
-    private RequestSecurityProcessorChain chain;
+	private RememberMeAutoLoginProcessor processor;
+	@Mock
+	private RememberMeManager rememberMeManager;
+	@Mock
+	private Authentication authentication;
+	@Mock
+	private RequestSecurityProcessorChain chain;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-        when(rememberMeManager.autoLogin(any(RequestContext.class))).thenReturn(authentication);
+		when(rememberMeManager.autoLogin(any(RequestContext.class))).thenReturn(authentication);
 
-        processor = new RememberMeAutoLoginProcessor(rememberMeManager);
-    }
+		processor = new RememberMeAutoLoginProcessor(rememberMeManager);
+	}
 
-    @Test
-    public void testProcessRequest() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test
+	public void testProcessRequest() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        processor.processRequest(context, chain);
+		processor.processRequest(context, chain);
 
-        assertNotNull(SecurityUtils.getAuthentication(request));
-        assertEquals(authentication, SecurityUtils.getAuthentication(request));
+		assertNotNull(SecurityUtils.getAuthentication(request));
+		assertEquals(authentication, SecurityUtils.getAuthentication(request));
 
-        verify(rememberMeManager).autoLogin(context);
-        verify(chain).processRequest(context);
-    }
+		verify(rememberMeManager).autoLogin(context);
+		verify(chain).processRequest(context);
+	}
 
-    @Test
-    public void testProcessRequestWithPreviousAuthentication() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test
+	public void testProcessRequestWithPreviousAuthentication() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        SecurityUtils.setAuthentication(request, authentication);
+		SecurityUtils.setAuthentication(request, authentication);
 
-        processor.processRequest(context, chain);
+		processor.processRequest(context, chain);
 
-        verify(rememberMeManager, never()).autoLogin(context);
-        verify(chain).processRequest(context);
-    }
+		verify(rememberMeManager, never()).autoLogin(context);
+		verify(chain).processRequest(context);
+	}
 
 }

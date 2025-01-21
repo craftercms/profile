@@ -24,10 +24,10 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  */
 public class TenantExistsException extends I10nProfileException {
 
-    public static final String KEY = "profile.tenant.tenantExists";
+	public static final String KEY = "profile.tenant.tenantExists";
 
-    public TenantExistsException(String tenantName) {
-        super(KEY, tenantName);
-    }
+	public TenantExistsException(String tenantName) {
+		super(KEY, tenantName);
+	}
 
 }

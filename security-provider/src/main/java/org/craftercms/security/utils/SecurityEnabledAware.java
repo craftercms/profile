@@ -23,6 +23,6 @@ package org.craftercms.security.utils;
  */
 public interface SecurityEnabledAware {
 
-    void setSecurityEnabled(boolean securityEnabled);
+	void setSecurityEnabled(boolean securityEnabled);
 
 }

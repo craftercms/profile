@@ -16,6 +16,7 @@
 package org.craftercms.security.authentication.impl;
 
 import java.io.IOException;
+
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.craftercms.commons.http.RequestContext;
@@ -32,22 +33,22 @@ import org.craftercms.security.utils.handlers.AbstractRestHandlerBase;
  */
 public class RestLogoutSuccessHandler extends AbstractRestHandlerBase implements LogoutSuccessHandler {
 
-    protected static final String DEFAULT_LOGOUT_SUCCESS_MESSAGE = "Logout successful";
+	protected static final String DEFAULT_LOGOUT_SUCCESS_MESSAGE = "Logout successful";
 
-    protected String logoutSuccessMessage;
+	protected String logoutSuccessMessage;
 
-    public RestLogoutSuccessHandler(HttpMessageConvertingResponseWriter responseWriter) {
-        super(responseWriter);
-        logoutSuccessMessage = DEFAULT_LOGOUT_SUCCESS_MESSAGE;
-    }
+	public RestLogoutSuccessHandler(HttpMessageConvertingResponseWriter responseWriter) {
+		super(responseWriter);
+		logoutSuccessMessage = DEFAULT_LOGOUT_SUCCESS_MESSAGE;
+	}
 
-    public void setLogoutSuccessMessage(String logoutSuccessMessage) {
-        this.logoutSuccessMessage = logoutSuccessMessage;
-    }
+	public void setLogoutSuccessMessage(String logoutSuccessMessage) {
+		this.logoutSuccessMessage = logoutSuccessMessage;
+	}
 
-    @Override
-    public void handle(RequestContext context) throws SecurityProviderException, IOException {
-        sendMessage(HttpServletResponse.SC_OK, logoutSuccessMessage, context);
-    }
+	@Override
+	public void handle(RequestContext context) throws SecurityProviderException, IOException {
+		sendMessage(HttpServletResponse.SC_OK, logoutSuccessMessage, context);
+	}
 
 }

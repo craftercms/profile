@@ -24,10 +24,10 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  */
 public class NoSuchPersistentLoginException extends I10nProfileException {
 
-    public static final String KEY = "profile.auth.noSuchPersistentLogin";
+	public static final String KEY = "profile.auth.noSuchPersistentLogin";
 
-    public NoSuchPersistentLoginException(String loginId) {
-        super(KEY, loginId);
-    }
+	public NoSuchPersistentLoginException(String loginId) {
+		super(KEY, loginId);
+	}
 
 }

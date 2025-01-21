@@ -34,26 +34,26 @@ import static org.junit.Assert.assertEquals;
  */
 public class RestAccessDeniedHandlerTest extends AbstractRestHandlerTestBase {
 
-    private static final String ERROR_MESSAGE =             "Access denied: user is not allowed to access resource";
-    private static final String EXPECTED_RESPONSE_CONTENT = "{\"message\":\"" + ERROR_MESSAGE + "\"}";
+	private static final String ERROR_MESSAGE = "Access denied: user is not allowed to access resource";
+	private static final String EXPECTED_RESPONSE_CONTENT = "{\"message\":\"" + ERROR_MESSAGE + "\"}";
 
-    private RestAccessDeniedHandler handler;
+	private RestAccessDeniedHandler handler;
 
-    @Before
-    public void setUp() throws Exception {
-        handler = new RestAccessDeniedHandler(createResponseWriter());
-    }
+	@Before
+	public void setUp() throws Exception {
+		handler = new RestAccessDeniedHandler(createResponseWriter());
+	}
 
-    @Test
-    public void testHandle() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/admin.json");
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test
+	public void testHandle() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/admin.json");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        handler.handle(context, new AccessDeniedException(ERROR_MESSAGE));
+		handler.handle(context, new AccessDeniedException(ERROR_MESSAGE));
 
-        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
-        assertEquals(EXPECTED_RESPONSE_CONTENT, response.getContentAsString());
-    }
+		assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
+		assertEquals(EXPECTED_RESPONSE_CONTENT, response.getContentAsString());
+	}
 
 }

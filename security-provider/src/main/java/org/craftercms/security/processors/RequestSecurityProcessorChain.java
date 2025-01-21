@@ -24,11 +24,11 @@ import org.craftercms.commons.http.RequestContext;
  */
 public interface RequestSecurityProcessorChain {
 
-    /**
-     * Calls the next processor in the chain.
-     *
-     * @param context the {@link RequestContext} to pass to the next processor.
-     */
-    void processRequest(RequestContext context) throws Exception;
+	/**
+	 * Calls the next processor in the chain.
+	 *
+	 * @param context the {@link RequestContext} to pass to the next processor.
+	 */
+	void processRequest(RequestContext context) throws Exception;
 
 }

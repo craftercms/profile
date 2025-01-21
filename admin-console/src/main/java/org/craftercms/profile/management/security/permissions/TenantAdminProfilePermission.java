@@ -32,10 +32,10 @@ import static org.craftercms.profile.management.security.AuthorizationUtils.TENA
  */
 public class TenantAdminProfilePermission extends CompositePermission {
 
-    public TenantAdminProfilePermission(Profile currentUser, Profile object) {
-        super(new SubjectTenantIsSamePermission(currentUser.getTenant(), object.getTenant()),
-              new SubjectRoleIsNotInferiorPermission(TENANT_ADMIN_ROLE, object.getRoles()),
-              new DefaultAdminConsolePermission(GET_PROFILE, CREATE_PROFILE, UPDATE_PROFILE, DELETE_PROFILE));
-    }
+	public TenantAdminProfilePermission(Profile currentUser, Profile object) {
+		super(new SubjectTenantIsSamePermission(currentUser.getTenant(), object.getTenant()),
+			new SubjectRoleIsNotInferiorPermission(TENANT_ADMIN_ROLE, object.getRoles()),
+			new DefaultAdminConsolePermission(GET_PROFILE, CREATE_PROFILE, UPDATE_PROFILE, DELETE_PROFILE));
+	}
 
 }

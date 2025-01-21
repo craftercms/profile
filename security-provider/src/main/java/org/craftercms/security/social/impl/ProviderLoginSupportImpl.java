@@ -18,6 +18,7 @@ package org.craftercms.security.social.impl;
 
 import java.util.Map;
 import java.util.Set;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -54,161 +55,162 @@ import org.springframework.web.context.request.ServletWebRequest;
  */
 public class ProviderLoginSupportImpl implements ProviderLoginSupport {
 
-    public static final String PARAM_OAUTH_TOKEN = "oauth_token";
-    public static final String PARAM_CODE = "code";
-    public static final String PARAM_ERROR = "error";
-    public static final String PARAM_ERROR_DESCRIPTION = "error_description";
-    public static final String PARAM_ERROR_URI = "error_uri";
+	public static final String PARAM_OAUTH_TOKEN = "oauth_token";
+	public static final String PARAM_CODE = "code";
+	public static final String PARAM_ERROR = "error";
+	public static final String PARAM_ERROR_DESCRIPTION = "error_description";
+	public static final String PARAM_ERROR_URI = "error_uri";
 
-    protected ConnectSupport connectSupport;
-    protected ConnectionFactoryLocator connectionFactoryLocator;
-    protected ProfileService profileService;
-    protected AuthenticationManager authenticationManager;
-    protected TextEncryptor textEncryptor;
+	protected ConnectSupport connectSupport;
+	protected ConnectionFactoryLocator connectionFactoryLocator;
+	protected ProfileService profileService;
+	protected AuthenticationManager authenticationManager;
+	protected TextEncryptor textEncryptor;
 
-    public ProviderLoginSupportImpl(ConnectionFactoryLocator connectionFactoryLocator, ProfileService profileService,
-                                    AuthenticationManager authenticationManager, TextEncryptor textEncryptor) {
-        connectSupport = new ConnectSupport();
+	public ProviderLoginSupportImpl(ConnectionFactoryLocator connectionFactoryLocator, ProfileService profileService,
+					AuthenticationManager authenticationManager, TextEncryptor textEncryptor) {
+		connectSupport = new ConnectSupport();
 
-        this.connectionFactoryLocator = connectionFactoryLocator;
-        this.profileService = profileService;
-        this.authenticationManager = authenticationManager;
-        this.textEncryptor = textEncryptor;
-    }
+		this.connectionFactoryLocator = connectionFactoryLocator;
+		this.profileService = profileService;
+		this.authenticationManager = authenticationManager;
+		this.textEncryptor = textEncryptor;
+	}
 
-    public void setConnectSupport(ConnectSupport connectSupport) {
-        this.connectSupport = connectSupport;
-    }
+	public void setConnectSupport(ConnectSupport connectSupport) {
+		this.connectSupport = connectSupport;
+	}
 
-    @Override
-    public String start(String tenant, String providerId, HttpServletRequest request) throws AuthenticationException {
-        return start(tenant, providerId, request, null, null);
-    }
-    @Override
-    public String start(String tenant, String providerId, HttpServletRequest request,
-                        MultiValueMap<String, String> additionalUrlParams) throws AuthenticationException {
-        return start(tenant, providerId, request, additionalUrlParams, null);
-    }
+	@Override
+	public String start(String tenant, String providerId, HttpServletRequest request) throws AuthenticationException {
+		return start(tenant, providerId, request, null, null);
+	}
 
-    @Override
-    public String start(String tenant, String providerId, HttpServletRequest request,
-                        MultiValueMap<String, String> additionalUrlParams, ConnectSupport connectSupport)
-        throws AuthenticationException {
-        if (connectSupport == null) {
-            connectSupport = this.connectSupport;
-        }
+	@Override
+	public String start(String tenant, String providerId, HttpServletRequest request,
+			    MultiValueMap<String, String> additionalUrlParams) throws AuthenticationException {
+		return start(tenant, providerId, request, additionalUrlParams, null);
+	}
 
-        ConnectionFactory<?> connectionFactory = getConnectionFactory(providerId);
-        ServletWebRequest webRequest = new ServletWebRequest(request);
+	@Override
+	public String start(String tenant, String providerId, HttpServletRequest request,
+			    MultiValueMap<String, String> additionalUrlParams, ConnectSupport connectSupport)
+		throws AuthenticationException {
+		if (connectSupport == null) {
+			connectSupport = this.connectSupport;
+		}
 
-        return connectSupport.buildOAuthUrl(connectionFactory, webRequest, additionalUrlParams);
-    }
+		ConnectionFactory<?> connectionFactory = getConnectionFactory(providerId);
+		ServletWebRequest webRequest = new ServletWebRequest(request);
 
-    @Override
-    public Authentication complete(String tenant, String providerId,
-                                   HttpServletRequest request) throws AuthenticationException {
-        return complete(tenant, providerId, request, null, null, null);
-    }
+		return connectSupport.buildOAuthUrl(connectionFactory, webRequest, additionalUrlParams);
+	}
 
-    @Override
-    public Authentication complete(String tenant, String providerId, HttpServletRequest request,
-                                   Set<String> newUserRoles, Map<String, Object> newUserAttributes)
-        throws AuthenticationException {
-        return complete(tenant, providerId, request, newUserRoles, newUserAttributes, null);
-    }
+	@Override
+	public Authentication complete(String tenant, String providerId,
+				       HttpServletRequest request) throws AuthenticationException {
+		return complete(tenant, providerId, request, null, null, null);
+	}
 
-    @Override
-    public Authentication complete(String tenant, String providerId, HttpServletRequest request,
-                                   Set<String> newUserRoles, Map<String, Object> newUserAttributes,
-                                   ConnectSupport connectSupport) throws AuthenticationException {
-        if (connectSupport == null) {
-            connectSupport = this.connectSupport;
-        }
+	@Override
+	public Authentication complete(String tenant, String providerId, HttpServletRequest request,
+				       Set<String> newUserRoles, Map<String, Object> newUserAttributes)
+		throws AuthenticationException {
+		return complete(tenant, providerId, request, newUserRoles, newUserAttributes, null);
+	}
 
-        Connection<?> connection = completeConnection(connectSupport, providerId, request);
-        if (connection != null) {
-            Profile userData = ConnectionUtils.createProfile(connection);
-            Profile profile = getProfile(tenant, userData);
+	@Override
+	public Authentication complete(String tenant, String providerId, HttpServletRequest request,
+				       Set<String> newUserRoles, Map<String, Object> newUserAttributes,
+				       ConnectSupport connectSupport) throws AuthenticationException {
+		if (connectSupport == null) {
+			connectSupport = this.connectSupport;
+		}
 
-            if (profile == null) {
-                if (CollectionUtils.isNotEmpty(newUserRoles)) {
-                    userData.getRoles().addAll(newUserRoles);
-                }
-                if (MapUtils.isNotEmpty(newUserAttributes)) {
-                    userData.getAttributes().putAll(newUserAttributes);
-                }
+		Connection<?> connection = completeConnection(connectSupport, providerId, request);
+		if (connection != null) {
+			Profile userData = ConnectionUtils.createProfile(connection);
+			Profile profile = getProfile(tenant, userData);
 
-                profile = createProfile(tenant, connection, userData);
-            } else {
-                profile = updateProfileConnectionData(tenant, connection, profile);
-            }
+			if (profile == null) {
+				if (CollectionUtils.isNotEmpty(newUserRoles)) {
+					userData.getRoles().addAll(newUserRoles);
+				}
+				if (MapUtils.isNotEmpty(newUserAttributes)) {
+					userData.getAttributes().putAll(newUserAttributes);
+				}
 
-            Authentication auth = authenticationManager.authenticateUser(profile);
-            SecurityUtils.setAuthentication(request, auth);
+				profile = createProfile(tenant, connection, userData);
+			} else {
+				profile = updateProfileConnectionData(tenant, connection, profile);
+			}
 
-            return auth;
-        } else {
-            return null;
-        }
-    }
+			Authentication auth = authenticationManager.authenticateUser(profile);
+			SecurityUtils.setAuthentication(request, auth);
 
-    protected Connection<?> completeConnection(ConnectSupport connectSupport, String providerId,
-                                               HttpServletRequest request) throws OAuth2Exception {
-        if (StringUtils.isNotEmpty(request.getParameter(PARAM_OAUTH_TOKEN))) {
-            OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>)getConnectionFactory(providerId);
-            ServletWebRequest webRequest = new ServletWebRequest(request);
+			return auth;
+		} else {
+			return null;
+		}
+	}
 
-            return connectSupport.completeConnection(connectionFactory, webRequest);
-        } else if (StringUtils.isNotEmpty(request.getParameter(PARAM_CODE))) {
-            OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>)getConnectionFactory(providerId);
-            ServletWebRequest webRequest = new ServletWebRequest(request);
+	protected Connection<?> completeConnection(ConnectSupport connectSupport, String providerId,
+						   HttpServletRequest request) throws OAuth2Exception {
+		if (StringUtils.isNotEmpty(request.getParameter(PARAM_OAUTH_TOKEN))) {
+			OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) getConnectionFactory(providerId);
+			ServletWebRequest webRequest = new ServletWebRequest(request);
 
-            return connectSupport.completeConnection(connectionFactory, webRequest);
-        } else if (StringUtils.isNotEmpty(request.getParameter(PARAM_ERROR))) {
-            String error = request.getParameter(PARAM_ERROR);
-            String errorDescription = request.getParameter(PARAM_ERROR_DESCRIPTION);
-            String errorUri = request.getParameter(PARAM_ERROR_URI);
+			return connectSupport.completeConnection(connectionFactory, webRequest);
+		} else if (StringUtils.isNotEmpty(request.getParameter(PARAM_CODE))) {
+			OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) getConnectionFactory(providerId);
+			ServletWebRequest webRequest = new ServletWebRequest(request);
 
-            throw new OAuth2Exception(error, errorDescription, errorUri);
-        } else {
-            return null;
-        }
-    }
+			return connectSupport.completeConnection(connectionFactory, webRequest);
+		} else if (StringUtils.isNotEmpty(request.getParameter(PARAM_ERROR))) {
+			String error = request.getParameter(PARAM_ERROR);
+			String errorDescription = request.getParameter(PARAM_ERROR_DESCRIPTION);
+			String errorUri = request.getParameter(PARAM_ERROR_URI);
 
-    protected ConnectionFactory<?> getConnectionFactory(String providerId) {
-        return connectionFactoryLocator.getConnectionFactory(providerId);
-    }
+			throw new OAuth2Exception(error, errorDescription, errorUri);
+		} else {
+			return null;
+		}
+	}
 
-    protected Profile getProfile(String tenant, Profile userData) {
-        try {
-            return profileService.getProfileByUsername(tenant, userData.getUsername());
-        } catch (ProfileException e) {
-            throw new AuthenticationException("Unable to retrieve current profile for user '" +
-                                              userData.getUsername() + "' of tenant '" + tenant + "'", e);
-        }
-    }
+	protected ConnectionFactory<?> getConnectionFactory(String providerId) {
+		return connectionFactoryLocator.getConnectionFactory(providerId);
+	}
 
-    protected Profile createProfile(String tenant, Connection<?> connection, Profile userData) {
-        try {
-            ConnectionUtils.addConnectionData(userData, connection.createData(), textEncryptor);
+	protected Profile getProfile(String tenant, Profile userData) {
+		try {
+			return profileService.getProfileByUsername(tenant, userData.getUsername());
+		} catch (ProfileException e) {
+			throw new AuthenticationException("Unable to retrieve current profile for user '" +
+				userData.getUsername() + "' of tenant '" + tenant + "'", e);
+		}
+	}
 
-            return profileService.createProfile(tenant, userData.getUsername(), null, userData.getEmail(), true,
-                                                userData.getRoles(), userData.getAttributes(), null);
-        } catch (CryptoException | ProfileException e) {
-            throw new AuthenticationException("Unable to create profile of user '" + userData.getUsername() +
-                                              "' in tenant '" + tenant + "'", e);
-        }
-    }
+	protected Profile createProfile(String tenant, Connection<?> connection, Profile userData) {
+		try {
+			ConnectionUtils.addConnectionData(userData, connection.createData(), textEncryptor);
 
-    protected Profile updateProfileConnectionData(String tenant, Connection<?> connection, Profile profile) {
-        try {
-            ConnectionUtils.addConnectionData(profile, connection.createData(), textEncryptor);
+			return profileService.createProfile(tenant, userData.getUsername(), null, userData.getEmail(), true,
+				userData.getRoles(), userData.getAttributes(), null);
+		} catch (CryptoException | ProfileException e) {
+			throw new AuthenticationException("Unable to create profile of user '" + userData.getUsername() +
+				"' in tenant '" + tenant + "'", e);
+		}
+	}
 
-            return profileService.updateAttributes(profile.getId().toString(), profile.getAttributes());
-        } catch (CryptoException | ProfileException e) {
-            throw new AuthenticationException("Unable to update connection data of user '" + profile.getUsername() +
-                                              "' of tenant '" + tenant + "'", e);
-        }
-    }
+	protected Profile updateProfileConnectionData(String tenant, Connection<?> connection, Profile profile) {
+		try {
+			ConnectionUtils.addConnectionData(profile, connection.createData(), textEncryptor);
+
+			return profileService.updateAttributes(profile.getId().toString(), profile.getAttributes());
+		} catch (CryptoException | ProfileException e) {
+			throw new AuthenticationException("Unable to update connection data of user '" + profile.getUsername() +
+				"' of tenant '" + tenant + "'", e);
+		}
+	}
 
 }

@@ -17,6 +17,7 @@ package org.craftercms.security.processors.impl;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.MapUtils;
@@ -65,106 +66,106 @@ import org.springframework.util.PathMatcher;
  */
 public class UrlAccessRestrictionCheckingProcessor implements RequestSecurityProcessor {
 
-    public static final Logger logger = LoggerFactory.getLogger(UrlAccessRestrictionCheckingProcessor.class);
+	public static final Logger logger = LoggerFactory.getLogger(UrlAccessRestrictionCheckingProcessor.class);
 
-    protected PathMatcher pathMatcher;
-    protected Map<String, Expression> urlRestrictions;
+	protected PathMatcher pathMatcher;
+	protected Map<String, Expression> urlRestrictions;
 
-    /**
-     * Default constructor. Creates {@link AntPathMatcher} as default path matcher.
-     */
-    public UrlAccessRestrictionCheckingProcessor(Map<String, String> restrictions) {
-        pathMatcher = new AntPathMatcher();
+	/**
+	 * Default constructor. Creates {@link AntPathMatcher} as default path matcher.
+	 */
+	public UrlAccessRestrictionCheckingProcessor(Map<String, String> restrictions) {
+		pathMatcher = new AntPathMatcher();
 
-        // Sets the map of restrictions. Each key of the map is ANT-style path pattern, used to match the URLs of incoming
-        // requests, and each value is a Spring EL expression.
-        urlRestrictions = new LinkedHashMap<>();
+		// Sets the map of restrictions. Each key of the map is ANT-style path pattern, used to match the URLs of incoming
+		// requests, and each value is a Spring EL expression.
+		urlRestrictions = new LinkedHashMap<>();
 
-        ExpressionParser parser = new SpelExpressionParser();
+		ExpressionParser parser = new SpelExpressionParser();
 
-        for (Map.Entry<String, String> entry : restrictions.entrySet()) {
-            urlRestrictions.put(entry.getKey(), parser.parseExpression(entry.getValue()));
-        }
-    }
+		for (Map.Entry<String, String> entry : restrictions.entrySet()) {
+			urlRestrictions.put(entry.getKey(), parser.parseExpression(entry.getValue()));
+		}
+	}
 
-    /**
-     * Sets the path matcher to use to match the URLs for restriction checking.
-     */
-    public void setPathMatcher(PathMatcher pathMatcher) {
-        this.pathMatcher = pathMatcher;
-    }
+	/**
+	 * Sets the path matcher to use to match the URLs for restriction checking.
+	 */
+	public void setPathMatcher(PathMatcher pathMatcher) {
+		this.pathMatcher = pathMatcher;
+	}
 
-    protected Map<String, Expression> getUrlRestrictions() {
-        return urlRestrictions;
-    }
+	protected Map<String, Expression> getUrlRestrictions() {
+		return urlRestrictions;
+	}
 
-    /**
-     * Matches the request URL against the keys of the {@code restriction} map, which are ANT-style path patterns. If
-     * a key matches, the value is interpreted as a Spring EL expression, the expression is executed, and if it returns
-     * true, the processor chain is continued, if not an {@link AccessDeniedException} is thrown.
-     *
-     * @param context        the context which holds the current request and response
-     * @param processorChain the processor chain, used to call the next processor
-     */
-    public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
-        Map<String, Expression> urlRestrictions = getUrlRestrictions();
+	/**
+	 * Matches the request URL against the keys of the {@code restriction} map, which are ANT-style path patterns. If
+	 * a key matches, the value is interpreted as a Spring EL expression, the expression is executed, and if it returns
+	 * true, the processor chain is continued, if not an {@link AccessDeniedException} is thrown.
+	 *
+	 * @param context        the context which holds the current request and response
+	 * @param processorChain the processor chain, used to call the next processor
+	 */
+	public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
+		Map<String, Expression> urlRestrictions = getUrlRestrictions();
 
-        if (MapUtils.isNotEmpty(urlRestrictions)) {
-            HttpServletRequest request = context.getRequest();
-            String requestUrl = getRequestUrl(context.getRequest());
+		if (MapUtils.isNotEmpty(urlRestrictions)) {
+			HttpServletRequest request = context.getRequest();
+			String requestUrl = getRequestUrl(context.getRequest());
 
-            logger.debug("Checking access restrictions for URL {}", requestUrl);
+			logger.debug("Checking access restrictions for URL {}", requestUrl);
 
-            for (Map.Entry<String, Expression> entry : urlRestrictions.entrySet()) {
-                String urlPattern = entry.getKey();
-                Expression expression = entry.getValue();
+			for (Map.Entry<String, Expression> entry : urlRestrictions.entrySet()) {
+				String urlPattern = entry.getKey();
+				Expression expression = entry.getValue();
 
-                if (pathMatcher.match(urlPattern, requestUrl)) {
-                    logger.debug("Checking restriction [{} => {}]", requestUrl, expression.getExpressionString());
+				if (pathMatcher.match(urlPattern, requestUrl)) {
+					logger.debug("Checking restriction [{} => {}]", requestUrl, expression.getExpressionString());
 
-                    if (isAccessAllowed(request, expression)) {
-                        logger.debug("Restriction [{}' => {}] evaluated to true for user: access allowed", requestUrl,
-                                     expression.getExpressionString());
+					if (isAccessAllowed(request, expression)) {
+						logger.debug("Restriction [{}' => {}] evaluated to true for user: access allowed", requestUrl,
+							expression.getExpressionString());
 
-                        break;
-                    } else {
-                        throw new AccessDeniedException("Restriction ['" + requestUrl + "' => " +
-                                                        expression.getExpressionString() + "] evaluated to false " +
-                                                        "for user: access denied");
-                    }
-                }
-            }
-        }
+						break;
+					} else {
+						throw new AccessDeniedException("Restriction ['" + requestUrl + "' => " +
+							expression.getExpressionString() + "] evaluated to false " +
+							"for user: access denied");
+					}
+				}
+			}
+		}
 
-        processorChain.processRequest(context);
-    }
+		processorChain.processRequest(context);
+	}
 
-    /**
-     * Returns the request URL without the context path.
-     */
-    protected String getRequestUrl(HttpServletRequest request) {
-        return HttpUtils.getRequestUriWithoutContextPath(request);
-    }
+	/**
+	 * Returns the request URL without the context path.
+	 */
+	protected String getRequestUrl(HttpServletRequest request) {
+		return HttpUtils.getRequestUriWithoutContextPath(request);
+	}
 
-    protected boolean isAccessAllowed(HttpServletRequest request, Expression expression) {
-        Object value = expression.getValue(createExpressionRoot(request));
-        if (!(value instanceof Boolean)) {
-            throw new IllegalStateException("Expression " + expression.getExpressionString() + " should return a " +
-                                            "boolean value");
-        }
+	protected boolean isAccessAllowed(HttpServletRequest request, Expression expression) {
+		Object value = expression.getValue(createExpressionRoot(request));
+		if (!(value instanceof Boolean)) {
+			throw new IllegalStateException("Expression " + expression.getExpressionString() + " should return a " +
+				"boolean value");
+		}
 
-        return (Boolean)value;
-    }
+		return (Boolean) value;
+	}
 
-    protected Object createExpressionRoot(HttpServletRequest request) {
-        AccessRestrictionExpressionRoot root = new AccessRestrictionExpressionRoot();
-        Authentication auth = SecurityUtils.getAuthentication(request);
+	protected Object createExpressionRoot(HttpServletRequest request) {
+		AccessRestrictionExpressionRoot root = new AccessRestrictionExpressionRoot();
+		Authentication auth = SecurityUtils.getAuthentication(request);
 
-        if (auth != null) {
-            root.setProfile(auth.getProfile());
-        }
+		if (auth != null) {
+			root.setProfile(auth.getProfile());
+		}
 
-        return root;
-    }
+		return root;
+	}
 
 }

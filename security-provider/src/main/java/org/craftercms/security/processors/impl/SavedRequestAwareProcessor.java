@@ -35,38 +35,38 @@ import org.springframework.security.web.savedrequest.RequestCache;
  */
 public class SavedRequestAwareProcessor implements RequestSecurityProcessor {
 
-    public static final Logger logger = LoggerFactory.getLogger(SavedRequestAwareProcessor.class);
+	public static final Logger logger = LoggerFactory.getLogger(SavedRequestAwareProcessor.class);
 
-    protected RequestCache requestCache;
+	protected RequestCache requestCache;
 
-    public SavedRequestAwareProcessor() {
-        requestCache = new HttpSessionRequestCache();
-    }
+	public SavedRequestAwareProcessor() {
+		requestCache = new HttpSessionRequestCache();
+	}
 
-    public void setRequestCache(RequestCache requestCache) {
-        this.requestCache = requestCache;
-    }
+	public void setRequestCache(RequestCache requestCache) {
+		this.requestCache = requestCache;
+	}
 
-    /**
-     * Checks if there's a request in the request cache (which means that a previous request was cached). If there's
-     * one, the request cache creates a new request by merging the saved request with the current request. The new
-     * request is used through the rest of the processor chain.
-     *
-     * @param context        the context which holds the current request and response
-     * @param processorChain the processor chain, used to call the next processor
-     */
-    public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
-        HttpServletRequest request = context.getRequest();
-        HttpServletResponse response = context.getResponse();
-        HttpServletRequest wrappedSavedRequest = requestCache.getMatchingRequest(request, response);
+	/**
+	 * Checks if there's a request in the request cache (which means that a previous request was cached). If there's
+	 * one, the request cache creates a new request by merging the saved request with the current request. The new
+	 * request is used through the rest of the processor chain.
+	 *
+	 * @param context        the context which holds the current request and response
+	 * @param processorChain the processor chain, used to call the next processor
+	 */
+	public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
+		HttpServletRequest request = context.getRequest();
+		HttpServletResponse response = context.getResponse();
+		HttpServletRequest wrappedSavedRequest = requestCache.getMatchingRequest(request, response);
 
-        if (wrappedSavedRequest != null) {
-            logger.debug("A previously saved request was found, and has been merged with the current request");
+		if (wrappedSavedRequest != null) {
+			logger.debug("A previously saved request was found, and has been merged with the current request");
 
-            context.setRequest(wrappedSavedRequest);
-        }
+			context.setRequest(wrappedSavedRequest);
+		}
 
-        processorChain.processRequest(context);
-    }
+		processorChain.processRequest(context);
+	}
 
 }

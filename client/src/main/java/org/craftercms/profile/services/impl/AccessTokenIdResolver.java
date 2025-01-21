@@ -22,6 +22,6 @@ package org.craftercms.profile.services.impl;
  */
 public interface AccessTokenIdResolver {
 
-    String getAccessTokenId();
+	String getAccessTokenId();
 
 }

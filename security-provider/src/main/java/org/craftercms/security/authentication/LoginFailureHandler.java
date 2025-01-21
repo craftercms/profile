@@ -28,12 +28,12 @@ import org.craftercms.security.exception.SecurityProviderException;
  */
 public interface LoginFailureHandler {
 
-    /**
-     * Handles the request after a failed authentication
-     *
-     * @param context the request context
-     * @param e       the exception that caused the login to fail.
-     */
-    void handle(RequestContext context, AuthenticationException e) throws SecurityProviderException, IOException;
+	/**
+	 * Handles the request after a failed authentication
+	 *
+	 * @param context the request context
+	 * @param e       the exception that caused the login to fail.
+	 */
+	void handle(RequestContext context, AuthenticationException e) throws SecurityProviderException, IOException;
 
 }

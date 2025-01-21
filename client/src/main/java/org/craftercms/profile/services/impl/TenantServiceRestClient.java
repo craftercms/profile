@@ -53,118 +53,119 @@ import static org.craftercms.profile.api.ProfileConstants.URL_TENANT_VERIFY_NEW_
  */
 public class TenantServiceRestClient extends AbstractProfileRestClientBase implements TenantService {
 
-    public static final ParameterizedTypeReference<List<Tenant>> tenantListTypeRef =
-            new ParameterizedTypeReference<List<Tenant>>() {};
+	public static final ParameterizedTypeReference<List<Tenant>> tenantListTypeRef =
+		new ParameterizedTypeReference<List<Tenant>>() {
+		};
 
-    public TenantServiceRestClient(String baseUrl, RestTemplate restTemplate, AccessTokenIdResolver accessTokenIdResolver) {
-        super(baseUrl, restTemplate, accessTokenIdResolver);
-    }
+	public TenantServiceRestClient(String baseUrl, RestTemplate restTemplate, AccessTokenIdResolver accessTokenIdResolver) {
+		super(baseUrl, restTemplate, accessTokenIdResolver);
+	}
 
-    @Override
-    public Tenant createTenant(Tenant tenant) throws ProfileException {
-        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_CREATE);
+	@Override
+	public Tenant createTenant(Tenant tenant) throws ProfileException {
+		String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_CREATE);
 
-        return doPostForObject(url, tenant, Tenant.class);
-    }
+		return doPostForObject(url, tenant, Tenant.class);
+	}
 
-    @Override
-    public Tenant getTenant(String name) throws ProfileException {
-        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_GET);
+	@Override
+	public Tenant getTenant(String name) throws ProfileException {
+		String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_GET);
 
-        try {
-            return doGetForObject(url, Tenant.class, name);
-        } catch (ProfileRestServiceException e) {
-            if (e.getStatus() == HttpStatus.NOT_FOUND) {
-                return null;
-            } else {
-                throw e;
-            }
-        }
-    }
+		try {
+			return doGetForObject(url, Tenant.class, name);
+		} catch (ProfileRestServiceException e) {
+			if (e.getStatus() == HttpStatus.NOT_FOUND) {
+				return null;
+			} else {
+				throw e;
+			}
+		}
+	}
 
-    @Override
-    public Tenant updateTenant(Tenant tenant) throws ProfileException {
-        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_UPDATE);
+	@Override
+	public Tenant updateTenant(Tenant tenant) throws ProfileException {
+		String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_UPDATE);
 
-        return doPostForObject(url, tenant, Tenant.class);
-    }
+		return doPostForObject(url, tenant, Tenant.class);
+	}
 
-    @Override
-    public void deleteTenant(String name) throws ProfileException {
-        String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_DELETE);
+	@Override
+	public void deleteTenant(String name) throws ProfileException {
+		String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_DELETE);
 
-        doPostForLocation(url, createBaseParams(), name);
-    }
+		doPostForLocation(url, createBaseParams(), name);
+	}
 
-    @Override
-    public long getTenantCount() throws ProfileException {
-        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_COUNT);
+	@Override
+	public long getTenantCount() throws ProfileException {
+		String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_COUNT);
 
-        return doGetForObject(url, Long.class);
-    }
+		return doGetForObject(url, Long.class);
+	}
 
-    @Override
-    public List<Tenant> getAllTenants() throws ProfileException {
-        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_GET_ALL);
+	@Override
+	public List<Tenant> getAllTenants() throws ProfileException {
+		String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_GET_ALL);
 
-        return doGetForObject(url, tenantListTypeRef);
-    }
+		return doGetForObject(url, tenantListTypeRef);
+	}
 
-    @Override
-    public Tenant verifyNewProfiles(String tenantName, boolean verify) throws ProfileException {
-        MultiValueMap<String, String> params = createBaseParams();
-        HttpUtils.addValue(PARAM_VERIFY, verify, params);
+	@Override
+	public Tenant verifyNewProfiles(String tenantName, boolean verify) throws ProfileException {
+		MultiValueMap<String, String> params = createBaseParams();
+		HttpUtils.addValue(PARAM_VERIFY, verify, params);
 
-        String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_VERIFY_NEW_PROFILES);
+		String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_VERIFY_NEW_PROFILES);
 
-        return doPostForObject(url, params, Tenant.class, tenantName);
-    }
+		return doPostForObject(url, params, Tenant.class, tenantName);
+	}
 
-    @Override
-    public Tenant addRoles(String tenantName, Collection<String> roles) throws ProfileException {
-        MultiValueMap<String, String> params = createBaseParams();
-        HttpUtils.addValues(PARAM_ROLE, roles, params);
+	@Override
+	public Tenant addRoles(String tenantName, Collection<String> roles) throws ProfileException {
+		MultiValueMap<String, String> params = createBaseParams();
+		HttpUtils.addValues(PARAM_ROLE, roles, params);
 
-        String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_ADD_ROLES);
+		String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_ADD_ROLES);
 
-        return doPostForObject(url, params, Tenant.class, tenantName);
-    }
+		return doPostForObject(url, params, Tenant.class, tenantName);
+	}
 
-    @Override
-    public Tenant removeRoles(String tenantName, Collection<String> roles) throws ProfileException {
-        MultiValueMap<String, String> params = createBaseParams();
-        HttpUtils.addValues(PARAM_ROLE, roles, params);
+	@Override
+	public Tenant removeRoles(String tenantName, Collection<String> roles) throws ProfileException {
+		MultiValueMap<String, String> params = createBaseParams();
+		HttpUtils.addValues(PARAM_ROLE, roles, params);
 
-        String url = getAbsoluteUrl(BASE_URL_TENANT + URL_PROFILE_REMOVE_ROLES);
+		String url = getAbsoluteUrl(BASE_URL_TENANT + URL_PROFILE_REMOVE_ROLES);
 
-        return doPostForObject(url, params, Tenant.class, tenantName);
-    }
+		return doPostForObject(url, params, Tenant.class, tenantName);
+	}
 
-    @Override
-    public Tenant addAttributeDefinitions(String tenantName, Collection<AttributeDefinition> attributeDefinitions)
-            throws ProfileException {
-        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_ADD_ATTRIBUTE_DEFINITIONS);
+	@Override
+	public Tenant addAttributeDefinitions(String tenantName, Collection<AttributeDefinition> attributeDefinitions)
+		throws ProfileException {
+		String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_ADD_ATTRIBUTE_DEFINITIONS);
 
-        return doPostForObject(url, attributeDefinitions, Tenant.class, tenantName);
-    }
+		return doPostForObject(url, attributeDefinitions, Tenant.class, tenantName);
+	}
 
-    @Override
-    public Tenant updateAttributeDefinitions(String tenantName, Collection<AttributeDefinition> attributeDefinitions)
-            throws ProfileException {
-        String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_UPDATE_ATTRIBUTE_DEFINITIONS);
+	@Override
+	public Tenant updateAttributeDefinitions(String tenantName, Collection<AttributeDefinition> attributeDefinitions)
+		throws ProfileException {
+		String url = getAbsoluteUrlWithAccessTokenIdParam(BASE_URL_TENANT + URL_TENANT_UPDATE_ATTRIBUTE_DEFINITIONS);
 
-        return doPostForObject(url, attributeDefinitions, Tenant.class, tenantName);
-    }
+		return doPostForObject(url, attributeDefinitions, Tenant.class, tenantName);
+	}
 
-    @Override
-    public Tenant removeAttributeDefinitions(String tenantName, Collection<String> attributeNames)
-            throws ProfileException {
-        MultiValueMap<String, String> params = createBaseParams();
-        HttpUtils.addValues(PARAM_ATTRIBUTE_NAME, attributeNames, params);
+	@Override
+	public Tenant removeAttributeDefinitions(String tenantName, Collection<String> attributeNames)
+		throws ProfileException {
+		MultiValueMap<String, String> params = createBaseParams();
+		HttpUtils.addValues(PARAM_ATTRIBUTE_NAME, attributeNames, params);
 
-        String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_REMOVE_ATTRIBUTE_DEFINITIONS);
+		String url = getAbsoluteUrl(BASE_URL_TENANT + URL_TENANT_REMOVE_ATTRIBUTE_DEFINITIONS);
 
-        return doPostForObject(url, params, Tenant.class, tenantName);
-    }
+		return doPostForObject(url, params, Tenant.class, tenantName);
+	}
 
 }

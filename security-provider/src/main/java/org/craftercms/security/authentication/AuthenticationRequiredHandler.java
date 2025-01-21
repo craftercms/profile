@@ -28,12 +28,12 @@ import org.craftercms.security.exception.SecurityProviderException;
  */
 public interface AuthenticationRequiredHandler {
 
-    /**
-     * Handles the request when authentication is required.
-     *
-     * @param context the request context
-     * @param e       the exception with the reason for requiring authentication
-     */
-    void handle(RequestContext context, AuthenticationException e) throws SecurityProviderException, IOException;
+	/**
+	 * Handles the request when authentication is required.
+	 *
+	 * @param context the request context
+	 * @param e       the exception with the reason for requiring authentication
+	 */
+	void handle(RequestContext context, AuthenticationException e) throws SecurityProviderException, IOException;
 
 }

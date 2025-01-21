@@ -15,23 +15,23 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <Configuration>
-    <!-- Appenders -->
-    <Appenders>
-        <File name="fileAppender" fileName="${sys:profile.log}">
-            <PatternLayout pattern="%d{yyyy-MM-dd_HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
-        </File>
-    </Appenders>
+		<!-- Appenders -->
+		<Appenders>
+				<File name="fileAppender" fileName="${sys:profile.log}">
+						<PatternLayout pattern="%d{yyyy-MM-dd_HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+				</File>
+		</Appenders>
 
-    <Loggers>
-        <!-- Application Loggers -->
-        <Logger name="org.craftercms" level="trace"/>
+		<Loggers>
+				<!-- Application Loggers -->
+				<Logger name="org.craftercms" level="trace"/>
 
-        <!-- 3rdparty Loggers -->
-        <Logger name="org.springframework" level="info"/>
+				<!-- 3rdparty Loggers -->
+				<Logger name="org.springframework" level="info"/>
 
-        <!-- Root Logger -->
-        <Root level="error">
-            <AppenderRef ref="fileAppender"/>
-        </Root>
-    </Loggers>
+				<!-- Root Logger -->
+				<Root level="error">
+						<AppenderRef ref="fileAppender"/>
+				</Root>
+		</Loggers>
 </Configuration>

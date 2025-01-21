@@ -24,10 +24,10 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  */
 public class BadCredentialsException extends I10nProfileException {
 
-    public static final String KEY = "profile.auth.badCredentials";
+	public static final String KEY = "profile.auth.badCredentials";
 
-    public BadCredentialsException() {
-        super(KEY);
-    }
+	public BadCredentialsException() {
+		super(KEY);
+	}
 
 }

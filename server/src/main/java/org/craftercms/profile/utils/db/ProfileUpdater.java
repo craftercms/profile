@@ -32,116 +32,116 @@ import org.craftercms.profile.repositories.ProfileRepository;
  * Created by alfonsovasquez on 14/6/16.
  */
 public class ProfileUpdater {
-    
-    protected Profile profile;
-    protected UpdateHelper updateHelper;
-    protected ProfileRepository profileRepository;
 
-    public ProfileUpdater(Profile profile, UpdateHelper updateHelper, ProfileRepository profileRepository) {
-        this.profile = profile;
-        this.updateHelper = updateHelper;
-        this.profileRepository = profileRepository;
-    }
+	protected Profile profile;
+	protected UpdateHelper updateHelper;
+	protected ProfileRepository profileRepository;
 
-    public Profile getProfile() {
-        return profile;
-    }
+	public ProfileUpdater(Profile profile, UpdateHelper updateHelper, ProfileRepository profileRepository) {
+		this.profile = profile;
+		this.updateHelper = updateHelper;
+		this.profileRepository = profileRepository;
+	}
 
-    public void setUsername(String username) {
-        profile.setUsername(username);
-        updateHelper.set("username", username);
-    }
+	public Profile getProfile() {
+		return profile;
+	}
 
-    public void setPassword(String password) {
-        profile.setPassword(password);
-        updateHelper.set("password", password);
-    }
+	public void setUsername(String username) {
+		profile.setUsername(username);
+		updateHelper.set("username", username);
+	}
 
-    public void setEmail(String email) {
-        profile.setEmail(email);
-        updateHelper.set("email", email);
-    }
+	public void setPassword(String password) {
+		profile.setPassword(password);
+		updateHelper.set("password", password);
+	}
 
-    public void setVerified(boolean verified) {
-        profile.setVerified(verified);
-        updateHelper.set("verified", verified);
-    }
+	public void setEmail(String email) {
+		profile.setEmail(email);
+		updateHelper.set("email", email);
+	}
 
-    public void setEnabled(boolean enabled) {
-        profile.setEnabled(enabled);
-        updateHelper.set("enabled", enabled);
-    }
+	public void setVerified(boolean verified) {
+		profile.setVerified(verified);
+		updateHelper.set("verified", verified);
+	}
 
-    public void setLastModified(Date lastModified) {
-        profile.setLastModified(lastModified);
-        updateHelper.set("lastModified", lastModified);
-    }
+	public void setEnabled(boolean enabled) {
+		profile.setEnabled(enabled);
+		updateHelper.set("enabled", enabled);
+	}
 
-    public void setRoles(Set<String> roles) {
-        profile.setRoles(roles);
-        updateHelper.set("roles", roles);
-    }
+	public void setLastModified(Date lastModified) {
+		profile.setLastModified(lastModified);
+		updateHelper.set("lastModified", lastModified);
+	}
 
-    public void addRoles(Collection<String> roles) {
-        Set<String> allRoles = profile.getRoles();
-        List<String> pushValues = new ArrayList<>();
+	public void setRoles(Set<String> roles) {
+		profile.setRoles(roles);
+		updateHelper.set("roles", roles);
+	}
 
-        for (String role : roles) {
-            if (allRoles.add(role)) {
-                pushValues.add(role);
-            }
-        }
+	public void addRoles(Collection<String> roles) {
+		Set<String> allRoles = profile.getRoles();
+		List<String> pushValues = new ArrayList<>();
 
-        updateHelper.pushAll("roles", pushValues);
-    }
+		for (String role : roles) {
+			if (allRoles.add(role)) {
+				pushValues.add(role);
+			}
+		}
 
-    public void removeRoles(Collection<String> roles) {
-        Set<String> allRoles = profile.getRoles();
-        List<String> pullValues = new ArrayList<>();
+		updateHelper.pushAll("roles", pushValues);
+	}
 
-        for (String role : roles) {
-            if (allRoles.remove(role)) {
-                pullValues.add(role);
-            }
-        }
+	public void removeRoles(Collection<String> roles) {
+		Set<String> allRoles = profile.getRoles();
+		List<String> pullValues = new ArrayList<>();
 
-        updateHelper.pullAll("roles", pullValues);
-    }
+		for (String role : roles) {
+			if (allRoles.remove(role)) {
+				pullValues.add(role);
+			}
+		}
 
-    public void setAttributes(Map<String, Object> attributes) {
-        profile.setAttributes(attributes);
-        updateHelper.set("attributes", attributes);
-    }
+		updateHelper.pullAll("roles", pullValues);
+	}
 
-    public void addAttributes(Map<String, Object> attributes) {
-        for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
-            String name = attribute.getKey();
-            Object value = attribute.getValue();
+	public void setAttributes(Map<String, Object> attributes) {
+		profile.setAttributes(attributes);
+		updateHelper.set("attributes", attributes);
+	}
 
-            profile.getAttributes().put(name, value);
-            updateHelper.set("attributes." + name, value);
-        }
-    }
+	public void addAttributes(Map<String, Object> attributes) {
+		for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
+			String name = attribute.getKey();
+			Object value = attribute.getValue();
 
-    public void removeAttributes(Collection<String> attributeNames) {
-        for (String attributeName : attributeNames) {
-            profile.getAttributes().remove(attributeName);
-            updateHelper.unset("attributes." + attributeName);
-        }
-    }
+			profile.getAttributes().put(name, value);
+			updateHelper.set("attributes." + name, value);
+		}
+	}
 
-    public void setFailedLoginAttempts(int failedLoginAttempts) {
-        profile.setFailedLoginAttempts(failedLoginAttempts);
-        updateHelper.set("failedLoginAttempts", failedLoginAttempts);
-    }
+	public void removeAttributes(Collection<String> attributeNames) {
+		for (String attributeName : attributeNames) {
+			profile.getAttributes().remove(attributeName);
+			updateHelper.unset("attributes." + attributeName);
+		}
+	}
 
-    public void setLastFailedLogin(Date lastFailedLogin) {
-        profile.setLastFailedLogin(lastFailedLogin);
-        updateHelper.set("lastFailedLogin", lastFailedLogin);
-    }
+	public void setFailedLoginAttempts(int failedLoginAttempts) {
+		profile.setFailedLoginAttempts(failedLoginAttempts);
+		updateHelper.set("failedLoginAttempts", failedLoginAttempts);
+	}
 
-    public void update() throws MongoDataException {
-        updateHelper.executeUpdate(profile.getId().toString(), profileRepository);
-    }
-    
+	public void setLastFailedLogin(Date lastFailedLogin) {
+		profile.setLastFailedLogin(lastFailedLogin);
+		updateHelper.set("lastFailedLogin", lastFailedLogin);
+	}
+
+	public void update() throws MongoDataException {
+		updateHelper.executeUpdate(profile.getId().toString(), profileRepository);
+	}
+
 }

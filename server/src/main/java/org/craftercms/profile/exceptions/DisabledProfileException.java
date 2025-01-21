@@ -24,10 +24,10 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  */
 public class DisabledProfileException extends I10nProfileException {
 
-    public static final String KEY = "profile.profile.disabledProfile";
+	public static final String KEY = "profile.profile.disabledProfile";
 
-    public DisabledProfileException(String id, String tenant) {
-        super(KEY, id, tenant);
-    }
+	public DisabledProfileException(String id, String tenant) {
+		super(KEY, id, tenant);
+	}
 
 }

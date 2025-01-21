@@ -24,17 +24,18 @@ import java.beans.ConstructorProperties;
 
 /**
  * Rest controller to provide monitoring information
+ *
  * @author joseross
  */
 @RestController
 @RequestMapping(MonitoringController.URL_ROOT)
 public class MonitoringController extends MonitoringRestControllerBase {
 
-    public final static String URL_ROOT = "/api/1";
+	public final static String URL_ROOT = "/api/1";
 
-    @ConstructorProperties({"authorizationToken"})
-    public MonitoringController(final String authorizationToken) {
-        super(authorizationToken);
-    }
+	@ConstructorProperties({"authorizationToken"})
+	public MonitoringController(final String authorizationToken) {
+		super(authorizationToken);
+	}
 
 }

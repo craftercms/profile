@@ -33,41 +33,40 @@ import org.craftercms.security.utils.SecurityUtils;
  */
 public class TenantUtils {
 
-    private TenantUtils() {
-    }
+	private TenantUtils() {
+	}
 
-    /**
-     * Returns a list with the names of all tenants.
-     *
-     * @param tenantService the service that retrieves the {@link org.craftercms.profile.api.Tenant}s.
-     *
-     * @return the list of tenant names
-     */
-    public static List<String> getTenantNames(TenantService tenantService) throws ProfileException {
-        List<Tenant> tenants = tenantService.getAllTenants();
-        List<String> tenantNames = new ArrayList<>(tenants.size());
+	/**
+	 * Returns a list with the names of all tenants.
+	 *
+	 * @param tenantService the service that retrieves the {@link org.craftercms.profile.api.Tenant}s.
+	 * @return the list of tenant names
+	 */
+	public static List<String> getTenantNames(TenantService tenantService) throws ProfileException {
+		List<Tenant> tenants = tenantService.getAllTenants();
+		List<String> tenantNames = new ArrayList<>(tenants.size());
 
-        if (CollectionUtils.isNotEmpty(tenants)) {
-            for (Tenant tenant : tenants) {
-                tenantNames.add(tenant.getName());
-            }
-        }
+		if (CollectionUtils.isNotEmpty(tenants)) {
+			for (Tenant tenant : tenants) {
+				tenantNames.add(tenant.getName());
+			}
+		}
 
-        return tenantNames;
-    }
+		return tenantNames;
+	}
 
-    /**
-     * Returns the current tenant name, which is the tenant of the currently authenticated profile.
-     *
-     * @return the current tenant name.
-     */
-    public static String getCurrentTenantName() {
-        Profile profile = SecurityUtils.getCurrentProfile();
-        if (profile != null) {
-            return profile.getTenant();
-        } else {
-            return null;
-        }
-    }
+	/**
+	 * Returns the current tenant name, which is the tenant of the currently authenticated profile.
+	 *
+	 * @return the current tenant name.
+	 */
+	public static String getCurrentTenantName() {
+		Profile profile = SecurityUtils.getCurrentProfile();
+		if (profile != null) {
+			return profile.getTenant();
+		} else {
+			return null;
+		}
+	}
 
 }

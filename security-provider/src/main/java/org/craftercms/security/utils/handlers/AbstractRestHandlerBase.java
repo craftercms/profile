@@ -17,6 +17,7 @@ package org.craftercms.security.utils.handlers;
 
 import java.io.IOException;
 import java.util.Collections;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -33,35 +34,35 @@ import org.springframework.web.HttpMediaTypeNotAcceptableException;
  */
 public abstract class AbstractRestHandlerBase {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractRestHandlerBase.class);
+	private static final Logger logger = LoggerFactory.getLogger(AbstractRestHandlerBase.class);
 
-    protected HttpMessageConvertingResponseWriter responseWriter;
+	protected HttpMessageConvertingResponseWriter responseWriter;
 
-    public AbstractRestHandlerBase(HttpMessageConvertingResponseWriter responseWriter) {
-        this.responseWriter = responseWriter;
-    }
+	public AbstractRestHandlerBase(HttpMessageConvertingResponseWriter responseWriter) {
+		this.responseWriter = responseWriter;
+	}
 
-    protected <T> void sendObject(int status, T responseBody, RequestContext context) throws IOException {
-        HttpServletRequest request = context.getRequest();
-        HttpServletResponse response = context.getResponse();
+	protected <T> void sendObject(int status, T responseBody, RequestContext context) throws IOException {
+		HttpServletRequest request = context.getRequest();
+		HttpServletResponse response = context.getResponse();
 
-        response.setStatus(status);
+		response.setStatus(status);
 
-        try {
-            responseWriter.writeWithMessageConverters(responseBody, request, response);
-        } catch (HttpMediaTypeNotAcceptableException e) {
-            logger.error(e.getMessage(), e);
+		try {
+			responseWriter.writeWithMessageConverters(responseBody, request, response);
+		} catch (HttpMediaTypeNotAcceptableException e) {
+			logger.error(e.getMessage(), e);
 
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-        }
-    }
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+		}
+	}
 
-    protected void sendMessage(int status, String message, RequestContext context) throws IOException {
-        sendObject(status, Collections.singletonMap("message", message), context);
-    }
+	protected void sendMessage(int status, String message, RequestContext context) throws IOException {
+		sendObject(status, Collections.singletonMap("message", message), context);
+	}
 
-    protected void sendErrorMessage(int status, Throwable e, RequestContext context) throws IOException {
-        sendMessage(status, e.getLocalizedMessage(), context);
-    }
+	protected void sendErrorMessage(int status, Throwable e, RequestContext context) throws IOException {
+		sendMessage(status, e.getLocalizedMessage(), context);
+	}
 
 }

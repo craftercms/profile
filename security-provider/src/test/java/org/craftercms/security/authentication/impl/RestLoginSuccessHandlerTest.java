@@ -16,6 +16,7 @@
 package org.craftercms.security.authentication.impl;
 
 import java.util.UUID;
+
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
@@ -37,38 +38,38 @@ import static org.junit.Assert.assertEquals;
  */
 public class RestLoginSuccessHandlerTest extends AbstractRestHandlerTestBase {
 
-    private RestLoginSuccessHandler handler;
+	private RestLoginSuccessHandler handler;
 
-    @Before
-    public void setUp() throws Exception {
-        handler = new RestLoginSuccessHandler(createResponseWriter());
-    }
+	@Before
+	public void setUp() throws Exception {
+		handler = new RestLoginSuccessHandler(createResponseWriter());
+	}
 
-    @Test
-    public void testHandle() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/login.json");
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test
+	public void testHandle() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/login.json");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        String ticket = UUID.randomUUID().toString();
-        ObjectId profileId = new ObjectId();
+		String ticket = UUID.randomUUID().toString();
+		ObjectId profileId = new ObjectId();
 
-        Profile profile = new Profile();
-        profile.setId(profileId);
-        profile.setUsername("jdoe");
-        profile.setPassword("1234");
-        profile.setEmail("jdoe@craftercms.org");
+		Profile profile = new Profile();
+		profile.setId(profileId);
+		profile.setUsername("jdoe");
+		profile.setPassword("1234");
+		profile.setEmail("jdoe@craftercms.org");
 
-        Authentication auth = new DefaultAuthentication(ticket.toString(), profile);
+		Authentication auth = new DefaultAuthentication(ticket.toString(), profile);
 
-        handler.handle(context, auth);
+		handler.handle(context, auth);
 
-        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        assertEquals("{\"ticket\":\"" + ticket + "\",\"profile\":{\"username\":\"jdoe\"," +
-                     "\"password\":\"1234\",\"email\":\"jdoe@craftercms.org\",\"verified\":false," +
-                     "\"enabled\":false,\"createdOn\":null,\"lastModified\":null,\"tenant\":null,\"roles\":[]," +
-                     "\"attributes\":{},\"failedLoginAttempts\":0,\"lastFailedLogin\":null,\"id\":\"" +
-                     profileId.toString() + "\"},\"remembered\":false}", response.getContentAsString());
-    }
+		assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+		assertEquals("{\"ticket\":\"" + ticket + "\",\"profile\":{\"username\":\"jdoe\"," +
+			"\"password\":\"1234\",\"email\":\"jdoe@craftercms.org\",\"verified\":false," +
+			"\"enabled\":false,\"createdOn\":null,\"lastModified\":null,\"tenant\":null,\"roles\":[]," +
+			"\"attributes\":{},\"failedLoginAttempts\":0,\"lastFailedLogin\":null,\"id\":\"" +
+			profileId.toString() + "\"},\"remembered\":false}", response.getContentAsString());
+	}
 
 }

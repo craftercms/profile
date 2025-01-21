@@ -29,23 +29,23 @@ import org.craftercms.profile.api.AttributePermission;
  */
 public class AttributePermissionResolver implements PermissionResolver<AccessToken, AttributeDefinition> {
 
-    @Override
-    public Permission getGlobalPermission(AccessToken token) throws PermissionException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Permission getGlobalPermission(AccessToken token) throws PermissionException {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Permission getPermission(AccessToken token, AttributeDefinition definition) throws PermissionException {
-        for (AttributePermission permission : definition.getPermissions()) {
-            String app = token.getApplication();
-            String permittedApp = permission.getApplication();
+	@Override
+	public Permission getPermission(AccessToken token, AttributeDefinition definition) throws PermissionException {
+		for (AttributePermission permission : definition.getPermissions()) {
+			String app = token.getApplication();
+			String permittedApp = permission.getApplication();
 
-            if (permittedApp.equals(AttributePermission.ANY_APPLICATION) || permittedApp.equals(app)) {
-                return permission;
-            }
-        }
+			if (permittedApp.equals(AttributePermission.ANY_APPLICATION) || permittedApp.equals(app)) {
+				return permission;
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
 }

@@ -44,98 +44,98 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(AccessTokenController.BASE_URL_ACCESS_TOKEN)
 public class AccessTokenController {
 
-    public static final String BASE_URL_ACCESS_TOKEN = "/access_token";
+	public static final String BASE_URL_ACCESS_TOKEN = "/access_token";
 
-    public static final String PATH_VAR_ID = "id";
+	public static final String PATH_VAR_ID = "id";
 
-    public static final String URL_VIEW_ACCESS_TOKEN_LIST = "/list/view";
-    public static final String URL_VIEW_NEW_ACCESS_TOKEN = "/new/view";
-    public static final String URL_VIEW_ACCESS_TOKEN = "/view";
+	public static final String URL_VIEW_ACCESS_TOKEN_LIST = "/list/view";
+	public static final String URL_VIEW_NEW_ACCESS_TOKEN = "/new/view";
+	public static final String URL_VIEW_ACCESS_TOKEN = "/view";
 
-    public static final String URL_GET_ALL_ACCESS_TOKENS = "/all";
-    public static final String URL_GET_ACCESS_TOKEN = "/{" + PATH_VAR_ID + "}";
-    public static final String URL_CREATE_ACCESS_TOKEN = "/create";
-    public static final String URL_DELETE_ACCESS_TOKEN = "/{" + PATH_VAR_ID + "}/delete";
+	public static final String URL_GET_ALL_ACCESS_TOKENS = "/all";
+	public static final String URL_GET_ACCESS_TOKEN = "/{" + PATH_VAR_ID + "}";
+	public static final String URL_CREATE_ACCESS_TOKEN = "/create";
+	public static final String URL_DELETE_ACCESS_TOKEN = "/{" + PATH_VAR_ID + "}/delete";
 
-    public static final String VIEW_ACCESS_TOKEN_LIST = "access-token-list";
-    public static final String VIEW_NEW_ACCESS_TOKEN = "new-access-token";
-    public static final String VIEW_ACCESS_TOKEN = "access-token";
+	public static final String VIEW_ACCESS_TOKEN_LIST = "access-token-list";
+	public static final String VIEW_NEW_ACCESS_TOKEN = "new-access-token";
+	public static final String VIEW_ACCESS_TOKEN = "access-token";
 
-    public static final String MODEL_MESSAGE = "message";
+	public static final String MODEL_MESSAGE = "message";
 
-    public static final String MSG_ACCESS_TOKEN_CREATED_FORMAT = "Access token '%s' created";
-    public static final String MSG_ACCESS_TOKEN_DELETED_FORMAT = "Access token '%s' deleted";
+	public static final String MSG_ACCESS_TOKEN_CREATED_FORMAT = "Access token '%s' created";
+	public static final String MSG_ACCESS_TOKEN_DELETED_FORMAT = "Access token '%s' deleted";
 
-    private AccessTokenService accessTokenService;
+	private AccessTokenService accessTokenService;
 
-    public AccessTokenController(AccessTokenService accessTokenService) {
-        this.accessTokenService = accessTokenService;
-    }
+	public AccessTokenController(AccessTokenService accessTokenService) {
+		this.accessTokenService = accessTokenService;
+	}
 
-    @RequestMapping(value = URL_VIEW_ACCESS_TOKEN_LIST, method = RequestMethod.GET)
-    public String viewAccessTokenList() throws ProfileException {
-        return VIEW_ACCESS_TOKEN_LIST;
-    }
+	@RequestMapping(value = URL_VIEW_ACCESS_TOKEN_LIST, method = RequestMethod.GET)
+	public String viewAccessTokenList() throws ProfileException {
+		return VIEW_ACCESS_TOKEN_LIST;
+	}
 
-    @RequestMapping(value = URL_VIEW_NEW_ACCESS_TOKEN, method = RequestMethod.GET)
-    public String viewNewAccessToken() throws ProfileException {
-        return VIEW_NEW_ACCESS_TOKEN;
-    }
+	@RequestMapping(value = URL_VIEW_NEW_ACCESS_TOKEN, method = RequestMethod.GET)
+	public String viewNewAccessToken() throws ProfileException {
+		return VIEW_NEW_ACCESS_TOKEN;
+	}
 
-    @RequestMapping(value = URL_VIEW_ACCESS_TOKEN, method = RequestMethod.GET)
-    public String viewAccessToken() throws ProfileException {
-        return VIEW_ACCESS_TOKEN;
-    }
+	@RequestMapping(value = URL_VIEW_ACCESS_TOKEN, method = RequestMethod.GET)
+	public String viewAccessToken() throws ProfileException {
+		return VIEW_ACCESS_TOKEN;
+	}
 
-    @RequestMapping(value = URL_GET_ALL_ACCESS_TOKENS, method = RequestMethod.GET)
-    @ResponseBody
-    public List<AccessToken> getAllAccessTokens() throws ProfileException {
-        checkIfAllowed(null, Action.GET_ALL_ACCESS_TOKENS);
+	@RequestMapping(value = URL_GET_ALL_ACCESS_TOKENS, method = RequestMethod.GET)
+	@ResponseBody
+	public List<AccessToken> getAllAccessTokens() throws ProfileException {
+		checkIfAllowed(null, Action.GET_ALL_ACCESS_TOKENS);
 
-        return accessTokenService.getAllTokens();
-    }
+		return accessTokenService.getAllTokens();
+	}
 
-    @RequestMapping(value = URL_GET_ACCESS_TOKEN, method = RequestMethod.GET)
-    @ResponseBody
-    public AccessToken getAccessToken(@PathVariable(PATH_VAR_ID) String id) throws ProfileException {
-        checkIfAllowed(id, Action.GET_PROFILE);
+	@RequestMapping(value = URL_GET_ACCESS_TOKEN, method = RequestMethod.GET)
+	@ResponseBody
+	public AccessToken getAccessToken(@PathVariable(PATH_VAR_ID) String id) throws ProfileException {
+		checkIfAllowed(id, Action.GET_PROFILE);
 
-        AccessToken token = accessTokenService.getToken(id);
-        if (token != null) {
-            return token;
-        } else {
-            throw new ResourceNotFoundException("No access token found with ID '" + id + "'");
-        }
-    }
+		AccessToken token = accessTokenService.getToken(id);
+		if (token != null) {
+			return token;
+		} else {
+			throw new ResourceNotFoundException("No access token found with ID '" + id + "'");
+		}
+	}
 
-    @RequestMapping(value = URL_CREATE_ACCESS_TOKEN, method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, String> createAccessToken(@RequestBody AccessToken token) throws ProfileException {
-        checkIfAllowed(null, Action.CREATE_ACCESS_TOKEN);
+	@RequestMapping(value = URL_CREATE_ACCESS_TOKEN, method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, String> createAccessToken(@RequestBody AccessToken token) throws ProfileException {
+		checkIfAllowed(null, Action.CREATE_ACCESS_TOKEN);
 
-        token = accessTokenService.createToken(token);
+		token = accessTokenService.createToken(token);
 
-        return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_ACCESS_TOKEN_CREATED_FORMAT, token.getId()));
-    }
+		return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_ACCESS_TOKEN_CREATED_FORMAT, token.getId()));
+	}
 
-    @RequestMapping(value = URL_DELETE_ACCESS_TOKEN, method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, String> deleteAccessToken(@PathVariable(PATH_VAR_ID) String id) throws ProfileException {
-        checkIfAllowed(id, Action.DELETE_ACCESS_TOKEN);
+	@RequestMapping(value = URL_DELETE_ACCESS_TOKEN, method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, String> deleteAccessToken(@PathVariable(PATH_VAR_ID) String id) throws ProfileException {
+		checkIfAllowed(id, Action.DELETE_ACCESS_TOKEN);
 
-        accessTokenService.deleteToken(id);
+		accessTokenService.deleteToken(id);
 
-        return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_ACCESS_TOKEN_DELETED_FORMAT, id));
-    }
+		return Collections.singletonMap(MODEL_MESSAGE, String.format(MSG_ACCESS_TOKEN_DELETED_FORMAT, id));
+	}
 
-    private void checkIfAllowed(String tokenId, Action action) throws ActionDeniedException {
-        if (!AuthorizationUtils.isSuperadmin(SecurityUtils.getCurrentProfile())) {
-            if (tokenId != null) {
-                throw new ActionDeniedException(action.toString(), tokenId);
-            } else {
-                throw new ActionDeniedException(action.toString());
-            }
-        }
-    }
+	private void checkIfAllowed(String tokenId, Action action) throws ActionDeniedException {
+		if (!AuthorizationUtils.isSuperadmin(SecurityUtils.getCurrentProfile())) {
+			if (tokenId != null) {
+				throw new ActionDeniedException(action.toString(), tokenId);
+			} else {
+				throw new ActionDeniedException(action.toString());
+			}
+		}
+	}
 
 }

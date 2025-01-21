@@ -22,19 +22,19 @@ package org.craftercms.security.authentication;
  */
 public interface AuthenticationCache {
 
-    /**
-     * Returns the cached authentication for the given ticket.
-     */
-    Authentication getAuthentication(String ticket);
+	/**
+	 * Returns the cached authentication for the given ticket.
+	 */
+	Authentication getAuthentication(String ticket);
 
-    /**
-     * Puts the specified authentication in the cache.
-     */
-    void putAuthentication(Authentication authentication);
+	/**
+	 * Puts the specified authentication in the cache.
+	 */
+	void putAuthentication(Authentication authentication);
 
-    /**
-     * Removes the authentication associated to the given ticket from the cache.
-     */
-    void removeAuthentication(String ticket);
+	/**
+	 * Removes the authentication associated to the given ticket from the cache.
+	 */
+	void removeAuthentication(String ticket);
 
 }

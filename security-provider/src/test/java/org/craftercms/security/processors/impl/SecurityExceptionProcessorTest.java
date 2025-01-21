@@ -45,76 +45,76 @@ import static org.mockito.Mockito.verify;
  */
 public class SecurityExceptionProcessorTest {
 
-    private SecurityExceptionProcessor processor;
-    @Mock
-    private AuthenticationRequiredHandler authenticationRequiredHandler;
-    @Mock
-    private AccessDeniedHandler accessDeniedHandler;
+	private SecurityExceptionProcessor processor;
+	@Mock
+	private AuthenticationRequiredHandler authenticationRequiredHandler;
+	@Mock
+	private AccessDeniedHandler accessDeniedHandler;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-        processor = new SecurityExceptionProcessor(authenticationRequiredHandler, accessDeniedHandler);
-    }
+		processor = new SecurityExceptionProcessor(authenticationRequiredHandler, accessDeniedHandler);
+	}
 
-    @Test
-    public void testAuthenticationRequired() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
-        RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
+	@Test
+	public void testAuthenticationRequired() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
+		RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
-        doThrow(AuthenticationRequiredException.class).when(chain).processRequest(context);
+		doThrow(AuthenticationRequiredException.class).when(chain).processRequest(context);
 
-        processor.processRequest(context, chain);
+		processor.processRequest(context, chain);
 
-        verify(chain).processRequest(context);
-        verify(authenticationRequiredHandler).handle(eq(context), any(AuthenticationRequiredException.class));
-    }
+		verify(chain).processRequest(context);
+		verify(authenticationRequiredHandler).handle(eq(context), any(AuthenticationRequiredException.class));
+	}
 
-    @Test
-    public void testAccessDeniedNoAuthentication() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
-        RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
+	@Test
+	public void testAccessDeniedNoAuthentication() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
+		RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
-        doThrow(AccessDeniedException.class).when(chain).processRequest(context);
+		doThrow(AccessDeniedException.class).when(chain).processRequest(context);
 
-        processor.processRequest(context, chain);
+		processor.processRequest(context, chain);
 
-        verify(chain).processRequest(context);
-        verify(authenticationRequiredHandler).handle(eq(context), any(AuthenticationRequiredException.class));
-    }
+		verify(chain).processRequest(context);
+		verify(authenticationRequiredHandler).handle(eq(context), any(AuthenticationRequiredException.class));
+	}
 
-    @Test
-    public void testAccessDeniedWithAuthentication() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
-        RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
+	@Test
+	public void testAccessDeniedWithAuthentication() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
+		RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
-        doThrow(AccessDeniedException.class).when(chain).processRequest(context);
+		doThrow(AccessDeniedException.class).when(chain).processRequest(context);
 
-        SecurityUtils.setAuthentication(request, new DefaultAuthentication(new ObjectId().toString(), new Profile()));
+		SecurityUtils.setAuthentication(request, new DefaultAuthentication(new ObjectId().toString(), new Profile()));
 
-        processor.processRequest(context, chain);
+		processor.processRequest(context, chain);
 
-        verify(chain).processRequest(context);
-        verify(accessDeniedHandler).handle(eq(context), any(AccessDeniedException.class));
-    }
+		verify(chain).processRequest(context);
+		verify(accessDeniedHandler).handle(eq(context), any(AccessDeniedException.class));
+	}
 
-    @Test(expected = Exception.class)
-    public void testNonSecurityException() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
-        RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
+	@Test(expected = Exception.class)
+	public void testNonSecurityException() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
+		RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
-        doThrow(Exception.class).when(chain).processRequest(context);
+		doThrow(Exception.class).when(chain).processRequest(context);
 
-        processor.processRequest(context, chain);
-    }
+		processor.processRequest(context, chain);
+	}
 
 }

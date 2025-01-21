@@ -23,12 +23,12 @@ package org.craftercms.security.exception.rememberme;
  */
 public class CookieTheftException extends RememberMeException {
 
-    public CookieTheftException(String s) {
-        super(s);
-    }
+	public CookieTheftException(String s) {
+		super(s);
+	}
 
-    public CookieTheftException(String s, Throwable throwable) {
-        super(s, throwable);
-    }
+	public CookieTheftException(String s, Throwable throwable) {
+		super(s, throwable);
+	}
 
 }

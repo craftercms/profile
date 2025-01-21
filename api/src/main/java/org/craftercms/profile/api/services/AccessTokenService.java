@@ -29,36 +29,34 @@ import org.craftercms.profile.api.exceptions.ProfileException;
  */
 public interface AccessTokenService {
 
-    /**
-     * Creates a new access token.
-     *
-     * @param token the token to create
-     *
-     * @return the created token
-     */
-    AccessToken createToken(AccessToken token) throws ProfileException;
+	/**
+	 * Creates a new access token.
+	 *
+	 * @param token the token to create
+	 * @return the created token
+	 */
+	AccessToken createToken(AccessToken token) throws ProfileException;
 
-    /**
-     * Returns the token for the given ID.
-     *
-     * @param id the ID of the token
-     *
-     * @return the token, or null if not found
-     */
-    AccessToken getToken(String id) throws ProfileException;
+	/**
+	 * Returns the token for the given ID.
+	 *
+	 * @param id the ID of the token
+	 * @return the token, or null if not found
+	 */
+	AccessToken getToken(String id) throws ProfileException;
 
-    /**
-     * Returns all the access tokens in the DB.
-     *
-     * @return all the access tokens
-     */
-    List<AccessToken> getAllTokens() throws ProfileException;
+	/**
+	 * Returns all the access tokens in the DB.
+	 *
+	 * @return all the access tokens
+	 */
+	List<AccessToken> getAllTokens() throws ProfileException;
 
-    /**
-     * Deletes the token with the given ID.
-     *
-     * @param id the ID of the token
-     */
-    void deleteToken(String id) throws ProfileException;
+	/**
+	 * Deletes the token with the given ID.
+	 *
+	 * @param id the ID of the token
+	 */
+	void deleteToken(String id) throws ProfileException;
 
 }

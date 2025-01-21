@@ -35,131 +35,131 @@ import org.craftercms.profile.repositories.TenantRepository;
  */
 public class TenantUpdater {
 
-    protected Tenant tenant;
-    protected UpdateHelper updateHelper;
-    protected TenantRepository tenantRepository;
+	protected Tenant tenant;
+	protected UpdateHelper updateHelper;
+	protected TenantRepository tenantRepository;
 
-    public TenantUpdater(Tenant tenant, UpdateHelper updateHelper, TenantRepository tenantRepository) {
-        this.tenant = tenant;
-        this.updateHelper = updateHelper;
-        this.tenantRepository = tenantRepository;
-    }
+	public TenantUpdater(Tenant tenant, UpdateHelper updateHelper, TenantRepository tenantRepository) {
+		this.tenant = tenant;
+		this.updateHelper = updateHelper;
+		this.tenantRepository = tenantRepository;
+	}
 
-    public Tenant getTenant() {
-        return tenant;
-    }
+	public Tenant getTenant() {
+		return tenant;
+	}
 
-    public void setVerifyNewProfiles(boolean verifyNewProfiles) {
-        tenant.setVerifyNewProfiles(verifyNewProfiles);
-        updateHelper.set("verifyNewProfiles", verifyNewProfiles);
-    }
+	public void setVerifyNewProfiles(boolean verifyNewProfiles) {
+		tenant.setVerifyNewProfiles(verifyNewProfiles);
+		updateHelper.set("verifyNewProfiles", verifyNewProfiles);
+	}
 
-    public void setAvailableRoles(Set<String> availableRoles) {
-        tenant.setAvailableRoles(availableRoles);
-        updateHelper.set("availableRoles", availableRoles);
-    }
+	public void setAvailableRoles(Set<String> availableRoles) {
+		tenant.setAvailableRoles(availableRoles);
+		updateHelper.set("availableRoles", availableRoles);
+	}
 
-    public void addAvailableRoles(Collection<String> availableRoles) {
-        Set<String> allAvailableRoles = tenant.getAvailableRoles();
-        List<String> pushValues = new ArrayList<>();
+	public void addAvailableRoles(Collection<String> availableRoles) {
+		Set<String> allAvailableRoles = tenant.getAvailableRoles();
+		List<String> pushValues = new ArrayList<>();
 
-        for (String role : availableRoles) {
-            if (allAvailableRoles.add(role)) {
-                pushValues.add(role);
-            }
-        }
+		for (String role : availableRoles) {
+			if (allAvailableRoles.add(role)) {
+				pushValues.add(role);
+			}
+		}
 
-        updateHelper.pushAll("availableRoles", pushValues);
-    }
+		updateHelper.pushAll("availableRoles", pushValues);
+	}
 
-    public void removeAvailableRoles(Collection<String> availableRoles) {
-        Set<String> allAvailableRoles = tenant.getAvailableRoles();
-        List<String> pullValues = new ArrayList<>();
+	public void removeAvailableRoles(Collection<String> availableRoles) {
+		Set<String> allAvailableRoles = tenant.getAvailableRoles();
+		List<String> pullValues = new ArrayList<>();
 
-        for (String role : availableRoles) {
-            if (allAvailableRoles.remove(role)) {
-                pullValues.add(role);
-            }
-        }
+		for (String role : availableRoles) {
+			if (allAvailableRoles.remove(role)) {
+				pullValues.add(role);
+			}
+		}
 
-        updateHelper.pullAll("availableRoles", pullValues);
-    }
+		updateHelper.pullAll("availableRoles", pullValues);
+	}
 
-    public void setSsoEnabled(boolean ssoEnabled) {
-        tenant.setSsoEnabled(ssoEnabled);
-        updateHelper.set("ssoEnabled", ssoEnabled);
-    }
+	public void setSsoEnabled(boolean ssoEnabled) {
+		tenant.setSsoEnabled(ssoEnabled);
+		updateHelper.set("ssoEnabled", ssoEnabled);
+	}
 
-    public void setCleanseAttributes(boolean cleanseAttributes) {
-        tenant.setCleanseAttributes(cleanseAttributes);
-        updateHelper.set("cleanseAttributes", cleanseAttributes);
-    }
+	public void setCleanseAttributes(boolean cleanseAttributes) {
+		tenant.setCleanseAttributes(cleanseAttributes);
+		updateHelper.set("cleanseAttributes", cleanseAttributes);
+	}
 
-    public void setAttributeDefinitions(List<AttributeDefinition> attributeDefinitions) {
-        tenant.setAttributeDefinitions(attributeDefinitions);
-        updateHelper.set("attributeDefinitions", attributeDefinitions);
-    }
+	public void setAttributeDefinitions(List<AttributeDefinition> attributeDefinitions) {
+		tenant.setAttributeDefinitions(attributeDefinitions);
+		updateHelper.set("attributeDefinitions", attributeDefinitions);
+	}
 
-    public void addAttributeDefinitions(Collection<AttributeDefinition> attributeDefinitions) {
-        List<AttributeDefinition> allDefinitions = tenant.getAttributeDefinitions();
-        List<AttributeDefinition> pushValues = new ArrayList<>();
+	public void addAttributeDefinitions(Collection<AttributeDefinition> attributeDefinitions) {
+		List<AttributeDefinition> allDefinitions = tenant.getAttributeDefinitions();
+		List<AttributeDefinition> pushValues = new ArrayList<>();
 
-        for (AttributeDefinition definition : attributeDefinitions) {
-            if (!allDefinitions.contains(definition)) {
-                allDefinitions.add(definition);
-                pushValues.add(definition);
-            }
-        }
+		for (AttributeDefinition definition : attributeDefinitions) {
+			if (!allDefinitions.contains(definition)) {
+				allDefinitions.add(definition);
+				pushValues.add(definition);
+			}
+		}
 
-        updateHelper.pushAll("attributeDefinitions", pushValues);
-    }
+		updateHelper.pushAll("attributeDefinitions", pushValues);
+	}
 
-    public void updateAttributeDefinitions(Collection<AttributeDefinition> attributeDefinitions) {
-        List<AttributeDefinition> allDefinitions = tenant.getAttributeDefinitions();
+	public void updateAttributeDefinitions(Collection<AttributeDefinition> attributeDefinitions) {
+		List<AttributeDefinition> allDefinitions = tenant.getAttributeDefinitions();
 
-        for (AttributeDefinition definition : attributeDefinitions) {
-            int idx = indexOfAttributeDefinition(definition.getName(), allDefinitions);
-            if (idx >= 0) {
-                allDefinitions.set(idx, definition);
+		for (AttributeDefinition definition : attributeDefinitions) {
+			int idx = indexOfAttributeDefinition(definition.getName(), allDefinitions);
+			if (idx >= 0) {
+				allDefinitions.set(idx, definition);
 
-                updateHelper.set("attributeDefinitions." + idx, definition);
-            }
-        }
-    }
+				updateHelper.set("attributeDefinitions." + idx, definition);
+			}
+		}
+	}
 
-    public void removeAttributeDefinitions(Collection<String> attributeNames) {
-        List<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
-        List<String> pullValues = new ArrayList<>();
+	public void removeAttributeDefinitions(Collection<String> attributeNames) {
+		List<AttributeDefinition> attributeDefinitions = tenant.getAttributeDefinitions();
+		List<String> pullValues = new ArrayList<>();
 
-        for (String attributeName : attributeNames) {
-            for (Iterator<AttributeDefinition> iter = attributeDefinitions.iterator(); iter.hasNext();) {
-                AttributeDefinition definition = iter.next();
-                if (definition.getName().equals(attributeName)) {
-                    iter.remove();
+		for (String attributeName : attributeNames) {
+			for (Iterator<AttributeDefinition> iter = attributeDefinitions.iterator(); iter.hasNext(); ) {
+				AttributeDefinition definition = iter.next();
+				if (definition.getName().equals(attributeName)) {
+					iter.remove();
 
-                    pullValues.add(attributeName);
+					pullValues.add(attributeName);
 
-                    break;
-                }
-            }
-        }
+					break;
+				}
+			}
+		}
 
-        updateHelper.pullAllDocuments("attributeDefinitions", "name", pullValues);
-    }
+		updateHelper.pullAllDocuments("attributeDefinitions", "name", pullValues);
+	}
 
-    public void update() throws MongoDataException {
-        updateHelper.executeUpdate(tenant.getId().toString(), tenantRepository);
-    }
+	public void update() throws MongoDataException {
+		updateHelper.executeUpdate(tenant.getId().toString(), tenantRepository);
+	}
 
-    protected int indexOfAttributeDefinition(final String name, List<AttributeDefinition> definitions) {
-        return ListUtils.indexOf(definitions, new Predicate<AttributeDefinition>() {
+	protected int indexOfAttributeDefinition(final String name, List<AttributeDefinition> definitions) {
+		return ListUtils.indexOf(definitions, new Predicate<AttributeDefinition>() {
 
-            @Override
-            public boolean evaluate(AttributeDefinition definition) {
-                return definition.getName().equals(name);
-            }
+			@Override
+			public boolean evaluate(AttributeDefinition definition) {
+				return definition.getName().equals(name);
+			}
 
-        });
-    }
+		});
+	}
 
 }

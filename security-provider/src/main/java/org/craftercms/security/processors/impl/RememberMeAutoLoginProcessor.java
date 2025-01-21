@@ -31,25 +31,25 @@ import org.craftercms.security.utils.SecurityUtils;
  */
 public class RememberMeAutoLoginProcessor implements RequestSecurityProcessor {
 
-    protected RememberMeManager rememberMeManager;
+	protected RememberMeManager rememberMeManager;
 
-    public RememberMeAutoLoginProcessor(final RememberMeManager rememberMeManager) {
-        this.rememberMeManager = rememberMeManager;
-    }
+	public RememberMeAutoLoginProcessor(final RememberMeManager rememberMeManager) {
+		this.rememberMeManager = rememberMeManager;
+	}
 
-    @Override
-    public void processRequest(RequestContext context,
-                               RequestSecurityProcessorChain processorChain) throws Exception {
-        Authentication auth = SecurityUtils.getAuthentication(context.getRequest());
+	@Override
+	public void processRequest(RequestContext context,
+				   RequestSecurityProcessorChain processorChain) throws Exception {
+		Authentication auth = SecurityUtils.getAuthentication(context.getRequest());
 
-        if (auth == null) {
-            auth = rememberMeManager.autoLogin(context);
-            if (auth != null) {
-                SecurityUtils.setAuthentication(context.getRequest(), auth);
-            }
-        }
+		if (auth == null) {
+			auth = rememberMeManager.autoLogin(context);
+			if (auth != null) {
+				SecurityUtils.setAuthentication(context.getRequest(), auth);
+			}
+		}
 
-        processorChain.processRequest(context);
-    }
+		processorChain.processRequest(context);
+	}
 
 }

@@ -33,26 +33,26 @@ import static org.junit.Assert.assertTrue;
  */
 public class LogoutSuccessHandlerImplTest {
 
-    private static final String TARGET_URl = "/home";
+	private static final String TARGET_URl = "/home";
 
-    private LogoutSuccessHandlerImpl handler;
+	private LogoutSuccessHandlerImpl handler;
 
-    @Before
-    public void setUp() throws Exception {
-        handler = new LogoutSuccessHandlerImpl(TARGET_URl);
-    }
+	@Before
+	public void setUp() throws Exception {
+		handler = new LogoutSuccessHandlerImpl(TARGET_URl);
+	}
 
-    @Test
-    public void testRedirectToTargetUrl() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test
+	public void testRedirectToTargetUrl() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        handler.handle(context);
+		handler.handle(context);
 
-        assertEquals(TARGET_URl, response.getRedirectedUrl());
-        assertEquals(HttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
-        assertTrue(response.isCommitted());
-    }
+		assertEquals(TARGET_URl, response.getRedirectedUrl());
+		assertEquals(HttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
+		assertTrue(response.isCommitted());
+	}
 
 }

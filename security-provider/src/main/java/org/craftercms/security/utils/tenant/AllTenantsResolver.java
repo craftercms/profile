@@ -30,28 +30,28 @@ import org.slf4j.LoggerFactory;
  */
 public class AllTenantsResolver implements TenantsResolver {
 
-    private static final Logger logger = LoggerFactory.getLogger(AllTenantsResolver.class);
+	private static final Logger logger = LoggerFactory.getLogger(AllTenantsResolver.class);
 
-    protected TenantService tenantService;
+	protected TenantService tenantService;
 
-    public AllTenantsResolver(TenantService tenantService) {
-        this.tenantService = tenantService;
-    }
+	public AllTenantsResolver(TenantService tenantService) {
+		this.tenantService = tenantService;
+	}
 
-    @Override
-    public String[] getTenants() {
-        try {
-            List<String> tenants = TenantUtils.getTenantNames(tenantService);
-            if (tenants != null) {
-                return tenants.toArray(new String[tenants.size()]);
-            } else {
-                return null;
-            }
-        } catch (ProfileException e) {
-            logger.warn("Unable to retrieve tenants", e);
+	@Override
+	public String[] getTenants() {
+		try {
+			List<String> tenants = TenantUtils.getTenantNames(tenantService);
+			if (tenants != null) {
+				return tenants.toArray(new String[tenants.size()]);
+			} else {
+				return null;
+			}
+		} catch (ProfileException e) {
+			logger.warn("Unable to retrieve tenants", e);
 
-            return null;
-        }
-    }
+			return null;
+		}
+	}
 
 }

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -45,147 +46,147 @@ import org.springframework.web.filter.GenericFilterBean;
  */
 public class RequestSecurityFilter extends GenericFilterBean implements SecurityEnabledAware {
 
-    protected boolean securityEnabled;
-    protected List<RequestSecurityProcessor> securityProcessors;
-    protected String[] urlsToInclude;
-    protected String[] urlsToExclude;
+	protected boolean securityEnabled;
+	protected List<RequestSecurityProcessor> securityProcessors;
+	protected String[] urlsToInclude;
+	protected String[] urlsToExclude;
 
-    protected PathMatcher pathMatcher;
+	protected PathMatcher pathMatcher;
 
-    public RequestSecurityFilter(List<RequestSecurityProcessor> securityProcessors) {
-        pathMatcher = new AntPathMatcher();
+	public RequestSecurityFilter(List<RequestSecurityProcessor> securityProcessors) {
+		pathMatcher = new AntPathMatcher();
 
-        this.securityProcessors = securityProcessors;
-    }
+		this.securityProcessors = securityProcessors;
+	}
 
-    /**
-     * Sets if security is enabled or disabled. If disabled, the security processor chain is not run.
-     */
-    @Override
-    public void setSecurityEnabled(boolean securityEnabled) {
-        this.securityEnabled = securityEnabled;
-    }
+	/**
+	 * Sets if security is enabled or disabled. If disabled, the security processor chain is not run.
+	 */
+	@Override
+	public void setSecurityEnabled(boolean securityEnabled) {
+		this.securityEnabled = securityEnabled;
+	}
 
-    /**
-     * Sets the regular expressions used to match the URLs of requests that should be processed by the security chain.
-     */
-    public void setUrlsToInclude(String... urlsToInclude) {
-        this.urlsToInclude = urlsToInclude;
-    }
+	/**
+	 * Sets the regular expressions used to match the URLs of requests that should be processed by the security chain.
+	 */
+	public void setUrlsToInclude(String... urlsToInclude) {
+		this.urlsToInclude = urlsToInclude;
+	}
 
-    /**
-     * Sets the regular expressions used to match the URLs of requests that should NOT be processed by the security
-     * chain.
-     */
-    public void setUrlsToExclude(String... urlsToExclude) {
-        this.urlsToExclude = urlsToExclude;
-    }
+	/**
+	 * Sets the regular expressions used to match the URLs of requests that should NOT be processed by the security
+	 * chain.
+	 */
+	public void setUrlsToExclude(String... urlsToExclude) {
+		this.urlsToExclude = urlsToExclude;
+	}
 
-    /**
-     * If {@code securityEnabled}, passes the request through the chain of {@link RequestSecurityProcessor}s,
-     * depending if the request URL
-     * matches or not the {@code urlsToInclude} or the {@code urlsToExclude}. The last processor of the chain calls
-     * the actual filter
-     * chain.
-     *
-     * @param request
-     * @param response
-     * @param chain
-     * @throws IOException
-     * @throws ServletException
-     */
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-        ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest)request;
+	/**
+	 * If {@code securityEnabled}, passes the request through the chain of {@link RequestSecurityProcessor}s,
+	 * depending if the request URL
+	 * matches or not the {@code urlsToInclude} or the {@code urlsToExclude}. The last processor of the chain calls
+	 * the actual filter
+	 * chain.
+	 *
+	 * @param request
+	 * @param response
+	 * @param chain
+	 * @throws IOException
+	 * @throws ServletException
+	 */
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+		ServletException {
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        if (securityEnabled && (includeRequest(httpRequest) || !excludeRequest(httpRequest))) {
-            doFilterInternal((HttpServletRequest)request, (HttpServletResponse)response, chain);
-        } else {
-            chain.doFilter(request, response);
-        }
-    }
+		if (securityEnabled && (includeRequest(httpRequest) || !excludeRequest(httpRequest))) {
+			doFilterInternal((HttpServletRequest) request, (HttpServletResponse) response, chain);
+		} else {
+			chain.doFilter(request, response);
+		}
+	}
 
-    /**
-     * Passes the request through the chain of {@link RequestSecurityProcessor}s.
-     *
-     * @param request
-     * @param response
-     * @param chain
-     * @throws IOException
-     * @throws ServletException
-     */
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain chain) throws IOException, ServletException {
-        RequestContext context = RequestContext.getCurrent();
-        if (context == null) {
-            context = createRequestContext(request, response);
-        }
+	/**
+	 * Passes the request through the chain of {@link RequestSecurityProcessor}s.
+	 *
+	 * @param request
+	 * @param response
+	 * @param chain
+	 * @throws IOException
+	 * @throws ServletException
+	 */
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+					FilterChain chain) throws IOException, ServletException {
+		RequestContext context = RequestContext.getCurrent();
+		if (context == null) {
+			context = createRequestContext(request, response);
+		}
 
-        List<RequestSecurityProcessor> finalSecurityProcessors = new ArrayList<>(securityProcessors);
-        finalSecurityProcessors.add(getLastProcessorInChain(chain));
+		List<RequestSecurityProcessor> finalSecurityProcessors = new ArrayList<>(securityProcessors);
+		finalSecurityProcessors.add(getLastProcessorInChain(chain));
 
-        Iterator<RequestSecurityProcessor> processorIter = finalSecurityProcessors.iterator();
-        RequestSecurityProcessorChain processorChain = new RequestSecurityProcessorChainImpl(processorIter);
+		Iterator<RequestSecurityProcessor> processorIter = finalSecurityProcessors.iterator();
+		RequestSecurityProcessorChain processorChain = new RequestSecurityProcessorChainImpl(processorIter);
 
-        try {
-            processorChain.processRequest(context);
-        } catch (IOException | ServletException | RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ServletException(e.getMessage(), e);
-        }
-    }
+		try {
+			processorChain.processRequest(context);
+		} catch (IOException | ServletException | RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new ServletException(e.getMessage(), e);
+		}
+	}
 
-    /**
-     * Returns trues if the request should be excluded from processing.
-     */
-    protected boolean excludeRequest(HttpServletRequest request) {
-        if (ArrayUtils.isNotEmpty(urlsToExclude)) {
-            for (String pathPattern : urlsToExclude) {
-                if (pathMatcher.match(pathPattern, HttpUtils.getRequestUriWithoutContextPath(request))) {
-                    return true;
-                }
-            }
-        }
+	/**
+	 * Returns trues if the request should be excluded from processing.
+	 */
+	protected boolean excludeRequest(HttpServletRequest request) {
+		if (ArrayUtils.isNotEmpty(urlsToExclude)) {
+			for (String pathPattern : urlsToExclude) {
+				if (pathMatcher.match(pathPattern, HttpUtils.getRequestUriWithoutContextPath(request))) {
+					return true;
+				}
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    /**
-     * Returns trues if the request should be included for processing.
-     */
-    protected boolean includeRequest(HttpServletRequest request) {
-        if (ArrayUtils.isNotEmpty(urlsToInclude)) {
-            for (String pathPattern : urlsToInclude) {
-                if (pathMatcher.match(pathPattern, HttpUtils.getRequestUriWithoutContextPath(request))) {
-                    return true;
-                }
-            }
-        }
+	/**
+	 * Returns trues if the request should be included for processing.
+	 */
+	protected boolean includeRequest(HttpServletRequest request) {
+		if (ArrayUtils.isNotEmpty(urlsToInclude)) {
+			for (String pathPattern : urlsToInclude) {
+				if (pathMatcher.match(pathPattern, HttpUtils.getRequestUriWithoutContextPath(request))) {
+					return true;
+				}
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    /**
-     * Returns a new {@link RequestContext}, using the specified {@link HttpServletRequest} and {@link
-     * HttpServletResponse}.
-     */
-    protected RequestContext createRequestContext(HttpServletRequest request, HttpServletResponse response) {
-        return new RequestContext(request, response, getServletContext());
-    }
+	/**
+	 * Returns a new {@link RequestContext}, using the specified {@link HttpServletRequest} and {@link
+	 * HttpServletResponse}.
+	 */
+	protected RequestContext createRequestContext(HttpServletRequest request, HttpServletResponse response) {
+		return new RequestContext(request, response, getServletContext());
+	}
 
-    /**
-     * Returns the last processor of the chain, which should actually call the {@link FilterChain}.
-     */
-    protected RequestSecurityProcessor getLastProcessorInChain(final FilterChain chain) {
-        return new RequestSecurityProcessor() {
+	/**
+	 * Returns the last processor of the chain, which should actually call the {@link FilterChain}.
+	 */
+	protected RequestSecurityProcessor getLastProcessorInChain(final FilterChain chain) {
+		return new RequestSecurityProcessor() {
 
-            public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws
-                Exception {
-                chain.doFilter(context.getRequest(), context.getResponse());
-            }
+			public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws
+				Exception {
+				chain.doFilter(context.getRequest(), context.getResponse());
+			}
 
-        };
-    }
+		};
+	}
 
 }

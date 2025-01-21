@@ -38,49 +38,49 @@ import static org.mockito.Mockito.verify;
  */
 public class AuthenticationRequiredHandlerImplTest {
 
-    private static final String LOGIN_FORM_URL = "/login";
+	private static final String LOGIN_FORM_URL = "/login";
 
-    private AuthenticationRequiredHandlerImpl handler;
-    @Mock
-    private RequestCache requestCache;
+	private AuthenticationRequiredHandlerImpl handler;
+	@Mock
+	private RequestCache requestCache;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-        handler = new AuthenticationRequiredHandlerImpl();
-        handler.setRequestCache(requestCache);
-    }
+		handler = new AuthenticationRequiredHandlerImpl();
+		handler.setRequestCache(requestCache);
+	}
 
-    @Test
-    public void testRedirectToLoginFormUrl() throws Exception {
-        handler.setLoginFormUrl(LOGIN_FORM_URL);
+	@Test
+	public void testRedirectToLoginFormUrl() throws Exception {
+		handler.setLoginFormUrl(LOGIN_FORM_URL);
 
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        handler.handle(context, new AuthenticationRequiredException(""));
+		handler.handle(context, new AuthenticationRequiredException(""));
 
-        verify(requestCache).saveRequest(request, response);
+		verify(requestCache).saveRequest(request, response);
 
-        assertEquals(LOGIN_FORM_URL, response.getRedirectedUrl());
-        assertEquals(HttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
-        assertTrue(response.isCommitted());
-    }
+		assertEquals(LOGIN_FORM_URL, response.getRedirectedUrl());
+		assertEquals(HttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
+		assertTrue(response.isCommitted());
+	}
 
-    @Test
-    public void testSendError() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test
+	public void testSendError() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        handler.handle(context, new AuthenticationRequiredException(""));
+		handler.handle(context, new AuthenticationRequiredException(""));
 
-        verify(requestCache).saveRequest(request, response);
+		verify(requestCache).saveRequest(request, response);
 
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        assertTrue(response.isCommitted());
-    }
+		assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
+		assertTrue(response.isCommitted());
+	}
 
 }

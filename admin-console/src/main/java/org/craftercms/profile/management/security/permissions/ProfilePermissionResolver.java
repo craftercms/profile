@@ -29,20 +29,20 @@ import org.craftercms.profile.management.security.AuthorizationUtils;
  */
 public class ProfilePermissionResolver implements PermissionResolver<Profile, Profile> {
 
-    @Override
-    public Permission getGlobalPermission(Profile currentUser) throws PermissionException {
-        throw  new UnsupportedOperationException();
-    }
+	@Override
+	public Permission getGlobalPermission(Profile currentUser) throws PermissionException {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Permission getPermission(Profile currentUser, Profile profile) throws PermissionException {
-        if (AuthorizationUtils.isSuperadmin(currentUser)) {
-            return new SuperadminPermission();
-        } else if (AuthorizationUtils.isTenantAdmin(currentUser)) {
-            return new TenantAdminProfilePermission(currentUser, profile);
-        } else {
-            return new ProfileAdminProfilePermission(currentUser, profile);
-        }
-    }
+	@Override
+	public Permission getPermission(Profile currentUser, Profile profile) throws PermissionException {
+		if (AuthorizationUtils.isSuperadmin(currentUser)) {
+			return new SuperadminPermission();
+		} else if (AuthorizationUtils.isTenantAdmin(currentUser)) {
+			return new TenantAdminProfilePermission(currentUser, profile);
+		} else {
+			return new ProfileAdminProfilePermission(currentUser, profile);
+		}
+	}
 
 }

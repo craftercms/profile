@@ -35,50 +35,50 @@ import static org.craftercms.commons.entitlements.model.Module.PROFILE;
  */
 public class ProfileLicenseUsageProvider implements EntitlementUsageProvider {
 
-    /**
-     * Current instance of {@link TenantRepository}.
-     */
-    protected TenantRepository tenantRepository;
+	/**
+	 * Current instance of {@link TenantRepository}.
+	 */
+	protected TenantRepository tenantRepository;
 
-    /**
-     * Current instance of {@link ProfileRepository}.
-     */
-    protected ProfileRepository profileRepository;
+	/**
+	 * Current instance of {@link ProfileRepository}.
+	 */
+	protected ProfileRepository profileRepository;
 
-    public ProfileLicenseUsageProvider(final TenantRepository tenantRepository, final ProfileRepository profileRepository) {
-        this.tenantRepository = tenantRepository;
-        this.profileRepository = profileRepository;
-    }
+	public ProfileLicenseUsageProvider(final TenantRepository tenantRepository, final ProfileRepository profileRepository) {
+		this.tenantRepository = tenantRepository;
+		this.profileRepository = profileRepository;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Module getModule() {
-        return PROFILE;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Module getModule() {
+		return PROFILE;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<EntitlementType> getSupportedEntitlements() {
-        return Arrays.asList(EntitlementType.SITE, EntitlementType.USER);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<EntitlementType> getSupportedEntitlements() {
+		return Arrays.asList(EntitlementType.SITE, EntitlementType.USER);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int doGetEntitlementUsage(final EntitlementType type) throws Exception {
-        switch (type) {
-            case SITE:
-                return (int) tenantRepository.count();
-            case USER:
-                return (int) profileRepository.count();
-            default:
-                throw new UnsupportedEntitlementException(PROFILE, type);
-        }
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int doGetEntitlementUsage(final EntitlementType type) throws Exception {
+		switch (type) {
+			case SITE:
+				return (int) tenantRepository.count();
+			case USER:
+				return (int) profileRepository.count();
+			default:
+				throw new UnsupportedEntitlementException(PROFILE, type);
+		}
+	}
 
 }

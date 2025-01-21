@@ -44,46 +44,46 @@ import static org.mockito.Mockito.verify;
  */
 public class LogoutProcessorTest {
 
-    private static final String USERNAME = "jdoe";
+	private static final String USERNAME = "jdoe";
 
-    private LogoutProcessor processor;
-    @Mock
-    private AuthenticationManager authenticationManager;
-    @Mock
-    private LogoutSuccessHandler logoutSuccessHandler;
+	private LogoutProcessor processor;
+	@Mock
+	private AuthenticationManager authenticationManager;
+	@Mock
+	private LogoutSuccessHandler logoutSuccessHandler;
 
-    @Mock
-    private RememberMeManager rememberMeManager;
+	@Mock
+	private RememberMeManager rememberMeManager;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-        processor = new LogoutProcessor(authenticationManager, logoutSuccessHandler, rememberMeManager);
-    }
+		processor = new LogoutProcessor(authenticationManager, logoutSuccessHandler, rememberMeManager);
+	}
 
-    @Test
-    public void testLogout() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest(LogoutProcessor.DEFAULT_LOGOUT_METHOD,
-                                                                    LogoutProcessor.DEFAULT_LOGOUT_URL);
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
-        RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
+	@Test
+	public void testLogout() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest(LogoutProcessor.DEFAULT_LOGOUT_METHOD,
+			LogoutProcessor.DEFAULT_LOGOUT_URL);
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
+		RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
-        Profile profile = new Profile();
-        profile.setUsername(USERNAME);
+		Profile profile = new Profile();
+		profile.setUsername(USERNAME);
 
-        Authentication auth = new DefaultAuthentication(new ObjectId().toString(), profile);
+		Authentication auth = new DefaultAuthentication(new ObjectId().toString(), profile);
 
-        SecurityUtils.setAuthentication(request, auth);
+		SecurityUtils.setAuthentication(request, auth);
 
-        processor.processRequest(context, chain);
+		processor.processRequest(context, chain);
 
-        verify(chain, never()).processRequest(context);
+		verify(chain, never()).processRequest(context);
 
-        assertNull(SecurityUtils.getAuthentication(request));
+		assertNull(SecurityUtils.getAuthentication(request));
 
-        verify(logoutSuccessHandler).handle(context);
-    }
+		verify(logoutSuccessHandler).handle(context);
+	}
 
 }

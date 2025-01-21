@@ -22,12 +22,12 @@ package org.craftercms.security.exception;
  */
 public class AccessDeniedException extends SecurityProviderException {
 
-    public AccessDeniedException(String s) {
-        super(s);
-    }
+	public AccessDeniedException(String s) {
+		super(s);
+	}
 
-    public AccessDeniedException(String s, Throwable throwable) {
-        super(s, throwable);
-    }
+	public AccessDeniedException(String s, Throwable throwable) {
+		super(s, throwable);
+	}
 
 }

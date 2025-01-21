@@ -16,6 +16,7 @@
 package org.craftercms.security.processors.impl;
 
 import java.util.UUID;
+
 import jakarta.servlet.http.HttpSession;
 
 import org.craftercms.commons.http.RequestContext;
@@ -56,110 +57,110 @@ import static org.mockito.Mockito.when;
  */
 public class LoginProcessorTest {
 
-    private static final String[] TENANTS = new String[] {"default"};
-    private static final String USERNAME = "jdoe";
-    private static final String VALID_PASSWORD = "1234";
-    private static final String INVALID_PASSWORD = "4321";
-    private static final String TICKET = UUID.randomUUID().toString();
+	private static final String[] TENANTS = new String[]{"default"};
+	private static final String USERNAME = "jdoe";
+	private static final String VALID_PASSWORD = "1234";
+	private static final String INVALID_PASSWORD = "4321";
+	private static final String TICKET = UUID.randomUUID().toString();
 
-    private LoginProcessor processor;
-    @Mock
-    private AuthenticationManager authenticationManager;
-    @Mock
-    private LoginSuccessHandler loginSuccessHandler;
-    @Mock
-    private LoginFailureHandler loginFailureHandler;
-    @Mock
-    private RememberMeManager rememberMeManager;
+	private LoginProcessor processor;
+	@Mock
+	private AuthenticationManager authenticationManager;
+	@Mock
+	private LoginSuccessHandler loginSuccessHandler;
+	@Mock
+	private LoginFailureHandler loginFailureHandler;
+	@Mock
+	private RememberMeManager rememberMeManager;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-        DefaultTenantsResolver resolver = new DefaultTenantsResolver(TENANTS);
+		DefaultTenantsResolver resolver = new DefaultTenantsResolver(TENANTS);
 
-        processor = new LoginProcessor(authenticationManager, loginSuccessHandler, loginFailureHandler, rememberMeManager, resolver);
+		processor = new LoginProcessor(authenticationManager, loginSuccessHandler, loginFailureHandler, rememberMeManager, resolver);
 
-        Profile profile = new Profile();
-        profile.setUsername(USERNAME);
+		Profile profile = new Profile();
+		profile.setUsername(USERNAME);
 
-        when(authenticationManager.authenticateUser(TENANTS, USERNAME, VALID_PASSWORD)).thenReturn(
-            new DefaultAuthentication(TICKET, profile));
-        doThrow(BadCredentialsException.class).when(authenticationManager).authenticateUser(TENANTS, USERNAME,
-                                                                                            INVALID_PASSWORD);
-    }
+		when(authenticationManager.authenticateUser(TENANTS, USERNAME, VALID_PASSWORD)).thenReturn(
+			new DefaultAuthentication(TICKET, profile));
+		doThrow(BadCredentialsException.class).when(authenticationManager).authenticateUser(TENANTS, USERNAME,
+			INVALID_PASSWORD);
+	}
 
-    @Test
-    public void testLoginSuccess() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest(LoginProcessor.DEFAULT_LOGIN_METHOD,
-                LoginProcessor.DEFAULT_LOGIN_URL);
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        HttpSession session = request.getSession(true);
-        RequestContext context = new RequestContext(request, response, null);
-        RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
+	@Test
+	public void testLoginSuccess() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest(LoginProcessor.DEFAULT_LOGIN_METHOD,
+			LoginProcessor.DEFAULT_LOGIN_URL);
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		HttpSession session = request.getSession(true);
+		RequestContext context = new RequestContext(request, response, null);
+		RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
-        request.setParameter(LoginProcessor.DEFAULT_USERNAME_PARAM, USERNAME);
-        request.setParameter(LoginProcessor.DEFAULT_PASSWORD_PARAM, VALID_PASSWORD);
-        session.setAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE,
-                             new BadCredentialsException());
-        session.setAttribute(SecurityUtils.AUTHENTICATION_EXCEPTION_SESSION_ATTRIBUTE,
-                             new AuthenticationSystemException());
+		request.setParameter(LoginProcessor.DEFAULT_USERNAME_PARAM, USERNAME);
+		request.setParameter(LoginProcessor.DEFAULT_PASSWORD_PARAM, VALID_PASSWORD);
+		session.setAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE,
+			new BadCredentialsException());
+		session.setAttribute(SecurityUtils.AUTHENTICATION_EXCEPTION_SESSION_ATTRIBUTE,
+			new AuthenticationSystemException());
 
-        processor.processRequest(context, chain);
+		processor.processRequest(context, chain);
 
-        verify(chain, never()).processRequest(context);
+		verify(chain, never()).processRequest(context);
 
-        /** Removed Session are invalidated after login is ok.
-         assertNull(session.getAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE));
-         assertNull(session.getAttribute(SecurityUtils.AUTHENTICATION_EXCEPTION_SESSION_ATTRIBUTE));
-         **/
+		/** Removed Session are invalidated after login is ok.
+		 assertNull(session.getAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE));
+		 assertNull(session.getAttribute(SecurityUtils.AUTHENTICATION_EXCEPTION_SESSION_ATTRIBUTE));
+		 **/
 
-        Authentication auth = SecurityUtils.getAuthentication(request);
+		Authentication auth = SecurityUtils.getAuthentication(request);
 
-        assertNotNull(auth);
-        assertEquals(TICKET, auth.getTicket());
-        assertNotNull(auth.getProfile());
-        assertEquals(USERNAME, auth.getProfile().getUsername());
+		assertNotNull(auth);
+		assertEquals(TICKET, auth.getTicket());
+		assertNotNull(auth.getProfile());
+		assertEquals(USERNAME, auth.getProfile().getUsername());
 
-        verify(authenticationManager).authenticateUser(TENANTS, USERNAME, VALID_PASSWORD);
-        verify(rememberMeManager).disableRememberMe(context);
-        verify(loginSuccessHandler).handle(context, auth);
+		verify(authenticationManager).authenticateUser(TENANTS, USERNAME, VALID_PASSWORD);
+		verify(rememberMeManager).disableRememberMe(context);
+		verify(loginSuccessHandler).handle(context, auth);
 
-        request.setParameter(LoginProcessor.DEFAULT_REMEMBER_ME_PARAM, "true");
+		request.setParameter(LoginProcessor.DEFAULT_REMEMBER_ME_PARAM, "true");
 
-        processor.processRequest(context, chain);
+		processor.processRequest(context, chain);
 
-        auth = SecurityUtils.getAuthentication(request);
+		auth = SecurityUtils.getAuthentication(request);
 
-        assertNotNull(auth);
+		assertNotNull(auth);
 
-        verify(rememberMeManager).enableRememberMe(auth, context);
-    }
+		verify(rememberMeManager).enableRememberMe(auth, context);
+	}
 
-    @Test
-    public void testLoginFailure() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest(LoginProcessor.DEFAULT_LOGIN_METHOD,
-                                                                    LoginProcessor.DEFAULT_LOGIN_URL);
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        HttpSession session = request.getSession(true);
-        RequestContext context = new RequestContext(request, response, null);
-        RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
+	@Test
+	public void testLoginFailure() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest(LoginProcessor.DEFAULT_LOGIN_METHOD,
+			LoginProcessor.DEFAULT_LOGIN_URL);
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		HttpSession session = request.getSession(true);
+		RequestContext context = new RequestContext(request, response, null);
+		RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
-        request.setParameter(LoginProcessor.DEFAULT_USERNAME_PARAM, USERNAME);
-        request.setParameter(LoginProcessor.DEFAULT_PASSWORD_PARAM, INVALID_PASSWORD);
+		request.setParameter(LoginProcessor.DEFAULT_USERNAME_PARAM, USERNAME);
+		request.setParameter(LoginProcessor.DEFAULT_PASSWORD_PARAM, INVALID_PASSWORD);
 
-        processor.processRequest(context, chain);
+		processor.processRequest(context, chain);
 
-        verify(chain, never()).processRequest(context);
+		verify(chain, never()).processRequest(context);
 
-        assertNotNull(session.getAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE));
+		assertNotNull(session.getAttribute(SecurityUtils.BAD_CREDENTIALS_EXCEPTION_SESSION_ATTRIBUTE));
 
-        Authentication auth = SecurityUtils.getAuthentication(request);
+		Authentication auth = SecurityUtils.getAuthentication(request);
 
-        assertNull(auth);
+		assertNull(auth);
 
-        verify(authenticationManager).authenticateUser(TENANTS, USERNAME, INVALID_PASSWORD);
-        verify(loginFailureHandler).handle(eq(context), any(BadCredentialsException.class));
-    }
+		verify(authenticationManager).authenticateUser(TENANTS, USERNAME, INVALID_PASSWORD);
+		verify(loginFailureHandler).handle(eq(context), any(BadCredentialsException.class));
+	}
 
 }

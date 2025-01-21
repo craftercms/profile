@@ -16,6 +16,7 @@
 package org.craftercms.security.authentication.impl;
 
 import java.io.IOException;
+
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,43 +36,43 @@ import org.slf4j.LoggerFactory;
  */
 public class LoginFailureHandlerImpl implements LoginFailureHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoginFailureHandlerImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(LoginFailureHandlerImpl.class);
 
-    protected String targetUrl;
+	protected String targetUrl;
 
-    public LoginFailureHandlerImpl() {
-        super();
-    }
+	public LoginFailureHandlerImpl() {
+		super();
+	}
 
-    public void setTargetUrl(String targetUrl) {
-        this.targetUrl = targetUrl;
-    }
+	public void setTargetUrl(String targetUrl) {
+		this.targetUrl = targetUrl;
+	}
 
-    protected String getTargetUrl() {
-        return targetUrl;
-    }
+	protected String getTargetUrl() {
+		return targetUrl;
+	}
 
-    /**
-     * Redirects the response to target URL if target URL is not empty. If not, a 401 UNAUTHORIZED error is sent.
-     *
-     * @param context the request context
-     * @param e       the exception that caused the login to fail.
-     */
-    @Override
-    public void handle(RequestContext context, AuthenticationException e) throws SecurityProviderException,
-            IOException {
-        String targetUrl = getTargetUrl();
-        if (StringUtils.isNotEmpty(targetUrl)) {
-            RedirectUtils.redirect(context.getRequest(), context.getResponse(), targetUrl);
-        } else {
-            sendError(e, context);
-        }
-    }
+	/**
+	 * Redirects the response to target URL if target URL is not empty. If not, a 401 UNAUTHORIZED error is sent.
+	 *
+	 * @param context the request context
+	 * @param e       the exception that caused the login to fail.
+	 */
+	@Override
+	public void handle(RequestContext context, AuthenticationException e) throws SecurityProviderException,
+		IOException {
+		String targetUrl = getTargetUrl();
+		if (StringUtils.isNotEmpty(targetUrl)) {
+			RedirectUtils.redirect(context.getRequest(), context.getResponse(), targetUrl);
+		} else {
+			sendError(e, context);
+		}
+	}
 
-    protected void sendError(AuthenticationException e, RequestContext context) throws IOException {
-        logger.debug("Sending 401 UNAUTHORIZED error");
+	protected void sendError(AuthenticationException e, RequestContext context) throws IOException {
+		logger.debug("Sending 401 UNAUTHORIZED error");
 
-        context.getResponse().sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
-    }
+		context.getResponse().sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
+	}
 
 }

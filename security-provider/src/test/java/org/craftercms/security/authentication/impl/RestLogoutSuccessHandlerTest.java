@@ -33,25 +33,25 @@ import static org.junit.Assert.assertEquals;
  */
 public class RestLogoutSuccessHandlerTest extends AbstractRestHandlerTestBase {
 
-    private static final String EXPECTED_RESPONSE_CONTENT = "{\"message\":\"Logout successful\"}";
+	private static final String EXPECTED_RESPONSE_CONTENT = "{\"message\":\"Logout successful\"}";
 
-    private RestLogoutSuccessHandler handler;
+	private RestLogoutSuccessHandler handler;
 
-    @Before
-    public void setUp() throws Exception {
-        handler = new RestLogoutSuccessHandler(createResponseWriter());
-    }
+	@Before
+	public void setUp() throws Exception {
+		handler = new RestLogoutSuccessHandler(createResponseWriter());
+	}
 
-    @Test
-    public void testHandle() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/logout.json");
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test
+	public void testHandle() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/logout.json");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        handler.handle(context);
+		handler.handle(context);
 
-        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        assertEquals(EXPECTED_RESPONSE_CONTENT, response.getContentAsString());
-    }
+		assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+		assertEquals(EXPECTED_RESPONSE_CONTENT, response.getContentAsString());
+	}
 
 }

@@ -16,6 +16,7 @@
 package org.craftercms.security.authentication.impl;
 
 import java.io.IOException;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -40,46 +41,46 @@ import org.springframework.security.web.savedrequest.SavedRequest;
  */
 public class LoginSuccessHandlerImpl implements LoginSuccessHandler {
 
-    protected RequestCache requestCache;
-    protected String defaultTargetUrl;
-    protected boolean alwaysUseDefaultTargetUrl;
+	protected RequestCache requestCache;
+	protected String defaultTargetUrl;
+	protected boolean alwaysUseDefaultTargetUrl;
 
-    public LoginSuccessHandlerImpl(String defaultTargetUrl) {
-        super();
-        this.defaultTargetUrl = defaultTargetUrl;
-        requestCache = new HttpSessionRequestCache();
-        alwaysUseDefaultTargetUrl = false;
-    }
+	public LoginSuccessHandlerImpl(String defaultTargetUrl) {
+		super();
+		this.defaultTargetUrl = defaultTargetUrl;
+		requestCache = new HttpSessionRequestCache();
+		alwaysUseDefaultTargetUrl = false;
+	}
 
-    public void setRequestCache(RequestCache requestCache) {
-        this.requestCache = requestCache;
-    }
+	public void setRequestCache(RequestCache requestCache) {
+		this.requestCache = requestCache;
+	}
 
-    protected String getDefaultTargetUrl() {
-        return defaultTargetUrl;
-    }
+	protected String getDefaultTargetUrl() {
+		return defaultTargetUrl;
+	}
 
-    public void setAlwaysUseDefaultTargetUrl(boolean alwaysUseDefaultTargetUrl) {
-        this.alwaysUseDefaultTargetUrl = alwaysUseDefaultTargetUrl;
-    }
+	public void setAlwaysUseDefaultTargetUrl(boolean alwaysUseDefaultTargetUrl) {
+		this.alwaysUseDefaultTargetUrl = alwaysUseDefaultTargetUrl;
+	}
 
-    protected boolean isAlwaysUseDefaultTargetUrl() {
-        return alwaysUseDefaultTargetUrl;
-    }
+	protected boolean isAlwaysUseDefaultTargetUrl() {
+		return alwaysUseDefaultTargetUrl;
+	}
 
-    @Override
-    public void handle(RequestContext context, Authentication authentication) throws SecurityProviderException,
-            IOException {
-        redirectToSavedRequest(context.getRequest(), context.getResponse());
-    }
+	@Override
+	public void handle(RequestContext context, Authentication authentication) throws SecurityProviderException,
+		IOException {
+		redirectToSavedRequest(context.getRequest(), context.getResponse());
+	}
 
-    protected void redirectToSavedRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        SavedRequest savedRequest = requestCache.getRequest(request, response);
-        if (!isAlwaysUseDefaultTargetUrl() && savedRequest != null) {
-            RedirectUtils.redirect(request, response, savedRequest.getRedirectUrl());
-        } else {
-            RedirectUtils.redirect(request, response, getDefaultTargetUrl());
-        }
-    }
+	protected void redirectToSavedRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		SavedRequest savedRequest = requestCache.getRequest(request, response);
+		if (!isAlwaysUseDefaultTargetUrl() && savedRequest != null) {
+			RedirectUtils.redirect(request, response, savedRequest.getRedirectUrl());
+		} else {
+			RedirectUtils.redirect(request, response, getDefaultTargetUrl());
+		}
+	}
 
 }

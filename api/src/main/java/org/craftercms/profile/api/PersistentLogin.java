@@ -27,84 +27,84 @@ import java.util.Date;
  */
 public class PersistentLogin {
 
-    private String _id;
-    private String tenant;
-    private String profileId;
-    private String token;
-    private Date timestamp;
+	private String _id;
+	private String tenant;
+	private String profileId;
+	private String token;
+	private Date timestamp;
 
-    public String getId() {
-        return _id;
-    }
+	public String getId() {
+		return _id;
+	}
 
-    public void setId(String id) {
-        this._id = id;
-    }
+	public void setId(String id) {
+		this._id = id;
+	}
 
-    public String getTenant() {
-        return tenant;
-    }
+	public String getTenant() {
+		return tenant;
+	}
 
-    public void setTenant(final String tenant) {
-        this.tenant = tenant;
-    }
+	public void setTenant(final String tenant) {
+		this.tenant = tenant;
+	}
 
-    public String getProfileId() {
-        return profileId;
-    }
+	public String getProfileId() {
+		return profileId;
+	}
 
-    public void setProfileId(String profileId) {
-        this.profileId = profileId;
-    }
+	public void setProfileId(String profileId) {
+		this.profileId = profileId;
+	}
 
-    public String getToken() {
-        return token;
-    }
+	public String getToken() {
+		return token;
+	}
 
-    public void setToken(String token) {
-        this.token = token;
-    }
+	public void setToken(String token) {
+		this.token = token;
+	}
 
-    public Date getTimestamp() {
-        return timestamp;
-    }
+	public Date getTimestamp() {
+		return timestamp;
+	}
 
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-        PersistentLogin login = (PersistentLogin) o;
+		PersistentLogin login = (PersistentLogin) o;
 
-        if (!_id.equals(login._id)) {
-            return false;
-        }
+		if (!_id.equals(login._id)) {
+			return false;
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public int hashCode() {
-        return _id.hashCode();
-    }
+	@Override
+	public int hashCode() {
+		return _id.hashCode();
+	}
 
-    @Override
-    public String toString() {
-        return "PersistentLogin{" +
-            "id='" + _id + '\'' +
-            ", tenant='" + tenant + '\'' +
-            ", profileId='" + profileId + '\'' +
-            ", token='" + token + '\'' +
-            ", timestamp='" + timestamp + '\'' +
-            '}';
-    }
+	@Override
+	public String toString() {
+		return "PersistentLogin{" +
+			"id='" + _id + '\'' +
+			", tenant='" + tenant + '\'' +
+			", profileId='" + profileId + '\'' +
+			", token='" + token + '\'' +
+			", timestamp='" + timestamp + '\'' +
+			'}';
+	}
 
 }

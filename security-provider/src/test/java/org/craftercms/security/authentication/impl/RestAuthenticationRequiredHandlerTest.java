@@ -34,26 +34,26 @@ import static org.junit.Assert.assertEquals;
  */
 public class RestAuthenticationRequiredHandlerTest extends AbstractRestHandlerTestBase {
 
-    private static final String ERROR_MESSAGE =             "Access denied: user needs to be authenticated";
-    private static final String EXPECTED_RESPONSE_CONTENT = "{\"message\":\"" + ERROR_MESSAGE + "\"}";
+	private static final String ERROR_MESSAGE = "Access denied: user needs to be authenticated";
+	private static final String EXPECTED_RESPONSE_CONTENT = "{\"message\":\"" + ERROR_MESSAGE + "\"}";
 
-    private RestAuthenticationRequiredHandler handler;
+	private RestAuthenticationRequiredHandler handler;
 
-    @Before
-    public void setUp() throws Exception {
-        handler = new RestAuthenticationRequiredHandler(createResponseWriter());
-    }
+	@Before
+	public void setUp() throws Exception {
+		handler = new RestAuthenticationRequiredHandler(createResponseWriter());
+	}
 
-    @Test
-    public void testHandle() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/profile.json");
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test
+	public void testHandle() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/profile.json");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        handler.handle(context, new AuthenticationRequiredException(ERROR_MESSAGE));
+		handler.handle(context, new AuthenticationRequiredException(ERROR_MESSAGE));
 
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        assertEquals(EXPECTED_RESPONSE_CONTENT, response.getContentAsString());
-    }
+		assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
+		assertEquals(EXPECTED_RESPONSE_CONTENT, response.getContentAsString());
+	}
 
 }

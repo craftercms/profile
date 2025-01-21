@@ -28,25 +28,25 @@ import org.craftercms.profile.api.AccessToken;
  */
 public class AccessTokenUtils {
 
-    public static final String ACCESS_TOKE_ATTRIBUTE_NAME = "accessToken";
+	public static final String ACCESS_TOKE_ATTRIBUTE_NAME = "accessToken";
 
-    public static AccessToken getCurrentToken() {
-        return getAccessToken(RequestContext.getCurrent().getRequest());
-    }
+	public static AccessToken getCurrentToken() {
+		return getAccessToken(RequestContext.getCurrent().getRequest());
+	}
 
-    public static void setCurrentToken(AccessToken accessToken) {
-        setAccessToken(RequestContext.getCurrent().getRequest(), accessToken);
-    }
+	public static void setCurrentToken(AccessToken accessToken) {
+		setAccessToken(RequestContext.getCurrent().getRequest(), accessToken);
+	}
 
-    public static AccessToken getAccessToken(HttpServletRequest request) {
-        return (AccessToken)request.getAttribute(ACCESS_TOKE_ATTRIBUTE_NAME);
-    }
+	public static AccessToken getAccessToken(HttpServletRequest request) {
+		return (AccessToken) request.getAttribute(ACCESS_TOKE_ATTRIBUTE_NAME);
+	}
 
-    public static void setAccessToken(HttpServletRequest request, AccessToken accessToken) {
-        request.setAttribute(ACCESS_TOKE_ATTRIBUTE_NAME, accessToken);
-    }
+	public static void setAccessToken(HttpServletRequest request, AccessToken accessToken) {
+		request.setAttribute(ACCESS_TOKE_ATTRIBUTE_NAME, accessToken);
+	}
 
-    private AccessTokenUtils() {
-    }
+	private AccessTokenUtils() {
+	}
 
 }

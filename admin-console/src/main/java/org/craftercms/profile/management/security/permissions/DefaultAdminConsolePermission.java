@@ -25,10 +25,10 @@ import org.craftercms.commons.security.permissions.DefaultPermission;
  */
 public class DefaultAdminConsolePermission extends DefaultPermission {
 
-    public DefaultAdminConsolePermission(Action... allowedActions) {
-        for (Action action : allowedActions) {
-            allow(action.toString());
-        }
-    }
+	public DefaultAdminConsolePermission(Action... allowedActions) {
+		for (Action action : allowedActions) {
+			allow(action.toString());
+		}
+	}
 
 }

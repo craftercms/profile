@@ -54,72 +54,72 @@ import static org.craftercms.profile.api.ProfileConstants.URL_AUTH_REFRESH_PERSI
 @RequestMapping(BASE_URL_AUTHENTICATION)
 public class AuthenticationController {
 
-    protected AuthenticationService authenticationService;
+	protected AuthenticationService authenticationService;
 
-    public AuthenticationController(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
+	public AuthenticationController(AuthenticationService authenticationService) {
+		this.authenticationService = authenticationService;
+	}
 
-    @RequestMapping(value = URL_AUTH_AUTHENTICATE, method = RequestMethod.POST)
-    @ResponseBody
-    public Ticket authenticate(@RequestParam(PARAM_TENANT_NAME) String tenantName,
-                               @RequestParam(PARAM_USERNAME) String username,
-                               @RequestParam(PARAM_PASSWORD)
-                               String password) throws ProfileException {
-        return authenticationService.authenticate(tenantName, username, password);
-    }
+	@RequestMapping(value = URL_AUTH_AUTHENTICATE, method = RequestMethod.POST)
+	@ResponseBody
+	public Ticket authenticate(@RequestParam(PARAM_TENANT_NAME) String tenantName,
+				   @RequestParam(PARAM_USERNAME) String username,
+				   @RequestParam(PARAM_PASSWORD)
+				   String password) throws ProfileException {
+		return authenticationService.authenticate(tenantName, username, password);
+	}
 
-    @RequestMapping(value = URL_AUTH_CREATE_TICKET, method = RequestMethod.POST)
-    @ResponseBody
-    public Ticket createTicket(@RequestParam(PARAM_PROFILE_ID) String profileId) throws ProfileException {
-        return authenticationService.createTicket(profileId);
-    }
+	@RequestMapping(value = URL_AUTH_CREATE_TICKET, method = RequestMethod.POST)
+	@ResponseBody
+	public Ticket createTicket(@RequestParam(PARAM_PROFILE_ID) String profileId) throws ProfileException {
+		return authenticationService.createTicket(profileId);
+	}
 
-    @RequestMapping(value = URL_AUTH_GET_TICKET, method = RequestMethod.GET)
-    @ResponseBody
-    public Ticket getTicket(@PathVariable(PATH_VAR_ID) String ticketId) throws ProfileException {
-        Ticket ticket = authenticationService.getTicket(ticketId);
-        if (ticket != null) {
-            return ticket;
-        } else {
-            throw new NoSuchTicketException(ticketId);
-        }
-    }
+	@RequestMapping(value = URL_AUTH_GET_TICKET, method = RequestMethod.GET)
+	@ResponseBody
+	public Ticket getTicket(@PathVariable(PATH_VAR_ID) String ticketId) throws ProfileException {
+		Ticket ticket = authenticationService.getTicket(ticketId);
+		if (ticket != null) {
+			return ticket;
+		} else {
+			throw new NoSuchTicketException(ticketId);
+		}
+	}
 
-    @RequestMapping(value = URL_AUTH_INVALIDATE_TICKET, method = RequestMethod.POST)
-    @ResponseStatus(value = HttpStatus.OK)
-    public void invalidateTicket(@PathVariable(PATH_VAR_ID) String ticketId) throws ProfileException {
-        authenticationService.invalidateTicket(ticketId);
-    }
+	@RequestMapping(value = URL_AUTH_INVALIDATE_TICKET, method = RequestMethod.POST)
+	@ResponseStatus(value = HttpStatus.OK)
+	public void invalidateTicket(@PathVariable(PATH_VAR_ID) String ticketId) throws ProfileException {
+		authenticationService.invalidateTicket(ticketId);
+	}
 
-    @RequestMapping(value = URL_AUTH_CREATE_PERSISTENT_LOGIN, method = RequestMethod.POST)
-    @ResponseBody
-    public PersistentLogin createPersistentLogin(@RequestParam(PARAM_PROFILE_ID)
-                                                 String profileId) throws ProfileException {
-        return authenticationService.createPersistentLogin(profileId);
-    }
+	@RequestMapping(value = URL_AUTH_CREATE_PERSISTENT_LOGIN, method = RequestMethod.POST)
+	@ResponseBody
+	public PersistentLogin createPersistentLogin(@RequestParam(PARAM_PROFILE_ID)
+						     String profileId) throws ProfileException {
+		return authenticationService.createPersistentLogin(profileId);
+	}
 
-    @RequestMapping(value = URL_AUTH_GET_PERSISTENT_LOGIN, method = RequestMethod.GET)
-    @ResponseBody
-    public PersistentLogin getPersistentLogin(@PathVariable(PATH_VAR_ID) String loginId) throws ProfileException {
-        PersistentLogin login = authenticationService.getPersistentLogin(loginId);
-        if (login != null) {
-            return login;
-        } else {
-            throw new NoSuchPersistentLoginException(loginId);
-        }
-    }
+	@RequestMapping(value = URL_AUTH_GET_PERSISTENT_LOGIN, method = RequestMethod.GET)
+	@ResponseBody
+	public PersistentLogin getPersistentLogin(@PathVariable(PATH_VAR_ID) String loginId) throws ProfileException {
+		PersistentLogin login = authenticationService.getPersistentLogin(loginId);
+		if (login != null) {
+			return login;
+		} else {
+			throw new NoSuchPersistentLoginException(loginId);
+		}
+	}
 
-    @RequestMapping(value = URL_AUTH_REFRESH_PERSISTENT_LOGIN_TOKEN, method = RequestMethod.POST)
-    @ResponseBody
-    public PersistentLogin refreshPersistentLoginToken(@PathVariable(PATH_VAR_ID) String loginId) throws ProfileException {
-        return authenticationService.refreshPersistentLoginToken(loginId);
-    }
+	@RequestMapping(value = URL_AUTH_REFRESH_PERSISTENT_LOGIN_TOKEN, method = RequestMethod.POST)
+	@ResponseBody
+	public PersistentLogin refreshPersistentLoginToken(@PathVariable(PATH_VAR_ID) String loginId) throws ProfileException {
+		return authenticationService.refreshPersistentLoginToken(loginId);
+	}
 
-    @RequestMapping(value = URL_AUTH_DELETE_PERSISTENT_LOGIN, method = RequestMethod.POST)
-    @ResponseStatus(value = HttpStatus.OK)
-    public void deletePersistentLogin(@PathVariable(PATH_VAR_ID) String loginId) throws ProfileException {
-        authenticationService.deletePersistentLogin(loginId);
-    }
+	@RequestMapping(value = URL_AUTH_DELETE_PERSISTENT_LOGIN, method = RequestMethod.POST)
+	@ResponseStatus(value = HttpStatus.OK)
+	public void deletePersistentLogin(@PathVariable(PATH_VAR_ID) String loginId) throws ProfileException {
+		authenticationService.deletePersistentLogin(loginId);
+	}
 
 }

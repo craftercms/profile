@@ -50,172 +50,172 @@ import static org.craftercms.security.authentication.impl.RememberMeManagerImpl.
  */
 public class RememberMeManagerImplTest {
 
-    private static final String LOGIN_ID = UUID.randomUUID().toString();
-    private static final String LOGIN_TOKEN = UUID.randomUUID().toString();
-    private static final String LOGIN_TOKEN2 = UUID.randomUUID().toString();
-    private static final ObjectId PROFILE_ID = ObjectId.get();
+	private static final String LOGIN_ID = UUID.randomUUID().toString();
+	private static final String LOGIN_TOKEN = UUID.randomUUID().toString();
+	private static final String LOGIN_TOKEN2 = UUID.randomUUID().toString();
+	private static final ObjectId PROFILE_ID = ObjectId.get();
 
-    private RememberMeManagerImpl rememberMeManager;
-    @Mock
-    private AuthenticationService authenticationService;
-    @Mock
-    private AuthenticationManager authenticationManager;
-    @Mock
-    private ProfileService profileService;
+	private RememberMeManagerImpl rememberMeManager;
+	@Mock
+	private AuthenticationService authenticationService;
+	@Mock
+	private AuthenticationManager authenticationManager;
+	@Mock
+	private ProfileService profileService;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-        when(authenticationService.createPersistentLogin(PROFILE_ID.toString())).thenReturn(getLogin());
-        when(authenticationService.getPersistentLogin(LOGIN_ID)).thenReturn(getLogin());
-        when(authenticationService.refreshPersistentLoginToken(LOGIN_ID)).thenReturn(getLogin2());
-        when(authenticationManager.authenticateUser(getProfile(), true)).thenReturn(getAuthentication());
-        when(profileService.getProfile(PROFILE_ID.toString(), new String[0])).thenReturn(getProfile());
+		when(authenticationService.createPersistentLogin(PROFILE_ID.toString())).thenReturn(getLogin());
+		when(authenticationService.getPersistentLogin(LOGIN_ID)).thenReturn(getLogin());
+		when(authenticationService.refreshPersistentLoginToken(LOGIN_ID)).thenReturn(getLogin2());
+		when(authenticationManager.authenticateUser(getProfile(), true)).thenReturn(getAuthentication());
+		when(profileService.getProfile(PROFILE_ID.toString(), new String[0])).thenReturn(getProfile());
 
-        rememberMeManager = new RememberMeManagerImpl(authenticationService, authenticationManager, profileService,
-                new NoOpTextEncryptor(), new CookieManager());
-    }
+		rememberMeManager = new RememberMeManagerImpl(authenticationService, authenticationManager, profileService,
+			new NoOpTextEncryptor(), new CookieManager());
+	}
 
-    @Test
-    public void testEnableRememberMe() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test
+	public void testEnableRememberMe() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        rememberMeManager.enableRememberMe(getAuthentication(), context);
+		rememberMeManager.enableRememberMe(getAuthentication(), context);
 
-        String cookieValue = response.getCookie(REMEMBER_ME_COOKIE_NAME).getValue();
+		String cookieValue = response.getCookie(REMEMBER_ME_COOKIE_NAME).getValue();
 
-        assertEquals(getSerializedLogin(), cookieValue);
-    }
+		assertEquals(getSerializedLogin(), cookieValue);
+	}
 
-    @Test
-    public void testDisableRememberMe() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test
+	public void testDisableRememberMe() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLogin()));
+		request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLogin()));
 
-        rememberMeManager.disableRememberMe(context);
+		rememberMeManager.disableRememberMe(context);
 
-        assertNull(response.getCookie(REMEMBER_ME_COOKIE_NAME).getValue());
+		assertNull(response.getCookie(REMEMBER_ME_COOKIE_NAME).getValue());
 
-        verify(authenticationService).deletePersistentLogin(LOGIN_ID);
-    }
+		verify(authenticationService).deletePersistentLogin(LOGIN_ID);
+	}
 
-    @Test
-    public void testAutoLogin() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test
+	public void testAutoLogin() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLogin()));
+		request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLogin()));
 
-        Authentication auth = rememberMeManager.autoLogin(context);
+		Authentication auth = rememberMeManager.autoLogin(context);
 
-        assertNotNull(auth);
-        assertEquals(getProfile(), auth.getProfile());
+		assertNotNull(auth);
+		assertEquals(getProfile(), auth.getProfile());
 
-        String cookieValue = response.getCookie(REMEMBER_ME_COOKIE_NAME).getValue();
+		String cookieValue = response.getCookie(REMEMBER_ME_COOKIE_NAME).getValue();
 
-        assertEquals(getSerializedLoginWithRefreshedToken(), cookieValue);
-    }
+		assertEquals(getSerializedLoginWithRefreshedToken(), cookieValue);
+	}
 
-    @Test
-    public void testAutoLoginWithInvalidId() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test
+	public void testAutoLoginWithInvalidId() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLoginWithInvalidId()));
+		request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLoginWithInvalidId()));
 
-        Authentication auth = rememberMeManager.autoLogin(context);
+		Authentication auth = rememberMeManager.autoLogin(context);
 
-        assertNull(auth);
+		assertNull(auth);
 
-        assertNull(response.getCookie(REMEMBER_ME_COOKIE_NAME).getValue());
-    }
+		assertNull(response.getCookie(REMEMBER_ME_COOKIE_NAME).getValue());
+	}
 
-    @Test(expected = InvalidCookieException.class)
-    public void testAutoLoginWithInvalidProfile() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test(expected = InvalidCookieException.class)
+	public void testAutoLoginWithInvalidProfile() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLoginWithInvalidProfile()));
+		request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLoginWithInvalidProfile()));
 
-        rememberMeManager.autoLogin(context);
-    }
+		rememberMeManager.autoLogin(context);
+	}
 
-    @Test(expected = CookieTheftException.class)
-    public void testAutoLoginWithInvalidToken() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test(expected = CookieTheftException.class)
+	public void testAutoLoginWithInvalidToken() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLoginWithInvalidToken()));
+		request.setCookies(new Cookie(REMEMBER_ME_COOKIE_NAME, getSerializedLoginWithInvalidToken()));
 
-        rememberMeManager.autoLogin(context);
-    }
+		rememberMeManager.autoLogin(context);
+	}
 
-    protected String getSerializedLogin() {
-        return serializeLogin(LOGIN_ID, PROFILE_ID.toString(), LOGIN_TOKEN);
-    }
+	protected String getSerializedLogin() {
+		return serializeLogin(LOGIN_ID, PROFILE_ID.toString(), LOGIN_TOKEN);
+	}
 
-    protected String getSerializedLoginWithRefreshedToken() {
-        return serializeLogin(LOGIN_ID, PROFILE_ID.toString(), LOGIN_TOKEN2);
-    }
+	protected String getSerializedLoginWithRefreshedToken() {
+		return serializeLogin(LOGIN_ID, PROFILE_ID.toString(), LOGIN_TOKEN2);
+	}
 
-    protected String getSerializedLoginWithInvalidId() {
-        return serializeLogin(UUID.randomUUID().toString(), PROFILE_ID.toString(), LOGIN_TOKEN);
-    }
+	protected String getSerializedLoginWithInvalidId() {
+		return serializeLogin(UUID.randomUUID().toString(), PROFILE_ID.toString(), LOGIN_TOKEN);
+	}
 
-    protected String getSerializedLoginWithInvalidProfile() {
-        return serializeLogin(LOGIN_ID, ObjectId.get().toString(), LOGIN_TOKEN);
-    }
+	protected String getSerializedLoginWithInvalidProfile() {
+		return serializeLogin(LOGIN_ID, ObjectId.get().toString(), LOGIN_TOKEN);
+	}
 
-    protected String getSerializedLoginWithInvalidToken() {
-        return serializeLogin(LOGIN_ID, PROFILE_ID.toString(), UUID.randomUUID().toString());
-    }
+	protected String getSerializedLoginWithInvalidToken() {
+		return serializeLogin(LOGIN_ID, PROFILE_ID.toString(), UUID.randomUUID().toString());
+	}
 
-    protected String serializeLogin(String id, String profileId, String token) {
-        StringBuilder serializedLogin = new StringBuilder();
-        serializedLogin.append(id).append(SERIALIZED_LOGIN_SEPARATOR);
-        serializedLogin.append(profileId).append(SERIALIZED_LOGIN_SEPARATOR);
-        serializedLogin.append(token);
+	protected String serializeLogin(String id, String profileId, String token) {
+		StringBuilder serializedLogin = new StringBuilder();
+		serializedLogin.append(id).append(SERIALIZED_LOGIN_SEPARATOR);
+		serializedLogin.append(profileId).append(SERIALIZED_LOGIN_SEPARATOR);
+		serializedLogin.append(token);
 
-        return serializedLogin.toString();
-    }
+		return serializedLogin.toString();
+	}
 
-    protected PersistentLogin getLogin() {
-        PersistentLogin login = new PersistentLogin();
-        login.setId(LOGIN_ID);
-        login.setToken(LOGIN_TOKEN);
-        login.setProfileId(PROFILE_ID.toString());
+	protected PersistentLogin getLogin() {
+		PersistentLogin login = new PersistentLogin();
+		login.setId(LOGIN_ID);
+		login.setToken(LOGIN_TOKEN);
+		login.setProfileId(PROFILE_ID.toString());
 
-        return login;
-    }
+		return login;
+	}
 
-    protected PersistentLogin getLogin2() {
-        PersistentLogin login = new PersistentLogin();
-        login.setId(LOGIN_ID);
-        login.setToken(LOGIN_TOKEN2);
-        login.setProfileId(PROFILE_ID.toString());
+	protected PersistentLogin getLogin2() {
+		PersistentLogin login = new PersistentLogin();
+		login.setId(LOGIN_ID);
+		login.setToken(LOGIN_TOKEN2);
+		login.setProfileId(PROFILE_ID.toString());
 
-        return login;
-    }
+		return login;
+	}
 
-    protected Profile getProfile() {
-        Profile profile = new Profile();
-        profile.setId(PROFILE_ID);
+	protected Profile getProfile() {
+		Profile profile = new Profile();
+		profile.setId(PROFILE_ID);
 
-        return profile;
-    }
+		return profile;
+	}
 
-    protected Authentication getAuthentication() {
-        return new DefaultAuthentication(null, getProfile(), true);
-    }
+	protected Authentication getAuthentication() {
+		return new DefaultAuthentication(null, getProfile(), true);
+	}
 
 }

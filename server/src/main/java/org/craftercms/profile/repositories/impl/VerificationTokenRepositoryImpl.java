@@ -29,16 +29,16 @@ import org.craftercms.profile.api.VerificationToken;
  * @author avasquez
  */
 public class VerificationTokenRepositoryImpl extends AbstractJongoRepository<VerificationToken>
-        implements VerificationTokenRepository {
+	implements VerificationTokenRepository {
 
-    public static final String KEY_REMOVE_TOKENS_OLDER_THAN_QUERy = "profile.verificationToken.removeOlderThan";
+	public static final String KEY_REMOVE_TOKENS_OLDER_THAN_QUERy = "profile.verificationToken.removeOlderThan";
 
-    @Override
-    public void removeOlderThan(long seconds) throws MongoDataException {
-        long millis = TimeUnit.SECONDS.toMillis(seconds);
-        Date limit = new Date(System.currentTimeMillis() - millis);
+	@Override
+	public void removeOlderThan(long seconds) throws MongoDataException {
+		long millis = TimeUnit.SECONDS.toMillis(seconds);
+		Date limit = new Date(System.currentTimeMillis() - millis);
 
-        remove(getQueryFor(KEY_REMOVE_TOKENS_OLDER_THAN_QUERy), limit);
-    }
+		remove(getQueryFor(KEY_REMOVE_TOKENS_OLDER_THAN_QUERy), limit);
+	}
 
 }

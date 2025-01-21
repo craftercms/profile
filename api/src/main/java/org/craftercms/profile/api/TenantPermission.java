@@ -24,56 +24,56 @@ import org.craftercms.commons.security.permissions.DefaultPermission;
  */
 public class TenantPermission extends DefaultPermission {
 
-    public static final String ANY_TENANT = "*";
+	public static final String ANY_TENANT = "*";
 
-    protected String tenant;
+	protected String tenant;
 
-    public TenantPermission() {
-        tenant = ANY_TENANT;
-    }
+	public TenantPermission() {
+		tenant = ANY_TENANT;
+	}
 
-    public TenantPermission(String tenant) {
-        this.tenant = tenant;
-    }
+	public TenantPermission(String tenant) {
+		this.tenant = tenant;
+	}
 
-    public String getTenant() {
-        return tenant;
-    }
+	public String getTenant() {
+		return tenant;
+	}
 
-    @Override
-    public String toString() {
-        return "TenantPermission{" +
-                "tenant='" + tenant + '\'' +
-                ", allowedActions=" + allowedActions +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "TenantPermission{" +
+			"tenant='" + tenant + '\'' +
+			", allowedActions=" + allowedActions +
+			'}';
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		if (!super.equals(o)) {
+			return false;
+		}
 
-        TenantPermission that = (TenantPermission) o;
+		TenantPermission that = (TenantPermission) o;
 
-        if (!tenant.equals(that.tenant)) {
-            return false;
-        }
+		if (!tenant.equals(that.tenant)) {
+			return false;
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + tenant.hashCode();
-        return result;
-    }
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + tenant.hashCode();
+		return result;
+	}
 
 }

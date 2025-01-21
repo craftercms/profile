@@ -17,6 +17,7 @@ package org.craftercms.security.processors.impl;
 
 import java.util.Arrays;
 import java.util.Date;
+
 import jakarta.servlet.http.Cookie;
 
 import org.bson.types.ObjectId;
@@ -43,90 +44,90 @@ import static org.junit.Assert.assertNotNull;
  */
 public class AddSecurityCookiesProcessorTest {
 
-    private AddSecurityCookiesProcessor processor;
+	private AddSecurityCookiesProcessor processor;
 
-    @Before
-    public void setUp() throws Exception {
-        processor = new AddSecurityCookiesProcessor(new CookieManager(), new CookieManager());
-    }
+	@Before
+	public void setUp() throws Exception {
+		processor = new AddSecurityCookiesProcessor(new CookieManager(), new CookieManager());
+	}
 
-    @Test
-    public void testAddCookiesLoggedIn() throws Exception {
-        String ticket = new ObjectId().toString();
-        Date lastModified = new Date();
+	@Test
+	public void testAddCookiesLoggedIn() throws Exception {
+		String ticket = new ObjectId().toString();
+		Date lastModified = new Date();
 
-        Profile profile = new Profile();
-        profile.setLastModified(lastModified);
+		Profile profile = new Profile();
+		profile.setLastModified(lastModified);
 
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
-        RequestSecurityProcessor flushResponseProcessor = new RequestSecurityProcessor() {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
+		RequestSecurityProcessor flushResponseProcessor = new RequestSecurityProcessor() {
 
-            @Override
-            public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain)
-                    throws Exception {
-                context.getResponse().getOutputStream().flush();
-            }
+			@Override
+			public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain)
+				throws Exception {
+				context.getResponse().getOutputStream().flush();
+			}
 
-        };
+		};
 
-        RequestSecurityProcessorChain chain = new RequestSecurityProcessorChainImpl(Arrays.asList(processor,
-                flushResponseProcessor).iterator());
+		RequestSecurityProcessorChain chain = new RequestSecurityProcessorChainImpl(Arrays.asList(processor,
+			flushResponseProcessor).iterator());
 
-        Authentication auth = new DefaultAuthentication(ticket, profile);
-        SecurityUtils.setAuthentication(request, auth);
+		Authentication auth = new DefaultAuthentication(ticket, profile);
+		SecurityUtils.setAuthentication(request, auth);
 
-        processor.processRequest(context, chain);
+		processor.processRequest(context, chain);
 
-        Cookie ticketCookie = response.getCookie(SecurityUtils.TICKET_COOKIE_NAME);
+		Cookie ticketCookie = response.getCookie(SecurityUtils.TICKET_COOKIE_NAME);
 
-        assertNotNull(ticketCookie);
-        assertEquals(ticket, ticketCookie.getValue());
+		assertNotNull(ticketCookie);
+		assertEquals(ticket, ticketCookie.getValue());
 
-        Cookie profileLastModifiedCookie = response.getCookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME);
+		Cookie profileLastModifiedCookie = response.getCookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME);
 
-        assertNotNull(profileLastModifiedCookie);
-        assertEquals(profile.getLastModified().getTime(), Long.parseLong(profileLastModifiedCookie.getValue()));
-    }
+		assertNotNull(profileLastModifiedCookie);
+		assertEquals(profile.getLastModified().getTime(), Long.parseLong(profileLastModifiedCookie.getValue()));
+	}
 
-    @Test
-    public void testAddCookiesLoggedOut() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
-        RequestSecurityProcessor flushResponseProcessor = new RequestSecurityProcessor() {
+	@Test
+	public void testAddCookiesLoggedOut() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
+		RequestSecurityProcessor flushResponseProcessor = new RequestSecurityProcessor() {
 
-            @Override
-            public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain)
-                    throws Exception {
-                context.getResponse().getOutputStream().flush();
-            }
+			@Override
+			public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain)
+				throws Exception {
+				context.getResponse().getOutputStream().flush();
+			}
 
-        };
+		};
 
-        Cookie ticketCookie = new Cookie(SecurityUtils.TICKET_COOKIE_NAME, new ObjectId().toString());
-        Cookie profileLastModifiedCookie = new Cookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME,
-                String.valueOf(System.currentTimeMillis()));
+		Cookie ticketCookie = new Cookie(SecurityUtils.TICKET_COOKIE_NAME, new ObjectId().toString());
+		Cookie profileLastModifiedCookie = new Cookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME,
+			String.valueOf(System.currentTimeMillis()));
 
-        request.setCookies(ticketCookie, profileLastModifiedCookie);
+		request.setCookies(ticketCookie, profileLastModifiedCookie);
 
-        RequestSecurityProcessorChain chain = new RequestSecurityProcessorChainImpl(Arrays.asList(processor,
-                flushResponseProcessor).iterator());
+		RequestSecurityProcessorChain chain = new RequestSecurityProcessorChainImpl(Arrays.asList(processor,
+			flushResponseProcessor).iterator());
 
-        processor.processRequest(context, chain);
+		processor.processRequest(context, chain);
 
-        ticketCookie = response.getCookie(SecurityUtils.TICKET_COOKIE_NAME);
+		ticketCookie = response.getCookie(SecurityUtils.TICKET_COOKIE_NAME);
 
-        assertNotNull(ticketCookie);
-        assertEquals(null, ticketCookie.getValue());
-        assertEquals(0, ticketCookie.getMaxAge());
+		assertNotNull(ticketCookie);
+		assertEquals(null, ticketCookie.getValue());
+		assertEquals(0, ticketCookie.getMaxAge());
 
-        profileLastModifiedCookie = response.getCookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME);
+		profileLastModifiedCookie = response.getCookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME);
 
-        assertNotNull(profileLastModifiedCookie);
-        assertEquals(null, profileLastModifiedCookie.getValue());
-        assertEquals(0, profileLastModifiedCookie.getMaxAge());
-    }
+		assertNotNull(profileLastModifiedCookie);
+		assertEquals(null, profileLastModifiedCookie.getValue());
+		assertEquals(0, profileLastModifiedCookie.getMaxAge());
+	}
 
 }

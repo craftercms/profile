@@ -24,10 +24,10 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  */
 public class NoSuchTenantException extends I10nProfileException {
 
-    private static final String KEY = "profile.tenant.noSuchTenant";
+	private static final String KEY = "profile.tenant.noSuchTenant";
 
-    public NoSuchTenantException(String tenantName) {
-        super(KEY, tenantName);
-    }
+	public NoSuchTenantException(String tenantName) {
+		super(KEY, tenantName);
+	}
 
 }

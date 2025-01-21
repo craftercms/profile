@@ -17,6 +17,7 @@ package org.craftercms.security.processors.impl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,150 +41,150 @@ import org.slf4j.LoggerFactory;
  */
 public class AddSecurityCookiesProcessor implements RequestSecurityProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(AddSecurityCookiesProcessor.class);
+	private static final Logger logger = LoggerFactory.getLogger(AddSecurityCookiesProcessor.class);
 
-    protected CookieManager ticketCookieManager;
-    protected CookieManager profileLastModifiedCookieManager;
+	protected CookieManager ticketCookieManager;
+	protected CookieManager profileLastModifiedCookieManager;
 
-    public AddSecurityCookiesProcessor(CookieManager ticketCookieManager, CookieManager profileLastModifiedCookieManager) {
-        this.ticketCookieManager = ticketCookieManager;
-        this.profileLastModifiedCookieManager = profileLastModifiedCookieManager;
-    }
+	public AddSecurityCookiesProcessor(CookieManager ticketCookieManager, CookieManager profileLastModifiedCookieManager) {
+		this.ticketCookieManager = ticketCookieManager;
+		this.profileLastModifiedCookieManager = profileLastModifiedCookieManager;
+	}
 
-    /**
-     * Wraps the response in a wrapper that adds (or deletes) the security cookies before the response is sent.
-     *
-     * @param context        the context which holds the current request and response
-     * @param processorChain the {@link RequestSecurityProcessorChain}, used to call the next processor
-     */
-    @Override
-    public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
-        AddSecurityCookiesResponseWrapper response = wrapResponse(context);
-        context.setResponse(response);
+	/**
+	 * Wraps the response in a wrapper that adds (or deletes) the security cookies before the response is sent.
+	 *
+	 * @param context        the context which holds the current request and response
+	 * @param processorChain the {@link RequestSecurityProcessorChain}, used to call the next processor
+	 */
+	@Override
+	public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
+		AddSecurityCookiesResponseWrapper response = wrapResponse(context);
+		context.setResponse(response);
 
-        logger.debug("Wrapped response in a {}", response.getClass().getName());
+		logger.debug("Wrapped response in a {}", response.getClass().getName());
 
-        try {
-            processorChain.processRequest(context);
-        } finally {
-            response.addCookies();
-        }
-    }
+		try {
+			processorChain.processRequest(context);
+		} finally {
+			response.addCookies();
+		}
+	}
 
-    protected AddSecurityCookiesResponseWrapper wrapResponse(RequestContext context) {
-        return new AddSecurityCookiesResponseWrapper(context.getRequest(), context.getResponse());
-    }
+	protected AddSecurityCookiesResponseWrapper wrapResponse(RequestContext context) {
+		return new AddSecurityCookiesResponseWrapper(context.getRequest(), context.getResponse());
+	}
 
-    protected class AddSecurityCookiesResponseWrapper extends HttpServletResponseWrapper {
+	protected class AddSecurityCookiesResponseWrapper extends HttpServletResponseWrapper {
 
-        protected HttpServletRequest request;
-        protected boolean cookiesAdded;
+		protected HttpServletRequest request;
+		protected boolean cookiesAdded;
 
-        public AddSecurityCookiesResponseWrapper(HttpServletRequest request, HttpServletResponse response) {
-            super(response);
+		public AddSecurityCookiesResponseWrapper(HttpServletRequest request, HttpServletResponse response) {
+			super(response);
 
-            this.request = request;
-            this.cookiesAdded = false;
-        }
+			this.request = request;
+			this.cookiesAdded = false;
+		}
 
-        @Override
-        public ServletOutputStream getOutputStream() throws IOException {
-            addCookies();
+		@Override
+		public ServletOutputStream getOutputStream() throws IOException {
+			addCookies();
 
-            return super.getOutputStream();
-        }
+			return super.getOutputStream();
+		}
 
-        @Override
-        public PrintWriter getWriter() throws IOException {
-            addCookies();
+		@Override
+		public PrintWriter getWriter() throws IOException {
+			addCookies();
 
-            return super.getWriter();
-        }
+			return super.getWriter();
+		}
 
-        @Override
-        public void sendError(int sc) throws IOException {
-            addCookies();
+		@Override
+		public void sendError(int sc) throws IOException {
+			addCookies();
 
-            super.sendError(sc);
-        }
+			super.sendError(sc);
+		}
 
-        @Override
-        public void sendError(int sc, String msg) throws IOException {
-            addCookies();
+		@Override
+		public void sendError(int sc, String msg) throws IOException {
+			addCookies();
 
-            super.sendError(sc, msg);
-        }
+			super.sendError(sc, msg);
+		}
 
-        @Override
-        public void sendRedirect(String location) throws IOException {
-            addCookies();
+		@Override
+		public void sendRedirect(String location) throws IOException {
+			addCookies();
 
-            super.sendRedirect(location);
-        }
+			super.sendRedirect(location);
+		}
 
-        @Override
-        public void flushBuffer() throws IOException {
-            addCookies();
+		@Override
+		public void flushBuffer() throws IOException {
+			addCookies();
 
-            super.flushBuffer();
-        }
+			super.flushBuffer();
+		}
 
-        public void addCookies() {
-            if (!cookiesAdded) {
-                Authentication auth = SecurityUtils.getAuthentication(request);
-                if (auth != null) {
-                    // If the user is authenticated, but there are no cookies set, it means that user just logged in
-                    // and the cookies must be set. Also, if the profile last modified cookie is different from the
-                    // last modified of the current profile, the cookie is updated
-                    String ticket = SecurityUtils.getTicketCookie(request);
-                    Long profileLastModified = SecurityUtils.getProfileLastModifiedCookie(request);
-                    long currentProfileLastModified = auth.getProfile().getLastModified().getTime();
+		public void addCookies() {
+			if (!cookiesAdded) {
+				Authentication auth = SecurityUtils.getAuthentication(request);
+				if (auth != null) {
+					// If the user is authenticated, but there are no cookies set, it means that user just logged in
+					// and the cookies must be set. Also, if the profile last modified cookie is different from the
+					// last modified of the current profile, the cookie is updated
+					String ticket = SecurityUtils.getTicketCookie(request);
+					Long profileLastModified = SecurityUtils.getProfileLastModifiedCookie(request);
+					long currentProfileLastModified = auth.getProfile().getLastModified().getTime();
 
-                    // If both cookie and auth tickets are diff, it means the user has logged in with a new ticket,
-                    // so set the new ticket as the cookie
-                    if (StringUtils.isEmpty(ticket) || !ticket.equals(auth.getTicket())) {
-                        addTicketCookie(auth.getTicket());
-                    }
+					// If both cookie and auth tickets are diff, it means the user has logged in with a new ticket,
+					// so set the new ticket as the cookie
+					if (StringUtils.isEmpty(ticket) || !ticket.equals(auth.getTicket())) {
+						addTicketCookie(auth.getTicket());
+					}
 
-                    if (profileLastModified == null || currentProfileLastModified != profileLastModified) {
-                        addProfileLastModifiedCookie(currentProfileLastModified);
-                    }
-                } else {
-                    // If there's no authentication, but the cookies still exist, they should be deleted because the
-                    // user just logged out
-                    String ticket = SecurityUtils.getTicketCookie(request);
-                    Long profileLastModified = SecurityUtils.getProfileLastModifiedCookie(request);
+					if (profileLastModified == null || currentProfileLastModified != profileLastModified) {
+						addProfileLastModifiedCookie(currentProfileLastModified);
+					}
+				} else {
+					// If there's no authentication, but the cookies still exist, they should be deleted because the
+					// user just logged out
+					String ticket = SecurityUtils.getTicketCookie(request);
+					Long profileLastModified = SecurityUtils.getProfileLastModifiedCookie(request);
 
-                    if (StringUtils.isNotEmpty(ticket)) {
-                        deleteTicketCookie();
-                    }
-                    if (profileLastModified != null) {
-                        deleteProfileLastModifiedCookie();
-                    }
-                }
+					if (StringUtils.isNotEmpty(ticket)) {
+						deleteTicketCookie();
+					}
+					if (profileLastModified != null) {
+						deleteProfileLastModifiedCookie();
+					}
+				}
 
-                cookiesAdded = true;
-            }
-        }
+				cookiesAdded = true;
+			}
+		}
 
-        protected void addTicketCookie(String ticket) {
-            ticketCookieManager.addCookie(SecurityUtils.TICKET_COOKIE_NAME, ticket, this);
-        }
+		protected void addTicketCookie(String ticket) {
+			ticketCookieManager.addCookie(SecurityUtils.TICKET_COOKIE_NAME, ticket, this);
+		}
 
-        protected void addProfileLastModifiedCookie(long lastModified) {
-            profileLastModifiedCookieManager.addCookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME,
-                                                       String.valueOf(lastModified), this);
-        }
+		protected void addProfileLastModifiedCookie(long lastModified) {
+			profileLastModifiedCookieManager.addCookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME,
+				String.valueOf(lastModified), this);
+		}
 
-        protected void deleteTicketCookie() {
-            ticketCookieManager.deleteCookie(SecurityUtils.TICKET_COOKIE_NAME, this);
-        }
+		protected void deleteTicketCookie() {
+			ticketCookieManager.deleteCookie(SecurityUtils.TICKET_COOKIE_NAME, this);
+		}
 
-        protected void deleteProfileLastModifiedCookie() {
-            profileLastModifiedCookieManager.deleteCookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME, this);
-        }
+		protected void deleteProfileLastModifiedCookie() {
+			profileLastModifiedCookieManager.deleteCookie(SecurityUtils.PROFILE_LAST_MODIFIED_COOKIE_NAME, this);
+		}
 
-    }
+	}
 
 
 }

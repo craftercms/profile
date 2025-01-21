@@ -51,108 +51,108 @@ import static org.mockito.Mockito.when;
  */
 public class AuthenticationHeadersLoginProcessorTest {
 
-    private static final String TENANT_NAME = "default";
+	private static final String TENANT_NAME = "default";
 
-    private static final String FIRST_NAME_ATTRIB_NAME = "firstName";
-    private static final String LAST_NAME_ATTRIB_NAME = "lastName";
+	private static final String FIRST_NAME_ATTRIB_NAME = "firstName";
+	private static final String LAST_NAME_ATTRIB_NAME = "lastName";
 
-    private static final String TOKEN = "TOP_SECRET_TOKEN";
-    private static final ObjectId PROFILE_ID = ObjectId.get();
-    private static final String USERNAME = "jdoe";
-    private static final String EMAIL = "john.doe@example.com";
-    private static final String FIRST_NAME = "John";
-    private static final String LAST_NAME = "Doe";
-    private static final String TICKET = UUID.randomUUID().toString();
+	private static final String TOKEN = "TOP_SECRET_TOKEN";
+	private static final ObjectId PROFILE_ID = ObjectId.get();
+	private static final String USERNAME = "jdoe";
+	private static final String EMAIL = "john.doe@example.com";
+	private static final String FIRST_NAME = "John";
+	private static final String LAST_NAME = "Doe";
+	private static final String TICKET = UUID.randomUUID().toString();
 
-    private AuthenticationHeadersLoginProcessor processor;
-    @Mock
-    private TenantService tenantService;
-    @Mock
-    private ProfileService profileService;
-    @Mock
-    private TenantsResolver tenantsResolver;
-    @Mock
-    private AuthenticationManager authenticationManager;
+	private AuthenticationHeadersLoginProcessor processor;
+	@Mock
+	private TenantService tenantService;
+	@Mock
+	private ProfileService profileService;
+	@Mock
+	private TenantsResolver tenantsResolver;
+	@Mock
+	private AuthenticationManager authenticationManager;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-        Profile profile = getProfile();
+		Profile profile = getProfile();
 
-        when(tenantService.getTenant(TENANT_NAME)).thenReturn(getTenant());
-        when(profileService.createProfile(TENANT_NAME, USERNAME, null, EMAIL, true, null, getAttributes(), null))
-            .thenReturn(profile);
-        when(tenantsResolver.getTenants()).thenReturn(new String[] {TENANT_NAME});
-        when(authenticationManager.authenticateUser(profile)).thenReturn(new DefaultAuthentication(TICKET, profile));
+		when(tenantService.getTenant(TENANT_NAME)).thenReturn(getTenant());
+		when(profileService.createProfile(TENANT_NAME, USERNAME, null, EMAIL, true, null, getAttributes(), null))
+			.thenReturn(profile);
+		when(tenantsResolver.getTenants()).thenReturn(new String[]{TENANT_NAME});
+		when(authenticationManager.authenticateUser(profile)).thenReturn(new DefaultAuthentication(TICKET, profile));
 
-        processor = new AuthenticationHeadersLoginProcessor(tenantService, profileService, tenantsResolver, authenticationManager);
-        processor.setTokenExpectedValue(TOKEN);
-    }
+		processor = new AuthenticationHeadersLoginProcessor(tenantService, profileService, tenantsResolver, authenticationManager);
+		processor.setTokenExpectedValue(TOKEN);
+	}
 
-    @Test
-    public void testProcess() throws Exception {
-        RequestContext context = getRequestContext();
-        RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
+	@Test
+	public void testProcess() throws Exception {
+		RequestContext context = getRequestContext();
+		RequestSecurityProcessorChain chain = mock(RequestSecurityProcessorChain.class);
 
-        processor.processRequest(context, chain);
+		processor.processRequest(context, chain);
 
-        Authentication auth = SecurityUtils.getAuthentication(context.getRequest());
+		Authentication auth = SecurityUtils.getAuthentication(context.getRequest());
 
-        assertNotNull(auth);
-        assertEquals(TICKET, auth.getTicket());
-        assertEquals(PROFILE_ID, auth.getProfile().getId());
-        assertEquals(USERNAME, auth.getProfile().getUsername());
-        assertEquals(EMAIL, auth.getProfile().getEmail());
-        assertTrue(auth.getProfile().isEnabled());
-        assertEquals(TENANT_NAME, auth.getProfile().getTenant());
-        assertEquals(getAttributes(), auth.getProfile().getAttributes());
-    }
+		assertNotNull(auth);
+		assertEquals(TICKET, auth.getTicket());
+		assertEquals(PROFILE_ID, auth.getProfile().getId());
+		assertEquals(USERNAME, auth.getProfile().getUsername());
+		assertEquals(EMAIL, auth.getProfile().getEmail());
+		assertTrue(auth.getProfile().isEnabled());
+		assertEquals(TENANT_NAME, auth.getProfile().getTenant());
+		assertEquals(getAttributes(), auth.getProfile().getAttributes());
+	}
 
-    private Tenant getTenant() {
-        AttributeDefinition firstNameDef = new AttributeDefinition(FIRST_NAME_ATTRIB_NAME);
-        AttributeDefinition lastNameDef = new AttributeDefinition(LAST_NAME_ATTRIB_NAME);
+	private Tenant getTenant() {
+		AttributeDefinition firstNameDef = new AttributeDefinition(FIRST_NAME_ATTRIB_NAME);
+		AttributeDefinition lastNameDef = new AttributeDefinition(LAST_NAME_ATTRIB_NAME);
 
-        Tenant tenant = new Tenant();
-        tenant.setName(TENANT_NAME);
-        tenant.setSsoEnabled(true);
-        tenant.getAttributeDefinitions().add(firstNameDef);
-        tenant.getAttributeDefinitions().add(lastNameDef);
+		Tenant tenant = new Tenant();
+		tenant.setName(TENANT_NAME);
+		tenant.setSsoEnabled(true);
+		tenant.getAttributeDefinitions().add(firstNameDef);
+		tenant.getAttributeDefinitions().add(lastNameDef);
 
-        return tenant;
-    }
+		return tenant;
+	}
 
-    private Profile getProfile() {
-        Profile profile = new Profile();
-        profile.setId(PROFILE_ID);
-        profile.setUsername(USERNAME);
-        profile.setEmail(EMAIL);
-        profile.setEnabled(true);
-        profile.setTenant(TENANT_NAME);
-        profile.setAttributes(getAttributes());
+	private Profile getProfile() {
+		Profile profile = new Profile();
+		profile.setId(PROFILE_ID);
+		profile.setUsername(USERNAME);
+		profile.setEmail(EMAIL);
+		profile.setEnabled(true);
+		profile.setTenant(TENANT_NAME);
+		profile.setAttributes(getAttributes());
 
-        return profile;
-    }
+		return profile;
+	}
 
-    private Map<String, Object> getAttributes() {
-        Map<String, Object> attributes = new HashMap<>();
-        attributes.put(FIRST_NAME_ATTRIB_NAME, FIRST_NAME);
-        attributes.put(LAST_NAME_ATTRIB_NAME, LAST_NAME);
+	private Map<String, Object> getAttributes() {
+		Map<String, Object> attributes = new HashMap<>();
+		attributes.put(FIRST_NAME_ATTRIB_NAME, FIRST_NAME);
+		attributes.put(LAST_NAME_ATTRIB_NAME, LAST_NAME);
 
-        return attributes;
-    }
+		return attributes;
+	}
 
-    private RequestContext getRequestContext() {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
+	private RequestContext getRequestContext() {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
 
-        request.addHeader(AuthenticationHeadersLoginProcessor.DEFAULT_TOKEN_HEADER_NAME, TOKEN);
-        request.addHeader(AuthenticationHeadersLoginProcessor.DEFAULT_USERNAME_HEADER_NAME, USERNAME);
-        request.addHeader(AuthenticationHeadersLoginProcessor.DEFAULT_EMAIL_HEADER_NAME, EMAIL);
-        request.addHeader(AuthenticationHeadersLoginProcessor.DEFAULT_MELLON_HEADER_PREFIX + FIRST_NAME_ATTRIB_NAME, FIRST_NAME);
-        request.addHeader(AuthenticationHeadersLoginProcessor.DEFAULT_MELLON_HEADER_PREFIX + LAST_NAME_ATTRIB_NAME, LAST_NAME);
+		request.addHeader(AuthenticationHeadersLoginProcessor.DEFAULT_TOKEN_HEADER_NAME, TOKEN);
+		request.addHeader(AuthenticationHeadersLoginProcessor.DEFAULT_USERNAME_HEADER_NAME, USERNAME);
+		request.addHeader(AuthenticationHeadersLoginProcessor.DEFAULT_EMAIL_HEADER_NAME, EMAIL);
+		request.addHeader(AuthenticationHeadersLoginProcessor.DEFAULT_MELLON_HEADER_PREFIX + FIRST_NAME_ATTRIB_NAME, FIRST_NAME);
+		request.addHeader(AuthenticationHeadersLoginProcessor.DEFAULT_MELLON_HEADER_PREFIX + LAST_NAME_ATTRIB_NAME, LAST_NAME);
 
-        return new RequestContext(request, response, null);
-    }
+		return new RequestContext(request, response, null);
+	}
 
 }

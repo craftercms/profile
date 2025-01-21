@@ -24,8 +24,8 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  */
 public class InvalidQueryException extends I10nProfileException {
 
-    public InvalidQueryException(String key, Object... args) {
-        super(key, args);
-    }
+	public InvalidQueryException(String key, Object... args) {
+		super(key, args);
+	}
 
 }

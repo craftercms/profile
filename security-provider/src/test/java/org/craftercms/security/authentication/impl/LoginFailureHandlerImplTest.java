@@ -35,42 +35,42 @@ import static org.junit.Assert.assertTrue;
  */
 public class LoginFailureHandlerImplTest {
 
-    private static final String TARGET_URL = "/login?login_error=true";
+	private static final String TARGET_URL = "/login?login_error=true";
 
-    private LoginFailureHandlerImpl handler;
+	private LoginFailureHandlerImpl handler;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-        handler = new LoginFailureHandlerImpl();
-    }
+		handler = new LoginFailureHandlerImpl();
+	}
 
-    @Test
-    public void testRedirectToTargetUrl() throws Exception {
-        handler.setTargetUrl(TARGET_URL);
+	@Test
+	public void testRedirectToTargetUrl() throws Exception {
+		handler.setTargetUrl(TARGET_URL);
 
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        handler.handle(context, new AuthenticationException());
+		handler.handle(context, new AuthenticationException());
 
-        assertEquals(TARGET_URL, response.getRedirectedUrl());
-        assertEquals(HttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
-        assertTrue(response.isCommitted());
-    }
+		assertEquals(TARGET_URL, response.getRedirectedUrl());
+		assertEquals(HttpServletResponse.SC_MOVED_TEMPORARILY, response.getStatus());
+		assertTrue(response.isCommitted());
+	}
 
-    @Test
-    public void testSendError() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        RequestContext context = new RequestContext(request, response, null);
+	@Test
+	public void testSendError() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		RequestContext context = new RequestContext(request, response, null);
 
-        handler.handle(context, new AuthenticationException());
+		handler.handle(context, new AuthenticationException());
 
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        assertTrue(response.isCommitted());
-    }
+		assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
+		assertTrue(response.isCommitted());
+	}
 
 }

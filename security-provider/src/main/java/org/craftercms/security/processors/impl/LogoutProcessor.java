@@ -16,6 +16,7 @@
 package org.craftercms.security.processors.impl;
 
 import java.io.IOException;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -38,91 +39,91 @@ import org.slf4j.LoggerFactory;
  */
 public class LogoutProcessor implements RequestSecurityProcessor {
 
-    public static final Logger logger = LoggerFactory.getLogger(LogoutProcessor.class);
+	public static final Logger logger = LoggerFactory.getLogger(LogoutProcessor.class);
 
-    public static final String DEFAULT_LOGOUT_URL = "/crafter-security-logout";
-    public static final String DEFAULT_LOGOUT_METHOD = "GET";
+	public static final String DEFAULT_LOGOUT_URL = "/crafter-security-logout";
+	public static final String DEFAULT_LOGOUT_METHOD = "GET";
 
-    protected String logoutUrl;
-    protected String logoutMethod;
-    protected AuthenticationManager authenticationManager;
-    protected LogoutSuccessHandler logoutSuccessHandler;
-    protected RememberMeManager rememberMeManager;
+	protected String logoutUrl;
+	protected String logoutMethod;
+	protected AuthenticationManager authenticationManager;
+	protected LogoutSuccessHandler logoutSuccessHandler;
+	protected RememberMeManager rememberMeManager;
 
-    /**
-     * Default constructor.
-     */
-    public LogoutProcessor(AuthenticationManager authenticationManager, LogoutSuccessHandler logoutSuccessHandler,
-                           final RememberMeManager rememberMeManager) {
-        logoutUrl = DEFAULT_LOGOUT_URL;
-        logoutMethod = DEFAULT_LOGOUT_METHOD;
+	/**
+	 * Default constructor.
+	 */
+	public LogoutProcessor(AuthenticationManager authenticationManager, LogoutSuccessHandler logoutSuccessHandler,
+			       final RememberMeManager rememberMeManager) {
+		logoutUrl = DEFAULT_LOGOUT_URL;
+		logoutMethod = DEFAULT_LOGOUT_METHOD;
 
-        this.authenticationManager = authenticationManager;
-        this.logoutSuccessHandler = logoutSuccessHandler;
-        this.rememberMeManager = rememberMeManager;
-    }
+		this.authenticationManager = authenticationManager;
+		this.logoutSuccessHandler = logoutSuccessHandler;
+		this.rememberMeManager = rememberMeManager;
+	}
 
-    public void setLogoutUrl(String logoutUrl) {
-        this.logoutUrl = logoutUrl;
-    }
+	public void setLogoutUrl(String logoutUrl) {
+		this.logoutUrl = logoutUrl;
+	}
 
-    public void setLogoutMethod(String logoutMethod) {
-        this.logoutMethod = logoutMethod;
-    }
+	public void setLogoutMethod(String logoutMethod) {
+		this.logoutMethod = logoutMethod;
+	}
 
-    /**
-     * Checks if the request URL matches the {@code logoutUrl} and the HTTP method matches the {@code logoutMethod}.
-     * If it does, it proceeds to logout the user, by invalidating the authentication through
-     * {@link AuthenticationManager#invalidateAuthentication(Authentication)}
-     *
-     * @param context        the context which holds the current request and response
-     * @param processorChain the processor chain, used to call the next processor
-     */
-    public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
-        if (isLogoutRequest(context.getRequest())) {
-            logger.debug("Processing logout request");
+	/**
+	 * Checks if the request URL matches the {@code logoutUrl} and the HTTP method matches the {@code logoutMethod}.
+	 * If it does, it proceeds to logout the user, by invalidating the authentication through
+	 * {@link AuthenticationManager#invalidateAuthentication(Authentication)}
+	 *
+	 * @param context        the context which holds the current request and response
+	 * @param processorChain the processor chain, used to call the next processor
+	 */
+	public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
+		if (isLogoutRequest(context.getRequest())) {
+			logger.debug("Processing logout request");
 
-            Authentication auth = SecurityUtils.getAuthentication(context.getRequest());
-            if (auth != null) {
-                authenticationManager.invalidateAuthentication(auth);
-            }
+			Authentication auth = SecurityUtils.getAuthentication(context.getRequest());
+			if (auth != null) {
+				authenticationManager.invalidateAuthentication(auth);
+			}
 
-            onLogoutSuccess(context, auth);
-        } else {
-            processorChain.processRequest(context);
-        }
-    }
+			onLogoutSuccess(context, auth);
+		} else {
+			processorChain.processRequest(context);
+		}
+	}
 
-    protected boolean isLogoutRequest(HttpServletRequest request) {
-        return HttpUtils.getRequestUriWithoutContextPath(request).equals(logoutUrl) && request.getMethod().equals(
-                logoutMethod);
-    }
+	protected boolean isLogoutRequest(HttpServletRequest request) {
+		return HttpUtils.getRequestUriWithoutContextPath(request).equals(logoutUrl) && request.getMethod().equals(
+			logoutMethod);
+	}
 
-    protected void onLogoutSuccess(RequestContext context, Authentication authentication) throws IOException {
-        if (authentication != null) {
-            logger.debug("Logout for user '" + authentication.getProfile().getUsername() + "' successful");
+	protected void onLogoutSuccess(RequestContext context, Authentication authentication) throws IOException {
+		if (authentication != null) {
+			logger.debug("Logout for user '" + authentication.getProfile().getUsername() + "' successful");
 
-            if (authentication.isRemembered()) {
-                rememberMeManager.disableRememberMe(context);
-            }
+			if (authentication.isRemembered()) {
+				rememberMeManager.disableRememberMe(context);
+			}
 
-            SecurityUtils.removeAuthentication(context.getRequest());
-            final HttpSession session = context.getRequest().getSession();
-            if (session != null) {
-                try {
-                    session.invalidate();
-                    context.getRequest().getSession(true);//New Session after old stuff is killed
-                } catch (IllegalStateException ex) {
-                    // DO noting
-                    logger.debug("Http Session was already invalidated");
-                }
-            }
+			SecurityUtils.removeAuthentication(context.getRequest());
+			final HttpSession session = context.getRequest().getSession();
+			if (session != null) {
+				try {
+					session.invalidate();
+					context.getRequest().getSession(true);//New Session after old stuff is killed
+				} catch (IllegalStateException ex) {
+					// DO noting
+					logger.debug("Http Session was already invalidated");
+				}
+			}
 
-        } else {
-            logger.debug("No logout done: user wasn't authenticated");
-        }
+		} else {
+			logger.debug("No logout done: user wasn't authenticated");
+		}
 
-        logoutSuccessHandler.handle(context);
-    }
+		logoutSuccessHandler.handle(context);
+	}
 
 }

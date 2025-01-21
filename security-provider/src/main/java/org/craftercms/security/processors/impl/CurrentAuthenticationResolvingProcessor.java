@@ -33,54 +33,54 @@ import org.slf4j.LoggerFactory;
  */
 public class CurrentAuthenticationResolvingProcessor implements RequestSecurityProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(CurrentAuthenticationResolvingProcessor.class);
+	private static final Logger logger = LoggerFactory.getLogger(CurrentAuthenticationResolvingProcessor.class);
 
-    protected AuthenticationManager authenticationManager;
+	protected AuthenticationManager authenticationManager;
 
-    public CurrentAuthenticationResolvingProcessor(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
+	public CurrentAuthenticationResolvingProcessor(AuthenticationManager authenticationManager) {
+		this.authenticationManager = authenticationManager;
+	}
 
-    /**
-     * Sets the authentication for the current request. If the {@code profileLastModified} timestamp is in the
-     * request, and it doesn't match the one from the current profile, a reload of the profile is forced.
-     *
-     * @param context        the context which holds the current request and other security info pertinent to the
-     *                       request
-     * @param processorChain the processor chain, used to call the next processor
-     */
-    public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
-        HttpServletRequest request = context.getRequest();
-        Authentication auth = null;
+	/**
+	 * Sets the authentication for the current request. If the {@code profileLastModified} timestamp is in the
+	 * request, and it doesn't match the one from the current profile, a reload of the profile is forced.
+	 *
+	 * @param context        the context which holds the current request and other security info pertinent to the
+	 *                       request
+	 * @param processorChain the processor chain, used to call the next processor
+	 */
+	public void processRequest(RequestContext context, RequestSecurityProcessorChain processorChain) throws Exception {
+		HttpServletRequest request = context.getRequest();
+		Authentication auth = null;
 
-        // Make sure not to run the logic if there's already an authentication
-        if (SecurityUtils.getAuthentication(request) == null) {
-            String ticket = SecurityUtils.getTicketCookie(request);
-            if (ticket != null) {
-                auth = authenticationManager.getAuthentication(ticket, false);
-                if (auth != null) {
-                    // Check to see if profile was updated by another app
-                    Long profileLastModified = SecurityUtils.getProfileLastModifiedCookie(request);
-                    long currentProfileLastModified = auth.getProfile().getLastModified().getTime();
+		// Make sure not to run the logic if there's already an authentication
+		if (SecurityUtils.getAuthentication(request) == null) {
+			String ticket = SecurityUtils.getTicketCookie(request);
+			if (ticket != null) {
+				auth = authenticationManager.getAuthentication(ticket, false);
+				if (auth != null) {
+					// Check to see if profile was updated by another app
+					Long profileLastModified = SecurityUtils.getProfileLastModifiedCookie(request);
+					long currentProfileLastModified = auth.getProfile().getLastModified().getTime();
 
-                    if (profileLastModified == null || currentProfileLastModified != profileLastModified) {
-                        if (profileLastModified == null) {
-                            logger.debug("Not profile last modified timestamp specified in request");
-                        } else {
-                            logger.debug("The last modified timestamp in request doesn't match the current one");
-                        }
+					if (profileLastModified == null || currentProfileLastModified != profileLastModified) {
+						if (profileLastModified == null) {
+							logger.debug("Not profile last modified timestamp specified in request");
+						} else {
+							logger.debug("The last modified timestamp in request doesn't match the current one");
+						}
 
-                        auth = authenticationManager.getAuthentication(ticket, true);
-                    }
-                }
-            }
-        }
+						auth = authenticationManager.getAuthentication(ticket, true);
+					}
+				}
+			}
+		}
 
-        if (auth != null) {
-            SecurityUtils.setAuthentication(request, auth);
-        }
+		if (auth != null) {
+			SecurityUtils.setAuthentication(request, auth);
+		}
 
-        processorChain.processRequest(context);
-    }
+		processorChain.processRequest(context);
+	}
 
 }

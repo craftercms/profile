@@ -25,74 +25,74 @@ import java.util.Date;
  */
 public class Ticket {
 
-    private String _id;
-    private String tenant;
-    private String profileId;
-    private Date lastRequestTime;
+	private String _id;
+	private String tenant;
+	private String profileId;
+	private Date lastRequestTime;
 
-    public String getId() {
-        return _id;
-    }
+	public String getId() {
+		return _id;
+	}
 
-    public void setId(String id) {
-        this._id = id;
-    }
+	public void setId(String id) {
+		this._id = id;
+	}
 
-    public String getTenant() {
-        return tenant;
-    }
+	public String getTenant() {
+		return tenant;
+	}
 
-    public void setTenant(String tenant) {
-        this.tenant = tenant;
-    }
+	public void setTenant(String tenant) {
+		this.tenant = tenant;
+	}
 
-    public String getProfileId() {
-        return profileId;
-    }
+	public String getProfileId() {
+		return profileId;
+	}
 
-    public void setProfileId(String profileId) {
-        this.profileId = profileId;
-    }
+	public void setProfileId(String profileId) {
+		this.profileId = profileId;
+	}
 
-    public Date getLastRequestTime() {
-        return lastRequestTime;
-    }
+	public Date getLastRequestTime() {
+		return lastRequestTime;
+	}
 
-    public void setLastRequestTime(Date lastRequestTime) {
-        this.lastRequestTime = lastRequestTime;
-    }
+	public void setLastRequestTime(Date lastRequestTime) {
+		this.lastRequestTime = lastRequestTime;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-        Ticket ticket = (Ticket) o;
+		Ticket ticket = (Ticket) o;
 
-        if (!_id.equals(ticket._id)) {
-            return false;
-        }
+		if (!_id.equals(ticket._id)) {
+			return false;
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public int hashCode() {
-        return _id.hashCode();
-    }
+	@Override
+	public int hashCode() {
+		return _id.hashCode();
+	}
 
-    @Override
-    public String toString() {
-        return "Ticket{" +
-                "id=" + _id +
-                ", tenant='" + tenant + '\'' +
-                ", profileId='" + profileId + '\'' +
-                ", lastRequestTime=" + lastRequestTime +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "Ticket{" +
+			"id=" + _id +
+			", tenant='" + tenant + '\'' +
+			", profileId='" + profileId + '\'' +
+			", lastRequestTime=" + lastRequestTime +
+			'}';
+	}
 
 }

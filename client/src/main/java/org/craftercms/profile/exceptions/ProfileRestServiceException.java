@@ -27,35 +27,35 @@ import org.springframework.http.HttpStatusCode;
  */
 public class ProfileRestServiceException extends ProfileException {
 
-    protected HttpStatusCode status;
-    protected ErrorCode errorCode;
-    protected String detailMessage;
+	protected HttpStatusCode status;
+	protected ErrorCode errorCode;
+	protected String detailMessage;
 
-    public ProfileRestServiceException(HttpStatusCode status, String detailMessage) {
-        super("status = " + status + ", detailMessage = " + detailMessage);
+	public ProfileRestServiceException(HttpStatusCode status, String detailMessage) {
+		super("status = " + status + ", detailMessage = " + detailMessage);
 
-        this.status = status;
-        this.detailMessage = detailMessage;
-    }
+		this.status = status;
+		this.detailMessage = detailMessage;
+	}
 
-    public ProfileRestServiceException(HttpStatusCode status, ErrorCode errorCode, String detailMessage) {
-        super("status = " + status + ", errorCode = " + errorCode + ", detailMessage = " + detailMessage);
+	public ProfileRestServiceException(HttpStatusCode status, ErrorCode errorCode, String detailMessage) {
+		super("status = " + status + ", errorCode = " + errorCode + ", detailMessage = " + detailMessage);
 
-        this.status = status;
-        this.errorCode = errorCode;
-        this.detailMessage = detailMessage;
-    }
+		this.status = status;
+		this.errorCode = errorCode;
+		this.detailMessage = detailMessage;
+	}
 
-    public HttpStatusCode getStatus() {
-        return status;
-    }
+	public HttpStatusCode getStatus() {
+		return status;
+	}
 
-    public ErrorCode getErrorCode() {
-        return errorCode;
-    }
+	public ErrorCode getErrorCode() {
+		return errorCode;
+	}
 
-    public String getDetailMessage() {
-        return detailMessage;
-    }
+	public String getDetailMessage() {
+		return detailMessage;
+	}
 
 }

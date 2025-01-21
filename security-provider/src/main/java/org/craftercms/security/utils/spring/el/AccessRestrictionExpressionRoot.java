@@ -27,52 +27,52 @@ import org.craftercms.profile.api.Profile;
  */
 public class AccessRestrictionExpressionRoot {
 
-    private Profile profile;
+	private Profile profile;
 
-    public void setProfile(Profile profile) {
-        this.profile = profile;
-    }
+	public void setProfile(Profile profile) {
+		this.profile = profile;
+	}
 
-    /**
-     * Returns trues if user is anonymous.
-     */
-    public boolean isAnonymous() {
-        return profile == null;
-    }
+	/**
+	 * Returns trues if user is anonymous.
+	 */
+	public boolean isAnonymous() {
+		return profile == null;
+	}
 
-    /**
-     * Returns trues if user is authenticated.
-     */
-    public boolean isAuthenticated() {
-        return profile != null;
-    }
+	/**
+	 * Returns trues if user is authenticated.
+	 */
+	public boolean isAuthenticated() {
+		return profile != null;
+	}
 
-    /**
-     * Returns trues if the profile has the specified role.
-     */
-    public boolean hasRole(String role) {
-        return isAuthenticated() && profile.hasRole(role);
-    }
+	/**
+	 * Returns trues if the profile has the specified role.
+	 */
+	public boolean hasRole(String role) {
+		return isAuthenticated() && profile.hasRole(role);
+	}
 
-    /**
-     * Returns trues if the profile has any of the specified roles.
-     */
-    public boolean hasAnyRole(Collection<String> roles) {
-        return isAuthenticated() && profile.hasAnyRole(roles);
-    }
+	/**
+	 * Returns trues if the profile has any of the specified roles.
+	 */
+	public boolean hasAnyRole(Collection<String> roles) {
+		return isAuthenticated() && profile.hasAnyRole(roles);
+	}
 
-    /**
-     * Always returns true (allow access to everyone).
-     */
-    public boolean permitAll() {
-        return true;
-    }
+	/**
+	 * Always returns true (allow access to everyone).
+	 */
+	public boolean permitAll() {
+		return true;
+	}
 
-    /**
-     * Always returns false (deny access to everyone).
-     */
-    public boolean denyAll() {
-        return false;
-    }
+	/**
+	 * Always returns false (deny access to everyone).
+	 */
+	public boolean denyAll() {
+		return false;
+	}
 
 }

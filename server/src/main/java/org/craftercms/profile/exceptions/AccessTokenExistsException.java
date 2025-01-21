@@ -25,11 +25,11 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  */
 public class AccessTokenExistsException extends I10nProfileException {
 
-    public static final String KEY = "profile.accessToken.accessTokenExists";
+	public static final String KEY = "profile.accessToken.accessTokenExists";
 
-    public AccessTokenExistsException(String tokenId) {
-        super(KEY, tokenId);
-    }
+	public AccessTokenExistsException(String tokenId) {
+		super(KEY, tokenId);
+	}
 
 
 }

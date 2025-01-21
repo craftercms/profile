@@ -26,17 +26,17 @@ import org.craftercms.commons.security.permissions.Permission;
  */
 public class SubjectTenantIsSamePermission implements Permission {
 
-    private String subjectTenant;
-    private String tenant;
+	private String subjectTenant;
+	private String tenant;
 
-    public SubjectTenantIsSamePermission(String subjectTenant, String tenant) {
-        this.subjectTenant = subjectTenant;
-        this.tenant = tenant;
-    }
+	public SubjectTenantIsSamePermission(String subjectTenant, String tenant) {
+		this.subjectTenant = subjectTenant;
+		this.tenant = tenant;
+	}
 
-    @Override
-    public boolean isAllowed(String action) {
-        return subjectTenant.equals(tenant);
-    }
+	@Override
+	public boolean isAllowed(String action) {
+		return subjectTenant.equals(tenant);
+	}
 
 }

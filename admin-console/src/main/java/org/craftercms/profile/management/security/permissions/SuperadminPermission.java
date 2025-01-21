@@ -25,8 +25,8 @@ import org.craftercms.commons.security.permissions.DefaultPermission;
  */
 public class SuperadminPermission extends DefaultPermission {
 
-    public SuperadminPermission() {
-        allowAny();
-    }
+	public SuperadminPermission() {
+		allowAny();
+	}
 
 }

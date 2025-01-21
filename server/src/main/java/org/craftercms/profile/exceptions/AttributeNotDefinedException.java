@@ -25,10 +25,10 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  */
 public class AttributeNotDefinedException extends I10nProfileException {
 
-    public static final String KEY = "profile.attribute.attributeNotDefined";
+	public static final String KEY = "profile.attribute.attributeNotDefined";
 
-    public AttributeNotDefinedException(String attributeName, String tenant) {
-        super(KEY, attributeName, tenant);
-    }
+	public AttributeNotDefinedException(String attributeName, String tenant) {
+		super(KEY, attributeName, tenant);
+	}
 
 }

@@ -16,6 +16,7 @@
 package org.craftercms.security.authorization.impl;
 
 import java.io.IOException;
+
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,69 +39,69 @@ import org.slf4j.LoggerFactory;
  */
 public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(AccessDeniedHandlerImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(AccessDeniedHandlerImpl.class);
 
-    protected String errorPageUrl;
+	protected String errorPageUrl;
 
-    public AccessDeniedHandlerImpl() {
-        super();
-    }
+	public AccessDeniedHandlerImpl() {
+		super();
+	}
 
-    /**
-     * Sets the error page URL to forward to.
-     */
-    public void setErrorPageUrl(String errorPageUrl) {
-        this.errorPageUrl = errorPageUrl;
-    }
+	/**
+	 * Sets the error page URL to forward to.
+	 */
+	public void setErrorPageUrl(String errorPageUrl) {
+		this.errorPageUrl = errorPageUrl;
+	}
 
-    protected String getErrorPageUrl() {
-        return errorPageUrl;
-    }
+	protected String getErrorPageUrl() {
+		return errorPageUrl;
+	}
 
-    /**
-     * Forwards to the error page, but if not error page was specified, a 403 error is sent.
-     *
-     * @param context the request context
-     * @param e       the exception with the reason of the access deny
-     */
-    @Override
-    public void handle(RequestContext context, AccessDeniedException e) throws SecurityProviderException, IOException {
-        saveException(context, e);
+	/**
+	 * Forwards to the error page, but if not error page was specified, a 403 error is sent.
+	 *
+	 * @param context the request context
+	 * @param e       the exception with the reason of the access deny
+	 */
+	@Override
+	public void handle(RequestContext context, AccessDeniedException e) throws SecurityProviderException, IOException {
+		saveException(context, e);
 
-        if (StringUtils.isNotEmpty(getErrorPageUrl())) {
-            forwardToErrorPage(context);
-        } else {
-            sendError(e, context);
-        }
-    }
+		if (StringUtils.isNotEmpty(getErrorPageUrl())) {
+			forwardToErrorPage(context);
+		} else {
+			sendError(e, context);
+		}
+	}
 
-    protected void saveException(RequestContext context, AccessDeniedException e) {
-        logger.debug("Saving access denied exception in request to use after forward");
+	protected void saveException(RequestContext context, AccessDeniedException e) {
+		logger.debug("Saving access denied exception in request to use after forward");
 
-        context.getRequest().setAttribute(SecurityUtils.ACCESS_DENIED_EXCEPTION_SESSION_ATTRIBUTE, e);
-    }
+		context.getRequest().setAttribute(SecurityUtils.ACCESS_DENIED_EXCEPTION_SESSION_ATTRIBUTE, e);
+	}
 
-    protected void forwardToErrorPage(RequestContext context) throws SecurityProviderException, IOException {
-        HttpServletRequest request = context.getRequest();
-        HttpServletResponse response = context.getResponse();
-        String errorPageUrl = getErrorPageUrl();
+	protected void forwardToErrorPage(RequestContext context) throws SecurityProviderException, IOException {
+		HttpServletRequest request = context.getRequest();
+		HttpServletResponse response = context.getResponse();
+		String errorPageUrl = getErrorPageUrl();
 
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-        logger.debug("Forwarding to error page at {}, with 403 FORBIDDEN status", errorPageUrl);
+		logger.debug("Forwarding to error page at {}, with 403 FORBIDDEN status", errorPageUrl);
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher(errorPageUrl);
-        try {
-            dispatcher.forward(request, response);
-        } catch (ServletException e) {
-            throw new SecurityProviderException(e.getMessage(), e);
-        }
-    }
+		RequestDispatcher dispatcher = request.getRequestDispatcher(errorPageUrl);
+		try {
+			dispatcher.forward(request, response);
+		} catch (ServletException e) {
+			throw new SecurityProviderException(e.getMessage(), e);
+		}
+	}
 
-    protected void sendError(AccessDeniedException e, RequestContext requestContext) throws IOException {
-        logger.debug("Sending 403 FORBIDDEN error");
+	protected void sendError(AccessDeniedException e, RequestContext requestContext) throws IOException {
+		logger.debug("Sending 403 FORBIDDEN error");
 
-        requestContext.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
-    }
+		requestContext.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+	}
 
 }

@@ -22,11 +22,11 @@ package org.craftercms.profile.api;
  */
 public enum TenantAction {
 
-    CREATE_TENANT,
-    READ_TENANT,
-    UPDATE_TENANT,
-    DELETE_TENANT,
-    MANAGE_PROFILES,
-    MANAGE_TICKETS
+	CREATE_TENANT,
+	READ_TENANT,
+	UPDATE_TENANT,
+	DELETE_TENANT,
+	MANAGE_PROFILES,
+	MANAGE_TICKETS
 
 }

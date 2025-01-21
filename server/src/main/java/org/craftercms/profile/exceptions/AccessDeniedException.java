@@ -27,33 +27,33 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  */
 public class AccessDeniedException extends I10nProfileException {
 
-    private static final String KEY_MISSING_ACCESS_TOKEN_ID = "profile.accessToken.missingAccessTokenId";
-    private static final String KEY_EXPIRED_ACCESS_TOKEN = "profile.accessToken.expiredAccessToken";
-    private static final String KEY_NO_SUCH_ACCESS_TOKEN = "profile.accessToken.noSuchAccessToken";
+	private static final String KEY_MISSING_ACCESS_TOKEN_ID = "profile.accessToken.missingAccessTokenId";
+	private static final String KEY_EXPIRED_ACCESS_TOKEN = "profile.accessToken.expiredAccessToken";
+	private static final String KEY_NO_SUCH_ACCESS_TOKEN = "profile.accessToken.noSuchAccessToken";
 
-    protected AccessDeniedException(String key, Object... args) {
-        super(key, args);
-    }
+	protected AccessDeniedException(String key, Object... args) {
+		super(key, args);
+	}
 
-    public static class MissingAccessToken extends AccessDeniedException {
+	public static class MissingAccessToken extends AccessDeniedException {
 
-        public MissingAccessToken() {
-            super(KEY_MISSING_ACCESS_TOKEN_ID);
-        }
-    }
+		public MissingAccessToken() {
+			super(KEY_MISSING_ACCESS_TOKEN_ID);
+		}
+	}
 
-    public static class ExpiredAccessToken extends AccessDeniedException {
+	public static class ExpiredAccessToken extends AccessDeniedException {
 
-        public ExpiredAccessToken(String id, String application, Date expiredOn) {
-            super(KEY_EXPIRED_ACCESS_TOKEN, id, application, expiredOn);
-        }
-    }
+		public ExpiredAccessToken(String id, String application, Date expiredOn) {
+			super(KEY_EXPIRED_ACCESS_TOKEN, id, application, expiredOn);
+		}
+	}
 
-    public static class NoSuchAccessToken extends AccessDeniedException {
+	public static class NoSuchAccessToken extends AccessDeniedException {
 
-        public NoSuchAccessToken(String id) {
-            super(KEY_NO_SUCH_ACCESS_TOKEN, id);
-        }
-    }
+		public NoSuchAccessToken(String id) {
+			super(KEY_NO_SUCH_ACCESS_TOKEN, id);
+		}
+	}
 
 }

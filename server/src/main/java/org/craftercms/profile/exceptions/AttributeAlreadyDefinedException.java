@@ -24,10 +24,10 @@ import org.craftercms.profile.api.exceptions.I10nProfileException;
  */
 public class AttributeAlreadyDefinedException extends I10nProfileException {
 
-    private static final String KEY = "profile.attribute.attributeAlreadyDefined";
+	private static final String KEY = "profile.attribute.attributeAlreadyDefined";
 
-    public AttributeAlreadyDefinedException(String attributeName, String tenant) {
-        super(KEY, attributeName, tenant);
-    }
+	public AttributeAlreadyDefinedException(String attributeName, String tenant) {
+		super(KEY, attributeName, tenant);
+	}
 
 }

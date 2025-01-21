@@ -30,33 +30,33 @@ import org.slf4j.LoggerFactory;
  */
 public class RequestSecurityProcessorChainImpl implements RequestSecurityProcessorChain {
 
-    private static final Logger logger = LoggerFactory.getLogger(RequestSecurityProcessorChainImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(RequestSecurityProcessorChainImpl.class);
 
-    private Iterator<RequestSecurityProcessor> processorIterator;
+	private Iterator<RequestSecurityProcessor> processorIterator;
 
-    /**
-     * Default constructor
-     *
-     * @param processorIterator iterator of {@link RequestSecurityProcessor}s.
-     */
-    public RequestSecurityProcessorChainImpl(Iterator<RequestSecurityProcessor> processorIterator) {
-        this.processorIterator = processorIterator;
-    }
+	/**
+	 * Default constructor
+	 *
+	 * @param processorIterator iterator of {@link RequestSecurityProcessor}s.
+	 */
+	public RequestSecurityProcessorChainImpl(Iterator<RequestSecurityProcessor> processorIterator) {
+		this.processorIterator = processorIterator;
+	}
 
-    /**
-     * Calls the next {@link RequestSecurityProcessor} of the iterator.
-     *
-     * @param context the request context
-     * @throws Exception
-     */
-    public void processRequest(RequestContext context) throws Exception {
-        if (processorIterator.hasNext()){
-            RequestSecurityProcessor processor = processorIterator.next();
+	/**
+	 * Calls the next {@link RequestSecurityProcessor} of the iterator.
+	 *
+	 * @param context the request context
+	 * @throws Exception
+	 */
+	public void processRequest(RequestContext context) throws Exception {
+		if (processorIterator.hasNext()) {
+			RequestSecurityProcessor processor = processorIterator.next();
 
-            logger.debug("Executing processor {}", processor);
+			logger.debug("Executing processor {}", processor);
 
-            processor.processRequest(context, this);
-        }
-    }
+			processor.processRequest(context, this);
+		}
+	}
 
 }
