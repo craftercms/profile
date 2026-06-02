@@ -888,7 +888,7 @@ paths:
             operationId: removeRoles
             description: |
                 Module: Profile <br>
-                Removes the given roles to the specified tenant.
+                Removes the given roles from the specified tenant.
             parameters:
                 -   name: name
                     in: path
@@ -2840,7 +2840,7 @@ paths:
             operationId: uploadProfileAttachment
             description: |
                 Module: Profile <br>
-                Upload a attachment to the specified profile.<br><br><i>Note:</i><br>If the mime type of the attachment is not on the valid list will fail.
+                Upload an attachment to the specified profile.<br><br><i>Note:</i><br>If the mime type of the attachment is not on the valid list will fail.
             parameters:
                 -   name: accessTokenId
                     in: query
