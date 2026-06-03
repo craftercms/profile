@@ -36,7 +36,9 @@ paths:
                 - access_token
             summary: Create Access Token
             operationId: createAccessToken
-            description: Creates a new access token
+            description: |
+                Module: Profile <br>
+                Creates a new access token
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -86,7 +88,9 @@ paths:
                 - access_token
             summary: Get Access Token
             operationId: getAccessToken
-            description: Get the information for a specific access token.
+            description: |
+                Module: Profile <br>
+                Get the information for a specific access token.
             parameters:
                 -   name: id
                     in: path
@@ -131,7 +135,9 @@ paths:
                 - access_token
             summary: Get All Access Tokens
             operationId: getAllAccessToken
-            description: Get all existing access tokens.
+            description: |
+                Module: Profile <br>
+                Get all existing access tokens.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -181,7 +187,9 @@ paths:
                 - access_token
             summary: Delete Access Token
             operationId: deleteAccessToken
-            description: Deletes an access token
+            description: |
+                Module: Profile <br>
+                Deletes an access token
             parameters:
                 -   name: id
                     in: path
@@ -224,7 +232,9 @@ paths:
                 - tenant
             summary: Create Tenant
             operationId: createTenant
-            description: Creates the given tenant
+            description: |
+                Module: Profile <br>
+                Creates the given tenant
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -328,7 +338,9 @@ paths:
                 - tenant
             summary: Get Tenant
             operationId: getTenant
-            description: Returns a tenant.
+            description: |
+                Module: Profile <br>
+                Returns a tenant.
             parameters:
                 -   name: name
                     in: path
@@ -404,7 +416,9 @@ paths:
                 - tenant
             summary: Update Tenant
             operationId: updateTenant
-            description: Updates the given tenant
+            description: |
+                Module: Profile <br>
+                Updates the given tenant
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -513,7 +527,9 @@ paths:
                 - tenant
             summary: Delete Tenant
             operationId: deleteTenant
-            description: Deletes a tenant
+            description: |
+                Module: Profile <br>
+                Deletes a tenant
             parameters:
                 -   name: name
                     in: path
@@ -542,7 +558,9 @@ paths:
                 - tenant
             summary: Count Tenants
             operationId: countTenants
-            description: Returns the total number of tenants.
+            description: |
+                Module: Profile <br>
+                Returns the total number of tenants.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -569,7 +587,9 @@ paths:
                 - tenant
             summary: Get All Tenants
             operationId: getAllTenants
-            description: Returns a list with all the tenants.
+            description: |
+                Module: Profile <br>
+                Returns a list with all the tenants.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -696,7 +716,9 @@ paths:
                 - tenant
             summary: Verify New Profiles
             operationId: verifyNewProfiles
-            description: Sets if new profiles for the specified tenant should be verified or not.
+            description: |
+                Module: Profile <br>
+                Sets if new profiles for the specified tenant should be verified or not.
             parameters:
                 -   name: name
                     in: path
@@ -777,7 +799,9 @@ paths:
                 - tenant
             summary: Add Roles
             operationId: addRoles
-            description: Adds the given roles to the specified tenant.
+            description: |
+                Module: Profile <br>
+                Adds the given roles to the specified tenant.
             parameters:
                 -   name: name
                     in: path
@@ -862,7 +886,9 @@ paths:
                 - tenant
             summary: Remove Roles
             operationId: removeRoles
-            description: Removes the given roles to the specified tenant.
+            description: |
+                Module: Profile <br>
+                Removes the given roles from the specified tenant.
             parameters:
                 -   name: name
                     in: path
@@ -945,7 +971,9 @@ paths:
                 - tenant
             summary: Add Attributes
             operationId: addAttributes
-            description: Adds the given attribute definitions to the specified tenant.
+            description: |
+                Module: Profile <br>
+                Adds the given attribute definitions to the specified tenant.
             parameters:
                 -   name: name
                     in: path
@@ -1051,7 +1079,9 @@ paths:
                 - tenant
             summary: Update Attributes
             operationId: updateAttributes
-            description: Updates the given attribute definitions of the specified tenant.
+            description: |
+                Module: Profile <br>
+                Updates the given attribute definitions of the specified tenant.
             parameters:
                 -   name: name
                     in: path
@@ -1157,7 +1187,9 @@ paths:
                 - tenant
             summary: Remove Attributes
             operationId: removeAttributes
-            description: Removes the given attribute definitions from the specified tenant.
+            description: |
+                Module: Profile <br>
+                Removes the given attribute definitions from the specified tenant.
             parameters:
                 -   name: name
                     in: path
@@ -1234,7 +1266,9 @@ paths:
                 - profile
             summary: Create Profile
             operationId: createProfile
-            description: Creates a new profile for a specific tenant.
+            description: |
+                Module: Profile <br>
+                Creates a new profile for a specific tenant.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -1325,7 +1359,9 @@ paths:
                 - profile
             summary: Update Profile
             operationId: updateProfile
-            description: Updates the profile’s info.
+            description: |
+                Module: Profile <br>
+                Updates the profile’s info.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -1415,7 +1451,9 @@ paths:
                 - profile
             summary: Verify Profile
             operationId: verifyProfile
-            description: Sets the profile as verified if the verification token is valid.
+            description: |
+                Module: Profile <br>
+                Sets the profile as verified if the verification token is valid.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -1466,7 +1504,9 @@ paths:
                 - profile
             summary: Enable Profile
             operationId: enableProfile
-            description: Enables a profile.
+            description: |
+                Module: Profile <br>
+                Enables a profile.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -1518,7 +1558,9 @@ paths:
                 - profile
             summary: Disable Profile
             operationId: disableProfile
-            description: Disables a profile.
+            description: |
+                Module: Profile <br>
+                Disables a profile.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -1570,7 +1612,9 @@ paths:
                 - profile
             summary: Add Roles
             operationId: addRoles
-            description: Assign roles to a profile.
+            description: |
+                Module: Profile <br>
+                Assign roles to a profile.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -1628,7 +1672,9 @@ paths:
                 - profile
             summary: Remove Roles
             operationId: removeRoles
-            description: Remove assigned roles from a profile.
+            description: |
+                Module: Profile <br>
+                Remove assigned roles from a profile.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -1686,7 +1732,9 @@ paths:
                 - profile
             summary: Get Attributes
             operationId: getAttributes
-            description: Returns the attributes of a profile.
+            description: |
+                Module: Profile <br>
+                Returns the attributes of a profile.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -1728,7 +1776,9 @@ paths:
                 - profile
             summary: Update Attributes
             operationId: updateAttributes
-            description: Updates the attributes of a profile. <br><br> <i>NOTE:</i> <i>The specified attributes will be merged with existing attributes.</i>
+            description: |
+                Module: Profile <br>
+                Updates the attributes of a profile. <br><br> <i>NOTE:</i> <i>The specified attributes will be merged with existing attributes.</i>
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -1786,7 +1836,9 @@ paths:
                 - profile
             summary: Remove Attributes
             operationId: removeAttributes
-            description: Removes a list of attributes of a profile
+            description: |
+                Module: Profile <br>
+                Removes a list of attributes of a profile
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -1850,7 +1902,9 @@ paths:
                 - profile
             summary: Delete Profile
             operationId: deleteProfile
-            description: Deletes a profile
+            description: |
+                Module: Profile <br>
+                Deletes a profile
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -1879,7 +1933,9 @@ paths:
                 - profile
             summary: Get Profile By Query
             operationId: getProfileByQuery
-            description: Returns the single profile that matches the specified query
+            description: |
+                Module: Profile <br>
+                Returns the single profile that matches the specified query
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -1934,7 +1990,9 @@ paths:
                 - profile
             summary: Get Profile
             operationId: getProfile
-            description: Returns the profile for a specified ID.
+            description: |
+                Module: Profile <br>
+                Returns the profile for a specified ID.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -1984,7 +2042,9 @@ paths:
                 - profile
             summary: Get Profile By Username
             operationId: getProfileByUsername
-            description: Returns the user for the specified tenant and username.
+            description: |
+                Module: Profile <br>
+                Returns the user for the specified tenant and username.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2040,7 +2100,9 @@ paths:
                 - profile
             summary: Get Profile By Ticket
             operationId: getProfileByTicket
-            description: Returns the profile for the specified ticket.
+            description: |
+                Module: Profile <br>
+                Returns the profile for the specified ticket.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2091,7 +2153,9 @@ paths:
                 - profile
             summary: Get Profile Count
             operationId: getProfileCount
-            description: Returns the number of profiles for the specified tenant.
+            description: |
+                Module: Profile <br>
+                Returns the number of profiles for the specified tenant.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2125,7 +2189,9 @@ paths:
                 - profile
             summary: Get Profile Count By Query
             operationId: getProfileCountByQuery
-            description: Returns the number of profiles that match the query for the specified tenant.
+            description: |
+                Module: Profile <br>
+                Returns the number of profiles that match the query for the specified tenant.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2165,7 +2231,9 @@ paths:
                 - profile
             summary: Get Profiles By Query
             operationId: getProfilesByQuery
-            description: Returns the profiles that match the specified query.
+            description: |
+                Module: Profile <br>
+                Returns the profiles that match the specified query.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2242,7 +2310,9 @@ paths:
                 - profile
             summary: Get Profiles By Ids
             operationId: getProfilesByIds
-            description: Returns a list of profiles for the specified IDs.
+            description: |
+                Module: Profile <br>
+                Returns a list of profiles for the specified IDs.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2303,7 +2373,9 @@ paths:
                 - profile
             summary: Get Profiles By Range
             operationId: getProfilesByRange
-            description: Returns a range of profiles for the specified tenant.
+            description: |
+                Module: Profile <br>
+                Returns a range of profiles for the specified tenant.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2374,7 +2446,9 @@ paths:
                 - profile
             summary: Get Profiles By Role
             operationId: getProfilesByRole
-            description: Returns a list of profiles for a specific role and tenant.
+            description: |
+                Module: Profile <br>
+                Returns a list of profiles for a specific role and tenant.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2442,7 +2516,9 @@ paths:
                 - profile
             summary: Get Profiles By Attribute Value
             operationId: getProfilesByAttributeValue
-            description: Returns the list of profiles that have the given attribute with the given value.
+            description: |
+                Module: Profile <br>
+                Returns the list of profiles that have the given attribute with the given value.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2517,7 +2593,9 @@ paths:
                 - profile
             summary: Reset Password
             operationId: resetPassword
-            description: Sends an email to the profile’s user to indicate that the password needs to be reset.
+            description: |
+                Module: Profile <br>
+                Sends an email to the profile’s user to indicate that the password needs to be reset.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2573,7 +2651,9 @@ paths:
                 - profile
             summary: Change Password
             operationId: changePassword
-            description: Resets a profile’s password.
+            description: |
+                Module: Profile <br>
+                Resets a profile’s password.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2629,7 +2709,9 @@ paths:
                 - profile
             summary: Create Verification Token
             operationId: createVerificationToken
-            description: Creates a token that can be sent to the user in an email as a link.<br><br><i>Note:</i><br>After the user clicks the link, the token then can be passed to <b><i>/verify</i></b> or <b><i>/change_password</i></b> to verify user requesting the token.
+            description: |
+                Module: Profile <br>
+                Creates a token that can be sent to the user in an email as a link.<br><br><i>Note:</i><br>After the user clicks the link, the token then can be passed to <b><i>/verify</i></b> or <b><i>/change_password</i></b> to verify user requesting the token.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2676,7 +2758,9 @@ paths:
                 - profile
             summary: Get Verification Token
             operationId: getVerificationToken
-            description: Returns the verification token that corresponds to the given ID.
+            description: |
+                Module: Profile <br>
+                Returns the verification token that corresponds to the given ID.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2723,7 +2807,9 @@ paths:
                 - profile
             summary: Delete Verification Token
             operationId: deleteVerificationToken
-            description: Deletes a verification token when it’s not needed anymore.<br><br><i>Note:</i><br>Not necessary to call if <b><i>/verify</i></b> or <b><i>/change_password</i></b> were called, since they already delete the token.
+            description: |
+                Module: Profile <br>
+                Deletes a verification token when it’s not needed anymore.<br><br><i>Note:</i><br>Not necessary to call if <b><i>/verify</i></b> or <b><i>/change_password</i></b> were called, since they already delete the token.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2752,7 +2838,9 @@ paths:
                 - profile
             summary: Upload Profile Attachment
             operationId: uploadProfileAttachment
-            description: Upload a attachment to the specified profile.<br><br><i>Note:</i><br>If the mime type of the attachment is not on the valid list will fail.
+            description: |
+                Module: Profile <br>
+                Upload an attachment to the specified profile.<br><br><i>Note:</i><br>If the mime type of the attachment is not on the valid list will fail.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2803,7 +2891,9 @@ paths:
                 - profile
             summary: Get Profile Attachment
             operationId: getProfileAttachment
-            description: Gets the requested attachment of the given profile.
+            description: |
+                Module: Profile <br>
+                Gets the requested attachment of the given profile.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2862,7 +2952,9 @@ paths:
                 - profile
             summary: Get All Profile Attachments
             operationId: getAllProfileAttachments
-            description: Gets all attachments for the given profile.
+            description: |
+                Module: Profile <br>
+                Gets all attachments for the given profile.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2907,7 +2999,9 @@ paths:
                 - profile
             summary: Get Profile Attachment Details
             operationId: getProfileAttachmentDetails
-            description: Returns the details for a given attachment in a profile.
+            description: |
+                Module: Profile <br>
+                Returns the details for a given attachment in a profile.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -2954,7 +3048,9 @@ paths:
                 - authentication
             summary: Authenticate
             operationId: authenticate
-            description: Authenticates the user, and returns a ticket identifying the authentication.
+            description: |
+                Module: Profile <br>
+                Authenticates the user, and returns a ticket identifying the authentication.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -3008,7 +3104,9 @@ paths:
                 - authentication
             summary: Create Ticket
             operationId: createTicket
-            description: Creates a new ticket for the specified profile.<br><br><i>Note:</i><br>This method should only be used when actual authentication is done through other means (like when authenticating through Facebook or Twitter) different than profile.
+            description: |
+                Module: Profile <br>
+                Creates a new ticket for the specified profile.<br><br><i>Note:</i><br>This method should only be used when actual authentication is done through other means (like when authenticating through Facebook or Twitter) different than profile.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -3048,7 +3146,9 @@ paths:
                 - authentication
             summary: Get Ticket
             operationId: getTicket
-            description: Returns the ticket info for the given ticket ID.
+            description: |
+                Module: Profile <br>
+                Returns the ticket info for the given ticket ID.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -3086,7 +3186,9 @@ paths:
                 - authentication
             summary: Invalidate Ticket
             operationId: invalidateTicket
-            description: Invalidates the given ticket.
+            description: |
+                Module: Profile <br>
+                Invalidates the given ticket.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -3124,7 +3226,9 @@ paths:
                 - authentication
             summary: Create Persistent Login
             operationId: createPersistentLogin
-            description: Creates a persistent login, used for remember me functionality.
+            description: |
+                Module: Profile <br>
+                Creates a persistent login, used for remember me functionality.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -3163,7 +3267,9 @@ paths:
                 - authentication
             summary: Get Persistent Login
             operationId: getPersistentLogin
-            description: Returns the persistent login info for the given ID.
+            description: |
+                Module: Profile <br>
+                Returns the persistent login info for the given ID.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -3202,7 +3308,9 @@ paths:
                 - authentication
             summary: Refresh Persistent Login
             operationId: refreshPersistentLogin
-            description: Refreshes the token of the specified persistent login.
+            description: |
+                Module: Profile <br>
+                Refreshes the token of the specified persistent login.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -3241,7 +3349,9 @@ paths:
                 - authentication
             summary: Delete Persistent Login
             operationId: deletePersistentLogin
-            description: Deletes a persistent login.
+            description: |
+                Module: Profile <br>
+                Deletes a persistent login.
             parameters:
                 -   name: accessTokenId
                     in: query
@@ -3270,7 +3380,9 @@ paths:
                 - monitoring
             summary: Get Memory Stats
             operationId: getMemoryStats
-            description: Returns the Crafter Profile JVM memory details.
+            description: |
+                Module: Profile <br>
+                Returns the Crafter Profile JVM memory details.
             parameters:
                 -   name: token
                     in: query
@@ -3308,7 +3420,9 @@ paths:
                 - monitoring
             summary: Get Status
             operationId: getStatus
-            description: Returns the Crafter Profile JVM status details.
+            description: |
+                Module: Profile <br>
+                Returns the Crafter Profile JVM status details.
             parameters:
                 -   name: token
                     in: query
@@ -3341,7 +3455,9 @@ paths:
                 - monitoring
             summary: Get Version
             operationId: getVersion
-            description: Returns the Crafter Profile JVM version details.
+            description: |
+                Module: Profile <br>
+                Returns the Crafter Profile JVM version details.
             parameters:
                 -   name: token
                     in: query
